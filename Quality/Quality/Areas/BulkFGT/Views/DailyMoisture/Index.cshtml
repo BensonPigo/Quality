@@ -348,8 +348,12 @@
                                         @Html.TextBoxFor(o => o.Main.Instrument, new { @maxlength = "15", @class = "OnlyEdit", @readonly = "readonly", @onclick = "open_EndlineMoistureDetail()" })
                                     </td>
                                     <td><h5>Fabrication</h5></td>
-                                    <td colspan="3">
+                                    <td>
                                         @Html.TextBoxFor(o => o.Main.Fabrication, new { @maxlength = "15", @class = "Readonly" })
+                                    </td>
+                                    <td><h5>Line</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Main.Line, new { @maxlength = "15", @class = "OnlyEdit" })
                                     </td>
                                 </tr>
                                 <tr>
@@ -687,6 +691,10 @@
             if ($('#Main_Status').val() == "Confirmed") {
                 $('#Amend').bind('click').addClass("IsEditMode");
                 $('#Encode ,#Edit ,#Delete').unbind('click').removeClass("IsEditMode");
+            }
+
+            if ($('#Main_ReportNo').val() == '') {
+                $('#Encode').unbind('click').removeClass("IsEditMode");
             }
 
             $(".DataTable input, .DataTable select").attr("disabled", "disabled");

@@ -61,8 +61,14 @@ namespace Quality.Areas.BulkFGT.Controllers
                 return RedirectToAction("Index");
             }
 
-            // 不是Mockup系列則清空時間條件
-            if (!string.IsNullOrEmpty(Req.Type) && !Req.Type.ToUpper().Contains("MOCKUP") && !Req.Type.ToUpper().Contains("HT WASH"))
+            // Daily Moisture 的時候，不會篩選Received Date 
+            if (!string.IsNullOrEmpty(Req.Type) && Req.Type.Contains("Daily Moisture"))
+            {
+                Req.ReceivedDate_sText = string.Empty;
+                Req.ReceivedDate_eText = string.Empty;
+            }
+            // 不是Mockup系列 且不是 HT WASH 則清空時間條件
+            else if (!string.IsNullOrEmpty(Req.Type) && !Req.Type.ToUpper().Contains("MOCKUP") && !Req.Type.ToUpper().Contains("HT WASH"))
             {
                 Req.ReceivedDate_sText = string.Empty;
                 Req.ReceivedDate_eText = string.Empty;

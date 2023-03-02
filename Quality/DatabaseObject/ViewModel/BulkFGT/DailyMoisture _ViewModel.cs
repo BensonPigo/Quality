@@ -89,6 +89,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string StyleID { get; set; }
         public string Article { get; set; }
         public string Status { get; set; }
+        public string Line { get; set; }
         public DateTime? ReportDate { get; set; }
         public string ReportDateText 
         {

@@ -80,6 +80,7 @@ select b.ReportNo
       ,b.AddDate
       ,b.EditName
       ,b.EditDate
+      ,b.Line
       ,MRHandleEmail = ISNULL(p.Email, p2.Email)
 from BulkMoistureTest b
 left join EndlineMoisture e on  e.Instrument=b.Instrument and b.Fabrication=e.Fabrication 
@@ -151,6 +152,7 @@ where b.ReportNo = @ReportNo
                 { "@Remark", DbType.String, Req.Remark ?? "" } ,
                 { "@Action", DbType.String, Req.Action ?? "" } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
+                { "@Line", DbType.String, Req.Line ?? "" } ,
             };
 
             SbSql.Append($@"
@@ -165,6 +167,7 @@ INSERT INTO dbo.BulkMoistureTest
            ,Fabrication
            ,Remark
            ,Action
+           ,Line
            ,AddName
            ,AddDate)
 VALUES
@@ -178,6 +181,7 @@ VALUES
            ,@Fabrication
            ,@Remark
            ,@Action
+           ,@Line
            ,@AddName
            ,GETDATE()
 )
@@ -242,6 +246,7 @@ VALUES      (@ReportNo
             objParameter.Add("@Standard", Req.Main.Standard);
             objParameter.Add("@Action", DbType.String, Req.Main.Action ?? string.Empty);
             objParameter.Add("@Remark", DbType.String, Req.Main.Remark ?? string.Empty);
+            objParameter.Add("@Line", DbType.String, Req.Main.Line ?? string.Empty);
             objParameter.Add("@Editname", DbType.String, Req.Main.EditName ?? string.Empty);
 
 
@@ -250,6 +255,7 @@ Update BulkMoistureTest
 Set Instrument = @Instrument
     ,Fabrication = @Fabrication
     ,Action = @Action
+    ,Line = @Line
     ,Remark = @Remark
     ,EditDate =GETDATE()
     ,Editname = @Editname

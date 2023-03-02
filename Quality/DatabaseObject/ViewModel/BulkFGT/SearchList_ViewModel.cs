@@ -12,6 +12,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string StyleID { get; set; }
         public string Article { get; set; }
         public string Type { get; set; }
+        public string Line { get; set; }
         public string TempFileName { get; set; }
         public DateTime? ReceivedDate_s
         {
@@ -83,6 +84,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Article { get; set; }
         public string Artwork { get; set; }
         public string Result { get; set; }
+        public string Line { get; set; }
+        public string AddName { get; set; }
         public DateTime? TestDate { get; set; }
         public DateTime? ReceivedDate { get; set; }
         public DateTime? ReportDate { get; set; }
