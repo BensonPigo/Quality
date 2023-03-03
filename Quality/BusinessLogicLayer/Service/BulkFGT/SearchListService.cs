@@ -79,11 +79,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Cells[i + 2, 5] = model.DataList[i].StyleID;
                     worksheet.Cells[i + 2, 6] = model.DataList[i].SeasonID;
                     worksheet.Cells[i + 2, 7] = model.DataList[i].Article;
-                    worksheet.Cells[i + 2, 8] = model.DataList[i].Artwork;
-                    worksheet.Cells[i + 2, 9] = model.DataList[i].Result;
-                    worksheet.Cells[i + 2, 10] = model.DataList[i].ReceivedDate.HasValue ? model.DataList[i].ReceivedDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
-                    worksheet.Cells[i + 2, 11] = model.DataList[i].ReportDate.HasValue ? model.DataList[i].ReportDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
-                    worksheet.Cells[i + 2, 12] = model.DataList[i].TestDate.HasValue ? model.DataList[i].TestDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
+                    worksheet.Cells[i + 2, 8] = model.DataList[i].Line;
+                    worksheet.Cells[i + 2, 9] = model.DataList[i].Artwork;
+                    worksheet.Cells[i + 2, 10] = model.DataList[i].Result;
+                    worksheet.Cells[i + 2, 11] = model.DataList[i].ReceivedDate.HasValue ? model.DataList[i].ReceivedDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
+                    worksheet.Cells[i + 2, 12] = model.DataList[i].ReportDate.HasValue ? model.DataList[i].ReportDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
+                    worksheet.Cells[i + 2, 13] = model.DataList[i].TestDate.HasValue ? model.DataList[i].TestDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
+                    worksheet.Cells[i + 2, 14] = model.DataList[i].AddName;
                 }
 
                 worksheet.Columns.AutoFit();
