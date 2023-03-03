@@ -846,10 +846,10 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 var RFTInspection_Result = _Provider.Get_RFTInspection_Result(ID).ToList();
                 var res = _Provider.Get_CFT_OrderComments(model.OrderID).ToList();
 
-                foreach (var item in res)
-                {
-                    item.Comnments = item.Comnments == null ? string.Empty : item.Comnments.Replace("*", "<br>");
-                }
+                //foreach (var item in res)
+                //{
+                //    item.Comnments = item.Comnments == null ? string.Empty : item.Comnments.Replace("*", Environment.NewLine);
+                //}
                 foreach (var item in samePOIDList)
                 {
 
