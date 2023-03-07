@@ -133,8 +133,14 @@
                             <td>
                                 <label class="FindLab" for="TypeSP">Type</label>
                             </td>
-                            <td colspan="9">
+                            <td colspan="2">
                                 @Html.DropDownListFor(o => o.Type, Model.TypeDatasource)
+                            </td>
+                            <td>
+                                <label class="FindLab" >Line</label>
+                            </td>
+                            <td colspan="6">
+                                @Html.TextBoxFor(o => o.Line, new { @value = Model.Line, @style = "width:9vw" })
                             </td>
                             <td style="padding: 0vw;">
                                 <input type="button" class="site-btn btn-gy font1rem Black" style="width: 7vw;" name="action:ToExcel" id="btnExcel" value="To Excel" />
@@ -181,11 +187,13 @@
                                 <th>Brand</th>
                                 <th>Season</th>
                                 <th>Article</th>
+                                <th>Line</th>
                                 <th>Artwork</th>
                                 <th>Result</th>
                                 <th>Received Date</th>
                                 <th>Report Date</th>
                                 <th>Test Date</th>
+                                <th>Technician Name</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -319,6 +327,9 @@
                                     @Html.DisplayFor(modelItem => item.Article)
                                 </td>
                                 <td>
+                                    @Html.DisplayFor(modelItem => item.Line)
+                                </td>
+                                <td>
                                     @Html.DisplayFor(modelItem => item.Artwork)
                                 </td>
                                 <td style="color: @color">
@@ -329,12 +340,15 @@
                                     @Html.DisplayFor(modelItem => ReceivedDate)
                                 </td>
                                 <td>
-                                    @{string ReportDate = item.ReportDate.HasValue ? item.ReportDate.Value.ToShortDateString() : ""; }
+                                    @{string ReportDate = item.ReportDate.HasValue ? item.ReportDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : ""; }
                                     @Html.DisplayFor(modelItem => ReportDate)
                                 </td>
                                 <td>
-                                    @{string TestDate = item.TestDate.HasValue ? item.TestDate.Value.ToShortDateString() : ""; }
+                                    @{string TestDate = item.TestDate.HasValue ? item.TestDate.Value.ToString("yyyy-MM-dd HH:mm:ss") : ""; }
                                     @Html.DisplayFor(modelItem => TestDate)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.AddName)
                                 </td>
                             </tr>
                                 }
@@ -532,6 +546,9 @@
                 $(".mockupOnly").removeAttr("disabled");
             }
 
+            if (includes_Moistureh) {
+                $("#ReceivedDate_sText, #ReceivedDate_eText ").attr("disabled", "disabled");
+            }
         });
     }
 

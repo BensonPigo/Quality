@@ -84,6 +84,7 @@ select Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
 		, [TestDate] = f_TestDate.TestDate
 	    , ReceivedDate = NULL
 	    , ReportDate = NULL
+        , AddName = '' ----AddName不會是單一個人，故不顯示
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = p.ID
 outer apply (
@@ -167,8 +168,11 @@ select  Type = 'Garment Test (450, 451, 701, 710)'
 		, TestDate = gd.InspDate
 	    , ReceivedDate = NULL
 	    , ReportDate = NULL
+        , AddName = ISNULL(pa.Name, ma.Name)
 from GarmentTest g WITH(NOLOCK)
 inner join GarmentTest_Detail gd WITH(NOLOCK) ON g.ID= gd.ID
+left join Production.dbo.Pass1 pa on gd.AddName = pa.ID
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on gd.AddName = ma.ID
 {sqlWhseArrival}
 WHERE gd.Result <> ''
 ";
@@ -229,7 +233,10 @@ select DISTINCT  Type = 'Mockup Crocking Test  (504)'
 		, m.TestDate 
         , m.ReceivedDate
         , ReportDate = m.ReleasedDate
+        , AddName = ISNULL(pa.Name, ma.Name)
 from MockupCrocking m WITH(NOLOCK)
+left join Production.dbo.Pass1 pa on m.AddName = pa.ID
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on m.AddName = ma.ID
 {sqlWhseArrival}
 WHERE m.Result <> ''
 ";
@@ -302,7 +309,10 @@ select DISTINCT Type = 'Mockup Oven Test (514)'
 	, m.TestDate
     , m.ReceivedDate
     , ReportDate = m.ReleasedDate
+    , AddName = ISNULL(pa.Name, ma.Name)
 from MockupOven m WITH(NOLOCK)
+left join Production.dbo.Pass1 pa on m.AddName = pa.ID
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on m.AddName = ma.ID
 {sqlWhseArrival}
 where m.Type = 'B'
 and m.Result <> ''
@@ -376,7 +386,10 @@ select DISTINCT Type = 'Mockup Wash Test (701)'
 	, m.TestDate
     , m.ReceivedDate
     , ReportDate = m.ReleasedDate
+    , AddName = ISNULL(pa.Name, ma.Name)
 from MockupWash m WITH(NOLOCK)
+left join Production.dbo.Pass1 pa on m.AddName = pa.ID
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on m.AddName = ma.ID
 {sqlWhseArrival}
 where m.Type = 'B' 
 and m.Result <> ''
@@ -450,9 +463,12 @@ select DISTINCT Type= 'Fabric Oven Test (515)'
 		, TestDate = f.InspDate
 	    , ReceivedDate = NULL
 	    , ReportDate = NULL
+        , AddName = ISNULL(pa.Name, ma.Name)
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
 inner join Oven f WITH(NOLOCK) ON f.POID = p.ID
+left join Production.dbo.Pass1 pa on f.AddName = pa.ID
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on f.AddName = ma.ID
 {sqlWhseArrival}
 where f.Result <> ''
 ";
@@ -507,9 +523,12 @@ select DISTINCT Type= 'Washing Fastness (501)'
 		, TestDate = f.InspDate
 	    , ReceivedDate = NULL
 	    , ReportDate = NULL
+        , AddName = ISNULL(pa.Name, ma.Name)
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
 INNER JOIN ColorFastness f WITH(NOLOCK) ON f.POID = p.ID
+left join Production.dbo.Pass1 pa on f.AddName = pa.ID
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on f.AddName = ma.ID
 {sqlWhseArrival}
 WHERE f.Result <> ''
 ";
@@ -564,6 +583,7 @@ select Type = 'Accessory Oven & Wash Test (515, 701)'
 		, [TestDate] = f_TestDate.TestDate
 		, ReceivedDate = NULL
 		, ReportDate = NULL
+        , AddName = '' ----不會只有一個人，故空著
 from PO p
 inner join Orders o WITH(NOLOCK) ON o.ID = p.ID
 outer apply (
@@ -646,7 +666,10 @@ select DISTINCT Type = 'Pulling test for Snap/Botton/Rivet (437)'
 	, m.TestDate
 	, ReceivedDate = NULL
 	, ReportDate = NULL
+    , AddName = ISNULL(pa.Name, ma.Name)
 from [ExtendServer].ManufacturingExecution.dbo.PullingTest m WITH(NOLOCK)
+left join Production.dbo.Pass1 pa on m.AddName = pa.ID
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on m.AddName = ma.ID
 {sqlWhseArrival}
 where m.Result <> ''
 ";
@@ -701,8 +724,11 @@ select DISTINCT Type= 'Water Fastness Test(503)'
 		, TestDate = w.InspDate
 	    , ReceivedDate =NULL
 	    , ReportDate =NULL
+        , AddName = ISNULL(pa.Name, ma.Name)
 from WaterFastness w WITH (NOLOCK) 
 inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
+left join Production.dbo.Pass1 pa on w.AddName = pa.ID
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on w.AddName = ma.ID
 {sqlWhseArrival}
 WHERE w.Result <> ''
 ";
@@ -757,8 +783,11 @@ select DISTINCT Type= 'Perspiration Fastness (502)'
 		, TestDate = w.InspDate
 	    , ReceivedDate = NULL
 	    , ReportDate = NULL
+        , AddName = ISNULL(pa.Name, ma.Name)
 from PerspirationFastness w WITH (NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
+left join Production.dbo.Pass1 pa on w.AddName = pa.ID
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on w.AddName = ma.ID
 {sqlWhseArrival}
 WHERE w.Result <> ''
 ";
@@ -797,12 +826,16 @@ select DISTINCT Type= 'Daily HT Wash Test'
 		, h.BrandID
 		, h.SeasonID
 		, h.Article 
+		, h.Line 
 		, Artwork = ''
 		, h.Result
 		, TestDate = h.ReportDate
 	    , ReceivedDate = h.ReceivedDate
 	    , ReportDate = h.ReportDate
+        , AddName = ISNULL(pa.Name, ma.Name)
 from [ExtendServer].ManufacturingExecution.dbo.HeatTransferWash h WITH (NOLOCK)
+left join Production.dbo.Pass1 pa on h.AddName = pa.ID
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on h.AddName = ma.ID
 WHERE h.Result <> ''
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -820,6 +853,18 @@ WHERE h.Result <> ''
             if (!string.IsNullOrEmpty(Req.Article))
             {
                 type13 += "AND h.Article = @Article ";
+            }
+            if (!string.IsNullOrEmpty(Req.Line))
+            {
+                type13 += "AND h.Line = @Line ";
+            }
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type13 += " AND @ReceivedDate_s <= h.ReceivedDate ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type13 += " AND h.ReceivedDate <= @ReceivedDate_e ";
             }
             if (Req.ReportDate_s.HasValue)
             {
@@ -851,13 +896,17 @@ select DISTINCT Type= 'Daily Bulk Moisture Test'
 		, o.BrandID
 		, o.SeasonID
 		, h.Article 
+		, h.Line
 		, Artwork = ''
 		, h.Result
-		, TestDate = h.ReportDate
+		, TestDate = h.AddDate
 	    , ReceivedDate = NULL
-	    , ReportDate = NULL
+	    , ReportDate = h.ReportDate
+        , AddName = ISNULL(pa.Name, ma.Name)
 from [ExtendServer].ManufacturingExecution.dbo.BulkMoistureTest h WITH (NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = h.OrderID
+left join Production.dbo.Pass1 pa on h.AddName = pa.ID
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on h.AddName = ma.ID
 {sqlWhseArrival}
 WHERE h.Result <> ''
 ";
@@ -876,6 +925,10 @@ WHERE h.Result <> ''
             if (!string.IsNullOrEmpty(Req.Article))
             {
                 type14 += "AND h.Article = @Article ";
+            }
+            if (!string.IsNullOrEmpty(Req.Line))
+            {
+                type14 += "AND h.Line = @Line ";
             }
             if (Req.ReportDate_s.HasValue)
             {
