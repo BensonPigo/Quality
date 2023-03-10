@@ -54,7 +54,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             this.CheckSession();
 
             // 必填條件
-            if ((Req.BrandID == "" || Req.SeasonID == "") || Req.StyleID == "")
+            if (!CheckInput(Req))
             {
                 Req.ErrorMessage = $@"msg.WithInfo(""[Style] or [Brand, Season] can't be cmpty. "");";
                 TempData["ModelSearchList"] = Req;
@@ -92,6 +92,15 @@ namespace Quality.Areas.BulkFGT.Controllers
             TempData["ModelSearchList"] = Req;
 
             return RedirectToAction("Index");
+        }
+
+        private bool CheckInput(SearchList_ViewModel Req)
+        {
+            int n = 0;
+            if (!string.IsNullOrEmpty(Req.BrandID)) n++;
+            if (!string.IsNullOrEmpty(Req.SeasonID)) n++;
+            if (!string.IsNullOrEmpty(Req.StyleID)) n++;
+            return n >= 2;
         }
 
         [HttpPost]

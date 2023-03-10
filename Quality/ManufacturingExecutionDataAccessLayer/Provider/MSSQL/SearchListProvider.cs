@@ -826,7 +826,6 @@ select DISTINCT Type= 'Daily HT Wash Test'
 		, h.BrandID
 		, h.SeasonID
 		, h.Article 
-		, h.Line 
 		, Artwork = ''
 		, h.Result
 		, TestDate = h.ReportDate
@@ -896,7 +895,6 @@ select DISTINCT Type= 'Daily Bulk Moisture Test'
 		, o.BrandID
 		, o.SeasonID
 		, h.Article 
-		, h.Line
 		, Artwork = ''
 		, h.Result
 		, TestDate = h.AddDate
