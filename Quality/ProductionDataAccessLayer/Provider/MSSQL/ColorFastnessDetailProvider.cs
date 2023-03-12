@@ -54,10 +54,10 @@ select cd.ID
     ,Seq = CONCAT(cd.SEQ1,'-',cd.SEQ2)
     ,cd.Roll
     ,cd.Dyelot
-    ,po3.Refno,po3.SCIRefno,po3.ColorID
-
+    ,psd.Refno
+    ,psd.SCIRefno
+    ,ColorID = pc.SpecValue
     ,cd.Result  --所有檢驗過的匯總
-
     ,cd.changeScale
     ,cd.ResultChange
     ,cd.StainingScale
@@ -74,7 +74,6 @@ select cd.ID
     ,cd.ResultAcrylic
     ,cd.WoolScale
     ,cd.ResultWool
-
     ,cd.ResultStain,cd.Remark
     ,[LastUpdate] = case 
         when cd.EditName !='' then CONCAT(cd.EditName,'-',pEdit.Name,pEdit.ExtNo)
@@ -83,7 +82,8 @@ select cd.ID
     ,cd.AddDate,cd.AddName,cd.EditDate,cd.EditName
 from ColorFastness_Detail cd WITH(NOLOCK)
 left join ColorFastness c WITH(NOLOCK) on c.ID =  cd.ID
-left join PO_Supp_Detail po3 WITH(NOLOCK) on c.POID = po3.ID and cd.SEQ1 = po3.SEQ1 and cd.SEQ2 = po3.SEQ2
+left join PO_Supp_Detail psd WITH(NOLOCK) on c.POID = psd.ID and cd.SEQ1 = psd.SEQ1 and cd.SEQ2 = psd.SEQ2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Pass1 pEdit WITH(NOLOCK) on pEdit.ID = cd.EditName
 left join pass1 pAdd WITH(NOLOCK) on pAdd.ID = cd.AddName
 where cd.ID = @ID
@@ -115,7 +115,7 @@ select cd.SubmitDate
         ,c.POID
         ,cd.Roll
         ,cd.Dyelot
-        ,SCIRefno_Color = po3.SCIRefno + ' ' +po3.ColorID
+        ,SCIRefno_Color = psd.SCIRefno + ' ' + pc.SpecValue
         ,c.Temperature
         ,c.CycleTime
         ,cd.ChangeScale
@@ -141,8 +141,8 @@ from ColorFastness_Detail cd WITH(NOLOCK)
 left join ColorFastness c WITH(NOLOCK) on c.ID =  cd.ID
 left join SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo
 left join Orders o WITH(NOLOCK) on o.ID=c.POID
-left join PO_Supp_Detail po3 WITH(NOLOCK) on c.POID = po3.ID 
-	and cd.SEQ1 = po3.SEQ1 and cd.SEQ2 = po3.SEQ2
+left join PO_Supp_Detail psd WITH(NOLOCK) on c.POID = psd.ID and cd.SEQ1 = psd.SEQ1 and cd.SEQ2 = psd.SEQ2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
 left join Pass1 pEdit WITH(NOLOCK) on pEdit.ID = cd.EditName
 left join pass1 pAdd WITH(NOLOCK) on pAdd.ID = cd.AddName
 where cd.ID = @ID
@@ -162,24 +162,26 @@ order by cd.SubmitDate
             };
 
             string sqlcmd = @"
-select POID = ID
-,SEQ = CONCAT(SEQ1,'-',SEQ2) 
-,Seq1,Seq2
-,SCIRefno
-,Refno
-,ColorID
-from PO_Supp_Detail WITH(NOLOCK)
-where ID = @POID
-and FabricType = 'F'
+select POID = psd.ID
+,SEQ = CONCAT(psd.SEQ1,'-',psd.SEQ2) 
+,psd.Seq1
+,psd.Seq2
+,psd.SCIRefno
+,psd.Refno
+,ColorID = pc.SpecValue
+from PO_Supp_Detail psd WITH(NOLOCK)
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+where psd.ID = @POID
+and psd.FabricType = 'F'
 ";
             if (!string.IsNullOrEmpty(Seq1))
             {
-                sqlcmd += " and Seq1 = @Seq1" + Environment.NewLine;
+                sqlcmd += " and psd.Seq1 = @Seq1" + Environment.NewLine;
             }
 
             if (!string.IsNullOrEmpty(Seq2))
             {
-                sqlcmd += " and Seq2 = @Seq2" + Environment.NewLine;
+                sqlcmd += " and psd.Seq2 = @Seq2" + Environment.NewLine;
             }
 
             return ExecuteList<PO_Supp_Detail>(CommandType.Text, sqlcmd, objParameter);
