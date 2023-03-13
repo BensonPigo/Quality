@@ -56,6 +56,20 @@
     .pointer {
         cursor: pointer;
     }
+
+
+    #loading {
+        position: fixed;
+        top: 50%;
+        left: 40%;
+        transform: translate(-50%, -50%);
+        border: 20px solid #f3f3f3;
+        border-top: 20px solid #ff8000;
+        border-radius: 50%;
+        width: 200px;
+        height: 200px;
+        animation: spin 2s linear infinite;
+    }
 </style>
 <br />
 <header>
@@ -113,6 +127,7 @@
     }
 
 </div>
+<div id="loading" style="display:none;"></div>
 
 @{
     Html.RenderPartial("ScreenShot");
@@ -213,45 +228,28 @@
             $("#BeforeUpload").click();
         });
 
-        BeforeUpload.onchange = evt => {
-            var length = BeforeUpload.files.length;
-
-            if (length > 0) {
-
-                var idx = 0;
-
-                // for of 可以解決非同步問題
-                for (const fileItem of BeforeUpload.files) {
-
-                    var picFile = BeforeUpload.files[idx];
-                    $(`#BeforePic`).attr('src', window.URL.createObjectURL(picFile));
-                    idx += 1;
-                }
-
+        BeforeUpload.onchange = async evt => {
+            $('#loading').show();
+            const file = evt.target.files[0];
+            if (file) {
+                const compressedBase64 = await compressImage(file);
+                $('#BeforePic').attr('src', compressedBase64);
+                $('#loading').hide();
             }
         }
-
 
         $("#AfterUploadIcon").click(function () {
 
             $("#AfterUpload").click();
         });
 
-        AfterUpload.onchange = evt => {
-            var length = AfterUpload.files.length;
-
-            if (length > 0) {
-
-                var idx = 0;
-
-                // for of 可以解決非同步問題
-                for (const fileItem of AfterUpload.files) {
-
-                    var picFile = AfterUpload.files[idx];
-                    $(`#AfterPic`).attr('src', window.URL.createObjectURL(picFile));
-                    idx += 1;
-                }
-
+        AfterUpload.onchange = async evt => {
+            $('#loading').show();
+            const file = evt.target.files[0];
+            if (file) {
+                const compressedBase64 = await compressImage(file);
+                $('#AfterPic').attr('src', compressedBase64);
+                $('#loading').hide();
             }
         }
 
@@ -334,4 +332,73 @@
             reader.readAsDataURL(file)
         })
     }
+
+    async function compressImage(imageFile) {
+        const MAX_FILE_SIZE = 500 * 1024; // 最大檔案大小為 500KB
+        const MAX_COMPRESSION_TRIES = 20; // 最大壓縮次數
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        let resizedFile = imageFile;
+        let compressionTries = 0;
+
+        while (
+            resizedFile.size > MAX_FILE_SIZE &&
+            compressionTries < MAX_COMPRESSION_TRIES
+        ) {
+            compressionTries++;
+            const reader = new FileReader();
+            const img = new Image();
+            reader.readAsDataURL(resizedFile);
+            resizedFile = await new Promise((resolve) => {
+                reader.onload = function (event) {
+                    img.src = event.target.result;
+                    img.onload = function () {
+                        const originalWidth = img.width;
+                        const originalHeight = img.height;
+                        const resizingFactor = 0.8;
+                        const canvasWidth = originalWidth * resizingFactor;
+                        const canvasHeight = originalHeight * resizingFactor;
+                        canvas.width = canvasWidth;
+                        canvas.height = canvasHeight;
+
+                        context.clearRect(0, 0, canvasWidth, canvasHeight);
+                        context.drawImage(
+                            img,
+                            0,
+                            0,
+                            originalWidth * resizingFactor,
+                            originalHeight * resizingFactor
+                        );
+
+                        canvas.toBlob(
+                            (blob) => {
+                                if (blob) {
+                                    resolve(blob);
+                                } else {
+                                    resolve(imageFile);
+                                }
+                            },
+                            "image/png",
+                            0.8
+                        );
+                    };
+                };
+
+                console.log(resizedFile.size);
+                console.log(compressionTries);
+            });
+        }
+
+        const base64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(resizedFile);
+            reader.onload = function () {
+                resolve(reader.result);
+            };
+        });
+
+        return base64;
+    }
+
 </script>
