@@ -948,6 +948,68 @@ WHERE h.Result <> ''
             }
             #endregion
 
+            #region AgingHydrolysisTest (461)
+
+            string type15 = $@"
+select Type= 'Accelerated Aging by Hydrolysis (461)'
+	, a.ReportNo
+	, b.OrderID
+	, b.StyleID
+	, b.BrandID
+	, b.SeasonID
+	, b.Article
+	, Line = ''
+	, Artwork = ''
+	, a.Result	
+	, TestDate = Cast( NULL as date)
+	, ReceivedDate = a.ReceivedDate
+	, ReportDate = a.ReportDate
+    , AddName = ISNULL(mp.Name, pp.Name)
+
+from [ExtendServer].ManufacturingExecution.dbo.AgingHydrolysisTest_Detail a
+inner join [ExtendServer].ManufacturingExecution.dbo.AgingHydrolysisTest b on b.ID = a.AgingHydrolysisTestID
+left join SciPMSFile_AgingHydrolysisTest_Image  d on a.ReportNo = d.ReportNo
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
+left join Pass1 pp on a.EditName = pp.ID
+WHERE a.Result <> ''
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type15 += "AND BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type15 += "AND SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type15 += "AND StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type15 += "AND Article = @Article ";
+            }
+
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type15 += " AND @ReceivedDate_s <= ReceivedDate ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type15 += " AND ReceivedDate <= ReceivedDate_e ";
+            }
+
+            if (Req.ReportDate_s.HasValue)
+            {
+                type15 += " AND @ReportDate_s <= ReportDate ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type15 += " AND ReportDate <= ReportDate_e ";
+            }
+
+            #endregion
+
             switch (Req.Type)
             {
                 case string a when a.Contains("Fabric Crocking & Shrinkage Test"):
@@ -989,6 +1051,9 @@ WHERE h.Result <> ''
                 case string a when a.Contains("Daily Moisture"):
                     SbSql.Append(type14);
                     break;
+                case string a when a.Contains("Accelerated Aging by Hydrolysis"):
+                    SbSql.Append(type15);
+                    break;
                 default:
                     SbSql.Append(
                         type1 + " union all " + 
@@ -1003,7 +1068,8 @@ WHERE h.Result <> ''
                         type11 + " union all " +
                         type12 + " union all " +
                         type13 + " union all " +
-                        type14);
+                        type14 + " union all " +
+                        type15);
                     break;
             }
 

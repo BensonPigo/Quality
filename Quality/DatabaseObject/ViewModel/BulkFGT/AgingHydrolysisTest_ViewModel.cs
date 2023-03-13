@@ -177,17 +177,22 @@ namespace DatabaseObject.ViewModel.BulkFGT
         };
         public List<SelectListItem> Result_Source = new List<SelectListItem>()
         {
+            new SelectListItem(){Text="",Value="" },
             new SelectListItem(){Text="Pass",Value="Pass" },
             new SelectListItem(){Text="Fail",Value="Fail" },
         };
+
+        public string TempFileName { get; set; }
     }
     public class AgingHydrolysisTest_Detail_Mockup : CompareBase
     {
         public string ReportNo { get; set; }
         public long Ukey { get; set; }
         public string SpecimenName { get; set; }
+        public string ChangeScaleStandard { get; set; }
         public string ChangeScale { get; set; }
         public string ChangeResult { get; set; }
+        public string StainingScaleStandard { get; set; }
         public string StainingScale { get; set; }
         public string StainingResult { get; set; }
         public string Comment { get; set; }

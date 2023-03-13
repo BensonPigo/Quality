@@ -300,6 +300,12 @@
                                                 OrderID = item.OrderID,
                                             });
                                             break;
+                                        case string a when a.Contains("Accelerated Aging by Hydrolysis"):
+                                            link = Url.Action("Detail", "AgingHydrolysisTest", new
+                                            {
+                                                ReportNo = item.ReportNo,
+                                            });
+                                            break;
                                         default:
                                             link = "#";
                                             break;
@@ -538,7 +544,9 @@
             let includes_MOCKUP = currentType.toUpperCase().includes("MOCKUP");
             let includes_HTWash = currentType.toUpperCase().includes("HT WASH");
             let includes_Moistureh = currentType.toUpperCase().includes("MOISTURE");
-            if (!includes_MOCKUP && !includes_HTWash && !includes_Moistureh) {
+            let includes_Aging = currentType.toUpperCase().includes("AGING");
+
+            if (!includes_MOCKUP && !includes_HTWash && !includes_Moistureh && !includes_Aging) {
                 $(".mockupOnly").val('');
                 $(".mockupOnly").attr("disabled", "disabled");
             }

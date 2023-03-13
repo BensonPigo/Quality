@@ -299,17 +299,23 @@ DELETE FROM AgingHydrolysisTest where ID = @ID
             ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
             return true;
         }
-        public bool Processe_AgingHydrolysisTest_Detail(AgingHydrolysisTest_ViewModel sources, string UserID)
+        public bool Processe_AgingHydrolysisTest_Detail(AgingHydrolysisTest_ViewModel sources, string UserID ,bool isSaveDetailPage = false)
         {
 
             List<AgingHydrolysisTest_Detail> oldDetailData = this.GetDetailList(new AgingHydrolysisTest_Request() { AgingHydrolysisTestID = sources.MainData.ID }).ToList();
+
+            // 若是Detail頁面的Save，只需比對相同ReportNo的資料
+            if (isSaveDetailPage && sources.DetailList.Any())
+            {
+                oldDetailData = oldDetailData.Where(o => o.ReportNo == sources.DetailList.FirstOrDefault().ReportNo).ToList();
+            }
 
             List<AgingHydrolysisTest_Detail> needUpdateDetailList =
                 PublicClass.CompareListValue<AgingHydrolysisTest_Detail>(
                     sources.DetailList,
                     oldDetailData,
                     "ReportNo",
-                    "MaterialType,ReportDate,ReceivedDate,FabricRefNo,AccRefNo,FabricColor,AccColor,Comment");
+                    "MaterialType,ReportDate,ReceivedDate,FabricRefNo,AccRefNo,FabricColor,AccColor,Result,Comment");
 
 
             string insertDetail = $@" ----寫入AgingHydrolysisTest_Detail
@@ -319,12 +325,14 @@ INSERT INTO AgingHydrolysisTest_Detail
            (AgingHydrolysisTestID
            ,ReportNo
            ,MaterialType
+           ,Status
            ,AddDate
            ,AddName)
 VALUES 
            (@AgingHydrolysisTestID
            ,@ReportNo
            ,@MaterialType
+           ,'New'
            ,GETDATE()
            ,@AddName)
 ;
@@ -345,8 +353,14 @@ SET EditDate = GETDATE() , EditName = @EditName
     ,AccRefNo = @AccRefNo
     ,FabricColor = @FabricColor
     ,AccColor = @AccColor
+    ,Result = @Result
     ,Comment = @Comment
 WHERE ReportNo = @ReportNo
+;
+if @MaterialType != 'Mockup'
+begin
+    delete from AgingHydrolysisTest_Detail_Mockup where ReportNo = @ReportNo
+end 
 ;
 UPDATE  PMSFile.dbo.AgingHydrolysisTest_Image 
 SET TestBeforePicture = @TestBeforePicture ,TestAfterPicture = @TestAfterPicture
@@ -388,6 +402,7 @@ DELETE FROM PMSFile.dbo.AgingHydrolysisTest_Image  where ReportNo = @ReportNo
                         listDetailPar.Add(new SqlParameter($"@FabricColor", detailItem.FabricColor ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@AccColor", detailItem.AccColor ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@Comment", detailItem.Comment ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@Result", detailItem.Result ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@EditName", UserID));
 
                         if (detailItem.TestBeforePicture != null)
@@ -483,19 +498,27 @@ WHERE ReportNo = @ReportNo
 INSERT INTO AgingHydrolysisTest_Detail_Mockup
            (ReportNo
            ,SpecimenName
+           ,ChangeScaleStandard
            ,ChangeScale
            ,ChangeResult
+           ,StainingScaleStandard
            ,StainingScale
            ,StainingResult
-           ,Comment)
+           ,Comment
+           ,EditDate
+           ,EditName)
 VALUES 
            (@ReportNo
            ,@SpecimenName
+           ,'4-5'
            ,@ChangeScale
-           ,@StainingScale
+           ,@ChangeResult
+           ,'4'
            ,@StainingScale
            ,@StainingResult
-           ,@Comment)
+           ,@Comment
+           ,GETDATE()
+           ,@EditName)
 ";
             string updateDetail = $@" ----AgingHydrolysisTest_Detail_Mockup
 UPDATE AgingHydrolysisTest_Detail_Mockup
@@ -521,11 +544,17 @@ where Ukey = @Ukey AND ReportNo = @ReportNo
                 {
                     case CompareStateType.Add:
                         listDetailPar.Add(new SqlParameter($"@SpecimenName", detailItem.SpecimenName ?? string.Empty));
+
+                        listDetailPar.Add(new SqlParameter($"@ChangeScaleStandard", detailItem.ChangeScaleStandard ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@ChangeScale", detailItem.ChangeScale ?? string.Empty));
-                        listDetailPar.Add(new SqlParameter($"@ChangeScale", detailItem.ChangeScale ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ChangeResult", detailItem.ChangeResult ?? string.Empty));
+
+                        listDetailPar.Add(new SqlParameter($"@StainingScaleStandard", detailItem.StainingScaleStandard ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@StainingScale", detailItem.StainingScale ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@StainingResult", detailItem.StainingResult ?? string.Empty));
+
                         listDetailPar.Add(new SqlParameter($"@Comment", detailItem.Comment ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@EditName", UserID));
 
                         ExecuteNonQuery(CommandType.Text, insertDetail, listDetailPar);
 
@@ -568,16 +597,34 @@ where Ukey = @Ukey AND ReportNo = @ReportNo
             SQLParameterCollection paras = new SQLParameterCollection();
             paras.Add("@EditName", UserID);
             paras.Add("@Status", request.Status);
-            paras.Add("@ReportDate", DbType.Date, request.ReportDate);
+            paras.Add("@Result", request.Result);
+            paras.Add("@ReportNo", request.ReportNo);
 
 
-            string sqlCmd = $@"
+            string sqlCmd ;
+
+            if (request.Status == "Confirmed")
+            {
+                sqlCmd = $@"
 UPDATE AgingHydrolysisTest_Detail
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = @Status
-    , ReportDate = @ReportDate
+    , Result = @Result
+    , ReportDate = GETDATE()
 WHERE ReportNo = @ReportNo
 ";
+            }
+            else
+            {
+                sqlCmd = $@"
+UPDATE AgingHydrolysisTest_Detail
+SET EditDate = GETDATE() , EditName = @EditName
+    , Status = 'New'
+    , Result = ''
+    , ReportDate = NULL
+WHERE ReportNo = @ReportNo
+";
+            }
 
             ExecuteNonQuery(CommandType.Text, sqlCmd, paras);
 
@@ -590,7 +637,6 @@ WHERE ReportNo = @ReportNo
             paras.Add("@ReportNo", Req.ReportNo);
 
             string sqlCmd = $@"
-
 select b.BrandID
 	,a.ReportNo
 	,b.OrderID
@@ -616,10 +662,8 @@ where a.ReportNo = @ReportNo
 
 select *
 from AgingHydrolysisTest_Detail_Mockup
-where a.ReportNo = @ReportNo
+where ReportNo = @ReportNo
 ";
-
-
             return ExecuteDataSet(CommandType.Text, sqlCmd, paras);
         }
     }

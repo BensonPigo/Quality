@@ -244,8 +244,11 @@
                 </div>
                 <div class="colDiv">
                 </div>
+                <div class="colDiv">
+                    <h4 class="searchTitle">SP# List</h4>
+                </div>
                 <div class="colDiv2">
-                    @Html.DropDownListFor(o=>o.Request.OrderID, Model.OrderID_Source, new {  @style = "width:100%" ,onchange = "SpNoChange(this.value)" })
+                    @Html.DropDownListFor(o => o.Request.OrderID, Model.OrderID_Source, new { @style = "width:100%", onchange = "SpNoChange(this.value)" })
                 </div>
                 <!-- #endregion -->
 
@@ -457,16 +460,19 @@
                                         </select>
                                     </div>
                                     <div class="DetailDataAreaItem1 colBody @rowName">
-                                        @Model.DetailList[i].ReceivedDate
+                                        @Model.DetailList[i].ReceivedDateText
                                     </div>
                                     <div class="DetailDataAreaItem1 colBody @rowName">
-                                        @Model.DetailList[i].ReportDate
+                                        @Model.DetailList[i].ReportDateText
                                     </div>
                                     <div class="DetailDataAreaItem1 colBody @rowName">
-                                        @Model.DetailList[i].Result
+                                        @Model.DetailList[i].LastUpadate
                                     </div>
                                     <div class="DetailDataAreaItem2 colBody @rowName">
-                                        <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                        @if (string.IsNullOrEmpty(Model.DetailList[i].ReportDateText))
+                                        {
+                                            <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                        }
                                     </div>
                                 }
                             }

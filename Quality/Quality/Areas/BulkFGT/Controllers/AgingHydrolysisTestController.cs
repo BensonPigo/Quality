@@ -1,4 +1,8 @@
-﻿using BusinessLogicLayer.Service.BulkFGT;
+﻿using BusinessLogicLayer.Interface.BulkFGT;
+using BusinessLogicLayer.Service;
+using BusinessLogicLayer.Service.BulkFGT;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Microsoft.Office.Interop.Excel;
 using Quality.Controllers;
@@ -126,7 +130,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             return RedirectToAction("Index");
         }
-        
+
 
         public ActionResult AddDetailRow(int lastNo)
         {
@@ -174,7 +178,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Content(html);
         }
 
-        public ActionResult OrderIDCheck( string orderID)
+        public ActionResult OrderIDCheck(string orderID)
         {
             AgingHydrolysisTest_ViewModel model = _service.GetOrderInfo(orderID);
 
@@ -220,6 +224,87 @@ namespace Quality.Areas.BulkFGT.Controllers
 
 
             return RedirectToAction("Detail", new { ReportNo = requestModel.MainDetailData.ReportNo });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult Encode(string ReportNo, string Result)
+        {
+            CheckSession();
+            AgingHydrolysisTest_ViewModel result = _service.EncodeAmend(new AgingHydrolysisTest_Detail()
+            {
+                ReportNo = ReportNo,
+                Status = "Confirmed",
+                Result = Result
+            }, this.UserID);
+
+            return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+        }
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult Amend(string ReportNo, string Result)
+        {
+            CheckSession();
+            AgingHydrolysisTest_ViewModel result = _service.EncodeAmend(new AgingHydrolysisTest_Detail()
+            {
+                ReportNo = ReportNo,
+                Status = "New",
+                Result = string.Empty
+            }, this.UserID);
+
+            return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public ActionResult ToExcel(string ReportNo)
+        {
+            this.CheckSession();
+
+            AgingHydrolysisTest_Detail_ViewModel result = _service.GetReport(ReportNo, false);
+
+            if (!result.Result)
+            {
+                result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+            }
+
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
+
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public ActionResult ToPDF(string ReportNo)
+        {
+            this.CheckSession();
+
+            AgingHydrolysisTest_Detail_ViewModel result = _service.GetReport(ReportNo, true);
+
+            if (!result.Result)
+            {
+                result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+            }
+
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
+
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
+        public JsonResult SendMailToMR(string ReportNo)
+        {
+            this.CheckSession();
+            AgingHydrolysisTest_Detail_ViewModel result = _service.GetReport(ReportNo, false);
+
+            if (!result.Result)
+            {
+                result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+            }
+
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
+
+            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, FileName = result.TempFileName });
         }
     }
 }

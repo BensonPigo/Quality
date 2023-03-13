@@ -250,10 +250,16 @@
 
                         </div>
                         <div class="buttonAreaItem">
-                            <input id="DeleteSubmit" type="submit" name="Action:Delete" style="display:none" />
-                            <h4 id="Delete" class="toolBarItem" style=" margin-right: 1em;">
-                                <img src="~/Image/Icon/Delete.png" width="30" />
-                                Delete
+                            <h4 id="Encode" class="toolBarItem" style="margin-right: 1em;">
+                                <img src="~/Image/Icon/Lock.png" width="30" />
+                                Encode
+                            </h4>
+
+                        </div>
+                        <div class="buttonAreaItem">
+                            <h4 id="Amend" class="toolBarItem" style="margin-right: 1em;">
+                                <img src="~/Image/Icon/Unlock.png" width="30" />
+                                Amend
                             </h4>
 
                         </div>
@@ -282,7 +288,6 @@
                                 Send to MR
                             </h4>
                         </div>
-                        <div class="buttonAreaItem"></div>
                     </div>
 
                     @*表頭*@
@@ -363,14 +368,14 @@
                         </div>
 
                         <div class="MainDataAreaItem odd">
-                            @Html.TextBoxFor(o => o.MainDetailData.Tempereture, new { @class = "CanEdit", @type = "number", @onchange = "value=TemperetureCheck(value)" })
+                            @Html.TextBoxFor(o => o.MainDetailData.Tempereture, new { @class = "", @type = "number", @onchange = "value=TemperetureCheck(value)" })
                         </div>
                         <div class="MainDataAreaItem odd">
                             <h4 class="colTitle">Time</h4>
                         </div>
 
                         <div class="MainDataAreaItem odd">
-                            @Html.TextBoxFor(o => o.MainDetailData.Time, new { @class = "CanEdit", @type = "number", @onchange = "value=TimeCheck(value)" })
+                            @Html.TextBoxFor(o => o.MainDetailData.Time, new { @class = "", @type = "number", @onchange = "value=TimeCheck(value)" })
                         </div>
 
                         <div class="MainDataAreaItem odd">
@@ -378,7 +383,7 @@
                         </div>
 
                         <div class="MainDataAreaItem odd">
-                            @Html.TextBoxFor(o => o.MainDetailData.Humidity, new { @class = "CanEdit", @type = "number", @onchange = "value=HumidityCheck(value)" })
+                            @Html.TextBoxFor(o => o.MainDetailData.Humidity, new { @class = "", @type = "number", @onchange = "value=HumidityCheck(value)" })
                         </div>
 
 
@@ -415,13 +420,15 @@
                         </div>
 
                         <div class="MainDataAreaItem odd">
-                            @Html.TextBoxFor(o => o.MainDetailData.ReceivedDate, new { @class = "date-picker CanEdit" })
+                            @Html.TextBoxFor(o => o.MainDetailData.ReceivedDate, "{0:yyyy/MM/dd}", new { @class = "date-picker CanEdit" })
                         </div>
 
                         <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Status</h4>
                         </div>
 
                         <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainDetailData.Status, new { @class = "" })
                         </div>
 
                         <div class="MainDataAreaItem odd">
@@ -477,7 +484,18 @@
                         </div>
 
                         <div class="MainDataAreaItem even">
-                            @Html.DropDownListFor(o => o.MainDetailData.Result, Model.Result_Source, new { @class = "CanEdit even" })
+                            @if (Model.MainDetailData.Result == "Pass")
+                            {
+                                @Html.DropDownListFor(o => o.MainDetailData.Result, Model.Result_Source, new { @class = "CanEdit even", @style = "color:blue", @onchange = "ResultChange(this)" })
+                            }
+                            else if (Model.MainDetailData.Result == "Fail")
+                            {
+                                @Html.DropDownListFor(o => o.MainDetailData.Result, Model.Result_Source, new { @class = "CanEdit even", @style = "color:red", @onchange = "ResultChange(this)" })
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(o => o.MainDetailData.Result, Model.Result_Source, new { @class = "CanEdit even", @style = "color:black", @onchange = "ResultChange(this)" })
+                            }
                         </div>
 
                         <div class="MainDataAreaItem even">
@@ -528,7 +546,7 @@
 
                                     </div>
                                     <div class="DetailDataAreaItem1 colBody">
-                                        <select id="MockupList[@i]_ChangeScale" name="MockupList[@i].ChangeScale" class="CanEdit">
+                                        <select id="MockupList[@i]_ChangeScale" name="MockupList[@i].ChangeScale" class="CanEdit" onchange="ScaleChange(@i, this, 'ChangeResult', '@Model.MockupList[i].ChangeScaleStandard')">
                                             @foreach (var item in Model.Scale_Source)
                                             {
                                                 string selected = item.Value.Equals(Model.MockupList[i].ChangeScale) ? "selected" : "";
@@ -537,16 +555,26 @@
                                         </select>
                                     </div>
                                     <div class="DetailDataAreaItem1 colBody">
-                                        <select id="MockupList[@i]_ChangeResult" name="MockupList[@i].ChangeResult" class="CanEdit">
-                                            @foreach (var item in Model.Result_Source)
-                                            {
-                                                string selected = item.Value.Equals(Model.MockupList[i].ChangeResult) ? "selected" : "";
-                                                <option value="@item.Value" @selected>@item.Text</option>
-                                            }
-                                        </select>
+                                        @*<select id="MockupList[@i]_ChangeResult" name="MockupList[@i].ChangeResult" class="CanEdit">
+                                                @foreach (var item in Model.Result_Source)
+                                                {
+                                                    string selected = item.Value.Equals(Model.MockupList[i].ChangeResult) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>*@
+                                        
+                                        @Html.HiddenFor(o => Model.MockupList[i].ChangeScaleStandard)
+                                        @if (Model.MockupList[i].ChangeResult == "Pass")
+                                        {
+                                            @Html.TextBoxFor(o => Model.MockupList[i].ChangeResult, new { @style = "color:blue", @onchange = "ResultChange(this)" })
+                                        }
+                                        else
+                                        {
+                                            @Html.TextBoxFor(o => Model.MockupList[i].ChangeResult, new { @style = "color:red", @onchange = "ResultChange(this)" })
+                                        }
                                     </div>
                                     <div class="DetailDataAreaItem1 colBody">
-                                        <select id="MockupList[@i]+StainingScale" name="MockupList[@i].StainingScale" class="CanEdit">
+                                        <select id="MockupList[@i]_StainingScale" name="MockupList[@i].StainingScale" class="CanEdit" onchange="ScaleChange(@i,this,'StainingResult','@Model.MockupList[i].StainingScaleStandard')">
                                             @foreach (var item in Model.Scale_Source)
                                             {
                                                 string selected = item.Value.Equals(Model.MockupList[i].StainingScale) ? "selected" : "";
@@ -555,16 +583,27 @@
                                         </select>
                                     </div>
                                     <div class="DetailDataAreaItem1 colBody">
-                                        <select id="MockupList[@i]+StainingResult" name="MockupList[@i].StainingResult" class="CanEdit">
-                                            @foreach (var item in Model.Result_Source)
-                                            {
-                                                string selected = item.Value.Equals(Model.MockupList[i].StainingResult) ? "selected" : "";
-                                                <option value="@item.Value" @selected>@item.Text</option>
-                                            }
-                                        </select>
+                                        @*<select id="MockupList[@i]_StainingResult" name="MockupList[@i].StainingResult" class="CanEdit">
+                                                @foreach (var item in Model.Result_Source)
+                                                {
+                                                    string selected = item.Value.Equals(Model.MockupList[i].StainingResult) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>*@
+
+                                        @Html.HiddenFor(o => Model.MockupList[i].StainingScaleStandard)
+
+                                        @if (Model.MockupList[i].StainingResult == "Pass")
+                                        {
+                                            @Html.TextBoxFor(o => Model.MockupList[i].StainingResult, new { @style = "color:blue", @onchange = "ResultChange(this)" })
+                                        }
+                                        else
+                                        {
+                                            @Html.TextBoxFor(o => Model.MockupList[i].StainingResult, new { @style = "color:red", @onchange = "ResultChange(this)" })
+                                        }
                                     </div>
                                     <div class="DetailDataAreaItem1 colBody">
-                                        @Html.TextBoxFor(o => Model.MockupList[i].Comment, new { @class = "CanEdit", @maxlength = "300" })
+                                        @Html.TextBoxFor(o => Model.MockupList[i].Comment, new { @class = "CanEdit" })
                                     </div>
                                     <div class="DetailDataAreaItem1 colBody">
                                         @Model.MockupList[i].LastUpadate
@@ -603,35 +642,42 @@
         BlurEventBind();
         $('.toolBarItem').removeClass("canUse");
 
-        if ($('#MainDetailData_OrderID').val() == '' ) {
+        if ($('#MainDetailData_ReportNo').val() == '' ) {
 
             // 可編輯欄位關閉
             $('.MainDataArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select').attr("disabled", true);
             $('.MainDataArea input ,.MainDataArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
-            $('#btnArticle').attr("disabled", true);
         }
         else {
             //根據模式區分
             if (EditMode) {
                 // 可編輯欄位開啟
-                $('.CanEdit').removeAttr("disabled");
-                $('.CanEdit').removeAttr("readonly");
-                $('#btnArticle').removeAttr("disabled");
+                $('.CanEdit').removeAttr("disabled").removeAttr("readonly");
 
                 // 編輯模式可用功能開啟
                 $('#Save, #Undo ,#Picture ,#Exit').addClass("canUse");
-                $(".detailDelete").show();
+                $("#MainDetailData_ReceivedDate").addClass("date-picker");
+                $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
 
             }
             else {
                 // 可編輯欄位關閉
                 $('.MainDataArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select').attr("disabled", true);
                 $('.MainDataArea input ,.MainDataArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
-                $('#btnArticle').attr("disabled", true);
+                $("#MainDetailData_ReceivedDate").removeClass("date-picker");
 
-                // 非編輯模式可用功能開啟
-                $('#Edit, #Delete ,#Excel ,#PDF ,#SendtoMR ,#Picture ,#Exit').addClass("canUse");
-                $(".detailDelete").hide();
+                // 非編輯模式
+
+                // 未Confirmed可用功能開啟
+                if ($("#MainDetailData_Status").val() == 'New') {
+                    $('#Encode').addClass("canUse");
+                    $('#Edit , #Delete ,#Excel ,#PDF ,#SendtoMR ,#Picture ,#Exit').addClass("canUse");
+                }
+                else {
+                // Confirmed後的可用功能開啟
+                    $('#Amend').addClass("canUse");
+                    $('#Excel ,#PDF ,#SendtoMR ,#Picture ,#Exit').addClass("canUse");
+                }
             }
 
         }
@@ -642,13 +688,13 @@
 
     function ClickEventBind() {
 
-        $('.toolBarItem ,detailDelete').unbind('click');
-
+        $('.toolBarItem').unbind('click');
 
         $('#Edit').on('click', function () {
             EditMode = true;
             IsEditModeChange();
         });
+
         $('#Save').on('click', function () {
             if (EditMode == false) {
                 return;
@@ -714,21 +760,137 @@
             window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
         });
 
-        $('.detailDelete').on('click', function () {
-            if (EditMode == false) {
-                return;
-            }
-            var t = $(this);
+        $("#Excel").on("click", function () {
 
-            msg.WithConfirm('Do you want to delete the data ?',
-                function () {
-                    let targetRow = t.parent('div').attr('class').split(' ').filter(o => o.includes('Row'))[0];
-
-                    $(`.${targetRow}`).remove();
-                    msg.WithSuccess("Delete Success");
-                }, null);
+            $.ajax({
+                url: "@Url.Action("ToExcel")",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ReportNo: $('#MainDetailData_ReportNo').val()}),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        window.location.href = data.reportPath;
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
         });
 
+        $("#PDF").on("click", function () {
+
+            $.ajax({
+                url: "@Url.Action("ToPDF")",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ReportNo: $('#MainDetailData_ReportNo').val()}),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        window.location.href = data.reportPath;
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+
+
+        $('#SendtoMR').on('click', function () {
+
+            if ($("#MainDetailData_ReportNo").val() == '') {
+                return false;
+            }
+
+            $.ajax({
+                url: "@Url.Action("SendMailToMR")",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    ReportNo: $('#MainDetailData_ReportNo').val()
+                }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        var para = "?To=";
+                        para += "&CC=";
+                        para += "&Subject=" + "Bulk Accelerated Aging by Hydrolysis Test – ReportNo:" + $("#MainDetailData_ReportNo").val();
+                        para += `&Body=Attachment Is Bulk Accelerated Aging by Hydrolysis Test - ReportNo:${$("#MainDetailData_ReportNo").val() } detail data`;
+                        para += "&file=" + data.FileName;
+                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        if ($("#MainDetailData_Status").val() == "New") {
+
+            $('#Encode').on('click', function () {
+
+                $.ajax({
+                    url: "@Url.Action("Encode")",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ ReportNo: $('#MainDetailData_ReportNo').val(), Result: $("#MainDetailData_Result").val() }),
+                    async: false,
+                    success: function (data) {
+                        if (data.Result) {
+                            msg.WithSuccesCheck("Success", function () {
+                                location.reload();
+                            });
+                        }
+                        else {
+                            msg.WithError(data.ErrMsg);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+        }
+        if ($("#MainDetailData_Status").val() != "New") {
+
+            $('#Amend').on('click', function () {
+
+                $.ajax({
+                    url: "@Url.Action("Amend")",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ ReportNo: $('#MainDetailData_ReportNo').val(), Result: $("#MainDetailData_Result").val() }),
+                    async: false,
+                    success: function (data) {
+                        if (data.Result) {
+                            msg.WithSuccesCheck("Success", function () {
+                                location.reload();
+                            });
+                        }
+                        else {
+                            msg.WithError(data.ErrMsg);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+        }
     }
 
     function BlurEventBind() {
@@ -736,7 +898,6 @@
         $('input ,select').unbind('blur').unbind('change');
 
     }
-
 
     function TimeCheck(value) {
         if (parseFloat(value) >= 99) {
@@ -776,4 +937,24 @@
         $('#MainDetailData_TestAfterPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
     }
 
+    function ResultChange(thisObj) {
+        if ($(thisObj).val() == "Pass") {
+            $(thisObj).css("color", "blue");
+        }
+        else {
+            $(thisObj).css("color", "red");
+        }
+    }
+
+    function ScaleChange(rowIdx ,thisObj ,resultType ,standard) {
+        var target = $(`#MockupList_${rowIdx}__${resultType}`);
+
+        if ($(thisObj).val() >= standard) {
+            $(target).val('Pass');
+        }
+        else {
+            $(target).val('Fail');
+        }
+        $(target).change();
+    }
 </script>
