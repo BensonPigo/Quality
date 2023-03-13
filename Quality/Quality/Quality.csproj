@@ -181,6 +181,7 @@
     <Compile Include="Areas\Authority\Controllers\UserListController.cs" />
     <Compile Include="Areas\BulkFGT\BulkFGTAreaRegistration.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\AccessoryOvenWashController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\AgingHydrolysisTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\BulkFGTMailGroupController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\DailyMoistureController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\FabricColorFastnessController.cs" />
@@ -441,6 +442,8 @@
     <Content Include="Areas\StyleManagement\Views\StyleResult\_Tab5_Layout.cshtml" />
     <Content Include="Areas\BulkFGT\Views\HeatTransferWash\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\DailyMoisture\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\AgingHydrolysisTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\AgingHydrolysisTest\Detail.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

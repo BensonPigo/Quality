@@ -1,0 +1,911 @@
+﻿@using DatabaseObject.ViewModel.BulkFGT
+
+@model AgingHydrolysisTest_ViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+
+<style>
+    .SearchDiv {
+        width: 100%;
+        /*height: 8vh;*/
+        /*background-color: pink;*/
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        display: flex;
+    }
+
+    .colDiv {
+        width: 4.3%;
+        padding: 2px;
+    }
+    .colDiv2 {
+        width: 12%;
+        padding: 2px;
+    }
+
+
+    .searchTitle {
+        color: white;
+    }
+
+    .row-name {
+        color: gray;
+        font-size: 1.2em;
+        background-color: wheat;
+    }
+
+    .buttonArea, .MainDataArea, .DetailDataArea {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .buttonAreaItem {
+        width: 10%;
+        padding: 2px;
+    }
+
+    .MainDataAreaItem {
+        width: 16.6%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+    }
+
+    .DetailDataAreaItem1 {
+        width: 19%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+    }
+
+    .DetailDataAreaItem2 {
+        width: 5%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+    }
+
+    .DetailDataAreaItem1 input, .DetailDataAreaItem1 select {
+        width: 100%;
+    }
+
+    .DetailDataAreaItem2 input, .DetailDataAreaItem2 select {
+        width: 100%;
+    }
+
+    .colHead {
+        background-color: wheat;
+        color: darkslategray;
+        font-size: 1rem;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+    /*   .colHead label{
+        font-weight:bold;
+        font-size:1rem;
+    }*/
+    .MainDataAreaItemSpan3 {
+        width: 37.5%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+    }
+
+    .MainDataAreaItemSpan7 {
+        width: 87.5%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+    }
+
+
+    .odd {
+        background-color: white;
+    }
+
+    .even {
+        background-color: lightgray;
+    }
+
+    .actionBtn {
+        width: 100%;
+    }
+
+    .colTitle {
+        /*color: white;*/
+    }
+
+    .canUse {
+        color: white !important;
+        cursor: pointer;
+    }
+
+
+    .textArenDiv {
+        height: 5rem;
+    }
+
+    textarea {
+        padding: 2px;
+        width: 100%;
+        height: 4.5rem;
+    }
+
+    input:-webkit-autofill {
+        -webkit-text-fill-color: black;
+    }
+
+    h4 {
+        font-size: 1rem;
+    }
+
+    #dialogProcessMsg {
+        display: none;
+        position: absolute;
+        top: 20%;
+        left: 25%;
+        height: 100%;
+        background-color: lavender;
+        border-radius: 5px;
+        z-index: 1002;
+        width: 50%;
+        height: 35vh;
+        /*overflow: scroll;*/
+    }
+
+    .black_overlay {
+        display: none;
+        position: absolute;
+        top: 0%;
+        left: 0%;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        z-index: 1001;
+        opacity: .80;
+    }
+</style>
+
+<div class="main-content">
+    <header class="page-header">
+        <h3>
+            <i class=""></i><span>Accelerated Ageing by Hydrolysis Test</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">Accelerated Ageing by Hydrolysis Test</div>
+        </div>
+    </header>
+
+
+
+    @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { }))
+    {
+        <div class="main-area">
+
+
+            <div class="SearchDiv">
+                <!-- #region Row 1-->
+                <div class="colDiv">
+                    <h4 class="searchTitle">Brand</h4>
+                </div>
+                <div class="colDiv2">
+                    @Html.TextBoxFor(o => o.Request.BrandID, new { @value = Model.Request.BrandID, @style = "width:80%" })
+                    <input id="btnBrandID" onclick="OpenWindow('BrandID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                </div>
+                <div class="colDiv">
+                    <h4 class="searchTitle">Season</h4>
+                </div>
+                <div class="colDiv2">
+                    @Html.TextBoxFor(o => o.Request.SeasonID, new { @value = Model.Request.SeasonID, @style = "width:80%" })
+                    <input id="btnSeasonID" onclick="OpenWindow('SeasonID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                </div>
+                <div class="colDiv">
+                    <h4 class="searchTitle">Style</h4>
+                </div>
+                <div class="colDiv2">
+                    @Html.TextBoxFor(o => o.Request.StyleID, new { @value = Model.Request.StyleID, @style = "width:80%" })
+                    <input id="btnStyleID" onclick="OpenWindow('StyleID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                </div>
+                <div class="colDiv">
+                    <h4 class="searchTitle">Article</h4>
+                </div>
+                <div class="colDiv2">
+                    @Html.TextBoxFor(o => o.Request.Article, new { @value = Model.Request.Article, @style = "width:80%" })
+                    <input id="btnArticle" onclick="OpenWindow('Article')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                </div>
+                <div class="colDiv">
+                    <input type="submit" class="site-btn btn-blue actionBtn" name="action:Query" id="btnQuery" value="Query" />
+                </div>
+                <div class="colDiv">
+                    <input type="button" class="site-btn btn-green actionBtn" name="action:New" id="btnNew" value="New" />
+                </div>
+                <div class="colDiv">
+                </div>
+                <div class="colDiv2">
+                    @Html.DropDownListFor(o=>o.Request.OrderID, Model.OrderID_Source, new {  @style = "width:100%" ,onchange = "SpNoChange(this.value)" })
+                </div>
+                <!-- #endregion -->
+
+            </div>
+
+            <div class="content-scroll">
+
+                <div class="inner-scroll" style="float:left">
+
+                    <div class="buttonArea">
+                        <div class="buttonAreaItem">
+
+                            <h4 id="Edit" class="toolBarItem" style=" margin-right: 1em;">
+                                <img src="~/Image/Icon/Edit.png" width="30" />
+                                Edit
+                            </h4>
+
+                        </div>
+                        <div class="buttonAreaItem">
+                            <input id="SaveSubmit" type="submit" name="Action:EditSave" style="display:none" />
+                            <h4 id="Save" class="toolBarItem" style=" margin-right: 1em;">
+                                <img src="~/Image/Icon/Save.png" width="30" />
+                                Save
+                            </h4>
+
+                        </div>
+                        <div class="buttonAreaItem">
+                            <h4 id="Undo" class="toolBarItem" style="margin-right: 1em;">
+                                <img src="~/Image/Icon/Undo.png" width="30" />
+                                Undo
+                            </h4>
+
+                        </div>
+                        <div class="buttonAreaItem">
+                            <input id="DeleteSubmit" type="submit" name="Action:Delete" style="display:none" />
+                            <h4 id="Delete" class="toolBarItem" style=" margin-right: 1em;">
+                                <img src="~/Image/Icon/Delete.png" width="30" />
+                                Delete
+                            </h4>
+
+                        </div>
+                        <div class="buttonAreaItem"></div>
+                        <div class="buttonAreaItem"></div>
+                        <div class="buttonAreaItem"></div>
+                        <div class="buttonAreaItem"></div>
+                        <div class="buttonAreaItem"></div>
+                        <div class="buttonAreaItem">
+                            <h4 id="NewTestNo" class="toolBarItem">
+                                <img src="~/Image/Icon/New.png" width="30" />
+                                New Test No
+                            </h4>
+                        </div>
+                    </div>
+
+                    @*表頭*@
+                    <div class="MainDataArea">
+                        <!-- #region Row 1-->
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">SP#</h4>
+
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            @Html.HiddenFor(o => o.MainData.ID, new { @class = "" })
+                            @Html.TextBoxFor(o => o.MainData.OrderID, new { @class = "CanEdit" })
+
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Brand</h4>
+
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainData.BrandID, new { @class = "" })
+
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Season</h4>
+
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainData.SeasonID, new { @class = "" })
+
+                        </div>
+
+                        <!-- #endregion -->
+                        <!-- #region Row 2-->
+
+                        <div class="MainDataAreaItem even">
+                            <h4 class="colTitle">Style</h4>
+
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            @Html.TextBoxFor(o => o.MainData.StyleID, new { @class = "even" })
+
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            <h4 class="colTitle">Article</h4>
+
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            @*@Html.TextBoxFor(o => o.MainData.Article, new { @class = "even" })*@
+
+                            <select id="MainData_Article" name="MainData.Article" class="even CanEdit">
+
+                                @foreach (var item in Model.Article_Source)
+                                {
+                                    string selected = item.Value.Equals(Model.MainData.Article) ? "selected" : "";
+                                    <option value="@item.Value" @selected>@item.Text</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            <h4 class="colTitle">Temperature(˚C)</h4>
+
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            @Html.TextBoxFor(o => o.MainData.Tempereture, new { @class = "even CanEdit" ,@type="number", @onchange = "value=TemperetureCheck(value)" })
+
+                        </div>
+
+                        <!-- #endregion -->
+                        <!-- #region Row 3-->
+
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Time</h4>
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainData.Time, new { @class = "CanEdit", @type = "number", @onchange = "value=TimeCheck(value)" })
+
+                        </div>
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Humidity</h4>
+
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainData.Humidity, new { @class = "CanEdit", @type = "number", @onchange = "value=HumidityCheck(value)" })
+                        </div>
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Last Update</h4>
+
+                        </div>
+                        <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainData.LastUpadate, new { @class = "" })
+
+                        </div>
+
+                        <!-- #endregion -->
+                    </div>
+
+                    @*表身*@
+                    <div class="detailDataDiv">
+                        <br />
+                        <div class="DetailDataArea">
+                            <!--#region Head-->
+                            <div class="DetailDataAreaItem1 colHead">
+                                Report No
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">
+                                Material Type
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">
+                                Received Date
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">
+                                Report Date
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">
+                                Las Update
+                            </div>
+                            <div class="DetailDataAreaItem2 colHead">
+                                Action
+                            </div>
+
+                            <!--#endregion-->
+
+                            @if (Model.DetailList != null)
+                            {
+                                for (int i = 0; i < Model.DetailList.Count; i++)
+                                {
+                                    string rowName = $@"Row{i}";
+                                    <div class="DetailDataAreaItem1 colBody @rowName">
+                                        <input type="hidden" class="detailRowIdx" name="name" value="@i" />
+                                        @*@Html.TextBoxFor(o => Model.DetailList[i].ReportNo, new { @class = "" })*@
+                                        @Html.HiddenFor(o => Model.DetailList[i].ReportNo, new { @class = "" })
+                                        @if (!string.IsNullOrEmpty(Model.DetailList[i].ReportNo))
+                                        {
+                                            @Html.ActionLink(Model.DetailList[i].ReportNo, "Detail", new { ReportNo = Model.DetailList[i].ReportNo })
+                                        }
+                                    </div>
+
+                                    <div class="DetailDataAreaItem1 colBody @rowName">
+                                        <select id="DetailList_@{@i}__MaterialType" name="DetailList[@{@i}].MaterialType" class="CanEdit DetailInput">
+                                            @foreach (var item in Model.MaterialType_Source)
+                                            {
+                                                string selected = item.Value.Equals(Model.DetailList[i].MaterialType) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="DetailDataAreaItem1 colBody @rowName">
+                                        @Model.DetailList[i].ReceivedDate
+                                    </div>
+                                    <div class="DetailDataAreaItem1 colBody @rowName">
+                                        @Model.DetailList[i].ReportDate
+                                    </div>
+                                    <div class="DetailDataAreaItem1 colBody @rowName">
+                                        @Model.DetailList[i].Result
+                                    </div>
+                                    <div class="DetailDataAreaItem2 colBody @rowName">
+                                        <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                    </div>
+                                }
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+    var EditType = "@Model.MainData.EditType";
+    var EditMode;
+
+    $(function () {
+        EditMode = false;
+
+        IsEditModeChange();
+        if (EditType == 'New') {
+            EditMode = true;
+            $("#SaveSubmit").attr("name", "Action:NewSave");
+            IsEditModeChange();
+        }
+        QueryBind();
+
+        @Html.Raw(Model.ErrorMessage)
+    });
+
+    function IsEditModeChange() {
+
+        // 控制項重置
+        ClickEventBind();
+        BlurEventBind();
+        $('.toolBarItem').removeClass("canUse");
+
+        if ($('#MainData_OrderID').val() == '' && EditType != 'New') {
+
+            // 可編輯欄位關閉
+            $('.MainDataArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select').attr("disabled", true);
+            $('.MainDataArea input ,.MainDataArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
+        }
+        else {
+            //根據模式區分
+            if (EditMode) {
+                // 可編輯欄位開啟
+                $('.CanEdit').removeAttr("disabled");
+                $('.CanEdit').removeAttr("readonly");
+
+                // 編輯模式可用功能開啟
+                $('#Save, #Undo ,#NewTestNo').addClass("canUse");
+                $(".detailDelete").show();
+
+            }
+            else {
+                // 可編輯欄位關閉
+                $('.MainDataArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select').attr("disabled", true);
+                $('.MainDataArea input ,.MainDataArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
+
+                // 非編輯模式可用功能開啟
+                $('#Edit, #Delete').addClass("canUse");
+                $(".detailDelete").hide();
+            }
+
+        }
+
+        // 移除不可用功能的事件
+        $('.toolBarItem:not(.canUse)').unbind('click');
+    }
+
+    function QueryBind() {
+
+        $('#btnQuery').on('click', function () {
+            if ($('#Request_BrandID').val() == '' || $('#Request_SeasonID').val() == '' || $('#Request_StyleID').val() == '' || $('#Request_Article').val() == '') {
+                msg.WithError("Brand, Season ,Style and Article cannot be empty");
+                return false;
+            }
+        });
+
+        $("#Request_BrandID").blur(function () {
+            $.ajax({
+                url: "@Url.Action("BrandList", "PublicWondow", new { Area = "" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Request_BrandID").val('');
+                        msg.WithError('Brand Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#Request_SeasonID").blur(function () {
+            var BrandID = $('#Request_BrandID').val();
+            $.ajax({
+                url: "@Url.Action("SeasonList", "PublicWondow", new { Area = "" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Request_SeasonID").val('');
+                        msg.WithError('Season Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#Request_StyleID").blur(function () {
+            var BrandID = $('#Request_BrandID').val();
+            var SeasonID = $('#Request_SeasonID').val();
+            $.ajax({
+                url: "@Url.Action("StyleList", "PublicWondow", new { Area = "" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Request_StyleID").val('');
+                        msg.WithError('Style Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#Request_Article").blur(function () {
+            var BrandID = $('#Request_BrandID').val();
+            var SeasonID = $('#Request_SeasonID').val();
+            var StyleID = $('#Request_StyleID').val();
+            $.ajax({
+                url: "@Url.Action("ArticleList", "PublicWondow", new { Area = "" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: StyleID, Article: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Request_Article").val('');
+                        msg.WithError('Article Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    }
+
+    function OpenWindow(WindowType) {
+        if (WindowType == "BrandID") {
+            window.open('@Url.Action("BrandList", "PublicWondow", new { Area = "" })', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        if (WindowType == "SeasonID") {
+
+            if ($('#Request_BrandID').val() == '' ) {
+                msg.WithError('Please input brand  first.');
+                return;
+            }
+            var para = "?BrandID=" + $('#Request_BrandID').val();
+            window.open('@Url.Action("SeasonList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        if (WindowType == "StyleID") {
+
+            if ($('#Request_BrandID').val() == '' || $('#Request_SeasonID').val() == '') {
+                msg.WithError('Please input brand and season first.');
+                return;
+            }
+            var para = "?BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val();
+            window.open('@Url.Action("StyleList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        if (WindowType == "Article") {
+
+            if ($('#Request_BrandID').val() == '' || $('#Request_SeasonID').val() == '' || $('#Request_StyleID').val() == '') {
+                msg.WithError('Please input brand season ,and Style first.');
+                return;
+            }
+            var para = "?TargetID=Request_Article&OrderID=&StyleUkey=0&BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val() + "&StyleID=" + $('#Request_StyleID').val();
+            window.open('@Url.Action("ArticleList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+    }
+
+    function GetBrandList(BrandID) {
+        $("#Request_BrandID").val(BrandID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+    function GetSeasonList(SeasonID) {
+        $("#Request_SeasonID").val(SeasonID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+    function GetStyleList(StyleID) {
+        $("#Request_StyleID").val(StyleID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+    function GetArticleList(Article) {
+        $("#Request_Article").val(Article);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+
+    function ClickEventBind() {
+
+        $('.toolBarItem ,detailDelete').unbind('click');
+
+        $('#btnNew').on('click', function () {
+            window.location = '@Url.Action("New")';
+        });
+
+        $('#Edit').on('click', function () {
+            EditMode = true;
+            IsEditModeChange();
+        });
+        $('#Save').on('click', function () {
+            if (EditMode == false) {
+                return;
+            }
+
+
+            $('.detailRowIdx').each(function (index, data) {
+                var idx = $(this).val();
+                if (idx != index) {
+
+                    let className = `Row${idx}`;
+
+                    //$.each($(this).find("input[id^='Details']"), function () {
+                    //    var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                    //    var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                    //    $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                    //    $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    //});
+
+                    $.each($(`.Row${idx} .DetailInput`), function () {
+                        let colName = $(this).attr("Name").split('.')[1];
+                        let newName = `DetailList[${index}].${colName}`;
+                        let newID = `DetailList_${index}__${colName}`;
+                        $(this).removeClass(`Row${idx}`);
+                        $(this).addClass(`Row${index}`);
+                        $(this).attr("ID", newID);
+                        $(this).attr("Name", newName);
+                    });
+                }
+            });
+
+
+            $("#SaveSubmit").click();
+
+        });
+        $('#Undo').on('click', function () {
+            if (EditType == 'New') {
+                window.location.href="@Url.Action("Index")";
+            }
+            if ($("#MainData_OrderID").val() != '') {
+                // 重新Query 一次Detail
+                window.location.reload();
+            }
+            else {
+                EditMode = false;
+                EditType = '';
+                IsEditModeChange();
+            }
+        });
+        $('#Delete').on('click', function (e) {
+            if (EditMode == true) {
+                return;
+            }
+
+            if (EditMode == false && $('#MainData_ID').val() != null && $('#MainData_ID').val() != "" && $('#MainData_ID').val() != "0") {
+                e.preventDefault();
+                msg.WithConfirm('Do you want to delete the data ?',
+                    function () {
+                        $("#DeleteSubmit").click();
+                    }, null);
+            }
+        });
+        $('.detailDelete').on('click', function () {
+            if (EditMode == false) {
+                return;
+            }
+            var t = $(this);
+
+            msg.WithConfirm('Do you want to delete the data ?',
+                function () {
+                    let targetRow = t.parent('div').attr('class').split(' ').filter(o => o.includes('Row'))[0];
+
+                    $(`.${targetRow}`).remove();
+                    msg.WithSuccess("Delete Success");
+                }, null);
+        });
+        $('#NewTestNo').on('click', function () {
+            AddDetailRow();
+        });
+    }
+
+    function BlurEventBind() {
+
+        $('input ,select').unbind('blur').unbind('change');
+
+
+        $("#MainData_OrderID").on("change", function () {
+            if (EditMode == false) {
+                return;
+            }
+            // 重設Article下拉選單
+            $("#MainData_Article").empty();
+
+            if ($(this).val() == '') {
+                $("#MainData_OrderID").val('');
+                $("#MainData_BrandID").val('');
+                $("#MainData_SeasonID").val('');
+                $("#MainData_StyleID").val('');
+                $("#MainData_Article").val('');
+                return;
+            }
+
+            let orderID = $(this).val();
+
+
+            $.ajax({
+                url: "@Url.Action("OrderIDCheck")",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ orderID: orderID }),
+                async: true,
+                success: function (data) {
+                    if (data.Result == false || data.ErrMsg != "") {
+
+                        $("#MainData_OrderID").val('');
+                        $("#MainData_BrandID").val('');
+                        $("#MainData_SeasonID").val('');
+                        $("#MainData_StyleID").val('');
+                        $("#MainData_FactoryID").val('');
+
+                        msg.WithError(data.ErrMsg);
+                    }
+                    else {
+                        // 塞入Article下拉選單
+                        $("#MainData_Article").append(data.ArticleSource);
+
+                        $("#MainData_BrandID").val(data.MainData.BrandID);
+                        $("#MainData_SeasonID").val(data.MainData.SeasonID);
+                        $("#MainData_StyleID").val(data.MainData.StyleID);
+                        $("#MainData_FactoryID").val(data.MainData.FactoryID);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
+        });
+
+    }
+
+    function AddDetailRow() {
+
+        if (EditMode == false) {
+            return;
+        }
+        var lastNO;
+
+        if ($('.detailRowIdx').length > 0) {
+            lastNO = parseInt($('.detailRowIdx:last').val()) + 1;// 因為length會比index多1，所以不用+1了 parseInt($('#DetailTable > tbody > tr:last-child').attr('idx')) + 1;
+        }
+        else {
+            lastNO = 0;
+            $(".colBody").remove();
+        }
+
+        $.ajax({
+            url: "@Url.Action("AddDetailRow", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ lastNO: lastNO}),
+            async: false,
+            success: function (html) {
+                //$('#DetailTable > thead > tr').show();
+                //$('#DetailTable > tbody').append(html);
+
+                $(".DetailDataArea").append(html);
+                ClickEventBind();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function TimeCheck(value) {
+        if (parseFloat(value) >= 99) {
+            return 99;
+        }
+        else if (parseFloat(value) < 0) {
+            return 0;
+        }
+
+        return Number.parseInt(value);
+    }
+
+    function TemperetureCheck(value) {
+        if (parseFloat(value) >= 999) {
+            return 999;
+        }
+        else if (parseFloat(value) < 0) {
+            return 0;
+        }
+
+        return Number.parseInt(value);
+    }
+
+    function HumidityCheck(value) {
+        if (parseFloat(value) >= 99.9) {
+            return 99.9;
+        }
+        else if (parseFloat(value) < 0) {
+            return 0;
+        }
+
+        return Number.parseFloat(value).toFixed(1);
+    }
+
+    function SpNoChange(value) {
+        $('#btnQuery').unbind('click').click();
+    }
+</script>
