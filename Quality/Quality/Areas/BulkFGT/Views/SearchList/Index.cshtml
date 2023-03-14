@@ -555,16 +555,27 @@
     function checkvalue(buttonName) {
 
         if (buttonName =="Query") {
-        if (($("#BrandID").val() == "" || $("#SeasonID").val() == "" ) && $("#StyleID").val() == "") {
-
-            var msgContent = "[Style] or [Brand, Season] can't be cmpty. ";
-            msg.WithError(msgContent);
-
-            return false;
+            if (checkReq() < 2) {
+                var msgContent = "Does not include Type, two conditions must be selected. ";
+                msg.WithError(msgContent);
+                return false;
             }
         }
 
         return true;
+    }
+
+    function checkReq() {
+        var n = 0;
+        if ($("#BrandID").val() != "") n++;
+        if ($("#SeasonID").val() != "") n++;
+        if ($("#StyleID").val() != "") n++;
+        if ($("#Article").val() != "") n++;
+        if ($("#Line").val() != "") n++;
+        if ($("#ReceivedDate_sText").attr('disabled') == undefined && $("#ReceivedDate_sText").val() != "" && $("#ReceivedDate_eText").val() != "") n++;
+        if ($("#ReportDate_sText").attr('disabled') == undefined &&$("#ReportDate_sText").val() != "" && $("#ReportDate_eText").val() != "") n++;
+        if ($("#WhseArrival_sText").val() != "" && $("#WhseArrival_eText").val() != "") n++;
+        return n;
     }
 
 
