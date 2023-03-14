@@ -22,8 +22,8 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         public IList<SelectListItem> GetTypeDatasource(string Pass1ID)
         {
             string SbSql = $@"
-select Text = '', Value = ''
-UNION
+-- select Text = '', Value = ''
+-- UNION
 select Text = IIF(md.FunctionName IS NOt NULL , md.FunctionName,m.FunctionName)
 	 , Value = IIF(md.FunctionName IS NOt NULL , md.FunctionName,m.FunctionName)
 from Quality_Pass1 p WITH(NOLOCK)
