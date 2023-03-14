@@ -142,13 +142,13 @@
         // 找出父頁面的照片
         const CurrentBefore = window.opener.document.querySelector("#@BeforeColumn");
         const CurrentAfter = window.opener.document.querySelector("#@AfterColumn");
-
+        console.log(CurrentBefore.value);
         //如果父頁面有照片，則顯示父頁面照片，如果沒有則顯示DB的照片
-        if (CurrentBefore != null && CurrentBefore.value != '') {
+        if (CurrentBefore != null && CurrentBefore.value != '' && CurrentBefore.value != 'System.Byte[]') {
             var before = document.querySelector("#BeforePic");
             before.src = 'data:image/png;base64,' + CurrentBefore.value;
         }
-        if (CurrentAfter != null && CurrentAfter.value != '') {
+        if (CurrentAfter != null && CurrentAfter.value != '' && CurrentAfter.value != 'System.Byte[]') {
             var after = document.querySelector("#AfterPic");
             after.src = 'data:image/png;base64,' + CurrentAfter.value;
         }
@@ -161,53 +161,8 @@
 
 
         $("#btnKeep").click(async function () {
-
-            var before = document.querySelector("#BeforePic");
-            var after = document.querySelector("#AfterPic");
-
-            var BeforePicturePic;
-            var AfterPicturePic;
-
-            // blob:http表示為上傳圖檔
-            if (before.src.indexOf('blob:http') > -1) {
-
-                if (document.querySelector(`#BeforeUpload`).files.length > 0) {
-                    const file = document.querySelector(`#BeforeUpload`).files[0];
-                    var base64 = await convertFile(file);
-                    before = base64.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
-                    BeforePicturePic = before;
-                }
-                else {
-                    const blobUrl = document.querySelector(`#BeforePic`).src;
-                    const blob = await fetch(blobUrl).then(res => res.blob());
-                    var base64 = await convertFile(blob);
-                    before = base64.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
-                    BeforePicturePic = before;
-                }
-            }
-            else {
-                BeforePicturePic = before.src;
-            }
-
-            if (after.src.indexOf('blob:http') > -1) {
-
-                if (document.querySelector(`#AfterUpload`).files.length > 0) {
-                    const file = document.querySelector(`#AfterUpload`).files[0];
-                    var base64 = await convertFile(file);
-                    after = base64.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
-                    AfterPicturePic = after;
-                }
-                else {
-                    const blobUrl = document.querySelector(`#AfterPic`).src;
-                    const blob = await fetch(blobUrl).then(res => res.blob());
-                    var base64 = await convertFile(blob);
-                    after = base64.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
-                    AfterPicturePic = after;
-                }
-            }
-            else {
-                AfterPicturePic = after.src;
-            }
+            var BeforePicturePic = document.querySelector("#BeforePic").src.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+            var AfterPicturePic = document.querySelector("#AfterPic").src.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
 
             var Picture = {
                 BeforePicture: BeforePicturePic,
@@ -252,7 +207,6 @@
                 $('#loading').hide();
             }
         }
-
 
         $("#BeforeDel").click(function () {
 
@@ -342,10 +296,7 @@
         let resizedFile = imageFile;
         let compressionTries = 0;
 
-        while (
-            resizedFile.size > MAX_FILE_SIZE &&
-            compressionTries < MAX_COMPRESSION_TRIES
-        ) {
+        while (resizedFile.size > MAX_FILE_SIZE && compressionTries < MAX_COMPRESSION_TRIES) {
             compressionTries++;
             const reader = new FileReader();
             const img = new Image();
@@ -384,9 +335,6 @@
                         );
                     };
                 };
-
-                console.log(resizedFile.size);
-                console.log(compressionTries);
             });
         }
 
