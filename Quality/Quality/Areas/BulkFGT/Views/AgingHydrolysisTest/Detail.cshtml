@@ -364,11 +364,11 @@
                         <!-- #region Row 3-->
 
                         <div class="MainDataAreaItem odd">
-                            <h4 class="colTitle">Tempereture (˚C)</h4>
+                            <h4 class="colTitle">Temperature (˚C)</h4>
                         </div>
 
                         <div class="MainDataAreaItem odd">
-                            @Html.TextBoxFor(o => o.MainDetailData.Tempereture, new { @class = "", @type = "number", @onchange = "value=TemperetureCheck(value)" })
+                            @Html.TextBoxFor(o => o.MainDetailData.Temperature, new { @class = "", @type = "number", @onchange = "value=TemperatureCheck(value)" })
                         </div>
                         <div class="MainDataAreaItem odd">
                             <h4 class="colTitle">Time</h4>
@@ -910,7 +910,7 @@
         return Number.parseInt(value);
     }
 
-    function TemperetureCheck(value) {
+    function TemperatureCheck(value) {
         if (parseFloat(value) >= 999) {
             return 999;
         }

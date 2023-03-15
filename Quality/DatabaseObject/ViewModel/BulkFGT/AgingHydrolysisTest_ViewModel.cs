@@ -44,8 +44,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string FactoryID { get; set; }
         public string MDivisionID { get; set; }
         public string OrderID { get; set; }
-
-        public decimal Tempereture { get; set; }
+        
+        public decimal Temperature { get; set; }
         public decimal Time { get; set; }
         public decimal Humidity { get; set; }
 
@@ -160,7 +160,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string StyleID { get; set; }
         public string Article { get; set; }
         public string OrderID { get; set; }
-        public decimal Tempereture { get; set; }
+        public decimal Temperature { get; set; }
         public decimal Time { get; set; }
         public decimal Humidity { get; set; }
     }

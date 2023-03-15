@@ -374,7 +374,7 @@
                         </div>
 
                         <div class="MainDataAreaItem even">
-                            @Html.TextBoxFor(o => o.MainData.Tempereture, new { @class = "even CanEdit" ,@type="number", @onchange = "value=TemperetureCheck(value)" })
+                            @Html.TextBoxFor(o => o.MainData.Temperature, new { @class = "even CanEdit" ,@type="number", @onchange = "value=TemperatureCheck(value)" })
 
                         </div>
 
@@ -889,7 +889,7 @@
         return Number.parseInt(value);
     }
 
-    function TemperetureCheck(value) {
+    function TemperatureCheck(value) {
         if (parseFloat(value) >= 999) {
             return 999;
         }

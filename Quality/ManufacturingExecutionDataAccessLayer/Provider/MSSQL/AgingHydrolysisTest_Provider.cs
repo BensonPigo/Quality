@@ -130,7 +130,7 @@ select   b.BrandID
         ,b.StyleID
         ,b.Article
         ,b.OrderID
-        ,b.Tempereture
+        ,b.Temperature
         ,b.Time
         ,b.Humidity
         ,a.*
@@ -211,7 +211,7 @@ where 1=1
                 { "@StyleID", sources.MainData.StyleID } ,
                 { "@Article", sources.MainData.Article } ,
                 { "@OrderID", sources.MainData.OrderID } ,
-                { "@Tempereture", DbType.Decimal, Convert.ToDecimal(sources.MainData.Tempereture) },
+                { "@Temperature", DbType.Decimal, Convert.ToDecimal(sources.MainData.Temperature) },
                 { "@Time", DbType.Decimal, Convert.ToDecimal(sources.MainData.Time) },
                 { "@Humidity", DbType.Decimal, sources.MainData.Humidity },
                 { "@AddName", UserID },
@@ -232,7 +232,7 @@ or exists(
 begin
     UPDATE AgingHydrolysisTest
        SET EditDate = GETDATE()
-          ,Tempereture = @Tempereture
+          ,Temperature = @Temperature
           ,Time = @Time
           ,Humidity = @Humidity
           ,EditName = @EditName
@@ -244,10 +244,10 @@ else
 begin
     INSERT INTO dbo.AgingHydrolysisTest
                (BrandID           ,SeasonID           ,StyleID           ,Article           ,FactoryID           
-                ,OrderID           ,Tempereture               ,Time           ,Humidity           ,AddDate           ,AddName)
+                ,OrderID           ,Temperature               ,Time           ,Humidity           ,AddDate           ,AddName)
     VALUES
                (@BrandID           ,@SeasonID           ,@StyleID           ,@Article           ,@FactoryID
-                ,@OrderID           ,@Tempereture               ,@Time           ,@Humidity           ,GETDATE()           ,@AddName)
+                ,@OrderID           ,@Temperature               ,@Time           ,@Humidity           ,GETDATE()           ,@AddName)
     ;
     SELECT ID = CAST( @@IDENTITY as bigint),BrandID = @BrandID ,SeasonID = @SeasonID ,StyleID = @StyleID ,Article = @Article ,MDivisionID = @MDivisionID
 end
