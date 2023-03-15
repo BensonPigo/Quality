@@ -825,10 +825,6 @@
                         msg.WithError('Brand Not Found');
                     }
 
-                    if (name == '') {
-                        GetAccessoryRefNoList();
-                    }
-
                     ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -857,10 +853,6 @@
                     if (data.length == 0) {
                         $("#" + name + "SeasonID").val('');
                         msg.WithError('Season Not Found');
-                    }
-
-                    if (name == '') {
-                        GetAccessoryRefNoList();
                     }
 
                     ReportNoClear(name);
@@ -893,10 +885,6 @@
                     if (data.length == 0) {
                         $("#" + name + "StyleID").val('');
                         msg.WithError('Style Not Found');
-                    }
-
-                    if (name == '') {
-                        GetAccessoryRefNoList();
                     }
 
                     ReportNoClear(name);
@@ -1306,7 +1294,6 @@
     function GetBrandList(data, targetID) {
         $('#' + targetID).val(data);
 
-        GetAccessoryRefNoList();
         ClearColor();
         ReportNoClear(targetID);
     }
@@ -1314,14 +1301,12 @@
     function GetSeasonList(data, targetID) {
         $('#' + targetID).val(data);
 
-        GetAccessoryRefNoList();
         ReportNoClear(targetID);
     }
 
     function GetStyleList(data, targetID) {
         $('#' + targetID).val(data);
 
-        GetAccessoryRefNoList();
         ReportNoClear(targetID);
     }
 
