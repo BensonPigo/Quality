@@ -92,6 +92,9 @@ select    p.ReportNo
 		,PullForce_Standard = s.PullForce
 		,Time_Standard = s.Time
         ,TestDateText = convert(varchar, p.TestDate, 111)
+        ,p.Gender
+        ,[AddName] = a.name
+        ,[Signature] = (select t.Signature from [MainServer].Production.dbo.Technician t where t.ID = p.AddName and t.Junk = 0)
 from PullingTest p WITH(NOLOCK)
 left join SciPMSFile_PullingTest pi WITH(NOLOCK) on p.ReportNo = pi.ReportNo
 left join Production.dbo.Pass1 a WITH(NOLOCK) ON a.ID=p.AddName 
@@ -198,6 +201,7 @@ AND PullForceUnit = @PullForceUnit
                 { "@SnapOperator", DbType.String, Req.SnapOperator ?? "" } ,
                 { "@Remark", DbType.String, Req.Remark ?? "" } ,
                 { "@AddName", DbType.String, Req.AddName ?? "" } ,
+                { "@Gender", DbType.String, Req.Gender ?? "" } ,
             };
 
             if (Req.TestBeforePicture != null)
@@ -242,7 +246,8 @@ INSERT INTO PullingTest
            ,Remark
                     ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
            ,AddDate
-           ,AddName)
+           ,AddName
+           ,Gender)
 VALUES(    
             (   ---流水號處理
                 select REPLACE( @ReportNo ,'%','') + ISNULL(REPLICATE('0',4-len( CAST( CAST( RIGHT( max(ReportNo),3) as int) + 1 as varchar) ))+ CAST( CAST( RIGHT( max(ReportNo),3) as int) + 1 as varchar),'0001')
@@ -268,7 +273,8 @@ VALUES(
            ,@Remark
 
            ,GETDATE()
-           ,@AddName)
+           ,@AddName
+           ,@Gender)
 
 INSERT INTO SciPMSFile_PullingTest
            (ReportNo
@@ -370,7 +376,11 @@ VALUES(
                 modifyCol += $@"        ,EditName = @EditName " + Environment.NewLine;
                 objParameter.Add("@EditName", DbType.String, Req.EditName ?? "");
             }
-
+            if (!string.IsNullOrEmpty(Req.Gender))
+            {
+                modifyCol += $@"        ,Gender = @Gender " + Environment.NewLine;
+                objParameter.Add("@Gender", DbType.String, Req.Gender ?? "");
+            }
 
             modifyPicCol += $@"        ,TestBeforePicture = @TestBeforePicture " + Environment.NewLine;
             modifyPicCol += $@"        ,TestAfterPicture = @TestAfterPicture " + Environment.NewLine;
