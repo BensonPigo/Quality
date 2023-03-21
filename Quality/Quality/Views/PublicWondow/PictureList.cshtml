@@ -142,7 +142,7 @@
         // 找出父頁面的照片
         const CurrentBefore = window.opener.document.querySelector("#@BeforeColumn");
         const CurrentAfter = window.opener.document.querySelector("#@AfterColumn");
-        console.log(CurrentBefore.value);
+
         //如果父頁面有照片，則顯示父頁面照片，如果沒有則顯示DB的照片
         if (CurrentBefore != null && CurrentBefore.value != '' && CurrentBefore.value != 'System.Byte[]') {
             var before = document.querySelector("#BeforePic");
