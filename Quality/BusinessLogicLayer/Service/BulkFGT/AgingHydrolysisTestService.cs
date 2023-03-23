@@ -590,7 +590,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 //AgingHydrolysisTest_Detail_Mockup
-                if (agingHydrolysisTest_Detail_Mockup != null && agingHydrolysisTest_Detail_Mockup.Rows != null)
+                if (agingHydrolysisTest_Detail_Mockup != null && agingHydrolysisTest_Detail_Mockup.Rows != null && agingHydrolysisTest_Detail_Mockup.Rows.Count == 4)
                 {
                     // Specimen1
                     worksheet.Cells[11, 1] = agingHydrolysisTest_Detail_Mockup.Rows[0]["SpecimenName"].ToString();
