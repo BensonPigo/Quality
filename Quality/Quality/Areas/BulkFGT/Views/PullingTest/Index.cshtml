@@ -231,19 +231,19 @@
                                     <td style="width: 10vw;"><h5>Brand</h5></td>
                                     <td style="width: 20vw;">
                                         @Html.TextBoxFor(o => o.Detail.BrandID, "")
-                                        <input id="btnDetailBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                        <input id="btnDetailBrandSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td><h5>Season</h5></td>
                                     <td>
                                         @Html.TextBoxFor(o => o.Detail.SeasonID, "", new { @readonly = "readonly" })
-                                        <input id="btnDetailSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                        <input id="btnDetailSeasonSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
                                     <td><h5>Style#</h5></td>
                                     <td>
                                         @Html.TextBoxFor(o => o.Detail.StyleID, "", new { @readonly = "readonly" })
-                                        <input id="btnDetailStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                        <input id="btnDetailStyleSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
                                     <td><h5>Article</h5></td>
                                     <td>
@@ -287,7 +287,7 @@
                                     <td>
                                         @Html.TextBoxFor(o => o.Detail.Inspector, "", new { @style = "width:35%", @readonly = "readonly" })
                                         @Html.TextBoxFor(o => o.Detail.InspectorName, "", new { @style = "width:50%", @readonly = "readonly" })
-                                        <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                        <input id="btnDetailInspectorSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
                                 </tr>
                                 <tr>
@@ -368,7 +368,7 @@
             $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
             $('#btnQuery').addClass("IsEditModeQuery");
 
-            $("#Edit, #Delete ,#SendMail, #PDF").removeClass("IsEditMode");
+            $("#Edit, #Delete ,#SendMail, #PDF").unbind('click').removeClass("IsEditMode");
             $('#Save, #Undo, #New, #Picture').addClass("IsEditMode");
 
             if (EditType == "New") {
@@ -820,7 +820,8 @@
                 window.open('@Url.Action("SizeList","PublicWondow",new{Area=""})' + para,'SizeCode',config='toolbar=no,status=no,location=no,width=400,height=650');
             });
 
-            blurEvent("Detail_");
+        blurEvent("Detail_");
+        GenderChange($('#Detail_TestItem').val());
     }
 
     function CheckSP(obj) {
@@ -951,13 +952,7 @@
         var testitem = $(obj).val();
         var brand = $(`#${idPre}BrandID`).val();
         var pullForceUnit = $(`#${idPre}PullForceUnit`).val();
-        if (testitem == "Buttons" || testitem == "Snaps") {
-            $('#Detail_Gender').removeAttr("disabled").removeAttr("readonly");
-        }
-        else {
-            $('#Detail_Gender').val('').attr("disabled", "disabled").attr("readonly", "readonly");;
-        }
-
+        GenderChange(testitem);
         if (testitem != '' && brand != '' && pullForceUnit != '') {
             $.ajax({
                 url: '@Url.Action("GetStandard")',
@@ -996,6 +991,15 @@
                     }
                 }
             });
+        }
+    }
+
+    function GenderChange(itemVal) {
+        if (itemVal == "Buttons" || itemVal == "Snaps") {
+            $('#Detail_Gender').removeAttr("disabled").removeAttr("readonly");
+        }
+        else {
+            $('#Detail_Gender').val('').attr("disabled", "disabled").attr("readonly", "readonly");;
         }
     }
 
