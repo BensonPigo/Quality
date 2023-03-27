@@ -285,7 +285,7 @@
                                     </td>
                                     <td><h5>Inspector</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.Detail.Inspector, "", new { @style = "width:35%", @readonly = "readonly" })
+                                        @Html.TextBoxFor(o => o.Detail.Inspector, "", new { @style = "width:35%", @class = "OnlyEdit" })
                                         @Html.TextBoxFor(o => o.Detail.InspectorName, "", new { @style = "width:50%", @readonly = "readonly" })
                                         <input id="btnDetailInspectorSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>

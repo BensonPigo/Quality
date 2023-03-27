@@ -381,7 +381,11 @@ VALUES(
                 modifyCol += $@"        ,Gender = @Gender " + Environment.NewLine;
                 objParameter.Add("@Gender", DbType.String, Req.Gender ?? "");
             }
-
+            if (!string.IsNullOrEmpty(Req.Inspector))
+            {
+                modifyCol += $@"        ,Inspector = @Inspector " + Environment.NewLine;
+                objParameter.Add("@Inspector", DbType.String, Req.Inspector ?? "");
+            }
             modifyPicCol += $@"        ,TestBeforePicture = @TestBeforePicture " + Environment.NewLine;
             modifyPicCol += $@"        ,TestAfterPicture = @TestAfterPicture " + Environment.NewLine;
             if (Req.TestBeforePicture != null)
