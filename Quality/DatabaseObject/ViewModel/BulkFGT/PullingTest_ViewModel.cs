@@ -55,6 +55,20 @@ namespace DatabaseObject.ViewModel.BulkFGT
             set { }
         }
 
+        public List<SelectListItem> Gender_Source
+        {
+            get
+            {
+                return new List<SelectListItem>()
+                {
+                    new SelectListItem(){ Text="",Value=""},
+                    new SelectListItem(){ Text="Male",Value="Male"},
+                    new SelectListItem(){ Text="Female",Value="Female"},
+                };
+            }
+            set { }
+        }
+
         public PullingTest_Result Detail { get; set; }
     }
 
@@ -95,9 +109,9 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
         public decimal PullForce_Standard { get; set; }
         public int Time_Standard { get; set; }
-
         public string AddName { get; set; }
         public string EditName { get; set; }
-
+        public string Gender { get; set; }
+        public byte[] Signature { get; set; }
     }
 }
