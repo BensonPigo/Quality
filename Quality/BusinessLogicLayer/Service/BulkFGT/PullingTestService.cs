@@ -1,22 +1,22 @@
 ﻿using ADOHelper.Utility;
-using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
+using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
+using Microsoft.Office.Interop.Excel;
+using Sci;
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Mvc;
+using System.Configuration;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
     public class PullingTestService
     {
         private PullingTestProvider _PullingTestProvider;
+        private bool IsTest = bool.Parse(ConfigurationManager.AppSettings["IsTest"]);
 
         public PullingTest_ViewModel GetReportNoList(PullingTest_ViewModel Req)
         {
@@ -183,7 +183,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
-                DataTable dt = _PullingTestProvider.GetData_DataTable(ReportNo);
+                System.Data.DataTable dt = _PullingTestProvider.GetData_DataTable(ReportNo);
 
                 string unit = dt.Rows[0]["PullForceUnit"].ToString();
                 dt.Columns["PullForceUnit"].ColumnName = unit;
@@ -211,6 +211,153 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result.resultMsg = ex.Message.Replace("'", string.Empty);
             }
 
+
+            return result;
+        }
+
+        public Report_Result GetPDF(string ReportNo)
+        {
+            Report_Result result = new Report_Result();
+            if (string.IsNullOrEmpty(ReportNo))
+            {
+                result.Result = false;
+                result.ErrorMessage = "Get Data Fail!";
+                return result;
+            }
+
+            string basefileName = "PullingTest";
+
+            try
+            {
+                if (!this.IsTest)
+                {
+                    if (!Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
+                    {
+                        Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\");
+                    }
+
+                    if (!Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\"))
+                    {
+                        Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
+                    }
+                }
+
+                _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                PullingTest_Result model = _PullingTestProvider.GetData(ReportNo);
+
+                string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx"; ;
+                if (this.IsTest)
+                {
+                    openfilepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XLT", $"{basefileName}.xltx");
+                }
+
+                Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
+                excelApp.DisplayAlerts = false;
+                Worksheet worksheet = excelApp.Sheets[1];
+
+                worksheet.Cells[2, 2] = model.ReportNo;
+                worksheet.Cells[2, 4] = DateTime.Now.ToString("yyyy/MM/dd");    
+                worksheet.Cells[3, 2] = model.POID;
+                worksheet.Cells[3, 4] = model.TestDateText;
+                worksheet.Cells[4, 2] = model.SeasonID;
+                worksheet.Cells[4, 4] = model.StyleID;
+                worksheet.Cells[5, 2] = model.BrandID;
+                worksheet.Cells[5, 4] = model.Article;
+                worksheet.Cells[6, 2] = model.SizeCode;
+                worksheet.Cells[6, 4] = model.InspectorName;
+                worksheet.Cells[7, 2] = model.TestItem;
+                worksheet.Cells[7, 3] = model.PullForceUnit;
+                worksheet.Cells[7, 4] = model.PullForce;
+                worksheet.Cells[8, 2] = model.Time;
+                worksheet.Cells[8, 4] = model.Gender;
+                worksheet.Cells[9, 2] = model.FabricRefno;
+                worksheet.Cells[9, 4] = model.AccRefno;
+                worksheet.Cells[10, 2] = model.SnapOperator;
+                worksheet.Cells[12, 1] = model.Remark;
+                worksheet.Cells[22, 4] = model.AddName;
+
+                Range cell = worksheet.Cells[23, 4];
+                if (model.Signature != null)
+                {
+                    MemoryStream ms = new MemoryStream(model.Signature);
+                    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath;
+                    if (this.IsTest)
+                    {
+                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    img.Save(imgPath);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 60, 24);
+                }
+
+                cell = worksheet.Cells[15, 1];
+                if (model.TestBeforePicture != null)
+                {
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.TestBeforePicture, model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: this.IsTest);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 240, 100);
+                }
+
+                cell = worksheet.Cells[15, 3];
+                if (model.TestAfterPicture != null)
+                {
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.TestAfterPicture, model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: this.IsTest);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5 , cell.Top + 5, 240, 100);
+                }
+
+                #region Save & Show Excel
+
+                string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                string filexlsx = fileName + ".xlsx";
+                string fileNamePDF = fileName + ".pdf";
+
+                string filepath;
+                string filepathpdf;
+                if (this.IsTest)
+                {
+                    filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx);
+                    filepathpdf = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF);
+                }
+                else
+                {
+                    filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
+                    filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
+                }
+
+                Microsoft.Office.Interop.Excel.Workbook workbook = excelApp.ActiveWorkbook;
+                workbook.SaveAs(filepath);
+                workbook.Close();
+                excelApp.Quit();
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(workbook);
+                Marshal.ReleaseComObject(excelApp);
+
+                result.TempFileName = filexlsx;
+                result.Result = true;
+
+                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                {
+                    result.TempFileName = fileNamePDF;
+                    result.Result = true;
+                }
+                else
+                {
+                    result.ErrorMessage = "Convert To PDF Fail";
+                    result.Result = false;
+                }
+
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
 
             return result;
         }
