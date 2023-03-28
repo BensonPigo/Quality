@@ -115,6 +115,11 @@ where 1=1
                 sqlcmd += " and a.OrderID = @OrderID";
                 objParameter.Add("@OrderID", Req.OrderID);
             }
+            if (Req.AgingHydrolysisTestID != 0)
+            {
+                sqlcmd += " and a.ID = @ID";
+                objParameter.Add("@ID", Req.AgingHydrolysisTestID);
+            }
 
             var tmp = ExecuteList<AgingHydrolysisTest_Main>(CommandType.Text, sqlcmd, objParameter);
             return tmp.Any() ? tmp.ToList() : new List<AgingHydrolysisTest_Main>();
@@ -238,7 +243,7 @@ begin
           ,EditName = @EditName
      WHERE ID = @ID
     ;
-    SELECT ID = CAST( @ID as bigint) ,BrandID = @BrandID ,SeasonID = @SeasonID ,StyleID = @StyleID ,Article = @Article ,MDivisionID = @MDivisionID
+    SELECT ID = CAST( @ID as bigint) ,BrandID = @BrandID ,SeasonID = @SeasonID ,StyleID = @StyleID ,Article = @Article ,MDivisionID = @MDivisionID ,OrderID=@OrderID
 end
 else 
 begin
@@ -249,7 +254,7 @@ begin
                (@BrandID           ,@SeasonID           ,@StyleID           ,@Article           ,@FactoryID
                 ,@OrderID           ,@Temperature               ,@Time           ,@Humidity           ,GETDATE()           ,@AddName)
     ;
-    SELECT ID = CAST( @@IDENTITY as bigint),BrandID = @BrandID ,SeasonID = @SeasonID ,StyleID = @StyleID ,Article = @Article ,MDivisionID = @MDivisionID
+    SELECT ID = CAST( @@IDENTITY as bigint),BrandID = @BrandID ,SeasonID = @SeasonID ,StyleID = @StyleID ,Article = @Article ,MDivisionID = @MDivisionID ,OrderID=@OrderID
 end
 
 ";

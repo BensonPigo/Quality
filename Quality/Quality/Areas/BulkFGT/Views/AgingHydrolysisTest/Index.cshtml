@@ -24,8 +24,9 @@
         width: 4.3%;
         padding: 2px;
     }
+
     .colDiv2 {
-        width: 12%;
+        width: 13%;
         padding: 2px;
     }
 
@@ -185,6 +186,10 @@
         background-color: black;
         z-index: 1001;
         opacity: .80;
+    }
+
+    input, select, a, div {
+        font-size: 1rem;
     }
 </style>
 
@@ -374,7 +379,7 @@
                         </div>
 
                         <div class="MainDataAreaItem even">
-                            @Html.TextBoxFor(o => o.MainData.Temperature, new { @class = "even CanEdit" ,@type="number", @onchange = "value=TemperatureCheck(value)" })
+                            @Html.TextBoxFor(o => o.MainData.Temperature, new { @class = "even CanEdit", @type = "number", @onchange = "value=TemperatureCheck(value)" })
 
                         </div>
 
@@ -395,14 +400,14 @@
                         </div>
 
                         <div class="MainDataAreaItem odd">
-                            @Html.TextBoxFor(o => o.MainData.Humidity, new { @class = "CanEdit", @type = "number", @onchange = "value=HumidityCheck(value)" })
+                            @Html.TextBoxFor(o => o.MainData.Humidity, new { @class = "CanEdit", @type = "number", @step = "0.1", @onchange = "value=HumidityCheck(value)" })
                         </div>
                         <div class="MainDataAreaItem odd">
                             <h4 class="colTitle">Last Update</h4>
 
                         </div>
                         <div class="MainDataAreaItem odd">
-                            @Html.TextBoxFor(o => o.MainData.LastUpadate, new { @class = "" })
+                            @Html.TextBoxFor(o => o.MainData.LastUpadate, new { @class = "", @style = "width:100%" })
 
                         </div>
 

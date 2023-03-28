@@ -160,6 +160,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     StyleID = Req.StyleID,
                     Article = Req.Article,
                     OrderID = Req.OrderID,
+                    AgingHydrolysisTestID = Req.AgingHydrolysisTestID,
                 });
 
                 if (tmpList.Any())
@@ -269,12 +270,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     SeasonID = main.SeasonID,
                     StyleID = main.StyleID,
                     Article = main.Article,
+                    OrderID = main.OrderID,
                     AgingHydrolysisTestID = main.ID,
                 });
                 model.Request.BrandID = Req.MainData.BrandID;
                 model.Request.SeasonID = Req.MainData.SeasonID;
                 model.Request.StyleID = Req.MainData.StyleID;
                 model.Request.Article = Req.MainData.Article;
+                model.Request.OrderID = Req.MainData.OrderID;
                 model.Request.AgingHydrolysisTestID = Req.MainData.ID;
 
                 model.Result = true;
