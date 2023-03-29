@@ -16,6 +16,7 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Quality.Helper;
+using BusinessLogicLayer.Service;
 
 namespace Quality.Areas.BulkFGT.Controllers
 {
@@ -374,6 +375,28 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             SendMail_Result result = Service.FailSendMail(ReportNo, TO, CC);
             return Json(result);
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public ActionResult Report(string ReportNo)
+        {
+            this.CheckSession();  
+
+            if (string.IsNullOrEmpty(ReportNo))
+            {
+                return Json(new { Result = false, ErrorMessage = @"msg.WithInfo(""No Data Found"");" });
+            }
+
+            Report_Result report_Result = Service.GetPDF(ReportNo);
+            string tempFilePath = report_Result.TempFileName;
+            tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
+            if (!report_Result.Result)
+            {
+                report_Result.ErrorMessage = report_Result.ErrorMessage.ToString();
+            }
+
+            return Json(new { report_Result.Result, report_Result.ErrorMessage, reportPath = tempFilePath, FileName = report_Result.TempFileName });
         }
     }
 }

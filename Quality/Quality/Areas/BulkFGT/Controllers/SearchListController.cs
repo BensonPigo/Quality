@@ -53,14 +53,6 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             this.CheckSession();
 
-            // 必填條件
-            if ((Req.BrandID == "" || Req.SeasonID == "") || Req.StyleID == "")
-            {
-                Req.ErrorMessage = $@"msg.WithInfo(""[Style] or [Brand, Season] can't be cmpty. "");";
-                TempData["ModelSearchList"] = Req;
-                return RedirectToAction("Index");
-            }
-
             // Daily Moisture 的時候，不會篩選Received Date 
             if (!string.IsNullOrEmpty(Req.Type) && Req.Type.Contains("Daily Moisture"))
             {
@@ -74,6 +66,22 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Req.ReceivedDate_eText = string.Empty;
                 Req.ReportDate_sText = string.Empty;
                 Req.ReportDate_eText = string.Empty;
+            }
+
+            // 必填條件
+            if (string.IsNullOrEmpty(Req.Type))
+            {
+                Req.ErrorMessage = $@"msg.WithInfo(""[Type] can't be cmpty. "");";
+                TempData["ModelSearchList"] = Req;
+                return RedirectToAction("Index");
+            }
+
+            // 必填條件
+            if (!CheckInput(Req))
+            {
+                Req.ErrorMessage = $@"msg.WithInfo(""Does not include Type, two conditions must be selected. "");";
+                TempData["ModelSearchList"] = Req;
+                return RedirectToAction("Index");
             }
 
             List<SelectListItem> data = _SearchListService.GetTypeDatasource(this.UserID);
@@ -92,6 +100,20 @@ namespace Quality.Areas.BulkFGT.Controllers
             TempData["ModelSearchList"] = Req;
 
             return RedirectToAction("Index");
+        }
+
+        private bool CheckInput(SearchList_ViewModel Req)
+        {
+            int n = 0;
+            if (!string.IsNullOrEmpty(Req.BrandID)) n++;
+            if (!string.IsNullOrEmpty(Req.SeasonID)) n++;
+            if (!string.IsNullOrEmpty(Req.StyleID)) n++;
+            if (!string.IsNullOrEmpty(Req.Article)) n++;
+            if (!string.IsNullOrEmpty(Req.Line)) n++;
+            if (!string.IsNullOrEmpty(Req.ReceivedDate_sText) && !string.IsNullOrEmpty(Req.ReceivedDate_eText)) n++;
+            if (!string.IsNullOrEmpty(Req.ReportDate_sText) && !string.IsNullOrEmpty(Req.ReportDate_eText)) n++;
+            if (!string.IsNullOrEmpty(Req.WhseArrival_sText) && !string.IsNullOrEmpty(Req.WhseArrival_eText)) n++;
+            return n >= 2;
         }
 
         [HttpPost]

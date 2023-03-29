@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
+using ADOHelper.Utility;
 using BusinessLogicLayer.Interface;
 using BusinessLogicLayer.Service.FinalInspection;
 using DatabaseObject;
@@ -102,47 +103,48 @@ namespace BusinessLogicLayer.Service
                 return result;
             }
 
-                using (TransactionScope transactionScope = new TransactionScope())
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
+
+            try
             {
-                try
+                _FinalInspectionProvider = new FinalInspectionProvider(_ISQLDataTransaction);
+
+                DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
+                    _FinalInspectionProvider.GetFinalInspection(others.FinalInspectionID);
+
+                finalInspection.ID = others.FinalInspectionID;
+
+                if (others.ProductionStatus != null)
                 {
-                    string mainServerName = string.Empty;
-                    string extendServerName = string.Empty;
-
-                    _FinalInspectionProvider = new FinalInspectionProvider(Common.ProductionDataAccessLayer);
-                    _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-
-                    DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection =
-                        _FinalInspectionProvider.GetFinalInspection(others.FinalInspectionID);
-
-                    finalInspection.ID = others.FinalInspectionID;
-
-                    if (others.ProductionStatus != null)
-                    {
-                        finalInspection.ProductionStatus = others.ProductionStatus;
-                    }
-
-                    finalInspection.OthersRemark = others.OthersRemark;
-                    finalInspection.CFA = UserID;
-                    finalInspection.ShipmentStatus = others.ShipmentStatus;
-                    finalInspection.InspectionResult = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "Fail" : "Pass";
-                    
-                    finalInspection.InspectionStep = "Submit";
-                    _FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, "Insp-Others", UserID);
-                    List<OtherImage> imgList = others.ListOthersImageItem != null && others.ListOthersImageItem.Any() ? others.ListOthersImageItem : new List<OtherImage>();
-                    _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, imgList);
-                    transactionScope.Complete();
-                    transactionScope.Dispose();
+                    finalInspection.ProductionStatus = others.ProductionStatus;
                 }
-                catch (Exception ex)
-                {
-                    transactionScope.Dispose();
-                    result.Result = false;
-                    result.ErrorMessage = ex.ToString();
-                    return result;
-                }
+
+                finalInspection.OthersRemark = others.OthersRemark;
+                finalInspection.CFA = UserID;
+                finalInspection.ShipmentStatus = others.ShipmentStatus;
+                finalInspection.InspectionResult = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "Fail" : "Pass";
+
+                finalInspection.InspectionStep = "Submit";
+                _FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, "Insp-Others", UserID);
+                List<OtherImage> imgList = others.ListOthersImageItem != null && others.ListOthersImageItem.Any() ? others.ListOthersImageItem : new List<OtherImage>();
+                _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, imgList);
+
+
+                _ISQLDataTransaction.Commit();
             }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                result.Result = false;
+                result.ErrorMessage = ex.Message;
+            }
+            finally
+            {
+                _ISQLDataTransaction.CloseConnection();
+            }
+
             return result;
+
         }
     }
 }

@@ -32,7 +32,8 @@ namespace BusinessLogicLayer.Service.FinalInspection
         private IStyleProvider _StyleProvider;
         private static readonly string CryptoKey = ConfigurationManager.AppSettings["CryptoKey"].ToString();
         private string IsTest = ConfigurationManager.AppSettings["IsTest"];
-
+        private string TestMailReceiver = ConfigurationManager.AppSettings["TestMailReceiver"];
+        
         public List<QueryFinalInspection> GetFinalinspectionQueryList_Default(QueryFinalInspection_ViewModel request)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -256,6 +257,20 @@ NOTE: This is an automated reply from a system mailbox. Please do not reply to t
                     if (!string.IsNullOrEmpty(cc))
                     {
                         message.To.Add(cc);
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(TestMailReceiver))
+                {
+                    message.To.Clear();
+                    message.CC.Clear();
+
+                    foreach (var receiver in TestMailReceiver.Split(';'))
+                    {
+                        if (receiver != "")
+                        {
+                            message.To.Add(receiver);
+                        }
                     }
                 }
 

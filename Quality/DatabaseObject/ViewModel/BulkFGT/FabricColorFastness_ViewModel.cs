@@ -53,7 +53,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
                     new SelectListItem(){ Text="30",Value="30"},
                     new SelectListItem(){ Text="40",Value="40"},
                     new SelectListItem(){ Text="50",Value="50"},
-                    new SelectListItem(){ Text="60",Value="65"},
+                    new SelectListItem(){ Text="60",Value="60"},
                 };
             }
             set { }

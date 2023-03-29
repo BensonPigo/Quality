@@ -22,8 +22,8 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         public IList<SelectListItem> GetTypeDatasource(string Pass1ID)
         {
             string SbSql = $@"
-select Text = '', Value = ''
-UNION
+-- select Text = '', Value = ''
+-- UNION
 select Text = IIF(md.FunctionName IS NOt NULL , md.FunctionName,m.FunctionName)
 	 , Value = IIF(md.FunctionName IS NOt NULL , md.FunctionName,m.FunctionName)
 from Quality_Pass1 p WITH(NOLOCK)
@@ -826,7 +826,6 @@ select DISTINCT Type= 'Daily HT Wash Test'
 		, h.BrandID
 		, h.SeasonID
 		, h.Article 
-		, h.Line 
 		, Artwork = ''
 		, h.Result
 		, TestDate = h.ReportDate
@@ -896,7 +895,6 @@ select DISTINCT Type= 'Daily Bulk Moisture Test'
 		, o.BrandID
 		, o.SeasonID
 		, h.Article 
-		, h.Line
 		, Artwork = ''
 		, h.Result
 		, TestDate = h.AddDate

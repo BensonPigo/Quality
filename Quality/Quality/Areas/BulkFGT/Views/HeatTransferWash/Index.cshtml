@@ -695,12 +695,6 @@
                         $("#" + name + "BrandID").val('');
                         msg.WithError('Brand Not Found');
                     }
-
-                    if (name == '') {
-                        GetAccessoryRefNoList();
-                    }
-
-                    //ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -729,12 +723,6 @@
                         $("#" + name + "SeasonID").val('');
                         msg.WithError('Season Not Found');
                     }
-
-                    if (name == '') {
-                        GetAccessoryRefNoList();
-                    }
-
-                    //ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -766,12 +754,6 @@
                         $("#" + name + "StyleID").val('');
                         msg.WithError('Style Not Found');
                     }
-
-                    if (name == '') {
-                        GetAccessoryRefNoList();
-                    }
-
-                    //ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -799,8 +781,6 @@
                         $("#" + name + "Article").val('');
                         msg.WithError('Article Not Found');
                     }
-
-                    //ReportNoClear(name);
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -1199,23 +1179,17 @@
 
     function GetBrandList(data, targetID) {
         $('#' + targetID).val(data);
-
-        GetAccessoryRefNoList();
         ClearColor();
         ReportNoClear(targetID);
     }
 
     function GetSeasonList(data, targetID) {
         $('#' + targetID).val(data);
-
-        GetAccessoryRefNoList();
         ReportNoClear(targetID);
     }
 
     function GetStyleList(data, targetID) {
         $('#' + targetID).val(data);
-
-        GetAccessoryRefNoList();
         ReportNoClear(targetID);
     }
 
