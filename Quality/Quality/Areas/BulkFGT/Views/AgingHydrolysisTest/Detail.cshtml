@@ -1,0 +1,963 @@
+﻿@using DatabaseObject.ViewModel.BulkFGT
+
+@model AgingHydrolysisTest_Detail_ViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+
+<style>
+    .SearchDiv {
+        width: 100%;
+        /*height: 8vh;*/
+        /*background-color: pink;*/
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        display: flex;
+    }
+
+    .colDiv {
+        width: 4.3%;
+        padding: 2px;
+    }
+
+    .colDiv2 {
+        width: 12%;
+        padding: 2px;
+    }
+
+
+    .searchTitle {
+        color: white;
+    }
+
+    .row-name {
+        color: gray;
+        font-size: 1.2em;
+        background-color: wheat;
+    }
+
+    .buttonArea, .MainDataArea, .DetailDataArea {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .buttonAreaItem {
+        width: 10%;
+        padding: 2px;
+    }
+
+    .MainDataAreaItem {
+        width: 16.6%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+    }
+
+    .MainDataAreaItemSpan2 {
+        width: 33.2%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+    }
+
+    .MainDataAreaItemSpan3 {
+        width: 49.8%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+    }
+
+        .MainDataAreaItem input, MainDataAreaItem select, .MainDataAreaItemSpan2 input, MainDataAreaItemSpan2 select, .MainDataAreaItemSpan3 input, MainDataAreaItemSpan3 select {
+            width: 100%;
+        }
+
+    .DetailDataAreaItem1 {
+        width: 15.2%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+    }
+
+        .DetailDataAreaItem1 input, .DetailDataAreaItem1 select {
+            width: 100%;
+        }
+
+    .DetailDataAreaItem2 {
+        width: 8%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+    }
+
+    .DetailDataAreaItem1 input, .DetailDataAreaItem1 select {
+        width: 100%;
+    }
+
+    .DetailDataAreaItem2 input, .DetailDataAreaItem2 select {
+        width: 100%;
+    }
+
+    .colHead {
+        background-color: wheat;
+        color: darkslategray;
+        font-size: 1rem;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+    /*   .colHead label{
+        font-weight:bold;
+        font-size:1rem;
+    }*/
+
+
+    .odd {
+        background-color: white;
+    }
+
+    .even {
+        background-color: lightgray;
+    }
+
+    .actionBtn {
+        width: 100%;
+    }
+
+    .colTitle {
+        /*color: white;*/
+    }
+
+    .canUse {
+        color: white !important;
+        cursor: pointer;
+    }
+
+
+    .textArenDiv {
+        height: 5rem;
+    }
+
+    textarea {
+        padding: 2px;
+        width: 100%;
+        height: 4.5rem;
+    }
+
+    input:-webkit-autofill {
+        -webkit-text-fill-color: black;
+    }
+
+    h4 {
+        font-size: 1rem;
+    }
+
+    #dialogProcessMsg {
+        display: none;
+        position: absolute;
+        top: 20%;
+        left: 25%;
+        height: 100%;
+        background-color: lavender;
+        border-radius: 5px;
+        z-index: 1002;
+        width: 50%;
+        height: 35vh;
+        /*overflow: scroll;*/
+    }
+
+    .black_overlay {
+        display: none;
+        position: absolute;
+        top: 0%;
+        left: 0%;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        z-index: 1001;
+        opacity: .80;
+    }
+    input, select, a, div {
+        font-size: 1rem;
+    }
+</style>
+
+<div class="main-content">
+    <header class="page-header">
+        <h3>
+            <i class=""></i><span>Accelerated Ageing by Hydrolysis Test</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div>Accelerated Ageing by Hydrolysis Test</div>
+            <div class="current">Detail</div>
+        </div>
+    </header>
+
+
+
+    @using (Html.BeginForm("Detail", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { }))
+    {
+        <div class="main-area">
+            <div class="content-scroll">
+
+                <div class="inner-scroll" style="float:left">
+
+                    <div class="buttonArea">
+                        <div class="buttonAreaItem">
+                            <h4 id="Exit" class="toolBarItem" style=" margin-right: 1em;">
+                                <a href="@Url.Action("IndexBack", ViewContext.RouteData.GetRequiredString("Controller"), new { OrderID = Model.MainDetailData.OrderID })">
+                                    <img src="~/Image/Icon/Exit.png" width="30" />
+                                    Exit
+                                </a>
+                            </h4>
+                        </div>
+                        <div class="buttonAreaItem">
+                            <h4 id="Edit" class="toolBarItem" style=" margin-right: 1em;">
+                                <img src="~/Image/Icon/Edit.png" width="30" />
+                                Edit
+                            </h4>
+                        </div>
+                        <div class="buttonAreaItem">
+                            <input id="SaveSubmit" type="submit" name="Action:DetailSave" style="display:none" />
+                            <h4 id="Save" class="toolBarItem" style=" margin-right: 1em;">
+                                <img src="~/Image/Icon/Save.png" width="30" />
+                                Save
+                            </h4>
+
+                        </div>
+                        <div class="buttonAreaItem">
+                            <h4 id="Undo" class="toolBarItem" style="margin-right: 1em;">
+                                <img src="~/Image/Icon/Undo.png" width="30" />
+                                Undo
+                            </h4>
+
+                        </div>
+                        <div class="buttonAreaItem">
+                            <h4 id="Encode" class="toolBarItem" style="margin-right: 1em;">
+                                <img src="~/Image/Icon/Lock.png" width="30" />
+                                Encode
+                            </h4>
+
+                        </div>
+                        <div class="buttonAreaItem">
+                            <h4 id="Amend" class="toolBarItem" style="margin-right: 1em;">
+                                <img src="~/Image/Icon/Unlock.png" width="30" />
+                                Amend
+                            </h4>
+
+                        </div>
+                        <div class="buttonAreaItem">
+
+                            <h4 id="Excel" class="toolBarItem" style=" margin-right: 1em;">
+                                <img src="~/Image/Icon/XLS.png" width="30" />
+                                Excel
+                            </h4>
+                        </div>
+                        <div class="buttonAreaItem">
+                            <h4 id="PDF" class="toolBarItem" style=" margin-right: 1em;">
+                                <img src="~/Image/Icon/PDF.png" width="30" />
+                                PDF
+                            </h4>
+                        </div>
+                        <div class="buttonAreaItem">
+                            <h4 id="Picture" class="toolBarItem" style=" margin-right: 1em;">
+                                <img src="~/Image/Icon/Picture.png" width="30" />
+                                Picture
+                            </h4>
+                        </div>
+                        <div class="buttonAreaItem">
+                            <h4 id="SendtoMR" class="toolBarItem" style=" margin-right: 1em;">
+                                <img src="~/Image/Icon/SendMail.png" width="30" />
+                                Send to MR
+                            </h4>
+                        </div>
+                    </div>
+
+                    @*表頭*@
+                    <div class="MainDataArea">
+                        <!-- #region Row 1-->
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">ReportNo</h4>
+
+                        </div>
+                        <div class="MainDataAreaItem odd">
+                            @Html.HiddenFor(o => o.MainDetailData.AgingHydrolysisTestID, new { @class = "" })
+
+                            @Html.HiddenFor(o => o.MainDetailData.TestBeforePicture)
+                            @Html.HiddenFor(o => o.MainDetailData.TestAfterPicture)
+                            @Html.TextBoxFor(o => o.MainDetailData.ReportNo, new { @class = "" })
+
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">SP#</h4>
+
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainDetailData.OrderID, new { @class = "" })
+
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Brand</h4>
+
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainDetailData.BrandID, new { @class = "" })
+
+                        </div>
+
+                        <!-- #endregion -->
+                        <!-- #region Row 2-->
+
+                        <div class="MainDataAreaItem even">
+                            <h4 class="colTitle">Season</h4>
+
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            @Html.TextBoxFor(o => o.MainDetailData.SeasonID, new { @class = "even" })
+
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            <h4 class="colTitle">Style</h4>
+
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            @Html.TextBoxFor(o => o.MainDetailData.StyleID, new { @class = "even" })
+
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            <h4 class="colTitle">Article</h4>
+
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            @Html.TextBoxFor(o => o.MainDetailData.Article, new { @class = "even" })
+
+                        </div>
+
+
+                        <!-- #endregion -->
+                        <!-- #region Row 3-->
+
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Temperature (˚C)</h4>
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainDetailData.Temperature, new { @class = "", @type = "number", @onchange = "value=TemperatureCheck(value)" })
+                        </div>
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Time</h4>
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainDetailData.Time, new { @class = "", @type = "number", @onchange = "value=TimeCheck(value)" })
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Humidity</h4>
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainDetailData.Humidity, new { @class = "", @type = "number", @onchange = "value=HumidityCheck(value)" })
+                        </div>
+
+
+                        <!-- #endregion -->
+                        <!-- #region Row 4-->
+
+                        <div class="MainDataAreaItem even">
+                            <h4 class="colTitle">Material Type</h4>
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            @Html.TextBoxFor(o => o.MainDetailData.MaterialType, new { @class = "even" })
+                        </div>
+                        <div class="MainDataAreaItem even">
+                            <h4 class="colTitle">Buyer Delivery</h4>
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            @Html.TextBoxFor(o => o.MainDetailData.BuyerDeliveryText, new { @class = "even" })
+                        </div>
+                        <div class="MainDataAreaItem even">
+                            <h4 class="colTitle">Report Date</h4>
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            @Html.TextBoxFor(o => o.MainDetailData.ReportDateText, new { @class = "even" })
+                        </div>
+
+                        <!-- #endregion -->
+                        <!-- #region Row 5-->
+
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Received Date</h4>
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainDetailData.ReceivedDate, "{0:yyyy/MM/dd}", new { @class = "date-picker CanEdit" })
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Status</h4>
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainDetailData.Status, new { @class = "" })
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                        </div>
+
+                        <div class="MainDataAreaItem odd">
+                        </div>
+
+
+                        <!-- #endregion -->
+                        <!-- #region Row 6-->
+
+                        <div class="MainDataAreaItem even">
+                            <h4 class="colTitle">Ref.(Fab)</h4>
+                        </div>
+
+                        <div class="MainDataAreaItemSpan2 even">
+                            @Html.TextBoxFor(o => o.MainDetailData.FabricRefNo, new { @class = "CanEdit even", @maxlength = "200" })
+                        </div>
+                        <div class="MainDataAreaItem even">
+                            <h4 class="colTitle">Ref.(Acc)</h4>
+                        </div>
+
+                        <div class="MainDataAreaItemSpan2 even">
+                            @Html.TextBoxFor(o => o.MainDetailData.AccRefNo, new { @class = "CanEdit even", @maxlength = "200" })
+                        </div>
+
+
+                        <!-- #endregion -->
+                        <!-- #region Row 7-->
+
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Refno CLR (Fab)</h4>
+                        </div>
+
+                        <div class="MainDataAreaItemSpan2 odd">
+                            @Html.TextBoxFor(o => o.MainDetailData.FabricColor, new { @class = "CanEdit", @maxlength = "150" })
+                        </div>
+                        <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Refno CLR (Acc)</h4>
+                        </div>
+
+                        <div class="MainDataAreaItemSpan2 odd">
+                            @Html.TextBoxFor(o => o.MainDetailData.AccColor, new { @class = "CanEdit", @maxlength = "150" })
+                        </div>
+
+
+                        <!-- #endregion -->
+                        <!-- #region Row 8-->
+
+                        <div class="MainDataAreaItem even">
+                            <h4 class="colTitle">Result</h4>
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            @if (Model.MainDetailData.Result == "Pass")
+                            {
+                                @Html.DropDownListFor(o => o.MainDetailData.Result, Model.Result_Source, new { @class = "CanEdit even", @style = "color:blue", @onchange = "ResultChange(this)" })
+                            }
+                            else if (Model.MainDetailData.Result == "Fail")
+                            {
+                                @Html.DropDownListFor(o => o.MainDetailData.Result, Model.Result_Source, new { @class = "CanEdit even", @style = "color:red", @onchange = "ResultChange(this)" })
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(o => o.MainDetailData.Result, Model.Result_Source, new { @class = "CanEdit even", @style = "color:black", @onchange = "ResultChange(this)" })
+                            }
+                        </div>
+
+                        <div class="MainDataAreaItem even">
+                            <h4 class="colTitle">Comment</h4>
+                        </div>
+                        <div class="MainDataAreaItemSpan3 even">
+                            @Html.TextBoxFor(o => o.MainDetailData.Comment, new { @class = "CanEdit even", @maxlength = "300" })
+                        </div>
+                        <!-- #endregion -->
+                    </div>
+                    @*表身*@
+                    <div class="detailDataDiv">
+                        <br />
+                        <div class="DetailDataArea">
+                            <!--#region Head-->
+                            <div class="DetailDataAreaItem2 colHead">
+                                Specimen
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">
+                                Color Change Scale
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">
+                                Color Change Result
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">
+                                Color Staining Scale
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">
+                                Color Staining Result
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">
+                                Comment
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">
+                                Las Update
+                            </div>
+
+                            <!--#endregion-->
+
+                            @if (Model.MockupList != null)
+                            {
+                                for (int i = 0; i < Model.MockupList.Count; i++)
+                                {
+                                    <div class="DetailDataAreaItem2 colBody ">
+                                        @Html.HiddenFor(o => Model.MockupList[i].Ukey)
+                                        @Html.HiddenFor(o => Model.MockupList[i].ReportNo, new { @class = "" })
+                                        @Html.TextBoxFor(o => Model.MockupList[i].SpecimenName, new { @class = "" })
+
+                                    </div>
+                                    <div class="DetailDataAreaItem1 colBody">
+                                        <select id="MockupList[@i]_ChangeScale" name="MockupList[@i].ChangeScale" class="CanEdit" onchange="ScaleChange(@i, this, 'ChangeResult', '@Model.MockupList[i].ChangeScaleStandard')">
+                                            @foreach (var item in Model.Scale_Source)
+                                            {
+                                                string selected = item.Value.Equals(Model.MockupList[i].ChangeScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="DetailDataAreaItem1 colBody">
+                                        @*<select id="MockupList[@i]_ChangeResult" name="MockupList[@i].ChangeResult" class="CanEdit">
+                                                @foreach (var item in Model.Result_Source)
+                                                {
+                                                    string selected = item.Value.Equals(Model.MockupList[i].ChangeResult) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>*@
+                                        
+                                        @Html.HiddenFor(o => Model.MockupList[i].ChangeScaleStandard)
+                                        @if (Model.MockupList[i].ChangeResult == "Pass")
+                                        {
+                                            @Html.TextBoxFor(o => Model.MockupList[i].ChangeResult, new { @style = "color:blue", @onchange = "ResultChange(this)" })
+                                        }
+                                        else
+                                        {
+                                            @Html.TextBoxFor(o => Model.MockupList[i].ChangeResult, new { @style = "color:red", @onchange = "ResultChange(this)" })
+                                        }
+                                    </div>
+                                    <div class="DetailDataAreaItem1 colBody">
+                                        <select id="MockupList[@i]_StainingScale" name="MockupList[@i].StainingScale" class="CanEdit" onchange="ScaleChange(@i,this,'StainingResult','@Model.MockupList[i].StainingScaleStandard')">
+                                            @foreach (var item in Model.Scale_Source)
+                                            {
+                                                string selected = item.Value.Equals(Model.MockupList[i].StainingScale) ? "selected" : "";
+                                                <option value="@item.Value" @selected>@item.Text</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="DetailDataAreaItem1 colBody">
+                                        @*<select id="MockupList[@i]_StainingResult" name="MockupList[@i].StainingResult" class="CanEdit">
+                                                @foreach (var item in Model.Result_Source)
+                                                {
+                                                    string selected = item.Value.Equals(Model.MockupList[i].StainingResult) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>*@
+
+                                        @Html.HiddenFor(o => Model.MockupList[i].StainingScaleStandard)
+
+                                        @if (Model.MockupList[i].StainingResult == "Pass")
+                                        {
+                                            @Html.TextBoxFor(o => Model.MockupList[i].StainingResult, new { @style = "color:blue", @onchange = "ResultChange(this)" })
+                                        }
+                                        else
+                                        {
+                                            @Html.TextBoxFor(o => Model.MockupList[i].StainingResult, new { @style = "color:red", @onchange = "ResultChange(this)" })
+                                        }
+                                    </div>
+                                    <div class="DetailDataAreaItem1 colBody">
+                                        @Html.TextBoxFor(o => Model.MockupList[i].Comment, new { @class = "CanEdit" })
+                                    </div>
+                                    <div class="DetailDataAreaItem1 colBody">
+                                        @Model.MockupList[i].LastUpadate
+                                    </div>
+                                }
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+    var EditMode;
+
+    $(function () {
+        EditMode = false;
+
+        IsEditModeChange();
+
+        @Html.Raw(Model.ErrorMessage)
+    });
+
+    function IsEditModeChange() {
+
+        // 控制項重置
+        ClickEventBind();
+        BlurEventBind();
+        $('.toolBarItem').removeClass("canUse");
+
+        if ($('#MainDetailData_ReportNo').val() == '' ) {
+
+            // 可編輯欄位關閉
+            $('.MainDataArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select').attr("disabled", true);
+            $('.MainDataArea input ,.MainDataArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
+        }
+        else {
+            //根據模式區分
+            if (EditMode) {
+                // 可編輯欄位開啟
+                $('.CanEdit').removeAttr("disabled").removeAttr("readonly");
+
+                // 編輯模式可用功能開啟
+                $('#Save, #Undo ,#Picture ,#Exit').addClass("canUse");
+                $("#MainDetailData_ReceivedDate").addClass("date-picker");
+                $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+
+            }
+            else {
+                // 可編輯欄位關閉
+                $('.MainDataArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select').attr("disabled", true);
+                $('.MainDataArea input ,.MainDataArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
+                $("#MainDetailData_ReceivedDate").removeClass("date-picker");
+
+                // 非編輯模式
+
+                // 未Confirmed可用功能開啟
+                if ($("#MainDetailData_Status").val() == 'New') {
+                    $('#Encode').addClass("canUse");
+                    $('#Edit , #Delete ,#Excel ,#PDF ,#SendtoMR ,#Picture ,#Exit').addClass("canUse");
+                }
+                else {
+                // Confirmed後的可用功能開啟
+                    $('#Amend').addClass("canUse");
+                    $('#Excel ,#PDF ,#SendtoMR ,#Picture ,#Exit').addClass("canUse");
+                }
+            }
+
+        }
+
+        // 移除不可用功能的事件
+        $('.toolBarItem:not(.canUse)').unbind('click');
+    }
+
+    function ClickEventBind() {
+
+        $('.toolBarItem').unbind('click');
+
+        $('#Edit').on('click', function () {
+            EditMode = true;
+            IsEditModeChange();
+        });
+
+        $('#Save').on('click', function () {
+            if (EditMode == false) {
+                return;
+            }
+
+
+            $('.detailRowIdx').each(function (index, data) {
+                var idx = $(this).val();
+                if (idx != index) {
+
+
+                    //$.each($(this).find("input[id^='Details']"), function () {
+                    //    var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                    //    var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                    //    $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                    //    $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    //});
+
+                    $.each($(`.Row${idx} .DetailInput`), function () {
+                        let colName = $(this).attr("Name").split('.')[1];
+                        let newName = `DetailList[${index}].${colName}`;
+                        let newID = `DetailList_${index}__${colName}`;
+                        $(this).removeClass(`Row${idx}`);
+                        $(this).addClass(`Row${index}`);
+                        $(this).attr("ID", newID);
+                        $(this).attr("Name", newName);
+                    });
+                }
+            });
+
+
+            $("#SaveSubmit").click();
+
+        });
+
+        $('#Undo').on('click', function () {
+            window.location.reload();
+        });
+
+        $('#Delete').on('click', function (e) {
+            if (EditMode == true) {
+                return;
+            }
+
+            if (EditMode == false && $('#MainDetailData_ID').val() != null && $('#MainDetailData_ID').val() != "" && $('#MainDetailData_ID').val() != "0") {
+                e.preventDefault();
+                msg.WithConfirm('Do you want to delete the data ?',
+                    function () {
+                        $("#DeleteSubmit").click();
+                    }, null);
+            }
+        });
+
+        $('#Picture').on('click', function () {
+            var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
+            para += "&" + "Table=AgingHydrolysisTest_Image";
+            para += "&" + "TargetBeforeColumn=MainDetailData_TestBeforePicture";
+            para += "&" + "TargetAfterColumn=MainDetailData_TestAfterPicture";
+            para += "&" + "BeforeColumn=TestBeforePicture";
+            para += "&" + "AfterColumn=TestAfterPicture";
+            para += "&" + "PKey_1=ReportNo";
+            para += "&" + "PKey_1_Val=" + $('#MainDetailData_ReportNo').val();
+            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
+        });
+
+        $("#Excel").on("click", function () {
+
+            $.ajax({
+                url: "@Url.Action("ToExcel")",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ReportNo: $('#MainDetailData_ReportNo').val()}),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        window.location.href = data.reportPath;
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#PDF").on("click", function () {
+
+            $.ajax({
+                url: "@Url.Action("ToPDF")",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ReportNo: $('#MainDetailData_ReportNo').val()}),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        window.location.href = data.reportPath;
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+
+
+        $('#SendtoMR').on('click', function () {
+
+            if ($("#MainDetailData_ReportNo").val() == '') {
+                return false;
+            }
+
+            $.ajax({
+                url: "@Url.Action("SendMailToMR")",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    ReportNo: $('#MainDetailData_ReportNo').val()
+                }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        var para = "?To=";
+                        para += "&CC=";
+                        para += "&Subject=" + "Bulk Accelerated Aging by Hydrolysis Test – ReportNo:" + $("#MainDetailData_ReportNo").val();
+                        para += `&Body=Attachment Is Bulk Accelerated Aging by Hydrolysis Test - ReportNo:${$("#MainDetailData_ReportNo").val() } detail data`;
+                        para += "&file=" + data.FileName;
+                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        if ($("#MainDetailData_Status").val() == "New") {
+
+            $('#Encode').on('click', function () {
+
+                $.ajax({
+                    url: "@Url.Action("Encode")",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ ReportNo: $('#MainDetailData_ReportNo').val(), Result: $("#MainDetailData_Result").val() }),
+                    async: false,
+                    success: function (data) {
+                        if (data.Result) {
+                            msg.WithSuccesCheck("Success", function () {
+                                location.reload();
+                            });
+                        }
+                        else {
+                            msg.WithError(data.ErrMsg);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+        }
+        if ($("#MainDetailData_Status").val() != "New") {
+
+            $('#Amend').on('click', function () {
+
+                $.ajax({
+                    url: "@Url.Action("Amend")",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ ReportNo: $('#MainDetailData_ReportNo').val(), Result: $("#MainDetailData_Result").val() }),
+                    async: false,
+                    success: function (data) {
+                        if (data.Result) {
+                            msg.WithSuccesCheck("Success", function () {
+                                location.reload();
+                            });
+                        }
+                        else {
+                            msg.WithError(data.ErrMsg);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+        }
+    }
+
+    function BlurEventBind() {
+
+        $('input ,select').unbind('blur').unbind('change');
+
+    }
+
+    function TimeCheck(value) {
+        if (parseFloat(value) >= 99) {
+            return 99;
+        }
+        else if (parseFloat(value) < 0) {
+            return 0;
+        }
+
+        return Number.parseInt(value);
+    }
+
+    function TemperatureCheck(value) {
+        if (parseFloat(value) >= 999) {
+            return 999;
+        }
+        else if (parseFloat(value) < 0) {
+            return 0;
+        }
+
+        return Number.parseInt(value);
+    }
+
+    function HumidityCheck(value) {
+        if (parseFloat(value) >= 99.9) {
+            return 99.9;
+        }
+        else if (parseFloat(value) < 0) {
+            return 0;
+        }
+
+        return Number.parseFloat(value).toFixed(1);
+    }
+
+    function GetPicture(data) {
+        $('#MainDetailData_TestBeforePicture').val(data.BeforePicture.replace("data:image/png;base64,", ""));
+        $('#MainDetailData_TestAfterPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
+    }
+
+    function ResultChange(thisObj) {
+        if ($(thisObj).val() == "Pass") {
+            $(thisObj).css("color", "blue");
+        }
+        else {
+            $(thisObj).css("color", "red");
+        }
+    }
+
+    function ScaleChange(rowIdx ,thisObj ,resultType ,standard) {
+        var target = $(`#MockupList_${rowIdx}__${resultType}`);
+
+        if ($(thisObj).val() >= standard) {
+            $(target).val('Pass');
+        }
+        else {
+            $(target).val('Fail');
+        }
+        $(target).change();
+    }
+</script>
