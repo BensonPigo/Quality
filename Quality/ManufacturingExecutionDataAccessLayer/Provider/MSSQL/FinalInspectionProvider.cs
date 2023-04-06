@@ -1272,10 +1272,14 @@ SET XACT_ABORT ON
 declare @StyleID varchar(15)
 declare @SeasonID varchar(10)
 declare @BrandID varchar(8)
+declare @BuyerDelivery date
+declare @DiffDay int
 
 select  @StyleID = StyleID,
         @SeasonID = SeasonID,
-        @BrandID = BrandID
+        @BrandID = BrandID,
+        @BuyerDelivery = BuyerDelivery,
+		@DiffDay = (SELECT CAST( DATEDIFF(DAY ,GETDATE() ,BuyerDelivery) as int ))
 from    Production.dbo.Orders with (nolock)
 where   ID IN (
     select ID
@@ -1294,10 +1298,22 @@ select  f.CustPONO,
         [StyleID] = @StyleID,
         [SeasonID] = @SeasonID,
         [BrandID] = @BrandID,
+        [BuyerDelivery] = @BuyerDelivery,
+		[AiComment] = Ai.Comment,
         [CFA] = (select name from pass1 with (nolock) where ID = f.CFA),
         [SubmitDate] = Format(f.SubmitDate, 'yyyy/MM/dd'),
         [AuditDate] = Format(f.AuditDate, 'yyyy/MM/dd')
 from FinalInspection f with (nolock)
+OUTER APPLY(
+	select ad.Comment
+	from AIComment a
+	inner join AIComment_Detail ad on a.Ukey = ad.AICommentUkey
+	where a.FunctionName = 'CFA' + f.InspectionStage
+	AND ad.[Day]= CASE WHEN @DiffDay <= 0 THEN 0
+					   WHEN @DiffDay > 8 THEN 8
+					   ELSE @DiffDay
+					END
+)Ai
 where   f.ID = @FinalInspectionID
 ";
 
