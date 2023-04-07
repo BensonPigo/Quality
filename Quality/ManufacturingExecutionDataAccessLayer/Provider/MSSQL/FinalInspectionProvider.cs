@@ -1272,13 +1272,13 @@ SET XACT_ABORT ON
 declare @StyleID varchar(15)
 declare @SeasonID varchar(10)
 declare @BrandID varchar(8)
-declare @BuyerDelivery date
+declare @BuyerDelivery varchar(10)
 declare @DiffDay int
 
 select  @StyleID = StyleID,
         @SeasonID = SeasonID,
         @BrandID = BrandID,
-        @BuyerDelivery = BuyerDelivery,
+        @BuyerDelivery = Format(BuyerDelivery, 'yyyy/MM/dd'),
 		@DiffDay = (SELECT CAST( DATEDIFF(DAY ,GETDATE() ,BuyerDelivery) as int ))
 from    Production.dbo.Orders with (nolock)
 where   ID IN (
