@@ -786,12 +786,12 @@ select	[POID] = f.POID,
         [DescDetail] = fab.DescDetail,
         [HeatRemark] = fl.HeatRemark,
         [HeatEncode] = fl.HeatEncode,
-        [HeatTestBeforePicture] = fli.HeatTestBeforePicture,
-        [HeatTestAfterPicture] = fli.HeatTestAfterPicture,
+        [HeatTestBeforePicture] =  (select top 1 HeatTestBeforePicture from SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) where fli.ID = fl.ID ),  
+        [HeatTestAfterPicture] = (select top 1 HeatTestAfterPicture from SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) where fli.ID = fl.ID),
         [ReportNo] = fl.ReportNo
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
-left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
+----left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID  改成子查詢抓TOP 1，提升速度
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
