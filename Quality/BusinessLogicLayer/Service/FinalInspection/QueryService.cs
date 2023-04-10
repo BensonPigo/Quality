@@ -182,7 +182,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 List<MailTo> mailTos = _IMailToProvider.Get(new MailTo() { ID = "401" }).ToList();
                 string toAddress = mailTos.Select(s => s.ToAddress).FirstOrDefault();
                 string ccAddress = mailTos.Select(s => s.CcAddress).FirstOrDefault();
-                string subject = $"Final Inspection Report(PO#: {drReportMailInfo["CustPONO"]})-{drReportMailInfo["InspectionResult"]}";
+                string subject = $"Inspection Report(PO#: {drReportMailInfo["CustPONO"]})-{drReportMailInfo["InspectionResult"]}";
 
                 //對照HomeController的RedirectToPage Action裡面的順序設定
                 string action = this.GetCurrentAction(finalInspection.InspectionStep);
@@ -202,8 +202,10 @@ Hi all,<br/>
 <b>[Brand]:</b><font style='color: blue'>  {drReportMailInfo["BrandID"]}</font><br/>
 <b>[CFA]:</b><font style='color: blue'>  {drReportMailInfo["CFA"]}</font><br/>
 <b>[Inspection Stage]:</b><font style='color: blue'>  {drReportMailInfo["InspectionStage"]}</font><br/>
+<b>[Buyer Delivery Date]:</b><font style='color: blue'>  {drReportMailInfo["BuyerDelivery"]}</font><br/>
 <b>[Submit Date]:</b><font style='color: blue'>  {drReportMailInfo["SubmitDate"]}</font><br/>
 <b>[Audit Date]:</b><font style='color: blue'>  {drReportMailInfo["AuditDate"]}</font><br/>
+<b>[AI Comment]:</b><font style='color: blue'>  {drReportMailInfo["AiComment"]}</font><br/>
 <a href='{WebHost}/Home/RedirectToPage?Code={code}'>
 More detail please click here
 </a>

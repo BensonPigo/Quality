@@ -103,6 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
+    <Compile Include="Helper\SetListItem.cs" />
     <Compile Include="Helper\StringEncryptHelper.cs" />
     <Compile Include="Interface\Authority\IAuthorityService.cs" />
     <Compile Include="Interface\BulkFGT\IFabricColorFastness_Service.cs" />
@@ -133,6 +134,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\Authority\AuthorityService.cs" />
     <Compile Include="Service\BulkFGT\AccessoryOvenWashService.cs" />
+    <Compile Include="Service\BulkFGT\AgingHydrolysisTestService.cs" />
     <Compile Include="Service\BulkFGT\DailyMoistureService.cs" />
     <Compile Include="Service\BulkFGT\FabricColorFastness_Service.cs" />
     <Compile Include="Service\BulkFGT\FabricOvenTestService.cs" />
