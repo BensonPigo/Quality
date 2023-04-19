@@ -976,5 +976,71 @@ drop table #base
 
             return ExecuteList<Window_Operation>(CommandType.Text, SbSql.ToString(), paras);
         }
+        public IList<Window_FabricRefNo> Get_FabricRefNo(string OrderID, string Refno)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            paras.Add("@OrderID ", DbType.String, OrderID);
+
+            string where = string.Empty;
+            if (!string.IsNullOrEmpty(Refno))
+            {
+                paras.Add("@Refno ", DbType.String, Refno);
+                where = "and psd.Refno = @Refno";
+            }
+
+            //台北
+            SbSql.Append($@"
+select DISTINCT 
+     psd.Seq1
+	,psd.Seq2
+	,Seq = psd.Seq1 +'-'+psd.Seq2
+	,psd.Refno
+	,psd.SCIRefno
+	,Color = psds.SpecValue
+	,ps.SuppID
+from PO_Supp_Detail psd WITH(NOLOCK)
+inner join PO_Supp ps on ps.id = psd.ID and ps.SEQ1 = psd.SEQ1
+inner join Fabric f WITH(NOLOCK) on psd.SCIRefno = f.SCIRefno
+inner join Orders o on o.POID = psd.id
+inner join PO_Supp_Detail_Spec psds on psd.ID = psds.id and psd.SEQ1 = psds.Seq1 and psd.SEQ2 = psds.Seq2 and SpecColumnID ='Color'
+Where 1 = 1
+And f.Type = 'F'
+And o.ID = @OrderID
+{where}
+
+Order by psd.Refno
+
+");
+
+            return ExecuteList<Window_FabricRefNo>(CommandType.Text, SbSql.ToString(), paras);
+        }
+        public IList<Window_RollDyelot> Get_RollDyelot(string OrderID,string Seq1, string Seq2)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            paras.Add("@OrderID ", DbType.String, OrderID);
+            paras.Add("@Seq1 ", DbType.String, Seq1);
+            paras.Add("@Seq2 ", DbType.String, Seq2);
+
+            string where = string.Empty;
+
+            //台北
+            SbSql.Append($@"
+Select DISTINCT Roll, Dyelot
+From Production.dbo.FtyInventory  WITH(NOLOCK)--工廠
+Where 1=1
+AND Seq1 = @Seq1 AND Seq2 = @Seq2 AND POID IN (
+    select POID from orders 
+    where id = @OrderID
+)
+
+
+");
+
+            return ExecuteList<Window_RollDyelot>(CommandType.Text, SbSql.ToString(), paras);
+        }
     }
 }
