@@ -192,5 +192,14 @@ namespace DatabaseObject.Public
         public string EmployeeID { get; set; }
         public string Name { get; set; }
     }
-
+    public class Window_FabricRefNo
+    {
+        public string Seq1 { get; set; }
+        public string Seq2 { get; set; }
+        public string Seq { get; set; }
+        public string SCIRefno { get; set; }
+        public string Refno { get; set; }
+        public string Color { get; set; }
+        public string SuppID { get; set; }
+    }
 }

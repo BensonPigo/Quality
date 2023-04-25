@@ -509,5 +509,15 @@ namespace Quality.Controllers
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
+
+        [HttpPost]
+        public ActionResult FabricRefNoList(string Title, string OrderID, string Refno, string TargetID)
+        {
+            var model = _PublicWindowService.Get_FabricRefNo(OrderID, Refno);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
     }
 }
