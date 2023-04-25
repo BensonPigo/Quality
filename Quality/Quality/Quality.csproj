@@ -193,6 +193,7 @@
     <Compile Include="Areas\BulkFGT\Controllers\MockupOvenTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\MockupWashController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\PullingTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\SalivaFastnessTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\PerspirationFastnessController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\WaterFastnessController.cs" />
@@ -444,6 +445,7 @@
     <Content Include="Areas\BulkFGT\Views\DailyMoisture\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\AgingHydrolysisTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\AgingHydrolysisTest\Detail.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\SalivaFastnessTest\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

@@ -129,6 +129,7 @@
     <Compile Include="Provider\MSSQL\CFTCommentsProvider.cs" />
     <Compile Include="Provider\MSSQL\RFTPerLineProvider.cs" />
     <Compile Include="Provider\MSSQL\RFTPicDuringDummyFittingProvider.cs" />
+    <Compile Include="Provider\MSSQL\SalivaFastnessTestProvider.cs" />
     <Compile Include="Provider\MSSQL\SearchListProvider.cs" />
   </ItemGroup>
   <ItemGroup>
