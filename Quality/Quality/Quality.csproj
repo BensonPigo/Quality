@@ -981,6 +981,8 @@
     <Content Include="XLT\PullingTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\PublicWondow\FabricRefNoList.cshtml" />
+    <Content Include="Views\PublicWondow\InkTypeList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

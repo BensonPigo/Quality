@@ -41,11 +41,18 @@
         background-color: wheat;
     }
 
+    .bodyDiv {
+        width: 100%;
+        overflow-x:scroll;
+    }
     .buttonArea, .MainArea, .DetailDataArea {
         width: 100%;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
+    }
+    .DetailDataArea {
+        width: 180%;
     }
 
     .buttonAreaItem {
@@ -74,7 +81,7 @@
     }
 
     .DetailDataAreaItem1 {
-        width: 5.8%;
+        width: 5%;
         padding: 2px;
         height: 3rem;
         border: 1px solid;
@@ -85,7 +92,7 @@
     }
 
     .DetailDataAreaItem2 {
-        width: 5%;
+        width: 20%;
         padding: 2px;
         height: 3rem;
         border: 1px solid;
@@ -207,11 +214,11 @@
 <div class="main-content">
     <header class="page-header">
         <h3>
-            <i class=""></i><span>Phenolic Yellowing Test</span>
+            <i class=""></i><span>Saliva Fastness Test</span>
         </h3>
         <div class="breadcrumb">
             <div>Home</div>
-            <div class="current">Phenolic Yellowing Test</div>
+            <div class="current">Saliva Fastness Test</div>
         </div>
     </header>
 
@@ -373,7 +380,7 @@
 
                         <div class="MainAreaItem odd">
                             @Html.HiddenFor(o => o.Main.SubmitDate)
-                            @Html.TextBoxFor(o => o.Main.SubmitDateText, new { @class = "CanEdit date-picker" })
+                            @Html.TextBoxFor(o => o.Main.SubmitDateText, new { @class = "CanEdit" })
 
                         </div>
 
@@ -501,14 +508,14 @@
 
                         </div>
                         <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.TypeOfPrint, new { @class = "odd" })
+                            @Html.TextBoxFor(o => o.Main.TypeOfPrint, new { @class = "odd", @onclick = "OpenWindow('InkType')", @placeholder = "Only Printing is available" })
                         </div>
                         <div class="MainAreaItem odd">
                             <h4 class="colTitle">Print Color</h4>
 
                         </div>
                         <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.PrintColor, new { @class = "odd" })
+                            @Html.TextBoxFor(o => o.Main.PrintColor, new { @class = "odd CanEdit" })
                         </div>
 
                         <!-- #endregion -->
@@ -553,13 +560,14 @@
                             <h4 class="colTitle">Temperature</h4>
                         </div>
                         <div class="MainAreaItem even">
-                            <select id="Main_Temperature" name="Main.Temperature" class="CanEdit even">
-                                @foreach (var item in Model.Temperature_Source)
-                                {
-                                    string selected = item.Value.Equals(Model.Main.Temperature.ToString()) ? "selected" : "";
-                                    <option value="@item.Value" @selected>@item.Text</option>
-                                }
-                            </select>
+                            @Html.TextBoxFor(o => o.Main.Temperature, new { @class = "even" })
+                            @*<select id="Main_Temperature" name="Main.Temperature" class="even">
+                    @foreach (var item in Model.Temperature_Source)
+                    {
+                        string selected = item.Value.Equals(Model.Main.Temperature.ToString()) ? "selected" : "";
+                        <option value="@item.Value" @selected>@item.Text</option>
+                    }
+                </select>*@
                         </div>
 
                         <div class="MainAreaItem even">
@@ -567,7 +575,7 @@
 
                         </div>
                         <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.Time, new { @class = "CanEdit even", @Type = "Number", @onchange = "value=TimeCheck(value)" })
+                            @Html.TextBoxFor(o => o.Main.Time, new { @class = "even", @Type = "Number", @onchange = "value=TimeCheck(value)" })
                         </div>
 
                         <div class="MainAreaItem even"></div>
@@ -577,170 +585,181 @@
                     </div>
 
                     @*表身*@
-                    <div class="detailDataDiv">
-                        <br />
-                        <div class="DetailDataArea">
-                            <!--#region Head-->
-                            <div class="DetailDataAreaItem1 colHead">
-                                Evaluation Item
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                All Result
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                Acetate<br />Scale
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                Cotton<br />Scale
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                Nylon<br />Scale
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                Polyester<br />Scale
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                Acrylic<br />Scale
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                Wool<br />Scale
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                Acetate<br />Result
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                Cotton<br />Result
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                Nylon<br />Result
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                Polyester<br />Result
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                Acrylic<br />Result
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                Wool<br />Result
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                Remark
-                            </div>
-                            <div class="DetailDataAreaItem1 colHead">
-                                Las Update
-                            </div>
-                            <div class="DetailDataAreaItem2 colHead">
-                                Action
-                            </div>
+                    <div class="bodyDiv">
 
-                            <!--#endregion-->
+                        <div class="detailDataDiv">
+                            <br />
+                            <div class="DetailDataArea">
+                                <!--#region Head-->
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Evaluation Item
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    All Result
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Acetate<br />Scale
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Cotton<br />Scale
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Nylon<br />Scale
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Polyester<br />Scale
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Acrylic<br />Scale
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Wool<br />Scale
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Acetate<br />Result
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Cotton<br />Result
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Nylon<br />Result
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Polyester<br />Result
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Acrylic<br />Result
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Wool<br />Result
+                                </div>
+                                <div class="DetailDataAreaItem2 colHead">
+                                    Remark
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Las Update
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Action
+                                </div>
 
-                            @if (Model.DetailList != null)
-                            {
-                                for (int i = 0; i < Model.DetailList.Count; i++)
+                                <!--#endregion-->
+
+                                @if (Model.DetailList != null)
                                 {
-                                    string rowName = $@"Row{i}";
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        <input type="hidden" class="detailRowIdx" name="name" value="@i" />
-                                        @*@Html.TextBoxFor(o => Model.DetailList[i].ReportNo, new { @class = "" })*@
-                                        @Html.HiddenFor(o => Model.DetailList[i].ReportNo, new { @class = "" })
-                                        @Html.HiddenFor(o => Model.DetailList[i].Ukey, new { @class = "" })
-                                        @Html.TextBoxFor(o => Model.DetailList[i].EvaluationItem, new { @class = "" })
-                                    </div>
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        @Html.TextBoxFor(o => Model.DetailList[i].AllResult, new { @class = "" })
-                                    </div>
+                                    for (int i = 0; i < Model.DetailList.Count; i++)
+                                    {
+                                        string rowName = $@"Row{i}";
+                                        string resultColor = "blue";
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            <input type="hidden" class="detailRowIdx" name="name" value="@i" />
+                                            @*@Html.TextBoxFor(o => Model.DetailList[i].ReportNo, new { @class = "" })*@
+                                            @Html.HiddenFor(o => Model.DetailList[i].ReportNo, new { @class = "" })
+                                            @Html.HiddenFor(o => Model.DetailList[i].Ukey, new { @class = "" })
+                                            @Html.TextBoxFor(o => Model.DetailList[i].EvaluationItem, new { @class = "" })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @{ resultColor = Model.DetailList[i].AllResult == "Fail" ? "red" : "blue";}
+                                            @Html.TextBoxFor(o => Model.DetailList[i].AllResult, new { @class = "", @style = $@"color:{resultColor}" })
+                                        </div>
 
 
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        <select id="DetailList[@i]_AcetateScale" name="DetailList[@i].AcetateScale" class="CanEdit" onchange="ScaleChange('@i', this, 'AcetateResult', '4-5')">
-                                            @foreach (var item in Model.Scale_Source)
-                                            {
-                                                string selected = item.Value.Equals(Model.DetailList[i].AcetateScale) ? "selected" : "";
-                                                <option value="@item.Value" @selected>@item.Text</option>
-                                            }
-                                        </select>
-                                    </div>
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        <select id="DetailList[@i]_CottonScale" name="DetailList[@i].CottonScale" class="CanEdit" onchange="ScaleChange('@i', this, 'CottonResult', '4-5')">
-                                            @foreach (var item in Model.Scale_Source)
-                                            {
-                                                string selected = item.Value.Equals(Model.DetailList[i].CottonScale) ? "selected" : "";
-                                                <option value="@item.Value" @selected>@item.Text</option>
-                                            }
-                                        </select>
-                                    </div>
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        <select id="DetailList[@i]_NylonScale" name="DetailList[@i].NylonScale" class="CanEdit" onchange="ScaleChange('@i', this, 'NylonResult', '4-5')">
-                                            @foreach (var item in Model.Scale_Source)
-                                            {
-                                                string selected = item.Value.Equals(Model.DetailList[i].NylonScale) ? "selected" : "";
-                                                <option value="@item.Value" @selected>@item.Text</option>
-                                            }
-                                        </select>
-                                    </div>
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        <select id="DetailList[@i]_PolyesterScale" name="DetailList[@i].PolyesterScale" class="CanEdit" onchange="ScaleChange('@i', this, 'PolyesterResult', '4-5')">
-                                            @foreach (var item in Model.Scale_Source)
-                                            {
-                                                string selected = item.Value.Equals(Model.DetailList[i].PolyesterScale) ? "selected" : "";
-                                                <option value="@item.Value" @selected>@item.Text</option>
-                                            }
-                                        </select>
-                                    </div>
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        <select id="DetailList[@i]_AcrylicScale" name="DetailList[@i].AcrylicScale" class="CanEdit" onchange="ScaleChange('@i', this, 'AcrylicResult', '4-5')">
-                                            @foreach (var item in Model.Scale_Source)
-                                            {
-                                                string selected = item.Value.Equals(Model.DetailList[i].AcrylicScale) ? "selected" : "";
-                                                <option value="@item.Value" @selected>@item.Text</option>
-                                            }
-                                        </select>
-                                    </div>
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        <select id="DetailList[@i]_WoolScale" name="DetailList[@i].WoolScale" class="CanEdit" onchange="ScaleChange('@i', this, 'WoolResult', '4-5')">
-                                            @foreach (var item in Model.Scale_Source)
-                                            {
-                                                string selected = item.Value.Equals(Model.DetailList[i].WoolScale) ? "selected" : "";
-                                                <option value="@item.Value" @selected>@item.Text</option>
-                                            }
-                                        </select>
-                                    </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            <select id="DetailList[@i]_AcetateScale" name="DetailList[@i].AcetateScale" class="CanEdit" onchange="ScaleChange('@i', this, 'AcetateResult', '4-5')">
+                                                @foreach (var item in Model.Scale_Source)
+                                                {
+                                                    string selected = item.Value.Equals(Model.DetailList[i].AcetateScale) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            <select id="DetailList[@i]_CottonScale" name="DetailList[@i].CottonScale" class="CanEdit" onchange="ScaleChange('@i', this, 'CottonResult', '4-5')">
+                                                @foreach (var item in Model.Scale_Source)
+                                                {
+                                                    string selected = item.Value.Equals(Model.DetailList[i].CottonScale) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            <select id="DetailList[@i]_NylonScale" name="DetailList[@i].NylonScale" class="CanEdit" onchange="ScaleChange('@i', this, 'NylonResult', '4-5')">
+                                                @foreach (var item in Model.Scale_Source)
+                                                {
+                                                    string selected = item.Value.Equals(Model.DetailList[i].NylonScale) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            <select id="DetailList[@i]_PolyesterScale" name="DetailList[@i].PolyesterScale" class="CanEdit" onchange="ScaleChange('@i', this, 'PolyesterResult', '4-5')">
+                                                @foreach (var item in Model.Scale_Source)
+                                                {
+                                                    string selected = item.Value.Equals(Model.DetailList[i].PolyesterScale) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            <select id="DetailList[@i]_AcrylicScale" name="DetailList[@i].AcrylicScale" class="CanEdit" onchange="ScaleChange('@i', this, 'AcrylicResult', '4-5')">
+                                                @foreach (var item in Model.Scale_Source)
+                                                {
+                                                    string selected = item.Value.Equals(Model.DetailList[i].AcrylicScale) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            <select id="DetailList[@i]_WoolScale" name="DetailList[@i].WoolScale" class="CanEdit" onchange="ScaleChange('@i', this, 'WoolResult', '4-5')">
+                                                @foreach (var item in Model.Scale_Source)
+                                                {
+                                                    string selected = item.Value.Equals(Model.DetailList[i].WoolScale) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </div>
 
 
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        @Html.TextBoxFor(o => Model.DetailList[i].AcetateResult, new { @class = "" })
-                                    </div>
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        @Html.TextBoxFor(o => Model.DetailList[i].CottonResult, new { @class = "" })
-                                    </div>
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        @Html.TextBoxFor(o => Model.DetailList[i].NylonResult, new { @class = "" })
-                                    </div>
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        @Html.TextBoxFor(o => Model.DetailList[i].PolyesterResult, new { @class = "" })
-                                    </div>
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        @Html.TextBoxFor(o => Model.DetailList[i].AcrylicResult, new { @class = "" })
-                                    </div>
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        @Html.TextBoxFor(o => Model.DetailList[i].WoolResult, new { @class = "" })
-                                    </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @{ resultColor = Model.DetailList[i].AcetateResult == "Fail" ? "red" : "blue";}
+                                            @Html.TextBoxFor(o => Model.DetailList[i].AcetateResult, new { @class = "", @style = $@"color:{resultColor}" })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @{ resultColor = Model.DetailList[i].CottonResult == "Fail" ? "red" : "blue";}
+                                            @Html.TextBoxFor(o => Model.DetailList[i].CottonResult, new { @class = "", @style = $@"color:{resultColor}" })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @{ resultColor = Model.DetailList[i].NylonResult == "Fail" ? "red" : "blue";}
+                                            @Html.TextBoxFor(o => Model.DetailList[i].NylonResult, new { @class = "", @style = $@"color:{resultColor}" })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @{ resultColor = Model.DetailList[i].PolyesterResult == "Fail" ? "red" : "blue";}
+                                            @Html.TextBoxFor(o => Model.DetailList[i].PolyesterResult, new { @class = "", @style = $@"color:{resultColor}" })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @{ resultColor = Model.DetailList[i].AcrylicResult == "Fail" ? "red" : "blue";}
+                                            @Html.TextBoxFor(o => Model.DetailList[i].AcrylicResult, new { @class = "", @style = $@"color:{resultColor}" })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @{ resultColor = Model.DetailList[i].WoolResult == "Fail" ? "red" : "blue";}
+                                            @Html.TextBoxFor(o => Model.DetailList[i].WoolResult, new { @class = "", @style = $@"color:{resultColor}" })
+                                        </div>
 
 
 
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        @Html.TextBoxFor(o => Model.DetailList[i].Remark, new { @class = "CanEdit" })
-                                    </div>
-                                    <div class="DetailDataAreaItem1 colBody @rowName">
-                                        @Model.DetailList[i].LastUpadate
-                                    </div>
-                                    <div class="DetailDataAreaItem2 colBody @rowName">
-                                        <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
-                                    </div>
+                                        <div class="DetailDataAreaItem2 colBody @rowName">
+                                            @Html.TextBoxFor(o => Model.DetailList[i].Remark, new { @class = "CanEdit" })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @Model.DetailList[i].LastUpadate
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                        </div>
+                                    }
                                 }
-                            }
 
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -778,6 +797,7 @@
         ClickEventBind();
         BlurEventBind();
         $('.toolBarItem').removeClass("canUse");
+        //$("#Main_SubmitDateText").removeClass('date-picker');
 
         if ($('#Main_ReportNo').val() == '' && EditType != 'New') {
 
@@ -795,6 +815,8 @@
                 // 編輯模式可用功能開啟
                 $('#Save, #Undo ,#Picture ,#NewItem').addClass("canUse");
                 $(".detailDelete").show();
+                $("#Main_SubmitDateText").addClass('date-picker');
+                $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
 
             }
             else {
@@ -953,6 +975,19 @@
             var para = "?TargetID=Main_FabricRefNo&OrderID=" + $('#Main_OrderID').val();
             window.open('@Url.Action("FabricRefNoList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
         }
+        if (WindowType == "InkType" && EditMode) {
+
+            if ($('#Main_ItemTested').val() != 'Printing') {
+                return;
+            }
+
+            if ($('#Main_BrandID').val() == '' || $('#Main_SeasonID').val() == '' || $('#Main_StyleID').val() == '') {
+                msg.WithError('Please input SP# first.');
+                return;
+            }
+            var para = `?TargetID=Main_TypeOfPrint&BrandID=${$('#Main_BrandID').val()}&SeasonID=${$('#Main_SeasonID').val()}&StyleID=${$('#Main_StyleID').val()}`;
+            window.open('@Url.Action("InkTypeList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
+        }
     }
 
 
@@ -981,13 +1016,14 @@
         // 在這邊取得開窗選擇的FabricRefNoData，進行後續動作
 
         // Roll Dyelot可能改變，因此清空表身
-        $(".colBody").remove();
+        // $(".colBody").remove();
     }
-    function GetRollDyelotList(RollDyelotData, targetID) {
-        $(`#${targetID}`).val(RollDyelotData.Dyelot);
-        $(`#${targetID.replace('Dyelot', 'Roll')}`).val(RollDyelotData.Roll);
+    function GetInkTypeList(InkTypeData) {
+        $("#Main_TypeOfPrint").val(InkTypeData.InkType);
+        // 在這邊取得開窗選擇的FabricRefNoData，進行後續動作
 
-        // 在這邊取得開窗選擇的RollDyelotData，進行後續動作
+        // Roll Dyelot可能改變，因此清空表身
+        $(".colBody").remove();
     }
 
     function GetPicture(data) {
@@ -1234,7 +1270,6 @@
 
         $('input ,select').unbind('blur').unbind('change');
 
-
         $("#Main_OrderID").on("change", function () {
             if (EditMode == false) {
                 return;
@@ -1286,6 +1321,17 @@
                 }
             });
 
+        });
+
+        $("#Main_ItemTested").on("change", function () {
+            if (EditMode == false) {
+                return;
+            }
+            let itemTested = $(this).val();
+
+            if (itemTested != 'Printing') {
+                $("#Main_TypeOfPrint").val('');
+            }
         });
 
         $("#Main_SubmitDateText").on("change", function () {
@@ -1361,33 +1407,33 @@
 
     function AllResultUpdate(rowIdx) {
         let isAnyFail = false;
-        if ($(`DetailList[${rowIdx}]_AcetateResult`).val() == "Fail") {
+        if ($(`#DetailList_${rowIdx}__AcetateResult`).val() == "Fail") {
             isAnyFail = true;
         }
-        if ($(`DetailList[${rowIdx}]_CottonResult`).val() == "Fail") {
+        if ($(`#DetailList_${rowIdx}__CottonResult`).val() == "Fail") {
             isAnyFail = true;
         }
-        if ($(`DetailList[${rowIdx}]_NylonResult`).val() == "Fail") {
+        if ($(`#DetailList_${rowIdx}__NylonResult`).val() == "Fail") {
             isAnyFail = true;
         }
-        if ($(`DetailList[${rowIdx}]_PolyesterResult`).val() == "Fail") {
+        if ($(`#DetailList_${rowIdx}__PolyesterResult`).val() == "Fail") {
             isAnyFail = true;
         }
-        if ($(`DetailList[${rowIdx}]_AcrylicResult`).val() == "Fail") {
+        if ($(`#DetailList_${rowIdx}__AcrylicResult`).val() == "Fail") {
             isAnyFail = true;
         }
-        if ($(`DetailList[${rowIdx}]_WoolResult`).val() == "Fail") {
+        if ($(`#DetailList_${rowIdx}__WoolResult`).val() == "Fail") {
             isAnyFail = true;
         }
 
         if (isAnyFail) {
-            $(`DetailList[${rowIdx}]_AllResult`).val('Fail');
-            $(`DetailList[${rowIdx}]_AllResult`).css('color', 'Red');
+            $(`#DetailList_${rowIdx}__AllResult`).val('Fail');
+            $(`#DetailList_${rowIdx}__AllResult`).css('color', 'Red');
         }
         else {
-            $(`DetailList[${rowIdx}]_AllResult`).val('Pass');
-            $(`DetailList[${rowIdx}]_AllResult`).css('color', 'blue');
+            $(`#DetailList_${rowIdx}__AllResult`).val('Pass');
+            $(`#DetailList_${rowIdx}__AllResult`).css('color', 'blue');
         }
-        $(`DetailList[${rowIdx}]_AllResult`).change();
+        $(`#DetailList_${rowIdx}__AllResult`).change();
     }
 </script>

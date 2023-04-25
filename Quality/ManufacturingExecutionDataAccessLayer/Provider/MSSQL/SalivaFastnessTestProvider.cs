@@ -157,6 +157,7 @@ where 1=1
                 { "@FabricRefNo", DbType.String, Req.Main.FabricRefNo ?? "" } ,
                 { "@FabricColor", DbType.String, Req.Main.FabricColor ?? "" } ,
                 { "@FabricDescription", DbType.String, Req.Main.FabricDescription ?? "" } ,
+                { "@ItemTested", DbType.String, Req.Main.ItemTested ?? "" } ,
                 { "@TypeOfPrint", DbType.String, Req.Main.TypeOfPrint ?? "" } ,
                 { "@PrintColor", DbType.String, Req.Main.PrintColor ?? "" } ,
                 { "@Temperature", Req.Main.Temperature } ,
@@ -200,6 +201,7 @@ INSERT INTO dbo.SalivaFastnessTest
            ,FabricColor
            ,FabricDescription
            ,TypeOfPrint
+           ,ItemTested
            ,PrintColor
            ,Temperature
            ,Time
@@ -214,6 +216,7 @@ VALUES
            ,@StyleID
            ,@Article
            ,@OrderID
+           ,(select top 1 FactoryID from SciProduction_Orders with(NOLOCK) where ID = @OrderID)
            ,@SubmitDate
            ,@Seq1
            ,@Seq2
@@ -221,6 +224,7 @@ VALUES
            ,@FabricColor
            ,@FabricDescription
            ,@TypeOfPrint
+           ,@ItemTested
            ,@PrintColor
            ,@Temperature
            ,@Time
@@ -252,6 +256,7 @@ VALUES
                 { "@FabricColor", DbType.String, Req.Main.FabricColor ?? "" } ,
                 { "@FabricDescription", DbType.String, Req.Main.FabricDescription ?? "" } ,
                 { "@TypeOfPrint", DbType.String, Req.Main.TypeOfPrint ?? "" } ,
+                { "@ItemTested", DbType.String, Req.Main.ItemTested ?? "" } ,
                 { "@PrintColor", DbType.String, Req.Main.PrintColor ?? "" } ,
                 { "@Temperature", Req.Main.Temperature } ,
                 { "@Time", Req.Main.Time } ,
@@ -288,6 +293,10 @@ UPDATE SalivaFastnessTest
       ,Seq2 = @Seq2
       ,FabricRefNo = @FabricRefNo
       ,FabricColor = @FabricColor
+      ,FabricDescription = @FabricDescription
+      ,TypeOfPrint = @TypeOfPrint
+      ,ItemTested = @ItemTested
+      ,PrintColor = @PrintColor
       ,Temperature = @Temperature
       ,Time = @Time
 WHERE ReportNo = @ReportNo
@@ -333,7 +342,7 @@ delete from SciPMSFile_SalivaFastnessTest WHERE ReportNo = @ReportNo
 INSERT INTO SalivaFastnessTest_Detail
            (ReportNo,EvaluationItem,AllResult,AcetateScale,CottonScale,NylonScale,PolyesterScale,AcrylicScale,WoolScale,AcetateResult,CottonResult,NylonResult,PolyesterResult,AcrylicResult,WoolResult,Remark,EditName,EditDate)
 VALUES 
-           (@ReportNo,@EvaluationItem,@AllResult,@AcetateScale,@CottonScale,@NylonScale@,PolyesterScale,@AcrylicScale,@WoolScale,@AcetateResult,@CottonResult,@NylonResult,@PolyesterResult,@AcrylicResult,@WoolResult,@Remark,@UserID,GETDATE())
+           (@ReportNo,@EvaluationItem,@AllResult,@AcetateScale,@CottonScale,@NylonScale,@PolyesterScale,@AcrylicScale,@WoolScale,@AcetateResult,@CottonResult,@NylonResult,@PolyesterResult,@AcrylicResult,@WoolResult,@Remark,@UserID,GETDATE())
 
 ";
             string updateDetail = $@" ----更新 SalivaFastnessTest_Detail

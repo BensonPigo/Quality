@@ -202,4 +202,8 @@ namespace DatabaseObject.Public
         public string Color { get; set; }
         public string SuppID { get; set; }
     }
+    public class Window_InkType
+    {
+        public string InkType { get; set; }
+    }
 }

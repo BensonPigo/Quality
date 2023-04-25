@@ -159,36 +159,36 @@ namespace Quality.Areas.BulkFGT.Controllers
 </div>
 
 <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
-    <input class="""" id=""DetailList_{lastNo}__AllResult"" name=""DetailList[{lastNo}].AllResult"" type=""text"" value=""Pass"" readonly=""readonly"">
+    <input class="""" id=""DetailList_{lastNo}__AllResult"" name=""DetailList[{lastNo}].AllResult"" type=""text"" value=""Pass"" style=""color:blue"" readonly=""readonly"">
 </div>
 
 <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
-    <select class=""CanEdit DetailInput"" id=""DetailList{lastNo}__AcetateScale"" name=""DetailList[{lastNo}].AcetateScale""  onchange=""ScaleChange({lastNo}, this, 'AcetateResult', '4-5')"">
+    <select class=""CanEdit DetailInput"" id=""DetailList_{lastNo}__AcetateScale"" name=""DetailList[{lastNo}].AcetateScale""  onchange=""ScaleChange({lastNo}, this, 'AcetateResult', '4-5')"">
     {string.Join(Environment.NewLine + "            ", ScaleOption)}
     </select>
 </div>
 <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
-    <select class=""CanEdit DetailInput"" id=""DetailList{lastNo}__CottonScale"" name=""DetailList[{lastNo}].CottonScale""  onchange=""ScaleChange({lastNo}, this, 'CottonResult', '4-5')"">
+    <select class=""CanEdit DetailInput"" id=""DetailList_{lastNo}__CottonScale"" name=""DetailList[{lastNo}].CottonScale""  onchange=""ScaleChange({lastNo}, this, 'CottonResult', '4-5')"">
     {string.Join(Environment.NewLine + "            ", ScaleOption)}
     </select>
 </div>
 <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
-    <select class=""CanEdit DetailInput"" id=""DetailList{lastNo}__NylonScale"" name=""DetailList[{lastNo}].NylonScale""  onchange=""ScaleChange({lastNo}, this, 'NylonResult', '4-5')"">
+    <select class=""CanEdit DetailInput"" id=""DetailList_{lastNo}__NylonScale"" name=""DetailList[{lastNo}].NylonScale""  onchange=""ScaleChange({lastNo}, this, 'NylonResult', '4-5')"">
     {string.Join(Environment.NewLine + "            ", ScaleOption)}
     </select>
 </div>
 <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
-    <select class=""CanEdit DetailInput"" id=""DetailList{lastNo}__PolyesterScale"" name=""DetailList[{lastNo}].PolyesterScale""  onchange=""ScaleChange({lastNo}, this, 'PolyesterResult', '4-5')"">
+    <select class=""CanEdit DetailInput"" id=""DetailList_{lastNo}__PolyesterScale"" name=""DetailList[{lastNo}].PolyesterScale""  onchange=""ScaleChange({lastNo}, this, 'PolyesterResult', '4-5')"">
     {string.Join(Environment.NewLine + "            ", ScaleOption)}
     </select>
 </div>
 <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
-    <select class=""CanEdit DetailInput"" id=""DetailList{lastNo}__AcrylicScale"" name=""DetailList[{lastNo}].AcrylicScale""  onchange=""ScaleChange({lastNo}, this, 'AcrylicResult', '4-5')"">
+    <select class=""CanEdit DetailInput"" id=""DetailList_{lastNo}__AcrylicScale"" name=""DetailList[{lastNo}].AcrylicScale""  onchange=""ScaleChange({lastNo}, this, 'AcrylicResult', '4-5')"">
     {string.Join(Environment.NewLine + "            ", ScaleOption)}
     </select>
 </div>
 <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
-    <select class=""CanEdit DetailInput"" id=""DetailList{lastNo}__WoolScale"" name=""DetailList[{lastNo}].WoolScale""  onchange=""ScaleChange({lastNo}, this, 'WoolResult', '4-5')"">
+    <select class=""CanEdit DetailInput"" id=""DetailList_{lastNo}__WoolScale"" name=""DetailList[{lastNo}].WoolScale""  onchange=""ScaleChange({lastNo}, this, 'WoolResult', '4-5')"">
     {string.Join(Environment.NewLine + "            ", ScaleOption)}
     </select>
 </div>

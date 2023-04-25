@@ -27,18 +27,25 @@ namespace BusinessLogicLayer.Service.BulkFGT
             SalivaFastnessTest_ViewModel model = new SalivaFastnessTest_ViewModel()
             {
                 Request = new SalivaFastnessTest_Request(),
-                Main = new SalivaFastnessTest_Main(),
-                
+                Main = new SalivaFastnessTest_Main()
+                {
+                    // ISP20230288 寫死4
+                    Time = 4,
+                    Temperature = 37,
+                },
+
                 ReportNo_Source = new List<System.Web.Mvc.SelectListItem>(),
                 Article_Source = new List<System.Web.Mvc.SelectListItem>(),
                 Scale_Source = new List<System.Web.Mvc.SelectListItem>(),
                 Temperature_Source = new List<System.Web.Mvc.SelectListItem>()
                 {
-                    new System.Web.Mvc.SelectListItem(){Text="0",Value="0"},
-                    new System.Web.Mvc.SelectListItem(){Text="30",Value="30"},
-                    new System.Web.Mvc.SelectListItem(){Text="40",Value="40"},
-                    new System.Web.Mvc.SelectListItem(){Text="50",Value="50"},
-                    new System.Web.Mvc.SelectListItem(){Text="60",Value="60"},
+                    // ISP20230288 寫死37
+                    new System.Web.Mvc.SelectListItem(){Text="37",Value="37"},
+                    //new System.Web.Mvc.SelectListItem(){Text="0",Value="0"},
+                    //new System.Web.Mvc.SelectListItem(){Text="30",Value="30"},
+                    //new System.Web.Mvc.SelectListItem(){Text="40",Value="40"},
+                    //new System.Web.Mvc.SelectListItem(){Text="50",Value="50"},
+                    //new System.Web.Mvc.SelectListItem(){Text="60",Value="60"},
                 },
                 DetailList = new List<SalivaFastnessTest_Detail>(),
             };
