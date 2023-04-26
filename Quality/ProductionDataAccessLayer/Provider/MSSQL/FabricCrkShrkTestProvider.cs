@@ -267,11 +267,10 @@ select	[POID] = f.POID,
         [DescDetail] = fab.DescDetail,
         [CrockingRemark] = fl.CrockingRemark,
         [CrockingEncdoe] = fl.CrockingEncode,
-        [CrockingTestBeforePicture] = fli.CrockingTestBeforePicture,
-        [CrockingTestAfterPicture] = fli.CrockingTestAfterPicture
+        [CrockingTestBeforePicture] = (select top 1 CrockingTestBeforePicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID ),
+        [CrockingTestAfterPicture] = (select top 1 CrockingTestAfterPicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID )
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
-left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
@@ -349,14 +348,13 @@ select	SubmitDate = fl.CrockingDate
 		,fd.ResultWet_Weft
 		,fd.Remark
 		,fd.Inspector
-		,fli.CrockingTestBeforePicture
-        ,fli.CrockingTestAfterPicture
+		,CrockingTestBeforePicture = (select top 1 CrockingTestBeforePicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
+        ,CrockingTestAfterPicture = (select top 1 CrockingTestAfterPicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
 		,f.ID
         ,fl.ReportNo
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 inner join FIR_Laboratory_Crocking fd WITH(NOLOCK) on fd.id = fl.id
-left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
@@ -646,11 +644,8 @@ select	[SP#] = f.POID,
         [Crocking Result] = fl.Crocking,
         [Crocking Last Test Date] = Format(fl.CrockingDate, 'yyyy/MM/dd'),
         [Crocking Remark] = fl.CrockingRemark
-        -- [TestBeforePicture] = fli.CrockingTestBeforePicture,
-        -- [TestAfterPicture] = fli.CrockingTestAfterPicture
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
--- left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
@@ -791,7 +786,6 @@ select	[POID] = f.POID,
         [ReportNo] = fl.ReportNo
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
-----left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID  改成子查詢抓TOP 1，提升速度
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
@@ -1086,11 +1080,8 @@ select	[SP#] = f.POID,
         [Heat Result] = fl.Heat,
         [Heat Last Test Date] = Format(fl.HeatDate, 'yyyy/MM/dd'),
         [Heat Remark] = fl.HeatRemark
-        -- [TestBeforePicture] = fli.HeatTestBeforePicture,
-        -- [TestAfterPicture] = fli.HeatTestAfterPicture 
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
--- left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
@@ -1192,12 +1183,11 @@ select	[POID] = f.POID,
         [DescDetail] = fab.DescDetail,
         [WashRemark] = fl.WashRemark,
         [WashEncode] = fl.WashEncode,
-        [WashTestBeforePicture] = fli.WashTestBeforePicture,
-        [WashTestAfterPicture] = fli.WashTestAfterPicture,
+        [WashTestBeforePicture] = (select top 1 WashTestBeforePicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID),
+        [WashTestAfterPicture] = (select top 1 WashTestAfterPicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID),
         [ReportNo] = fl.ReportNo
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
-left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
@@ -1525,11 +1515,8 @@ select	[SP#] = f.POID,
         [Wash Result] = fl.Wash,
         [Wash Last Test Date] = Format(fl.WashDate, 'yyyy/MM/dd'),
         [Wash Remark] = fl.WashRemark
-	    -- [TestBeforePicture] = fli.WashTestBeforePicture,
-	    -- [TestAfterPicture] = fli.WashTestAfterPicture
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
--- left join SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) on fli.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'

@@ -966,7 +966,6 @@ select Type= 'Accelerated Aging by Hydrolysis (461)'
 
 from [ExtendServer].ManufacturingExecution.dbo.AgingHydrolysisTest_Detail a
 inner join [ExtendServer].ManufacturingExecution.dbo.AgingHydrolysisTest b on b.ID = a.AgingHydrolysisTestID
-left join SciPMSFile_AgingHydrolysisTest_Image  d on a.ReportNo = d.ReportNo
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
 WHERE a.Result <> ''

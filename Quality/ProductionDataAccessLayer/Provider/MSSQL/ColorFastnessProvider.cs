@@ -89,11 +89,8 @@ select ID = c.POID
     ,c.Result
     ,c.Inspector
     ,c.Remark
-    -- ,ci.TestBeforePicture
-    -- ,ci.TestAfterPicture
 from ColorFastness c WITH (NOLOCK) 
 left join Orders b WITH (NOLOCK) on c.POID = b.ID
--- left join SciPMSFile_ColorFastness ci on c.ID = ci.ID and c.POID = ci.POID and c.TestNo = ci.TestNo
 where c.POID = @POID
 and c.ID = @ID
 and c.TestNo = @TestNo
@@ -325,11 +322,9 @@ exec UpdateInspPercent 'LabColorFastness', @POID
             SbSql.Append("        ,Detergent"+ Environment.NewLine);
             SbSql.Append("        ,Machine"+ Environment.NewLine);
             SbSql.Append("        ,Drying"+ Environment.NewLine);
-            SbSql.Append("        ,ci.TestBeforePicture"+ Environment.NewLine);
-            SbSql.Append("        ,ci.TestAfterPicture" + Environment.NewLine);
-            SbSql.Append($@"FROM [ColorFastness] c
-left join SciPMSFile_ColorFastness ci on c.ID=ci.ID and c.POID = ci.POID and c.TestNo = ci.TestNo
-" + Environment.NewLine);
+            SbSql.Append("        ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_ColorFastness ci WITH(NOLOCK) where c.ID=ci.ID and c.POID = ci.POID and c.TestNo = ci.TestNo)" + Environment.NewLine);
+            SbSql.Append("        ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_ColorFastness ci WITH(NOLOCK) where c.ID=ci.ID and c.POID = ci.POID and c.TestNo = ci.TestNo)" + Environment.NewLine);
+            SbSql.Append($@"FROM [ColorFastness] c " + Environment.NewLine);
             SbSql.Append("where c.ID = @ID" + Environment.NewLine);
 
             return ExecuteList<ColorFastness_Result>(CommandType.Text, SbSql.ToString(), objParameter);

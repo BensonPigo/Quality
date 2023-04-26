@@ -56,10 +56,9 @@ select	[TestNo] = cast(o.TestNo as varchar),
 		[Status] = o.Status,
         Temperature = Cast( o.Temperature as varchar),
         Time = Cast(  o.Time as varchar),
-        [TestBeforePicture] = oi.TestBeforePicture,
-        [TestAfterPicture] = oi.TestAfterPicture
+        [TestBeforePicture] = (select top 1 TestBeforePicture from SciPMSFile_WaterFastness oi WITH(NOLOCK) where o.ID = oi.ID ),
+        [TestAfterPicture] = (select top 1 TestAfterPicture from SciPMSFile_WaterFastness oi WITH(NOLOCK) where o.ID = oi.ID )
 from WaterFastness o with (nolock)
-LEFT JOIN SciPMSFile_WaterFastness oi with (nolock) ON o.ID = oi.ID
 left join pass1 pass1Inspector WITH(NOLOCK) on o.Inspector = pass1Inspector.ID
 where o.POID = @POID and o.TestNo = @TestNo
 ";
@@ -673,12 +672,9 @@ select  [SP#] = ov.POID,
         [Result] = ov.Result,
         [Inspector] = ov.Inspector,
         [Remark] = ov.Remark,
-        -- oi.TestBeforePicture,
-        -- oi.TestAfterPicture,
         ov.ID
 from    WaterFastness ov with (nolock)
 left join  Orders o with (nolock) on ov.POID = o.ID
--- left join SciPMSFile_WaterFastness oi with (nolock) on oi.ID=ov.ID
 where ov.POID = @poID and ov.TestNo = @TestNo
 ";
 
@@ -757,11 +753,10 @@ select  ov.ID
         ,ov.EditDate
         ,ov.Temperature
         ,ov.Time
-        ,oi.TestBeforePicture
-        ,oi.TestAfterPicture
+        ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_WaterFastness oi WITH(NOLOCK) where  oi.ID=ov.ID)
+        ,TestAfterPicture = (select top 1 TestAfterPicture SciPMSFile_WaterFastness oi WITH(NOLOCK) where  oi.ID=ov.ID)
         ,[InspectorName] = (select Name from Pass1 WITH(NOLOCK) where ID = ov.Inspector)
 from    WaterFastness ov with (nolock)
-left join SciPMSFile_WaterFastness oi with (nolock) on oi.ID=ov.ID
 where   ov.POID = @poID and ov.TestNo = @TestNo
 ";
 
@@ -822,12 +817,11 @@ select cd.SubmitDate
         ,cd.ResultWool
         ,cd.Remark
         ,c.Inspector
-        ,pmsFile.TestBeforePicture
-        ,pmsFile.TestAfterPicture
+        ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_WaterFastness pmsFile WITH(NOLOCK) where pmsFile.ID =  cd.ID)
+        ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_WaterFastness pmsFile WITH(NOLOCK) where pmsFile.ID =  cd.ID)
         ,c.ReportNo
 from WaterFastness_Detail cd WITH(NOLOCK)
 left join WaterFastness c WITH(NOLOCK) on c.ID =  cd.ID
-left join SciPMSFile_WaterFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID
 left join Orders o WITH(NOLOCK) on o.ID=c.POID
 left join PO_Supp_Detail psd WITH(NOLOCK) on c.POID = psd.ID and cd.SEQ1 = psd.SEQ1 and cd.SEQ2 = psd.SEQ2
 left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
