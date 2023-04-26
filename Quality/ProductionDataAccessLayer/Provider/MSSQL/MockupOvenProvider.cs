@@ -485,7 +485,7 @@ SELECT {top1}
 		,m.HTCoolingTime
         ,Type
         ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_MockupOven mi WITH(NOLOCK) where m.ReportNo=mi.ReportNo)
-        ,TestAfterPicture = (select top 1 TestAfterPicture SciPMSFile_MockupOven mi WITH(NOLOCK) where m.ReportNo=mi.ReportNo)
+        ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_MockupOven mi WITH(NOLOCK) where m.ReportNo=mi.ReportNo)
         ,AddDate
         ,AddName
         ,EditDate

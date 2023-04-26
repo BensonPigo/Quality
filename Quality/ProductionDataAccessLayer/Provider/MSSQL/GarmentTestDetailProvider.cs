@@ -115,9 +115,9 @@ gd.No
 ,[GarmentTest_Detail_EditName] = CONCAT(gd.EditName,'-',EditBy.Name,'',gd.EditDate)
 ,gd.SubmitDate,gd.ArrivedQty,gd.LineDry,gd.Temperature,gd.TumbleDry,gd.Machine,gd.HandWash
 ,gd.Composition,gd.Neck,gd.Status,gd.LOtoFactory,gd.MtlTypeID,gd.Above50NaturalFibres,gd.Above50SyntheticFibres
-,gdi.TestAfterPicture,gdi.TestBeforePicture
+,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_GarmentTest_Detail gdi WITH(NOLOCK) where gd.ID = gdi.ID AND gd.No = gdi.No)
+,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_GarmentTest_Detail gdi WITH(NOLOCK) where gd.ID = gdi.ID AND gd.No = gdi.No)
 from GarmentTest_Detail gd WITH(NOLOCK)
-left join SciPMSFile_GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID = gdi.ID AND gd.No = gdi.No
 left join Pass1 CreatBy WITH(NOLOCK) on CreatBy.ID = gd.AddName
 left join Pass1 EditBy WITH(NOLOCK) on EditBy.ID = gd.EditName
 outer apply(
@@ -469,11 +469,8 @@ select
     ,[701 Result] = case when gd.WashResult = 'P' then 'Pass' when gd.WashResult = 'F' then 'Fail' else '' end
     ,gd.inspector
     ,[Comments] = gd.Remark
-    -- ,gdi.TestBeforePicture
-    -- ,gdi.TestAfterPicture
 from GarmentTest g WITH(NOLOCK)
 inner join GarmentTest_Detail gd WITH(NOLOCK) on g.ID = gd.ID
--- left join SciPMSFile_GarmentTest_Detail gdi WITH(NOLOCK) on gd.ID=gdi.ID AND gd.No = gdi.No
 outer apply(
 	select Value =  r.Name 
 	from Style s WITH(NOLOCK)

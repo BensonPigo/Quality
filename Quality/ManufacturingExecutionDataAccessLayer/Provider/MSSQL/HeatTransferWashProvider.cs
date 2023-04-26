@@ -79,15 +79,14 @@ select h.ReportNo
       ,h.AddDate
       ,h.EditName
       ,h.EditDate
-      ,pmsfile.TestBeforePicture
-      ,pmsfile.TestAfterPicture
+      ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_HeatTransferWash pmsfile WITH(NOLOCK) where h.ReportNo=pmsfile.ReportNo )
+      ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_HeatTransferWash pmsfile WITH(NOLOCK) where h.ReportNo=pmsfile.ReportNo )
 	  ,LastEditText = ISNULL(LastEdit2.Name, LastEdit1.Name)
       ,MRHandleEmail = ISNULL(p.Email, p2.Email)
       ,Signature = Technician.Signature
       ,ArtworkTypeID_FullName = SubProcessInfo.ID
       ,h.ReceivedDate
 from HeatTransferWash h
-left join SciPMSFile_HeatTransferWash pmsfile on h.ReportNo=pmsfile.ReportNo
 inner join SciProduction_Orders o on h.OrderID = o.ID
 left join SciProduction_Style s on o.StyleUkey = s.Ukey
 left join SciProduction_Pass1 p on h.EditName = p.ID
