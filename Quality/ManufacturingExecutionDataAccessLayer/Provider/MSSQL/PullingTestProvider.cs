@@ -83,8 +83,8 @@ select    p.ReportNo
 		,p.AccRefno
 		,p.SnapOperator
 		,p.Remark
-		,pi.TestBeforePicture
-		,pi.TestAfterPicture
+        ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_PullingTest pi WITH(NOLOCK) where p.ReportNo = pi.ReportNo)
+        ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_PullingTest pi WITH(NOLOCK) where p.ReportNo = pi.ReportNo)
 		,[LastEditName]=IIF(p.EditDate IS NULL
 			,(Concat (p.AddName , '-', a.Name, ' ', Cast(p.AddDate as varchar)))
 			,(Concat (p.EditName, '-', e.Name, ' ', Cast(p.EditDate as varchar)))
@@ -96,7 +96,6 @@ select    p.ReportNo
         ,[AddName] = a.name
         ,[Signature] = (select t.Signature from [MainServer].Production.dbo.Technician t where t.ID = p.AddName and t.Junk = 0)
 from PullingTest p WITH(NOLOCK)
-left join SciPMSFile_PullingTest pi WITH(NOLOCK) on p.ReportNo = pi.ReportNo
 left join Production.dbo.Pass1 a WITH(NOLOCK) ON a.ID=p.AddName 
 left join Production.dbo.Pass1 e WITH(NOLOCK) ON e.ID=p.EditName
 left join Production.dbo.Pass1 i WITH(NOLOCK) ON i.ID=p.Inspector
@@ -499,10 +498,9 @@ select    p.ReportNo
 		, [Accessory Ref#] = p.AccRefno
 		, [Snap Operator] = p.SnapOperator
 		,p.Remark
-		,pi.TestBeforePicture
-		,pi.TestAfterPicture
+        ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_PullingTest pi WITH(NOLOCK) where p.ReportNo = pi.ReportNo)
+        ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_PullingTest pi WITH(NOLOCK) where p.ReportNo = pi.ReportNo)
 from PullingTest p 
-left join SciPMSFile_PullingTest pi WITH(NOLOCK) on p.ReportNo = pi.ReportNo
 where p.ReportNo = @ReportNo
 ";
 

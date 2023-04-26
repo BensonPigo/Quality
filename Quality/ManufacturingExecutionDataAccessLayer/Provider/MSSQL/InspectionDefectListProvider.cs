@@ -41,24 +41,6 @@ where OrderID = @OrderID
             listPar.Add(new SqlParameter("@OrderID", OrderID));
 
             string sql = $@"
-/*
-Select OrderID = o.ID
-	,SampleStage = o.OrderTypeID
-	,o.StyleID
-	,o.SeasonID
-	,rf.Article
-	,rf.Size
-	,rf.InspectionDate
-	,DefectType = Concat (rfd.AreaCode,  ' -', rfd.DefectCode, ' -', d.Description, ' -', rfd.PMS_RFTBACriteriaID)
-	,pmsFile.DefectPicture
-from Orders o  WITH(NOLOCK)
-INNER JOIN ExtendServer.ManufacturingExecution.dbo.RFT_Inspection rf WITH(NOLOCK) on o.ID = rf.OrderID 
-INNER JOIN ExtendServer.ManufacturingExecution.dbo.RFT_Inspection_Detail rfd WITH(NOLOCK) ON rf.ID = rfd.ID
-LEFT JOIN SciPMSFile_RFT_Inspection_Detail pmsFile WITH(NOLOCK) ON pmsFile.Ukey = rfd.Ukey
-LEFT JOIN DropdownList d WITH(NOLOCK) ON d.Type='PMS_RFTResp' AND d.ID = rfd.PMS_RFTRespID
-where o.ID = @OrderID
-*/
-
 select rfd.*
 INTO #Inspection_Detail
 from ExtendServer.ManufacturingExecution.dbo.RFT_Inspection rf WITH(NOLOCK) 

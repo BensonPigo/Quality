@@ -212,7 +212,7 @@ SELECT oq.Article
 	,[Right] = ISNULL(p.[Right], p.Side)
 	,p.Back
 from Production.dbo.Order_Qty oq WITH(NOLOCK) 
-left join SciPMSFile_RFT_PicDuringDummyFitting p WITH(NOLOCK) ON oq.ID = p.OrderID AND oq.Article = p.Article AND oq.SizeCode=p.Size
+inner join SciPMSFile_RFT_PicDuringDummyFitting p WITH(NOLOCK) ON oq.ID = p.OrderID AND oq.Article = p.Article AND oq.SizeCode=p.Size
 WHERE 1=1
 ");
             if (!string.IsNullOrEmpty(Req.OrderID))

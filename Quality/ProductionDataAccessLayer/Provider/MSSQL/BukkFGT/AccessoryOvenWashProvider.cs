@@ -264,10 +264,9 @@ select   al.POID
         ,AIR_LaboratoryID = al.ID
         ,al.Seq1
         ,al.Seq2
-		,ali.OvenTestBeforePicture
-		,ali.OvenTestAfterPicture
+		,OvenTestBeforePicture = (select top 1 OvenTestBeforePicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
+		,OvenTestAfterPicture = (select top 1 OvenTestAfterPicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
 from AIR_Laboratory al WITH(NOLOCK)
-left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
@@ -324,12 +323,11 @@ select   al.POID
         ,AIR_LaboratoryID = al.ID
         ,al.Seq1
         ,al.Seq2
-		,ali.OvenTestBeforePicture
-		,ali.OvenTestAfterPicture
+		,OvenTestBeforePicture = (select top 1 OvenTestBeforePicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
+		,OvenTestAfterPicture = (select top 1 OvenTestAfterPicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
         ,al.ReportNo
 from AIR_Laboratory al WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
-left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
@@ -557,12 +555,9 @@ select  [SP#] = al.POID
         ,[Oven Last Test Date]= convert(varchar, al.OvenDate , 111)  
 		,[Oven Lab Tech	AIR_Laboratory]=al.OvenInspector
         ,Remark = al.OvenRemark
-        -- ,[TestBeforePicture] = ali.OvenTestBeforePicture
-        -- ,[TestAfterPicture] = ali.OvenTestAfterPicture
 from AIR_Laboratory al WITH(NOLOCK)
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 INNER JOIn Orders o WITH(NOLOCK) ON o.ID = a.POID
--- left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
@@ -610,8 +605,8 @@ select   al.POID
         ,AIR_LaboratoryID = al.ID
         ,al.Seq1
         ,al.Seq2
-		,ali.WashTestBeforePicture
-		,ali.WashTestAfterPicture
+        ,WashTestBeforePicture = (select top 1 WashTestBeforePicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
+        ,WashTestAfterPicture = (select top 1 WashTestAfterPicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
         ,al.MachineWash
         ,al.WashingTemperature
         ,al.DryProcess
@@ -619,7 +614,6 @@ select   al.POID
         ,al.WashingCycle
 
 from AIR_Laboratory al WITH(NOLOCK)
-left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
@@ -859,12 +853,9 @@ select  [SP#] = al.POID
         ,[Wash Last Test Date]=  convert(varchar, al.WashDate , 111)  
 		,[Wash Lab Tech	AIR_Laboratory]=al.WashInspector
         ,Remark = al.WashRemark
-	    --- , [TestBeforePicture] = ali.WashTestBeforePicture
-	    -- , [TestAfterPicture] = ali.WashTestAfterPicture
 from AIR_Laboratory al WITH(NOLOCK)
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 INNER JOIn Orders o WITH(NOLOCK) ON o.ID = a.POID
-left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
@@ -913,8 +904,8 @@ select   al.POID
         ,AIR_LaboratoryID = al.ID
         ,al.Seq1
         ,al.Seq2
-		,ali.WashTestBeforePicture
-		,ali.WashTestAfterPicture
+        ,WashTestBeforePicture = (select top 1 WashTestBeforePicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
+        ,WashTestAfterPicture = (select top 1 WashTestAfterPicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
         ,al.MachineWash
         ,al.WashingTemperature
         ,al.DryProcess
@@ -923,7 +914,6 @@ select   al.POID
         ,al.ReportNo
 from AIR_Laboratory al WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
-left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
@@ -996,11 +986,10 @@ select   al.POID
 		,al.ResultWool
 		,al.CrossStainingScale
 		,al.ResultCrossStaining
-		,ali.WashingFastnessTestBeforePicture
-		,ali.WashingFastnessTestAfterPicture
+        ,WashingFastnessTestBeforePicture = (select top 1 WashingFastnessTestBeforePicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
+        ,WashingFastnessTestAfterPicture = (select top 1 WashingFastnessTestAfterPicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
 
 from AIR_Laboratory al WITH(NOLOCK)
-left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
@@ -1258,12 +1247,9 @@ select  [SP#] = al.POID
         ,[Washing Fastness Last Test Date]=  convert(varchar, al.WashingFastnessReportDate , 111)  
 		,[Washing Fastness Lab Tech	AIR_Laboratory]=al.WashingFastnessInspector
         ,Remark = al.WashingFastnessRemark
-	    -- , [TestBeforePicture] = ali.WashingFastnessTestBeforePicture
-	    -- , [TestAfterPicture] = ali.WashingFastnessTestAfterPicture
 from AIR_Laboratory al WITH(NOLOCK)
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 INNER JOIn Orders o WITH(NOLOCK) ON o.ID = a.POID
-left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
@@ -1321,9 +1307,8 @@ select   al.WashingFastnessReceivedDate
                                  al.ResultAcrylic = '' OR al.ResultWool = '' OR al.ResultCrossStaining = ''  THEN ''
                             ELSE 'APPROVED'
                        END
-
-		,ali.WashingFastnessTestBeforePicture
-		,ali.WashingFastnessTestAfterPicture
+        ,WashingFastnessTestBeforePicture = (select top 1 WashingFastnessTestBeforePicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
+        ,WashingFastnessTestAfterPicture = (select top 1 WashingFastnessTestAfterPicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
         ,Prepared = tc.SignaturePic
         ,PreparedText = p.Name
         ,Executive = (SELECT TOP 1 SignaturePic FROM Production..Technician Where ID ='PC6000204' AND BulkAccOvenWash=1)
@@ -1331,7 +1316,6 @@ select   al.WashingFastnessReceivedDate
         ,al.ReportNo
 from AIR_Laboratory al WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
-left join SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) ON ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
 left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
