@@ -45,16 +45,14 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,Technician" + Environment.NewLine);
             SbSql.Append("        ,MR" + Environment.NewLine);
             SbSql.Append("        ,Type" + Environment.NewLine);
-            SbSql.Append("        ,mi.TestBeforePicture" + Environment.NewLine);
-            SbSql.Append("        ,mi.TestAfterPicture" + Environment.NewLine);
+            SbSql.Append("        ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_MockupCrocking mi WITH(NOLOCK) where m.ReportNo=mi.ReportNo)" + Environment.NewLine);
+            SbSql.Append("        ,TestAfterPicture = (select top 1 TestAfterPicture fromSciPMSFile_MockupCrocking mi WITH(NOLOCK) where m.ReportNo=mi.ReportNo)" + Environment.NewLine);
             SbSql.Append("        ,AddDate" + Environment.NewLine);
             SbSql.Append("        ,AddName" + Environment.NewLine);
             SbSql.Append("        ,EditDate" + Environment.NewLine);
             SbSql.Append("        ,EditName" + Environment.NewLine);
             SbSql.Append("        ,EditName" + Environment.NewLine);
-            SbSql.Append($@"FROM [MockupCrocking] m WITH(NOLOCK)
-left join SciPMSFile_MockupCrocking mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
-" + Environment.NewLine);
+            SbSql.Append($@"FROM [MockupCrocking] m WITH(NOLOCK) " + Environment.NewLine);
 
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
             if (!string.IsNullOrEmpty(Item.ReportNo))
@@ -408,8 +406,8 @@ SELECT {top1}
 		,MRExtNo = MR_ne.Extno
         ,MRMail = MR_ne.EMail
         ,Type
-        ,mi.TestBeforePicture
-        ,mi.TestAfterPicture
+        ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_MockupCrocking mi WITH(NOLOCK) where m.ReportNo=mi.ReportNo)
+        ,TestAfterPicture = (select top 1 TestAfterPicture fromSciPMSFile_MockupCrocking mi WITH(NOLOCK) where m.ReportNo=mi.ReportNo)
         ,AddDate
         ,AddName
         ,EditDate
@@ -417,7 +415,6 @@ SELECT {top1}
         ,Signature = (select t.Signature from Technician t WITH(NOLOCK) where t.ID = Technician)
 		,LastEditName = iif(EditName <> '', Concat (EditName, '-', EditName.Name, ' ', Format(EditDate,'yyyy/MM/dd HH:mm:ss')), Concat (AddName, '-', AddName.Name, ' ', Format(AddDate,'yyyy/MM/dd HH:mm:ss')))
 FROM [MockupCrocking] m WITH(NOLOCK)
-left join SciPMSFile_MockupCrocking mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
 outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo, EMail from pass1 WITH(NOLOCK) where id = m.MR) MR_ne
 outer apply (select Name from Pass1 WITH(NOLOCK) where id = m.AddName) AddName
@@ -484,10 +481,7 @@ SELECT
         ,[Result] = Result
         ,[Technician] = Concat(Technician, '-', Technician_ne.Name, ' Ext.', Technician_ne.ExtNo)
         ,[MR] = Concat(MR, '-', MR_ne.Name, ' Ext.', MR_ne.ExtNo)
-		-- ,mi.TestBeforePicture
-        -- ,mi.TestAfterPicture
 FROM MockupCrocking m WITH(NOLOCK)
--- left join SciPMSFile_MockupCrocking mi WITH(NOLOCK) on m.ReportNo=mi.ReportNo
 outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo from pass1 WITH(NOLOCK) where id = m.MR) MR_ne
 where m.ReportNo = @ReportNo
