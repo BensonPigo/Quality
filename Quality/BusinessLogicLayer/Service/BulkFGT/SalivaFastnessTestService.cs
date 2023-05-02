@@ -411,24 +411,61 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
+                // 取得工作表上所有圖形物件
+                Microsoft.Office.Interop.Excel.Shapes shapes = worksheet.Shapes;
+
+                // 根據名稱，搜尋文字方塊物件
+                Microsoft.Office.Interop.Excel.Shape ADIDAS_TextBox = shapes.Item("ADIDAS_TextBox");
+                Microsoft.Office.Interop.Excel.Shape REEBOK_TextBox = shapes.Item("REEBOK_TextBox");
+                Microsoft.Office.Interop.Excel.Shape Item_Fabric_TextBox = shapes.Item("Item_Fabric_TextBox");
+                Microsoft.Office.Interop.Excel.Shape Item_Acc_TextBox = shapes.Item("Item_Acc_TextBox");
+                Microsoft.Office.Interop.Excel.Shape Item_Printing_TextBox = shapes.Item("Item_Printing_TextBox");
+                Microsoft.Office.Interop.Excel.Shape Detail_Pass = shapes.Item("Detail_Pass");
+                Microsoft.Office.Interop.Excel.Shape Detail_Fail = shapes.Item("Detail_Fail");
+
+
+                // BrandID
+                if (model.Main.BrandID.ToUpper() == "ADIDAS")
+                {
+                    ADIDAS_TextBox.TextFrame.Characters().Text = "V";
+                }
+                if (model.Main.BrandID.ToUpper() == "REEBOK")
+                {
+                    REEBOK_TextBox.TextFrame.Characters().Text = "V";
+                }
+
+                // ITEM TESTED
+                if (model.Main.ItemTested.ToUpper() == "FABRIC")
+                {
+                    Item_Fabric_TextBox.TextFrame.Characters().Text = "V";
+                }
+                if (model.Main.ItemTested.ToUpper() == "ACCESSORIES")
+                {
+                    Item_Acc_TextBox.TextFrame.Characters().Text = "V";
+                }
+                if (model.Main.ItemTested.ToUpper() == " PRINTING")
+                {
+                    Item_Printing_TextBox.TextFrame.Characters().Text = "V";
+                }
+
                 string reportNo = model.Main.ReportNo;
                 worksheet.Cells[3, 2] = model.Main.ReportNo;
-                worksheet.Cells[3, 5] = model.Main.SubmitDateText;
+                worksheet.Cells[3, 6] = model.Main.OrderID;
 
-                worksheet.Cells[4, 2] = model.Main.OrderID;
-                worksheet.Cells[4, 5] = model.Main.ReportDateText;
+                worksheet.Cells[4, 2] = model.Main.FactoryID;
+                worksheet.Cells[4, 6] = model.Main.SubmitDateText;
 
-                worksheet.Cells[5, 2] = model.Main.BrandID;
-                worksheet.Cells[5, 5] = model.Main.SeasonID;
+                worksheet.Cells[5, 2] = model.Main.StyleID;
+                worksheet.Cells[5, 6] = model.Main.ReportDateText;
 
-                worksheet.Cells[6, 2] = model.Main.StyleID;
-                worksheet.Cells[6, 5] = model.Main.Article;
+                worksheet.Cells[6, 2] = model.Main.Article;
+                worksheet.Cells[7, 2] = model.Main.SeasonID;
+                worksheet.Cells[8, 2] = model.Main.FabricRefNo;
+                worksheet.Cells[9, 2] = model.Main.FabricColor;
+                worksheet.Cells[10, 2] = model.Main.FabricDescription;
 
-                worksheet.Cells[7, 2] = model.Main.Seq;
-                worksheet.Cells[7, 5] = model.Main.FabricRefNo;
-
-                worksheet.Cells[8, 2] = model.Main.FabricColor;
-                worksheet.Cells[8, 5] = model.Main.Result;
+                worksheet.Cells[11, 2] = model.Main.TypeOfPrint;
+                worksheet.Cells[11, 6] = model.Main.PrintColor;
 
                 worksheet.Cells[11, 2] = model.Main.Temperature;
                 worksheet.Cells[11, 5] = model.Main.Time;
@@ -476,32 +513,62 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // 表身處理
                 if (model.DetailList.Any() && model.DetailList.Count > 1)
                 {
-                    // 先處理Remark
-                    List<string> allRemark = new List<string>();
-                    allRemark = model.DetailList.Where(o => !string.IsNullOrEmpty(o.Remark)).Select(o => o.Remark).ToList();
+                    //// 先處理Remark
+                    //List<string> allRemark = new List<string>();
+                    //allRemark = model.DetailList.Where(o => !string.IsNullOrEmpty(o.Remark)).Select(o => o.Remark).ToList();
 
-                    // 全部擠在一起，但是要分行
-                    worksheet.Cells[17, 2] = string.Join(Environment.NewLine, allRemark);
+                    //// 全部擠在一起，但是要分行
+                    //worksheet.Cells[17, 2] = string.Join(Environment.NewLine, allRemark);
 
                     // 複製欄位
                     int copyCount = model.DetailList.Count - 1;
                     for (int i = 0; i < copyCount; i++)
                     {
-                        Microsoft.Office.Interop.Excel.Range paste1 = worksheet.get_Range($"A{i + 15}", Type.Missing);
-                        Microsoft.Office.Interop.Excel.Range copyRow = worksheet.get_Range("A15").EntireRow;
+                        Microsoft.Office.Interop.Excel.Range paste1 = worksheet.get_Range($"A{i + 14}", Type.Missing);
+                        Microsoft.Office.Interop.Excel.Range copyRow = worksheet.get_Range("A14:H19");
                         paste1.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
+                    }
+
+                    Microsoft.Office.Interop.Excel.Shapes shape2 = worksheet.Shapes;
+
+                    int idx = 1;
+                    foreach (Microsoft.Office.Interop.Excel.Shape shape in shape2)
+                    {
+                        if (shape.Type == Detail_Pass.Type && shape.Name == "Detail_Pass" && shape.Name != Detail_Pass.Name)
+                        {
+                            // 進行相應的處理，例如重新命名
+                            shape.Name = Detail_Pass.Name + idx.ToString();
+                        }
+                        if (shape.Type == Detail_Pass.Type && shape.Name == "Detail_Fail" && shape.Name != Detail_Pass.Name)
+                        {
+                            // 進行相應的處理，例如重新命名
+                            shape.Name = Detail_Pass.Name + idx.ToString();
+                        }
                     }
 
                     int rowIdx = 0;
                     foreach (var detailData in model.DetailList)
                     {
-                        worksheet.Cells[15 + rowIdx, 1] = detailData.EvaluationItem;
-                        //worksheet.Cells[15 + rowIdx, 2] = detailData.Dyelot;
-                        //worksheet.Cells[15 + rowIdx, 3] = detailData.Roll;
-                        //worksheet.Cells[15 + rowIdx, 5] = detailData.Scale;
-                        //worksheet.Cells[15 + rowIdx, 6] = detailData.Result;
+                        worksheet.Cells[14 + rowIdx, 4] = detailData.AcetateScale;
+                        worksheet.Cells[14 + rowIdx, 6] = detailData.AcetateResult;
 
-                        allRemark.Add(detailData.Remark);
+                        worksheet.Cells[15 + rowIdx, 4] = detailData.CottonScale;
+                        worksheet.Cells[15 + rowIdx, 6] = detailData.CottonResult;
+
+                        worksheet.Cells[16 + rowIdx, 4] = detailData.NylonScale;
+                        worksheet.Cells[16 + rowIdx, 6] = detailData.NylonResult;
+
+                        worksheet.Cells[17 + rowIdx, 4] = detailData.PolyesterScale;
+                        worksheet.Cells[17 + rowIdx, 6] = detailData.PolyesterResult;
+
+                        worksheet.Cells[18 + rowIdx, 4] = detailData.AcrylicScale;
+                        worksheet.Cells[18 + rowIdx, 6] = detailData.AcrylicResult;
+
+                        worksheet.Cells[19 + rowIdx, 4] = detailData.WoolScale;
+                        worksheet.Cells[19 + rowIdx, 6] = detailData.WoolResult;
+
+
+                        //allRemark.Add(detailData.Remark);
                         rowIdx++;
                     }
                 }

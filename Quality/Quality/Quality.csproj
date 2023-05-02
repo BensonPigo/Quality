@@ -983,6 +983,9 @@
     </Content>
     <Content Include="Views\PublicWondow\FabricRefNoList.cshtml" />
     <Content Include="Views\PublicWondow\InkTypeList.cshtml" />
+    <Content Include="XLT\SalivaFastnessTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
