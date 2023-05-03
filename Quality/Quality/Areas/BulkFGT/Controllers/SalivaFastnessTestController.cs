@@ -35,6 +35,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 model = (SalivaFastnessTest_ViewModel)TempData["EditSaveSalivaFastnessTestModel"];
             }
+            else if (TempData["DeleteSalivaFastnessTestModel"] != null)
+            {
+                model = (SalivaFastnessTest_ViewModel)TempData["DeleteSalivaFastnessTestModel"];
+            }
 
             return View(model);
         }
@@ -128,8 +132,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             if (!model.Result)
             {
                 model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("'", string.Empty)}"");";
+                return View("Index", model);
             }
-
+            TempData["DeleteSalivaFastnessTestModel"] = model;
             return RedirectToAction("Index");
         }
 

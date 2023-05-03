@@ -1047,6 +1047,10 @@
                 return;
             }
 
+            if ($('#Main_OrderID').val() == '' || $('#Main_BrandID').val() == '' || $('#Main_SeasonID').val() == '' || $('#Main_StyleID').val() == '' || $('#Main_Article').val() == '') {
+                msg.WithError("SP#, Brand, Season ,Style and Article cannot be empty");
+                return false;
+            }
 
             $('.detailRowIdx').each(function (index, data) {
                 var idx = $(this).val();
@@ -1206,7 +1210,7 @@
                     success: function (data) {
                         if (data.Result) {
                             msg.WithSuccesCheck("Success", function () {
-                                location.reload();
+                                $("#btnQuery").click();
                             });
                         }
                         else {
@@ -1232,7 +1236,7 @@
                     success: function (data) {
                         if (data.Result) {
                             msg.WithSuccesCheck("Success", function () {
-                                location.reload();
+                                $("#btnQuery").click();
                             });
                         }
                         else {

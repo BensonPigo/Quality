@@ -994,7 +994,7 @@ WHERE a.Result <> ''
             }
             if (Req.ReceivedDate_e.HasValue)
             {
-                type15 += " AND ReceivedDate <= ReceivedDate_e ";
+                type15 += " AND ReceivedDate <= @ReceivedDate_e ";
             }
 
             if (Req.ReportDate_s.HasValue)
@@ -1003,7 +1003,7 @@ WHERE a.Result <> ''
             }
             if (Req.ReportDate_e.HasValue)
             {
-                type15 += " AND ReportDate <= ReportDate_e ";
+                type15 += " AND ReportDate <= @ReportDate_e ";
             }
 
             #endregion
@@ -1054,7 +1054,7 @@ WHERE a.Result <> ''
             }
             if (Req.ReceivedDate_e.HasValue)
             {
-                type17 += " AND a.SubmitDate <= ReceivedDate_e ";
+                type17 += " AND a.SubmitDate <= @ReceivedDate_e ";
             }
 
             if (Req.ReportDate_s.HasValue)
@@ -1063,7 +1063,7 @@ WHERE a.Result <> ''
             }
             if (Req.ReportDate_e.HasValue)
             {
-                type17 += " AND a.ReportDate <= ReportDate_e ";
+                type17 += " AND a.ReportDate <= @ReportDate_e ";
             }
 
             #endregion

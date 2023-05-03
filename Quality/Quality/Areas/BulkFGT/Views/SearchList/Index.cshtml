@@ -555,8 +555,9 @@
             let includes_HTWash = currentType.toUpperCase().includes("HT WASH");
             let includes_Moistureh = currentType.toUpperCase().includes("MOISTURE");
             let includes_Aging = currentType.toUpperCase().includes("AGING");
+            let includes_SALIVA = currentType.toUpperCase().includes("SALIVA");
 
-            if (!includes_MOCKUP && !includes_HTWash && !includes_Moistureh && !includes_Aging) {
+            if (!includes_MOCKUP && !includes_HTWash && !includes_Moistureh && !includes_Aging && !includes_SALIVA) {
                 $(".mockupOnly").val('');
                 $(".mockupOnly").attr("disabled", "disabled");
             }

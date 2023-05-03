@@ -344,6 +344,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Article = Req.Main.Article,
                 });
 
+                model.Request = new SalivaFastnessTest_Request()
+                {
+                    ReportNo = model.Main.ReportNo,
+                    BrandID = model.Main.BrandID,
+                    SeasonID = model.Main.SeasonID,
+                    StyleID = model.Main.StyleID,
+                    Article = model.Main.Article,
+                };
+
                 model.Result = true;
             }
             catch (Exception ex)
