@@ -213,13 +213,13 @@ namespace Quality.Areas.BulkFGT.Controllers
     <input class="""" id=""DetailList_{lastNo}__WoolResult"" name=""DetailList[{lastNo}].WoolResult"" type=""text"" value=""Pass"" style=""color:blue"" readonly=""readonly"">
 </div>
 
-<div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
+<div class=""DetailDataAreaItem2 colBody Row{lastNo}"">
     <input class=""CanEdit"" id=""DetailList_{lastNo}__Remark"" name=""DetailList[{lastNo}].Remark"" type=""text"" value="""">
 </div>
 <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
     <!--Last Update Date-->
 </div>
-<div class=""DetailDataAreaItem2 colBody Row{lastNo}"">
+<div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
     <img class='detailDelete' src=""/Image/Icon/Delete.png"" width=""30"">
 </div>
 <!--#endregion-->

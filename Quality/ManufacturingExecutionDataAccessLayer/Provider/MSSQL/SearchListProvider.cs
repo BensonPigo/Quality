@@ -1008,6 +1008,66 @@ WHERE a.Result <> ''
 
             #endregion
 
+            #region Saliva Fastness Test (519)
+
+            string type17 = $@"
+select Type= 'Saliva Fastness Test (519)'
+	, a.ReportNo
+	, a.OrderID
+	, a.StyleID
+	, a.BrandID
+	, a.SeasonID
+	, a.Article
+	, Line = ''
+	, Artwork = ''
+	, a.Result	
+	, TestDate = Cast( NULL as date)
+	, ReceivedDate = a.SubmitDate
+	, ReportDate = a.ReportDate
+    , AddName = ISNULL(mp.Name, pp.Name)
+
+from [ExtendServer].ManufacturingExecution.dbo.SalivaFastnessTest a
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
+left join Pass1 pp on a.EditName = pp.ID
+WHERE a.Result <> ''
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type17 += "AND a.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type17 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type17 += "AND a.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type17 += "AND a.Article = @Article ";
+            }
+
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type17 += " AND @ReceivedDate_s <= a.SubmitDate ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type17 += " AND a.SubmitDate <= ReceivedDate_e ";
+            }
+
+            if (Req.ReportDate_s.HasValue)
+            {
+                type17 += " AND @ReportDate_s <= a.ReportDate ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type17 += " AND a.ReportDate <= ReportDate_e ";
+            }
+
+            #endregion
+
             switch (Req.Type)
             {
                 case string a when a.Contains("Fabric Crocking & Shrinkage Test"):
@@ -1052,6 +1112,9 @@ WHERE a.Result <> ''
                 case string a when a.Contains("Accelerated Aging by Hydrolysis"):
                     SbSql.Append(type15);
                     break;
+                case string a when a.Contains("Saliva Fastness Test"):
+                    SbSql.Append(type17);
+                    break;
                 default:
                     SbSql.Append(
                         type1 + " union all " + 
@@ -1067,7 +1130,8 @@ WHERE a.Result <> ''
                         type12 + " union all " +
                         type13 + " union all " +
                         type14 + " union all " +
-                        type15);
+                        type15 + " union all " +
+                        type17);
                     break;
             }
 

@@ -397,7 +397,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
-
+            
             try
             {
                 _Provider = new SalivaFastnessTestProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -420,8 +420,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Microsoft.Office.Interop.Excel.Shape Item_Fabric_TextBox = shapes.Item("Item_Fabric_TextBox");
                 Microsoft.Office.Interop.Excel.Shape Item_Acc_TextBox = shapes.Item("Item_Acc_TextBox");
                 Microsoft.Office.Interop.Excel.Shape Item_Printing_TextBox = shapes.Item("Item_Printing_TextBox");
-                Microsoft.Office.Interop.Excel.Shape Detail_Pass = shapes.Item("Detail_Pass");
-                Microsoft.Office.Interop.Excel.Shape Detail_Fail = shapes.Item("Detail_Fail");
 
 
                 // BrandID
@@ -467,8 +465,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 worksheet.Cells[11, 2] = model.Main.TypeOfPrint;
                 worksheet.Cells[11, 6] = model.Main.PrintColor;
 
-                worksheet.Cells[11, 2] = model.Main.Temperature;
-                worksheet.Cells[11, 5] = model.Main.Time;
 
                 // Technician 欄位
                 if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
@@ -499,13 +495,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // TestBeforePicture、TestAfterPicture 圖片
                 if (model.Main.TestBeforePicture != null && model.Main.TestBeforePicture.Length > 1)
                 {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[21, 1];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[23, 1];
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestBeforePicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
                 if (model.Main.TestAfterPicture != null && model.Main.TestAfterPicture.Length > 1)
                 {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[21, 4];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[23, 6];
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestAfterPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
@@ -525,25 +521,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     for (int i = 0; i < copyCount; i++)
                     {
                         Microsoft.Office.Interop.Excel.Range paste1 = worksheet.get_Range($"A{i + 14}", Type.Missing);
-                        Microsoft.Office.Interop.Excel.Range copyRow = worksheet.get_Range("A14:H19");
+                        Microsoft.Office.Interop.Excel.Range copyRow = worksheet.get_Range("14:19");
                         paste1.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
-                    }
-
-                    Microsoft.Office.Interop.Excel.Shapes shape2 = worksheet.Shapes;
-
-                    int idx = 1;
-                    foreach (Microsoft.Office.Interop.Excel.Shape shape in shape2)
-                    {
-                        if (shape.Type == Detail_Pass.Type && shape.Name == "Detail_Pass" && shape.Name != Detail_Pass.Name)
-                        {
-                            // 進行相應的處理，例如重新命名
-                            shape.Name = Detail_Pass.Name + idx.ToString();
-                        }
-                        if (shape.Type == Detail_Pass.Type && shape.Name == "Detail_Fail" && shape.Name != Detail_Pass.Name)
-                        {
-                            // 進行相應的處理，例如重新命名
-                            shape.Name = Detail_Pass.Name + idx.ToString();
-                        }
                     }
 
                     int rowIdx = 0;
@@ -568,8 +547,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         worksheet.Cells[19 + rowIdx, 6] = detailData.WoolResult;
 
 
-                        //allRemark.Add(detailData.Remark);
-                        rowIdx++;
+                        if (detailData.AllResult.ToUpper()=="PASS")
+                        {
+                            worksheet.Cells[15 + rowIdx, 8] = "V";
+                        }
+                        if (true)
+                        {
+                            worksheet.Cells[18 + rowIdx, 8] = "V";
+                        }
+
+                        rowIdx += 6;
                     }
                 }
 

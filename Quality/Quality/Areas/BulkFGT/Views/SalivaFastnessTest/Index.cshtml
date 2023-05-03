@@ -1134,8 +1134,8 @@
                     if (data.Result) {
                         var para = "?To=";
                         para += "&CC=";
-                        para += "&Subject=" + "Bulk Phenolic Yellowing Test – ReportNo:" + $("#Main_ReportNo").val();
-                        para += `&Body=Attachment Is Bulk Phenolic Yellowing Test - ReportNo:${$("#Main_ReportNo").val() } detail data`;
+                        para += "&Subject=" + "Bulk Saliva Fastness Test – ReportNo:" + $("#Main_ReportNo").val();
+                        para += `&Body=Attachment Is Bulk Saliva Fastness Test - ReportNo:${$("#Main_ReportNo").val() } detail data`;
                         para += "&file=" + data.FileName;
                         window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
                     }
