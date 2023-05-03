@@ -1053,7 +1053,7 @@ WHERE a.Result <> '' AND　ａ.ReportDate IS NOT NULL
             }
             if (Req.ReceivedDate_e.HasValue)
             {
-                type16 += " AND a.SubmitDate <= ReceivedDate_e ";
+                type16 += " AND a.SubmitDate <= @ReceivedDate_e ";
             }
 
             if (Req.ReportDate_s.HasValue)
@@ -1062,7 +1062,7 @@ WHERE a.Result <> '' AND　ａ.ReportDate IS NOT NULL
             }
             if (Req.ReportDate_e.HasValue)
             {
-                type16 += " AND a.ReportDate <= ReportDate_e ";
+                type16 += " AND a.ReportDate <= @ReportDate_e ";
             }
 
             #endregion

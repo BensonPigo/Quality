@@ -35,6 +35,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 model = (PhenolicYellowTest_ViewModel)TempData["EditSavePhenolicYellowTestModel"];
             }
+            else if (TempData["DeletePhenolicYellowTestModel"] != null)
+            {
+                model = (PhenolicYellowTest_ViewModel)TempData["DeletePhenolicYellowTestModel"];
+            }
 
             return View(model);
         }
@@ -128,9 +132,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             if (!model.Result)
             {
                 model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("'", string.Empty)}"");";
+                return View("Index", model);
             }
 
+            TempData["DeletePhenolicYellowTestModel"] = model;
             return RedirectToAction("Index");
+            //return View("Index", model);
         }
 
         public ActionResult AddDetailRow(int lastNo)

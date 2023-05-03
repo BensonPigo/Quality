@@ -220,6 +220,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _Provider = new PhenolicYellowTestProvider(_ISQLDataTransaction);
 
+                if (string.IsNullOrEmpty(Req.Main.OrderID) || string.IsNullOrEmpty(Req.Main.BrandID) || string.IsNullOrEmpty(Req.Main.SeasonID)|| string.IsNullOrEmpty(Req.Main.StyleID) || string.IsNullOrEmpty(Req.Main.Article))
+                {
+                    throw new Exception("SP#、Brand、Season、Style and Article can't be empty.");
+                }
+
                 // 新增，並取得ReportNo
                 _Provider.Insert_PhenolicYellowTest(Req, MDivision, UserID, out newReportNo);
                 Req.Main.ReportNo = newReportNo;
@@ -336,6 +341,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     StyleID = Req.Main.StyleID,
                     Article = Req.Main.Article,
                 });
+
+                model.Request = new PhenolicYellowTest_Request()
+                {
+                    ReportNo = model.Main.ReportNo,
+                    BrandID =model.Main.BrandID,
+                    SeasonID = model.Main.SeasonID,
+                    StyleID = model.Main.StyleID,
+                    Article = model.Main.Article,
+                };
 
                 model.Result = true;
             }
