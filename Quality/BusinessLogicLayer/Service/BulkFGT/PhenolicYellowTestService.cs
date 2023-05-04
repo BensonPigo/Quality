@@ -225,6 +225,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     throw new Exception("SP#、Brand、Season、Style and Article can't be empty.");
                 }
 
+                // 判斷表頭Result，表身有任一Fail則Fail，否則Pass
+                if (Req.DetailList != null && Req.DetailList.Any())
+                {
+                    bool HasFail = Req.DetailList.Where(o => o.Result == "Fail").Any();
+                    Req.Main.Result = HasFail ? "Fail" : "Pass";
+                }
+                else
+                {
+                    Req.Main.Result = "Pass";
+                    Req.DetailList = new List<PhenolicYellowTest_Detail>();
+                }
+
                 // 新增，並取得ReportNo
                 _Provider.Insert_PhenolicYellowTest(Req, MDivision, UserID, out newReportNo);
                 Req.Main.ReportNo = newReportNo;

@@ -155,6 +155,7 @@ where 1=1
                 { "@Seq2", DbType.String, Req.Main.Seq2 ?? "" } ,
                 { "@FabricRefNo", DbType.String, Req.Main.FabricRefNo ?? "" } ,
                 { "@FabricColor", DbType.String, Req.Main.FabricColor ?? "" } ,
+                { "@Result", DbType.String, Req.Main.Result ?? "Pass" } ,
                 { "@Temperature", Req.Main.Temperature } ,
                 { "@Time", Req.Main.Time } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
@@ -214,7 +215,7 @@ VALUES
            ,@Temperature
            ,@Time
            ,'New'
-           ,'Pass'
+           ,@Result
            ,GETDATE()
            ,@AddName
 )
