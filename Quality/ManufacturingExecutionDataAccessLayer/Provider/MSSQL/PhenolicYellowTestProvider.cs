@@ -414,7 +414,6 @@ DELETE FROM PhenolicYellowTest_Detail where ReportNo = @ReportNo AND Ukey = @Uke
 UPDATE PhenolicYellowTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = @Status
-    , Result = @Result
     , ReportDate = GETDATE()
 WHERE ReportNo = @ReportNo
 ";
@@ -425,7 +424,6 @@ WHERE ReportNo = @ReportNo
 UPDATE PhenolicYellowTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New'
-    , Result = ''
     , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ";
