@@ -227,6 +227,19 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _Provider = new SalivaFastnessTestProvider(_ISQLDataTransaction);
 
+                // 判斷表頭Result，表身有任一Fail則Fail，否則Pass
+                if (Req.DetailList != null && Req.DetailList.Any())
+                {
+                    bool HasFail = Req.DetailList.Where(o => o.AllResult == "Fail").Any();
+                    Req.Main.Result = HasFail ? "Fail" : "Pass";
+                }
+                else
+                {
+                    Req.Main.Result = "Pass";
+                    Req.DetailList = new List<SalivaFastnessTest_Detail>();
+                }
+
+
                 // 新增，並取得ReportNo
                 _Provider.Insert_SalivaFastnessTest(Req, MDivision, UserID, out newReportNo);
                 Req.Main.ReportNo = newReportNo;

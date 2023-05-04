@@ -160,6 +160,7 @@ where 1=1
                 { "@ItemTested", DbType.String, Req.Main.ItemTested ?? "" } ,
                 { "@TypeOfPrint", DbType.String, Req.Main.TypeOfPrint ?? "" } ,
                 { "@PrintColor", DbType.String, Req.Main.PrintColor ?? "" } ,
+                { "@Result", DbType.String, Req.Main.Result ?? "Pass" } ,
                 { "@Temperature", Req.Main.Temperature } ,
                 { "@Time", Req.Main.Time } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
@@ -229,7 +230,7 @@ VALUES
            ,@Temperature
            ,@Time
            ,'New'
-           ,'Pass'
+           ,@Result
            ,GETDATE()
            ,@AddName
 )

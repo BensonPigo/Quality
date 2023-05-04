@@ -754,7 +754,10 @@
                                             @Model.DetailList[i].LastUpadate
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
-                                            <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                            @if (!string.IsNullOrEmpty(Model.Main.ReportDateText))
+                                            {
+                                                <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
+                                            }
                                         </div>
                                     }
                                 }
@@ -823,6 +826,7 @@
                 // 可編輯欄位關閉
                 $('.MainArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select').attr("disabled", true);
                 $('.MainArea input ,.MainArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
+                $(".detailDelete").hide();
 
 
                 // 未Confirmed可用功能開啟
@@ -1261,6 +1265,8 @@
                     let targetRow = t.parent('div').attr('class').split(' ').filter(o => o.includes('Row'))[0];
 
                     $(`.${targetRow}`).remove();
+
+                    reBuildIndex();
                     msg.WithSuccess("Delete Success");
                 }, null);
         });
@@ -1388,7 +1394,50 @@
         return Number.parseInt(value);
     }
 
+    // 若表身有資料被刪除，則重新編號索引
+    function reBuildIndex() {
 
+        // 取剩下的Row
+        var rows = $('.detailRowIdx');
+
+        // 新的索引，一律從0開始
+        var newIndex = 0;
+
+        // 剩下的Row逐一處理，可能會有連號造成Index不連貫，例如原本有三筆資料，索引0、1、2，但1刪掉了，剩下的兩筆索引要重新編成0、1
+        rows.each(function () {
+
+            // 取得舊索引
+            var oldIndex = $(this).val();
+
+            // 取得Name或ID用到舊索引的控制項，一律換成新索引
+            $(`input[name^="DetailList[${oldIndex}]"]`).each(function () {
+                var oldName = $(this).attr('name');
+                var newName = oldName.replace(oldIndex, newIndex);
+                $(this).attr('name', newName);
+            })
+
+            $(`input[id^="DetailList_${oldIndex}_"]`).each(function () {
+                var oldID = $(this).attr('id');
+                var newID = oldID.replace(oldIndex, newIndex);
+                $(this).attr('id', newID);
+            })
+
+            $(`select[name^="DetailList[${oldIndex}]"]`).each(function () {
+                var oldName = $(this).attr('name');
+                var newName = oldName.replace(oldIndex, newIndex);
+                $(this).attr('name', newName);
+
+                // 跟RowIndex有關的事件也要更新
+                if (newName.endsWith('Scale')) {
+                    $(this).attr('onchange', `ScaleChange(${newIndex}, this, 'Result', '4-5')`);
+                }
+            })
+
+            $(this).attr('value', newIndex);
+            newIndex++;
+        });
+
+    }
 
     function ReportNoChange(value) {
         $('#btnQuery').unbind('click').click();
