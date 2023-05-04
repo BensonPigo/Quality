@@ -466,7 +466,6 @@ DELETE FROM SalivaFastnessTest_Detail where ReportNo = @ReportNo AND Ukey = @Uke
 UPDATE SalivaFastnessTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = @Status
-    , Result = @Result
     , ReportDate = GETDATE()
 WHERE ReportNo = @ReportNo
 ";
@@ -477,7 +476,6 @@ WHERE ReportNo = @ReportNo
 UPDATE SalivaFastnessTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New'
-    , Result = ''
     , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ";
