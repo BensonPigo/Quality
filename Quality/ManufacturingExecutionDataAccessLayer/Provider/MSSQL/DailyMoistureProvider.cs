@@ -201,6 +201,7 @@ VALUES
                 { "@Point3",  Req.Point3 } ,
                 { "@Point4",  Req.Point4 } ,
                 { "@Point5",  Req.Point5 } ,
+                { "@Point6",  Req.Point6 } ,
                 { "@Area", DbType.String, Req.Area ?? "" } ,
                 { "@Fabric", DbType.String, Req.Fabric ?? "" } ,
                 { "@Result", DbType.String, Req.Result ?? "" } ,
@@ -215,6 +216,7 @@ INSERT INTO dbo.BulkMoistureTest_Detail
            ,Point3
            ,Point4
            ,Point5
+           ,Point6
            ,Area
            ,Fabric
            ,Result
@@ -226,6 +228,7 @@ VALUES      (@ReportNo
            ,@Point3
            ,@Point4
            ,@Point5
+           ,@Point6
            ,@Area
            ,@Fabric
            ,@Result
@@ -325,7 +328,7 @@ where ReportNo = @ReportNo
                     Req.Details,
                     oldData,
                     "Ukey",
-                    "Point1,Point2,Point3,Point4,Point5,Area,Fabric,Result");
+                    "Point1,Point2,Point3,Point4,Point5,Point6,Area,Fabric,Result");
 
             string insert = $@"
 INSERT INTO dbo.BulkMoistureTest_Detail
@@ -335,6 +338,7 @@ INSERT INTO dbo.BulkMoistureTest_Detail
            ,Point3
            ,Point4
            ,Point5
+           ,Point6
            ,Area
            ,Fabric
            ,Result
@@ -347,6 +351,7 @@ INSERT INTO dbo.BulkMoistureTest_Detail
            ,@Point3
            ,@Point4
            ,@Point5
+           ,@Point6
            ,@Area
            ,@Fabric
            ,@Result
@@ -361,6 +366,7 @@ SET  Point1 = @Point1
     ,Point3 = @Point3
     ,Point4 = @Point4
     ,Point5 = @Point5
+    ,Point6 = @Point6
     ,Area = @Area
     ,Fabric = @Fabric
     ,Result = @Result
@@ -381,6 +387,7 @@ delete BulkMoistureTest_Detail where Ukey = @Ukey
                 listDetailPar.Add("@Point3", detailItem.Point3);
                 listDetailPar.Add("@Point4", detailItem.Point4);
                 listDetailPar.Add("@Point5", detailItem.Point5);
+                listDetailPar.Add("@Point6", detailItem.Point6);
                 listDetailPar.Add("@Area", DbType.String, detailItem.Area ?? string.Empty);
                 listDetailPar.Add("@Fabric", DbType.String, detailItem.Fabric ?? string.Empty);
                 listDetailPar.Add("@Result", DbType.String, detailItem.Result ?? string.Empty);
