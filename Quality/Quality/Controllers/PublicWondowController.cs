@@ -283,7 +283,7 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult Po_Supp_Detail_RefnoList(string OrderID,string MtlTypeID, string TargetID)
+        public ActionResult Po_Supp_Detail_RefnoList(string OrderID, string MtlTypeID, string TargetID)
         {
             var model = _PublicWindowService.Get_Po_Supp_Detail_Refno(OrderID, MtlTypeID, string.Empty);
             ViewData["OrderID"] = OrderID;
@@ -358,7 +358,7 @@ namespace Quality.Controllers
 
         public ActionResult SewingLineList(string FactoryID, string TargetID)
         {
-            var model = _PublicWindowService.Get_SewingLine(FactoryID , string.Empty, false);
+            var model = _PublicWindowService.Get_SewingLine(FactoryID, string.Empty, false);
             ViewData["FactoryID"] = FactoryID;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
@@ -458,7 +458,7 @@ namespace Quality.Controllers
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
-        public ActionResult InspMeasurement_PictureList(string Title, bool EditMode, string TargetColumnName, string TargetID, string Table, string ColumnName, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val,bool ShowDelete = true)
+        public ActionResult InspMeasurement_PictureList(string Title, bool EditMode, string TargetColumnName, string TargetID, string Table, string ColumnName, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val, bool ShowDelete = true)
         {
             var model = _PublicWindowService.Get_SinglePicture(Table, ColumnName, PKey_1, PKey_2, PKey_3, PKey_4, PKey_1_Val, PKey_2_Val, PKey_3_Val, PKey_4_Val);
             ViewData["Title"] = Title;
@@ -509,5 +509,33 @@ namespace Quality.Controllers
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
+        public ActionResult FabricRefNoList(string Title, string OrderID, string TargetID)
+        {
+            var model = _PublicWindowService.Get_FabricRefNo(OrderID, string.Empty);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult FabricRefNoList(string Title, string OrderID, string Refno, string TargetID)
+        {
+            var model = _PublicWindowService.Get_FabricRefNo(OrderID, Refno);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+
+        public ActionResult RollDyelotList(string Title, string OrderID, string Seq1, string Seq2 ,string TargetID)
+        {
+            var model = _PublicWindowService.Get_RollDyelot(OrderID, Seq1 , Seq2);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+
     }
 }
