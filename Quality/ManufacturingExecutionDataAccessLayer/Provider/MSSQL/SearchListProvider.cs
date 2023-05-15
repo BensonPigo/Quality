@@ -895,6 +895,7 @@ select DISTINCT Type= 'Daily Bulk Moisture Test'
 		, o.BrandID
 		, o.SeasonID
 		, h.Article 
+        , h.Line
 		, Artwork = ''
 		, h.Result
 		, TestDate = h.AddDate

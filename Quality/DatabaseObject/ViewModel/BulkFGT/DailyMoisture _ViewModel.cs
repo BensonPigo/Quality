@@ -131,6 +131,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public decimal Point3 { get; set; }
         public decimal Point4 { get; set; }
         public decimal Point5 { get; set; }
+        public decimal Point6 { get; set; }
         public string Area { get; set; }
         public string Fabric { get; set; }
         public string Result { get; set; }
@@ -142,13 +143,13 @@ namespace DatabaseObject.ViewModel.BulkFGT
         {
             get
             {
-                return this.EditDate.HasValue ? $"{this.EditDate.Value.ToString("yyyy-MM-dd")}-{this.EditName}" : string.Empty;
+                return this.EditDate.HasValue ? $"{this.EditDate.Value.ToString("yyyy-MM-dd HH:mm:ss")}-{this.EditName}" : string.Empty;
             }
         }
         public string ReSetResult(decimal Standard)
         {
             this.Result = "Pass";
-            if (this.Point1 > Standard || this.Point2 > Standard || this.Point3 > Standard || this.Point4 > Standard || this.Point5 > Standard)
+            if (this.Point1 > Standard || this.Point2 > Standard || this.Point3 > Standard || this.Point4 > Standard || this.Point5 > Standard || this.Point6 > Standard)
             {
                 this.Result = "Fail";
             }
