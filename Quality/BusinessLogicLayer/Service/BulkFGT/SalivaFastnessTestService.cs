@@ -494,10 +494,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
 
                     // 姓名
-                    worksheet.Cells[24, 6] = TechnicianName;
+                    worksheet.Cells[37, 5] = TechnicianName;
 
                     // Signture 圖片
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[23, 6];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[36, 6];
                     if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
                     {
 
@@ -573,7 +573,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         {
                             worksheet.Cells[15 + rowIdx, 8] = "V";
                         }
-                        if (true)
+                        if (detailData.AllResult.ToUpper() == "FAIL")
                         {
                             worksheet.Cells[18 + rowIdx, 8] = "V";
                         }
