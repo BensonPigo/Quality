@@ -542,7 +542,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     int copyCount = model.DetailList.Count - 1;
                     for (int i = 0; i < copyCount; i++)
                     {
-                        Microsoft.Office.Interop.Excel.Range paste1 = worksheet.get_Range($"A{i + 14}", Type.Missing);
+                        Microsoft.Office.Interop.Excel.Range paste1 = worksheet.get_Range($"A14", Type.Missing);
                         Microsoft.Office.Interop.Excel.Range copyRow = worksheet.get_Range("14:19");
                         paste1.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
                     }
