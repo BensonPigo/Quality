@@ -194,7 +194,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 StringBuilder content = new StringBuilder();
                 content.Append($@"
 Hi all,<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is final inspection report for [PO#]:<font style='color: blue'> {drReportMailInfo["CustPONO"]}</font>. Please refer to below information.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This is CFA inspection report for [PO#]:<font style='color: blue'> {drReportMailInfo["CustPONO"]}</font>. Please refer to below information.<br/>
 <b>[Factory]:</b><font style='color: blue'> {drReportMailInfo["FactoryID"]}</font><br/>
 <b>[SP#]:</b><font style='color: blue'>  {drReportMailInfo["SP"]}</font><br/>
 <b>[Style]:</b><font style='color: blue'>  {drReportMailInfo["StyleID"]}</font><br/>

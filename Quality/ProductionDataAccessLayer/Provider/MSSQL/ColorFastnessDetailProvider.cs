@@ -38,11 +38,10 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
 select c.* 
     ,[Name] = p.Name
     ,[InspectionName] = Concat (Inspector, ' ', p.Name)
-    ,pmsFile.TestBeforePicture
-    ,pmsFile.TestAfterPicture
+    ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) where pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo)
+    ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) where pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo)
 from ColorFastness c WITH(NOLOCK)
 left join pass1 p on c.Inspector = p.ID
-left join SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo
 where c.id = @ID
 ";
             var main = ExecuteList<ColorFastness_Result>(CommandType.Text, sqlcmd, objParameter);
@@ -134,12 +133,11 @@ select cd.SubmitDate
         ,cd.ResultWool
         ,cd.Remark
         ,c.Inspector
-        ,pmsFile.TestBeforePicture
-        ,pmsFile.TestAfterPicture
+        ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) where pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo)
+        ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) where pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo)
         ,[ReportNo] = c.ID
 from ColorFastness_Detail cd WITH(NOLOCK)
 left join ColorFastness c WITH(NOLOCK) on c.ID =  cd.ID
-left join SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) on pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo
 left join Orders o WITH(NOLOCK) on o.ID=c.POID
 left join PO_Supp_Detail psd WITH(NOLOCK) on c.POID = psd.ID and cd.SEQ1 = psd.SEQ1 and cd.SEQ2 = psd.SEQ2
 left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'

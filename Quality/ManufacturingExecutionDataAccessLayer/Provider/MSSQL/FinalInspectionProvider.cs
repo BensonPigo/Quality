@@ -1310,7 +1310,7 @@ OUTER APPLY(
 	inner join AIComment_Detail ad on a.Ukey = ad.AICommentUkey
 	where a.FunctionName = 'CFA' + f.InspectionStage
 	AND ad.[Day]= CASE WHEN @DiffDay <= 0 THEN 0
-					   WHEN @DiffDay > 8 THEN 8
+					   WHEN @DiffDay > 8 THEN 9
 					   ELSE @DiffDay
 					END
 )Ai

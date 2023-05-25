@@ -895,6 +895,7 @@ select DISTINCT Type= 'Daily Bulk Moisture Test'
 		, o.BrandID
 		, o.SeasonID
 		, h.Article 
+        , h.Line
 		, Artwork = ''
 		, h.Result
 		, TestDate = h.AddDate
@@ -966,7 +967,6 @@ select Type= 'Accelerated Aging by Hydrolysis (461)'
 
 from [ExtendServer].ManufacturingExecution.dbo.AgingHydrolysisTest_Detail a
 inner join [ExtendServer].ManufacturingExecution.dbo.AgingHydrolysisTest b on b.ID = a.AgingHydrolysisTestID
-left join SciPMSFile_AgingHydrolysisTest_Image  d on a.ReportNo = d.ReportNo
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
 WHERE a.Result <> ''
@@ -1004,6 +1004,65 @@ WHERE a.Result <> ''
             if (Req.ReportDate_e.HasValue)
             {
                 type15 += " AND ReportDate <= @ReportDate_e ";
+            }
+
+            #endregion
+
+            #region Phenolic Yellow Test (510)
+
+            string type16 = $@"
+select Type= 'Phenolic Yellowing Test (510)'
+	, a.ReportNo
+	, a.OrderID
+	, a.StyleID
+	, a.BrandID
+	, a.SeasonID
+	, a.Article
+	, Line = ''
+	, Artwork = ''
+	, a.Result	
+	, TestDate = Cast( NULL as date)
+	, ReceivedDate = a.SubmitDate
+	, ReportDate = a.ReportDate
+    , AddName = ISNULL(ma.Name, pa.Name)
+from [ExtendServer].ManufacturingExecution.dbo.PhenolicYellowTest a WITH (NOLOCK) 
+left join Production.dbo.Pass1 pa on a.AddName = pa.ID
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on a.AddName = ma.ID
+WHERE a.Result <> '' AND　ａ.ReportDate IS NOT NULL
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type16 += "AND a.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type16 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type16 += "AND a.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type16 += "AND a.Article = @Article ";
+            }
+
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type16 += " AND @ReceivedDate_s <= a.SubmitDate ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type16 += " AND a.SubmitDate <= @ReceivedDate_e ";
+            }
+
+            if (Req.ReportDate_s.HasValue)
+            {
+                type16 += " AND @ReportDate_s <= a.ReportDate ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type16 += " AND a.ReportDate <= @ReportDate_e ";
             }
 
             #endregion
@@ -1068,6 +1127,7 @@ WHERE a.Result <> ''
 
             #endregion
 
+
             switch (Req.Type)
             {
                 case string a when a.Contains("Fabric Crocking & Shrinkage Test"):
@@ -1112,6 +1172,9 @@ WHERE a.Result <> ''
                 case string a when a.Contains("Accelerated Aging by Hydrolysis"):
                     SbSql.Append(type15);
                     break;
+                case string a when a.Contains("Phenolic Yellowing Test"):
+                    SbSql.Append(type16);
+                    break;
                 case string a when a.Contains("Saliva Fastness Test"):
                     SbSql.Append(type17);
                     break;
@@ -1131,6 +1194,7 @@ WHERE a.Result <> ''
                         type13 + " union all " +
                         type14 + " union all " +
                         type15 + " union all " +
+                        type16 + " union all " +
                         type17);
                     break;
             }

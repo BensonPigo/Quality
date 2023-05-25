@@ -19,7 +19,7 @@ namespace DatabaseObject.Public
 
     public class Window_Style
     {
-        public Int64 StyleUkey{ get; set; }
+        public Int64 StyleUkey { get; set; }
         public string ID { get; set; }
         public string BrandID { get; set; }
         public string SeasonID { get; set; }
@@ -205,5 +205,11 @@ namespace DatabaseObject.Public
     public class Window_InkType
     {
         public string InkType { get; set; }
+    }
+
+    public class Window_RollDyelot
+    {
+        public string Roll { get; set; }
+        public string Dyelot { get; set; }
     }
 }

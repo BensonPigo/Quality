@@ -56,11 +56,10 @@ select	[TestNo] = cast(o.TestNo as varchar),
 		[Status] = o.Status,
         Temperature = Cast( o.Temperature as varchar),
         Time = Cast(  o.Time as varchar),
-        o.MetalContent,
-        [TestBeforePicture] = oi.TestBeforePicture,
-        [TestAfterPicture] = oi.TestAfterPicture
+        o.MetalContent
+        ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_PerspirationFastness oi WITH(NOLOCK) where  o.ID = oi.ID)
+        ,TestAfterPicture = (select top 1 TestAfterPicture SciPMSFile_PerspirationFastness oi WITH(NOLOCK) where o.ID = oi.ID)
 from PerspirationFastness o with (nolock)
-LEFT JOIN SciPMSFile_PerspirationFastness oi with (nolock) ON o.ID = oi.ID
 left join pass1 pass1Inspector WITH(NOLOCK) on o.Inspector = pass1Inspector.ID
 where o.POID = @POID and o.TestNo = @TestNo
 ";
@@ -872,11 +871,8 @@ select  [SP#] = ov.POID,
         [Result] = ov.Result,
         [Inspector] = ov.Inspector,
         [Remark] = ov.Remark,
-        -- pmsFile.TestBeforePicture,
-        -- pmsFile.TestAfterPicture,
         ov.ID
 from    PerspirationFastness ov with (nolock)
--- left join SciPMSFile_PerspirationFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  ov.ID
 left join  Orders o with (nolock) on ov.POID = o.ID
 where ov.POID = @poID and ov.TestNo = @TestNo
 ";
@@ -955,12 +951,11 @@ select cd.SubmitDate
 
         ,cd.Remark
         ,c.Inspector
-        ,pmsFile.TestBeforePicture
-        ,pmsFile.TestAfterPicture
+        ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_PerspirationFastness pmsFile WITH(NOLOCK) where pmsFile.ID =  cd.ID)
+        ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_PerspirationFastness pmsFile WITH(NOLOCK) where pmsFile.ID =  cd.ID)
         ,c.ReportNo
 from PerspirationFastness_Detail cd WITH(NOLOCK)
 left join PerspirationFastness c WITH(NOLOCK) on c.ID =  cd.ID
-left join SciPMSFile_PerspirationFastness pmsFile WITH(NOLOCK) on pmsFile.ID =  cd.ID
 left join Orders o WITH(NOLOCK) on o.ID=c.POID
 left join PO_Supp_Detail psd WITH(NOLOCK) on c.POID = psd.ID and cd.SEQ1 = psd.SEQ1 and cd.SEQ2 = psd.SEQ2
 left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'

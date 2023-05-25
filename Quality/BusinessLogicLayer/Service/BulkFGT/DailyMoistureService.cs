@@ -306,10 +306,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 worksheet.Cells[2, 6] = head.Fabrication;
                 worksheet.Cells[2, 8] = (head.Standard * (decimal)0.01);
 
+                worksheet.Cells[3, 2] = head.Line;
                 // 表身筆數處理
                 if (!body.Any())
                 {
-                    worksheet.get_Range("A5").EntireRow.Delete();
+                    worksheet.get_Range("A6").EntireRow.Delete();
                 }
                 else
                 {
@@ -317,15 +318,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     for (int i = 0; i < copyCount; i++)
                     {
-                        Excel.Range paste1 = worksheet.get_Range($"A{i + 5}", Type.Missing);
-                        Excel.Range copyRow = worksheet.get_Range("A5").EntireRow;
+                        Excel.Range paste1 = worksheet.get_Range($"A{i + 6}", Type.Missing);
+                        Excel.Range copyRow = worksheet.get_Range("A6").EntireRow;
                         paste1.Insert(Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
                     }
                 }
 
 
                 // 表身填入
-                int bodyStart = 5;
+                int bodyStart = 6;
                 foreach (var item in body)
                 {
                     worksheet.Cells[bodyStart, 1] = item.Area;
@@ -335,7 +336,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Cells[bodyStart, 5] = item.Point3;
                     worksheet.Cells[bodyStart, 6] = item.Point4;
                     worksheet.Cells[bodyStart, 7] = item.Point5;
-                    worksheet.Cells[bodyStart, 8] = item.Result;
+                    worksheet.Cells[bodyStart, 8] = item.Point6;
+                    worksheet.Cells[bodyStart, 9] = item.Result;
                     bodyStart++;
                 }
 

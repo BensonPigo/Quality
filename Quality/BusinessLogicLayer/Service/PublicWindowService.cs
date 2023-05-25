@@ -494,5 +494,24 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+        public List<Window_RollDyelot> Get_RollDyelot(string OrderID, string Seq1, string Seq2)
+        {
+            List<Window_RollDyelot> result = new List<Window_RollDyelot>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_RollDyelot(OrderID, Seq1, Seq2).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
     }
 }
