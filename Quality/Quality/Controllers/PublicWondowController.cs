@@ -527,15 +527,21 @@ namespace Quality.Controllers
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
-
-        public ActionResult RollDyelotList(string Title, string OrderID, string Seq1, string Seq2 ,string TargetID)
+        public ActionResult InkTypeList(string Title, string BrandID, string SeasonID, string StyleID, string TargetID)
         {
-            var model = _PublicWindowService.Get_RollDyelot(OrderID, Seq1 , Seq2);
-
+            var model = _PublicWindowService.Get_InkType(BrandID, SeasonID, StyleID);
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
+
+        public ActionResult RollDyelotList(string Title, string OrderID, string Seq1, string Seq2 ,string TargetID)
+        {
+            var model = _PublicWindowService.Get_RollDyelot(OrderID, Seq1 , Seq2);
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
     }
 }
