@@ -306,6 +306,16 @@
                                                 ReportNo = item.ReportNo,
                                             });
                                             break;
+                                        case string a when a.Contains("Saliva Fastness Test"):
+                                            link = Url.Action("IndexGet", "SalivaFastnessTest", new
+                                            {
+                                                ReportNo = item.ReportNo,
+                                                BrandID = item.BrandID,
+                                                SeasonID = item.SeasonID,
+                                                StyleID = item.StyleID,
+                                                Article = item.Article,
+                                            });
+                                            break;
                                         case string a when a.Contains("Phenolic Yellowing Test"):
                                             link = Url.Action("IndexGet", "PhenolicYellowTest", new
                                             {
@@ -555,11 +565,12 @@
             let includes_HTWash = currentType.toUpperCase().includes("HT WASH");
             let includes_Moistureh = currentType.toUpperCase().includes("MOISTURE");
             let includes_Aging = currentType.toUpperCase().includes("AGING");
+            let includes_SALIVA = currentType.toUpperCase().includes("SALIVA");
             let includes_Yellowing = currentType.toUpperCase().includes("YELLOWING");
 
-            if (!includes_MOCKUP && !includes_HTWash && !includes_Moistureh && !includes_Aging && !includes_Yellowing) {
-                $(".specialUse").val('');
-                $(".specialUse").attr("disabled", "disabled");
+            if (!includes_MOCKUP && !includes_HTWash && !includes_Moistureh && !includes_Aging && !includes_SALIVA && !includes_Yellowing) {
+                $(".mockupOnly").val('');
+                $(".mockupOnly").attr("disabled", "disabled");
             }
             else {
                 $(".specialUse").removeAttr("disabled");

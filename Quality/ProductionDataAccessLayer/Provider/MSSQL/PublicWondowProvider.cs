@@ -1,5 +1,6 @@
 ﻿using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
+using DatabaseObject.ProductionDB;
 using DatabaseObject.Public;
 using System;
 using System.Collections.Generic;
@@ -1016,6 +1017,28 @@ Order by psd.Refno
 
             return ExecuteList<Window_FabricRefNo>(CommandType.Text, SbSql.ToString(), paras);
         }
+
+        public IList<Window_InkType> Get_InkType(string BrandID, string SeasonID, string StyleID)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+            paras.Add("@BrandID ", DbType.String, BrandID);
+            paras.Add("@SeasonID ", DbType.String, SeasonID);
+            paras.Add("@StyleID ", DbType.String, StyleID);
+
+            //台北
+            SbSql.Append($@"
+select  distinct InkType
+from Style_Artwork 
+where ArtworkTypeID='PRINTING' and StyleUkey IN (
+    select Ukey from Style where BrandID = @BrandID AND SeasonID = @SeasonID AND ID = @StyleID 
+)
+
+");
+
+            return ExecuteList<Window_InkType>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
         public IList<Window_RollDyelot> Get_RollDyelot(string OrderID,string Seq1, string Seq2)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -1041,6 +1064,8 @@ AND Seq1 = @Seq1 AND Seq2 = @Seq2 AND POID IN (
 ");
 
             return ExecuteList<Window_RollDyelot>(CommandType.Text, SbSql.ToString(), paras);
+
         }
     }
 }
+

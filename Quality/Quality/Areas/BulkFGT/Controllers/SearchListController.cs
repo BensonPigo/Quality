@@ -60,10 +60,11 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Req.ReceivedDate_eText = string.Empty;
             }
             // 不是Mockup系列 且不是 HT WASH 則清空時間條件
-            else if (!string.IsNullOrEmpty(Req.Type) && !Req.Type.ToUpper().Contains("MOCKUP") && !Req.Type.ToUpper().Contains("HT WASH")
+            else if (!string.IsNullOrEmpty(Req.Type) && !Req.Type.ToUpper().Contains("MOCKUP") && !Req.Type.ToUpper().Contains("HT WASH") && !Req.Type.ToUpper().Contains("SALIVA") 
                 && !Req.Type.ToUpper().Contains("MOISTURE")
-                && !Req.Type.ToUpper().Contains("AGING") 
+                && !Req.Type.ToUpper().Contains("AGING")
                 && !Req.Type.ToUpper().Contains("YELLOWING"))
+
             {
                 Req.ReceivedDate_sText = string.Empty;
                 Req.ReceivedDate_eText = string.Empty;
