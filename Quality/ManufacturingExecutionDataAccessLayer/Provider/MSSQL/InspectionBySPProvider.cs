@@ -1635,12 +1635,14 @@ where oqd.ID = @OrderID
                 objParameter.Add($"@Right{idx}", detail.Right == null ? System.Data.SqlTypes.SqlBinary.Null : detail.Right);
 
                 string sql = $@"
+SET XACT_ABORT ON
+
 if exists(
-    select 1 from PMSFile.dbo.RFT_PicDuringDummyFitting    
+    select 1 from SciPMSFile_RFT_PicDuringDummyFitting
     WHERE OrderID = @OrderID AND Article = @Article{idx} AND Size = @Size{idx}
 )
 begin
-    UPDATE PMSFile.dbo.RFT_PicDuringDummyFitting
+    UPDATE SciPMSFile_RFT_PicDuringDummyFitting
     SET Front = @Front{idx}
         --,Side = @Side{idx}
         ,Back = @Back{idx}
@@ -1652,7 +1654,7 @@ begin
 end
 else
 begin
-    INSERT INTO PMSFile.dbo.RFT_PicDuringDummyFitting
+    INSERT INTO SciPMSFile_RFT_PicDuringDummyFitting
                (OrderID
                ,Article
                ,Size

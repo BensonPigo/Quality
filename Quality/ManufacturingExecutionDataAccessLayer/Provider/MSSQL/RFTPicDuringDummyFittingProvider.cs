@@ -172,7 +172,17 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             sqlcmd += $@"
 
 SET XACT_ABORT ON
-if exists(select 1 from RFT_PicDuringDummyFitting WITH(NOLOCK) where OrderID = @OrderID and Article = @Article and Size = @Size)
+
+----主檔在ManufacturingExecution資料庫
+if nor exists(select 1 from RFT_PicDuringDummyFitting WITH(NOLOCK) where OrderID = @OrderID and Article = @Article and Size = @Size)
+begin
+    ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
+	insert into RFT_PicDuringDummyFitting(OrderID,Article,Size)
+	values(@OrderID, @Article,@Size)
+end
+
+----圖片檔在PMSFile資料庫
+if exists(select 1 from SciPMSFile_RFT_PicDuringDummyFitting WITH(NOLOCK) where OrderID = @OrderID and Article = @Article and Size = @Size)
 begin
     ---- 2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 
@@ -184,10 +194,6 @@ begin
 end
 else
 begin
-    ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
-	insert into RFT_PicDuringDummyFitting(OrderID,Article,Size)
-	values(@OrderID, @Article,@Size)
-
 	insert into SciPMSFile_RFT_PicDuringDummyFitting(OrderID,Article,Size,Front,Side,Back)
 	values(@OrderID, @Article,@Size,@Front,@Side,@Back)
 end
