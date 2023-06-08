@@ -469,12 +469,19 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             html += "</select></td>";
 
-            html += $"<td><select id='Details_{lastNO}__TemperatureUnit' name='Details[{lastNO}].TemperatureUnit'  class='OnlyEdit' >";
-            foreach (var item in model.TemperatureUnit_Source)
+            if (Brand == "ADIDAS")
             {
-                html += "<option value='" + item.Value + "'>" + item.Text + "</option>";
+                html += $"<td><select id='Details_{lastNO}__TemperatureUnit' name='Details[{lastNO}].TemperatureUnit'  class='OnlyEdit' >";
+                foreach (var item in model.TemperatureUnit_Source)
+                {
+                    html += "<option value='" + item.Value + "'>" + item.Text + "</option>";
+                }
+                html += "</select></td>";
             }
-            html += "</select></td>";
+            else
+            {
+                html += $"<td><input id='Details_{lastNO}__TemperatureUnit' name='Details[{lastNO}].TemperatureUnit' onchange = 'value=WashingIntCheck(value)' type='number' style='width:100%;' class='OnlyEdit'></td>";
+            }
 
 
             html += $"<td><select id='Details_{lastNO}__Result' name='Details[{lastNO}].Result'  class='OnlyEdit' >";
