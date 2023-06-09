@@ -170,10 +170,12 @@ UPDATE AIR_Laboratory
 SET  NonOven = @NonOven_{idx} ,NonWash = @NonWash_{idx} ,NonWashingFastness = @NonWashingFastness_{idx}
 ,EditDate=GETDATE() ,EditName=@EditName
 where POID = @ID
+AND ID = @ID_{idx}
 AND Seq1 = @Seq1_{idx}
 AND Seq2 = @Seq2_{idx}
 ";
 
+                listPar.Add($"@ID_{idx}", DbType.Int64, data.AIR_LaboratoryID);
                 listPar.Add($"@Seq1_{idx}", DbType.String, data.Seq1);
                 listPar.Add($"@Seq2_{idx}", DbType.String, data.Seq2);
                 listPar.Add($"@NonOven_{idx}",DbType.Boolean, data.NonOven);
@@ -217,10 +219,12 @@ SET  Result =   CASE    WHEN NonOven = 1 AND NonWash = 1 AND NonWashingFastness 
 	                    )
                 END
 where POID = @ID
+AND ID = @ID_{idx}
 AND Seq1 = @Seq1_{idx}
 AND Seq2 = @Seq2_{idx}
 ";
 
+                listPar.Add($"@ID_{idx}", DbType.Int64, data.AIR_LaboratoryID);
                 listPar.Add($"@Seq1_{idx}", DbType.String, data.Seq1);
                 listPar.Add($"@Seq2_{idx}", DbType.String, data.Seq2);
                 listPar.Add($"@NonOven_{idx}", DbType.Boolean, data.NonOven);
