@@ -469,7 +469,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             html += "</select></td>";
 
-            if (Brand == "ADIDAS")
+            if (BrandID == "ADIDAS")
             {
                 html += $"<td><select id='Details_{lastNO}__TemperatureUnit' name='Details[{lastNO}].TemperatureUnit'  class='OnlyEdit' >";
                 foreach (var item in model.TemperatureUnit_Source)
