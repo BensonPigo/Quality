@@ -337,7 +337,7 @@
                                     </td>
                                     <td><h5>Artwork</h5></td>
                                     <td>
-                                        @Html.DropDownListFor(o=>o.Main.ArtworkTypeID, Model.ArtworkType_Source, new { @class = "OnlyEdit" ,@onchange= "ArtworkTypeListChange(this)" })
+                                        @Html.DropDownListFor(o => o.Main.ArtworkTypeID, Model.ArtworkType_Source, new { @class = "OnlyEdit", @onchange = "ArtworkTypeListChange(this)" })
                                     </td>
                                 </tr>
                                 <tr>
@@ -371,7 +371,7 @@
                                         @Html.TextBoxFor(o => o.Main.LastEditName, new { @class = "Readonly" })
                                     </td>
                                 </tr>
-                                
+
                             </tbody>
                         </table>
                     </div>
@@ -441,13 +441,20 @@
 
                                         </td>
                                         <td>
-                                            <select id="Details_@{@i}__TemperatureUnit" name="Details[@{@i}].TemperatureUnit">
-                                                @foreach (var item in (List<SelectListItem>)Model.TemperatureUnit_Source)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Details[i].TemperatureUnit.ToString()) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
+                                            @if (Model.Main.BrandID == "ADIDAS")
+                                            {
+                                                <select id="Details_@{@i}__TemperatureUnit" name="Details[@{@i}].TemperatureUnit">
+                                                    @foreach (var item in (List<SelectListItem>)Model.TemperatureUnit_Source)
+                                                    {
+                                                        string selected = item.Text.Equals(Model.Details[i].TemperatureUnit.ToString()) ? "selected" : "";
+                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                    }
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(o => Model.Details[i].TemperatureUnit, new { @class = "OnlyEdit", @type = "number", @onchange = "value=WashingIntCheck(value)" })
+                                            }
                                         </td>
                                         <td>
                                             <select id="Details_@{@i}__Result" name="Details[@{@i}].Result">
@@ -1271,9 +1278,9 @@
     }
 
     function AddDetailRow() {
-        var BrandID = $('#BrandID').val();
-        var SeasonID = $('#SeasonID').val();
-        var StyleID = $('#StyleID').val();
+        var BrandID = $('#Main_BrandID').val();
+        var SeasonID = $('#Main_SeasonID').val();
+        var StyleID = $('#Main_StyleID').val();
 
         var lastNO;
         if ($('.DetailTable > tbody > tr').length > 0) {
@@ -1397,5 +1404,8 @@
         }
 
         return Number.parseFloat(value).toFixed(2);
+    }
+    function WashingIntCheck(value) {
+        return parseInt(value);
     }
 </script>
