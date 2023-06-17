@@ -503,11 +503,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 if (model.DetailList.Any() && model.DetailList.Count > 1)
                 {
                     //// 先處理Remark
-                    //List<string> allRemark = new List<string>();
-                    //allRemark = model.DetailList.Where(o => !string.IsNullOrEmpty(o.Remark)).Select(o => o.Remark).ToList();
+                    string allRemark = string.Join(Environment.NewLine, model.DetailList.Select(o => o.Remark));
 
                     //// 全部擠在一起，但是要分行
-                    //worksheet.Cells[17, 2] = string.Join(Environment.NewLine, allRemark);
+                    worksheet.Cells[14, 2] = allRemark;
 
                     // 複製欄位
                     int copyCount = model.DetailList.Count - 1;
