@@ -122,9 +122,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(_ISQLDataTransaction);
+                AccessoryOvenWashProvider _MESProvider=new AccessoryOvenWashProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 result.ScaleData = _AccessoryOvenWashProvider.GetScaleData();
                 int r = _AccessoryOvenWashProvider.UpdateOvenTest(Req);
+                int Mes_r = _MESProvider.UpdateOvenTestPic(Req);
 
                 result.Result = r > 0;
                 _AccessoryOvenWashProvider.Update_Oven_AllResult(Req);
@@ -381,9 +383,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(_ISQLDataTransaction);
+                AccessoryOvenWashProvider _MESProvider = new AccessoryOvenWashProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 result.ScaleData = _AccessoryOvenWashProvider.GetScaleData();
                 int r = _AccessoryOvenWashProvider.UpdateWashTest(Req);
+                int Mes_r = _MESProvider.UpdateWashTestPic(Req);
 
                 result.Result = r > 0;
                 _AccessoryOvenWashProvider.Update_Wash_AllResult(Req);
@@ -653,9 +657,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(_ISQLDataTransaction);
+                AccessoryOvenWashProvider _MESProvider = new AccessoryOvenWashProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 result.ScaleData = _AccessoryOvenWashProvider.GetScaleData();
                 int r = _AccessoryOvenWashProvider.UpdateWashingFastness(Req);
+                int Mes_r = _MESProvider.UpdateWashingFastnessPic(Req);
 
                 result.Result = r > 0;
                 _AccessoryOvenWashProvider.Update_WashingFastness_AllResult(Req);

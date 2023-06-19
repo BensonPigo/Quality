@@ -680,12 +680,8 @@ where   ID = @FinalInspectionID
                         {
                             string sqlInsertFinalInspection_DetailImage = @"
 SET XACT_ABORT ON
-/*
-insert into FinalInspection_DetailImage(ID, FinalInspection_DetailUkey ,Remark)
-                values(@FinalInspectionID, @FinalInspection_DetailUkey ,@Remark) ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
-*/
-    insert into SciPMSFile_FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image ,Remark)
-                values(@FinalInspectionID, @FinalInspection_DetailUkey, @Image ,@Remark)
+insert into SciPMSFile_FinalInspection_DetailImage(ID, FinalInspection_DetailUkey, Image ,Remark)
+            values(@FinalInspectionID, @FinalInspection_DetailUkey, @Image ,@Remark)
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
@@ -826,13 +822,10 @@ where   ID = @FinalInspectionID
                         foreach (var baDetail in criteriaItem.ListBACriteriaImage)
                         {
                             string sqlInsertFinalInspection_NonBACriteriaImage = @"
-    SET XACT_ABORT ON
-/*  
-insert into FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey ,Remark)
-                values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey ,@Remark) --2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
-*/
-    insert into SciPMSFile_FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image ,Remark)
-                values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey, @Image ,@Remark)
+SET XACT_ABORT ON
+
+insert into SciPMSFile_FinalInspection_NonBACriteriaImage(ID, FinalInspection_NonBACriteriaUkey, Image ,Remark)
+            values(@FinalInspectionID, @FinalInspection_NonBACriteriaUkey, @Image ,@Remark)
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, beautifulProductAudit.FinalInspectionID },
