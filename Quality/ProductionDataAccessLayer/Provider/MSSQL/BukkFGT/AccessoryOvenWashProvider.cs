@@ -367,7 +367,6 @@ where   al.ID=@AIR_LaboratoryID
             listPar.Add("@ReportNo", NewReportNo);
 
             string updateCol = string.Empty;
-            string updatePicCol = string.Empty;
             #region 需要UPDATE的欄位
             if (!string.IsNullOrEmpty(Req.Scale))
             {
@@ -404,8 +403,37 @@ where   al.ID=@AIR_LaboratoryID
                 listPar.Add("@EditName", Req.EditName);
             }
 
-            updatePicCol += $@"        ,OvenTestBeforePicture = @OvenTestBeforePicture " + Environment.NewLine;
-            updatePicCol += $@"        ,OvenTestAfterPicture = @OvenTestAfterPicture " + Environment.NewLine;
+            #endregion
+
+            string sqlCmd = $@"
+UPDATE AIR_Laboratory
+SET EditDate=GETDATE()
+{updateCol}
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+
+UPDATE AIR_Laboratory
+SET ReportNo = @ReportNo
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+    and ReportNo = ''
+";
+
+            return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
+
+        public int UpdateOvenTestPic(Accessory_Oven Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
             if (Req.OvenTestBeforePicture != null)
             {
                 listPar.Add("@OvenTestBeforePicture", Req.OvenTestBeforePicture);
@@ -423,37 +451,20 @@ where   al.ID=@AIR_LaboratoryID
             {
                 listPar.Add("@OvenTestAfterPicture", System.Data.SqlTypes.SqlBinary.Null);
             }
-            #endregion
 
             string sqlCmd = $@"
-SET XACT_ABORT ON
-
-UPDATE AIR_Laboratory
-SET EditDate=GETDATE()
-{updateCol}
-where   ID = @AIR_LaboratoryID
-    and POID = @POID
-    and Seq1 = @Seq1
-    and Seq2 = @Seq2
-
-UPDATE AIR_Laboratory
-SET ReportNo = @ReportNo
-where   ID = @AIR_LaboratoryID
-    and POID = @POID
-    and Seq1 = @Seq1
-    and Seq2 = @Seq2
-    and ReportNo = ''
-
-if not exists (select 1 from SciPMSFile_AIR_Laboratory where ID = @AIR_LaboratoryID and POID = @POID and Seq1 = @Seq1 and Seq2 = @Seq2)
+if not exists (select 1 from PMSFile.dbo.AIR_Laboratory where ID = @AIR_LaboratoryID and POID = @POID and Seq1 = @Seq1 and Seq2 = @Seq2)
 begin
-    INSERT INTO SciPMSFile_AIR_Laboratory (ID,POID,Seq1,Seq2,OvenTestBeforePicture,OvenTestAfterPicture)
+    INSERT INTO PMSFile.dbo.AIR_Laboratory (ID,POID,Seq1,Seq2,OvenTestBeforePicture,OvenTestAfterPicture)
     VALUES (@AIR_LaboratoryID,@POID,@Seq1,@Seq2,@OvenTestBeforePicture,@OvenTestAfterPicture)
 end
 else
 begin
-    UPDATE SciPMSFile_AIR_Laboratory
+    UPDATE PMSFile.dbo.AIR_Laboratory
     SET POID=POID
-    {updatePicCol}
+        ,OvenTestBeforePicture = @OvenTestBeforePicture 
+        ,OvenTestAfterPicture = @OvenTestAfterPicture 
+
     where   ID = @AIR_LaboratoryID
         and POID = @POID
         and Seq1 = @Seq1
@@ -463,7 +474,6 @@ end
 
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
         }
-
 
         public Accessory_Oven Oven_EncodeCheck(Accessory_Oven Req)
         {
@@ -652,7 +662,6 @@ where   al.ID=@AIR_LaboratoryID
             listPar.Add("@ReportNo", NewReportNo);
 
             string updateCol = string.Empty;
-            string updatePicCol = string.Empty;
             #region 需要UPDATE的欄位
             if (!string.IsNullOrEmpty(Req.Scale))
             {
@@ -703,9 +712,39 @@ where   al.ID=@AIR_LaboratoryID
                 updateCol += $@" , EditName = @EditName" + Environment.NewLine;
                 listPar.Add("@EditName", Req.EditName);
             }
+            #endregion
 
-            updatePicCol += $@"        ,WashTestBeforePicture = @WashTestBeforePicture " + Environment.NewLine;
-            updatePicCol += $@"        ,WashTestAfterPicture = @WashTestAfterPicture " + Environment.NewLine;
+            string sqlCmd = $@"
+UPDATE AIR_Laboratory
+SET EditDate=GETDATE()
+{updateCol}
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+
+UPDATE AIR_Laboratory
+SET ReportNo = @ReportNo
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+    and ReportNo=''
+
+";
+            return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
+
+        public int UpdateWashTestPic(Accessory_Wash Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            #region 需要UPDATE的欄位
+
             if (Req.WashTestBeforePicture != null)
             {
                 listPar.Add("@WashTestBeforePicture", Req.WashTestBeforePicture);
@@ -726,34 +765,17 @@ where   al.ID=@AIR_LaboratoryID
             #endregion
 
             string sqlCmd = $@"
-SET XACT_ABORT ON
-
-UPDATE AIR_Laboratory
-SET EditDate=GETDATE()
-{updateCol}
-where   ID = @AIR_LaboratoryID
-    and POID = @POID
-    and Seq1 = @Seq1
-    and Seq2 = @Seq2
-
-UPDATE AIR_Laboratory
-SET ReportNo = @ReportNo
-where   ID = @AIR_LaboratoryID
-    and POID = @POID
-    and Seq1 = @Seq1
-    and Seq2 = @Seq2
-    and ReportNo=''
-
-if not exists (select 1 from SciPMSFile_AIR_Laboratory where ID = @AIR_LaboratoryID and POID = @POID and Seq1 = @Seq1 and Seq2 = @Seq2)
+if not exists (select 1 from PMSFile.dbo.AIR_Laboratory where ID = @AIR_LaboratoryID and POID = @POID and Seq1 = @Seq1 and Seq2 = @Seq2)
 begin
-    INSERT INTO SciPMSFile_AIR_Laboratory (ID,POID,Seq1,Seq2,WashTestBeforePicture,WashTestAfterPicture)
+    INSERT INTO PMSFile.dbo.AIR_Laboratory (ID,POID,Seq1,Seq2,WashTestBeforePicture,WashTestAfterPicture)
     VALUES (@AIR_LaboratoryID,@POID,@Seq1,@Seq2,@WashTestBeforePicture,@WashTestAfterPicture)
 end
 else
 begin
-    UPDATE SciPMSFile_AIR_Laboratory
+    UPDATE PMSFile.dbo.AIR_Laboratory
     SET POID=POID
-    {updatePicCol}
+        ,WashTestBeforePicture = @WashTestBeforePicture
+        ,WashTestAfterPicture = @WashTestAfterPicture
     where   ID = @AIR_LaboratoryID
         and POID = @POID
         and Seq1 = @Seq1
@@ -762,7 +784,6 @@ end
 ";
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
         }
-
 
         public Accessory_Wash Wash_EncodeCheck(Accessory_Wash Req)
         {
@@ -1051,7 +1072,6 @@ where   ID = @AIR_LaboratoryID
             listPar.Add("@Seq2", Req.Seq2);
 
             string updateCol = string.Empty;
-            string updatePicCol = string.Empty;
             string NewReportNo = GetID(Req.MDivisionID + "AT", "AIR_Laboratory", DateTime.Today, 2, "ReportNo");
             listPar.Add("@ReportNo", NewReportNo);
 
@@ -1132,9 +1152,36 @@ where   ID = @AIR_LaboratoryID
 
 
 " + Environment.NewLine;
+            #endregion
 
-            updatePicCol += $@"        ,WashingFastnessTestBeforePicture = @WashingFastnessTestBeforePicture " + Environment.NewLine;
-            updatePicCol += $@"        ,WashingFastnessTestAfterPicture = @WashingFastnessTestAfterPicture " + Environment.NewLine;
+            string sqlCmd = $@"
+UPDATE AIR_Laboratory
+SET EditDate=GETDATE()
+{updateCol}
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+
+UPDATE AIR_Laboratory
+set ReportNo = @ReportNo
+where   ID = @AIR_LaboratoryID
+    and POID = @POID
+    and Seq1 = @Seq1
+    and Seq2 = @Seq2
+    and ReportNo = ''
+";
+            return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
+        }
+        public int UpdateWashingFastnessPic(Accessory_WashingFastness Req)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@AIR_LaboratoryID", Req.AIR_LaboratoryID);
+            listPar.Add("@POID", Req.POID);
+            listPar.Add("@Seq1", Req.Seq1);
+            listPar.Add("@Seq2", Req.Seq2);
+
+            #region 需要UPDATE的欄位
 
             if (Req.WashingFastnessTestBeforePicture != null)
             {
@@ -1156,31 +1203,23 @@ where   ID = @AIR_LaboratoryID
             #endregion
 
             string sqlCmd = $@"
-SET XACT_ABORT ON
+if not exists (select 1 from PMSFile.dbo.AIR_Laboratory where ID = @AIR_LaboratoryID and POID = @POID and Seq1 = @Seq1 and Seq2 = @Seq2)
+begin
+    INSERT INTO PMSFile.dbo.AIR_Laboratory (ID,POID,Seq1,Seq2,WashingFastnessTestBeforePicture,WashingFastnessTestAfterPicture)
+    VALUES (@AIR_LaboratoryID,@POID,@Seq1,@Seq2,@WashingFastnessTestBeforePicture,@WashingFastnessTestAfterPicture)
+end
+else
+begin
+    UPDATE PMSFile.dbo.AIR_Laboratory
+    SET POID=POID
+        ,WashingFastnessTestBeforePicture = @WashingFastnessTestBeforePicture
+        ,WashingFastnessTestAfterPicture = @WashingFastnessTestAfterPicture
+    where   ID = @AIR_LaboratoryID
+        and POID = @POID
+        and Seq1 = @Seq1
+        and Seq2 = @Seq2
+end
 
-UPDATE AIR_Laboratory
-SET EditDate=GETDATE()
-{updateCol}
-where   ID = @AIR_LaboratoryID
-    and POID = @POID
-    and Seq1 = @Seq1
-    and Seq2 = @Seq2
-
-UPDATE AIR_Laboratory
-set ReportNo = @ReportNo
-where   ID = @AIR_LaboratoryID
-    and POID = @POID
-    and Seq1 = @Seq1
-    and Seq2 = @Seq2
-    and ReportNo = ''
-
-UPDATE SciPMSFile_AIR_Laboratory
-SET POID=POID
-{updatePicCol}
-where   ID = @AIR_LaboratoryID
-    and POID = @POID
-    and Seq1 = @Seq1
-    and Seq2 = @Seq2
 ";
             return ExecuteNonQuery(CommandType.Text, sqlCmd, listPar);
         }
