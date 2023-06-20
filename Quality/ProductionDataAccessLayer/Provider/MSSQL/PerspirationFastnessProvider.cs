@@ -58,7 +58,7 @@ select	[TestNo] = cast(o.TestNo as varchar),
         Time = Cast(  o.Time as varchar),
         o.MetalContent
         ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_PerspirationFastness oi WITH(NOLOCK) where  o.ID = oi.ID)
-        ,TestAfterPicture = (select top 1 TestAfterPicture SciPMSFile_PerspirationFastness oi WITH(NOLOCK) where o.ID = oi.ID)
+        ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_PerspirationFastness oi WITH(NOLOCK) where o.ID = oi.ID)
 from PerspirationFastness o with (nolock)
 left join pass1 pass1Inspector WITH(NOLOCK) on o.Inspector = pass1Inspector.ID
 where o.POID = @POID and o.TestNo = @TestNo
