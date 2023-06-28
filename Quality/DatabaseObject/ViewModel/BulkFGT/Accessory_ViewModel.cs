@@ -157,6 +157,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Seq2 { get; set; }
         public string Seq { get; set; }
         public string POID { get; set; }
+        public string BrandID { get; set; }
         public string OverAllResult { get; set; } // Pass / Fail
 
         public string SCIRefno { get; set; }

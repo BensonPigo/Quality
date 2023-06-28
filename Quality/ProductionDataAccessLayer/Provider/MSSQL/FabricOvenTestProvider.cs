@@ -24,7 +24,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public FabricOvenTestProvider(string ConString) : base(ConString) { }
         public FabricOvenTestProvider(SQLDataTransaction tra) : base(tra) { }
 
-        public FabricOvenTest_Detail_Result GetFabricOvenTest_Detail(string poID, string TestNo)
+        public FabricOvenTest_Detail_Result GetFabricOvenTest_Detail(string poID, string TestNo, string BrandID = "")
         {
             FabricOvenTest_Detail_Result fabricOvenTest_Detail_Result = new FabricOvenTest_Detail_Result();
 
@@ -32,6 +32,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             {
                 fabricOvenTest_Detail_Result.Main.Status = "";
                 fabricOvenTest_Detail_Result.Main.POID = poID;
+                fabricOvenTest_Detail_Result.Main.BrandID = BrandID;
                 return fabricOvenTest_Detail_Result;
             }
 
@@ -45,6 +46,7 @@ select	[TestNo] = cast(o.TestNo as varchar),
         o.ReportNo,
         [POID] = o.POID,
 		[InspDate] = o.InspDate,
+		od.BrandID,
 		[Article] = o.Article,
 		[Inspector] = o.Inspector,
         [InspectorName] = pass1Inspector.Name,
@@ -54,6 +56,7 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [TestBeforePicture] = (select top 1 TestBeforePicture from SciPMSFile_Oven oi with (nolock) where o.ID = oi.ID) ,
         [TestAfterPicture] =  (select top 1 TestAfterPicture from SciPMSFile_Oven oi with (nolock) where o.ID = oi.ID) 
 from Oven o with (nolock)
+inner join Orders od  with (nolock) on o.POID = od.ID
 left join pass1 pass1Inspector WITH(NOLOCK) on o.Inspector = pass1Inspector.ID
 where o.POID = @POID and o.TestNo = @TestNo
 ";

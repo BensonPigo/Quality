@@ -70,9 +70,9 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [SessionAuthorizeAttribute]
-        public ActionResult Detail(string POID, string TestNo,string EditMode)
+        public ActionResult Detail(string POID, string TestNo,string EditMode, string BrandID)
         {
-            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(POID, TestNo);
+            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(POID, TestNo, BrandID);
 
             List<SelectListItem> ScaleIDList = new SetListItem().ItemListBinding(model.ScaleIDs);
             List<SelectListItem> ResultChangeList = new SetListItem().ItemListBinding(Results);
@@ -153,9 +153,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public ActionResult AddDetailRow(string POID, int lastNO, string GroupNO)
+        public ActionResult AddDetailRow(string POID, int lastNO, string GroupNO, string BrandID)
         {
-            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(POID, "");
+            FabricOvenTest_Detail_Result model = _FabricOvenTestService.GetFabricOvenTest_Detail_Result(POID, "", "");
 
 
             List<SelectListItem> ResultChangeList = new SetListItem().ItemListBinding(Results);
@@ -223,13 +223,22 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             html += "<td></td>"; // LastUpdate
 
-
-            html += "<td><select id='Details_" + i + "__Temperature' name='Details[" + i + "].Temperature' >"; // Temperature
-            foreach (string val in Temperatures)
+            // Temperature
+            if (BrandID == "ADIDAS" || BrandID == "REEBOK")
             {
-                html += "<option value='" + val + "'>" + val + "</option>";
+                html += "<td><select id='Details_" + i + "__Temperature' name='Details[" + i + "].Temperature' >"; // Temperature
+                foreach (string val in Temperatures)
+                {
+                    html += "<option value='" + val + "'>" + val + "</option>";
+                }
+                html += "</select></td>";
             }
-            html += "</select></td>";
+            else
+            {
+                html += "<td>"; 
+                html += $@"<input id=""Details_{i}__Temperature"" name=""Details[{i}].Temperature"" onchange=""value=IntCheck(value)"" type=""number"">";                
+                html += "</td>";
+            }
 
 
             html += "<td><select id='Details_" + i + "__Time' name='Details[" + i + "].Time' >"; // Time

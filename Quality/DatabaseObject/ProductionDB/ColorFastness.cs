@@ -32,6 +32,7 @@ namespace DatabaseObject.ProductionDB
         public DateTime? EditDate { get; set; }
 
         public int? Temperature { get; set; }
+        public string BrandID { get; set; }
 
         public int? Cycle { get; set; }
         public int? CycleTime { get; set; }

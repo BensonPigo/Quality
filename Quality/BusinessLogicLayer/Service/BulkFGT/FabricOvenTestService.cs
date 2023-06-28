@@ -120,7 +120,7 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public FabricOvenTest_Detail_Result GetFabricOvenTest_Detail_Result(string poID, string TestNo)
+        public FabricOvenTest_Detail_Result GetFabricOvenTest_Detail_Result(string poID, string TestNo ,string BrandID)
         {
             try
             {
@@ -128,7 +128,7 @@ namespace BusinessLogicLayer.Service
                 _FabricOvenTestProvider = new FabricOvenTestProvider(Common.ProductionDataAccessLayer);
                 _ScaleProvider = new ScaleProvider(Common.ProductionDataAccessLayer);
 
-                fabricOvenTest_Detail_Result = _FabricOvenTestProvider.GetFabricOvenTest_Detail(poID, TestNo);
+                fabricOvenTest_Detail_Result = _FabricOvenTestProvider.GetFabricOvenTest_Detail(poID, TestNo ,BrandID);
 
                 fabricOvenTest_Detail_Result.ScaleIDs = _ScaleProvider.Get().Select(s => s.ID).ToList();
 

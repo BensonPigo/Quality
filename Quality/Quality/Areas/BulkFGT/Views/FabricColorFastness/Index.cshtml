@@ -174,6 +174,7 @@
                                 <td style="width: 10vw;"><h5>SP#</h5></td>
                                 <td style="width: 20vw;">
                                     @Html.TextBoxFor(o => o.PoID, "", new { @readonly = "readonly" })
+                                    @Html.HiddenFor(o => o.BrandID, new { @readonly = "readonly" })
                                 </td>
                                 <td style="width: 10vw;"><h5>Style#</h5></td>
                                 <td style="width: 20vw;">
@@ -417,7 +418,7 @@
             if ($('#PoID').val() == "") {
                 return;
             }
-            location.href = '@Url.Action("Detail")?PoID=' + document.getElementById("PoID").value.trim() + '&ID=&EditMode=True';
+            location.href = `@Url.Action("Detail")?PoID=${$('#PoID').val()}&BrandID=${$('#BrandID').val()}&ID=&EditMode=True`;
         });
 
         function SaveData(main) {

@@ -599,6 +599,7 @@ where   al.ID=@AIR_LaboratoryID
             string sqlCmd = @"
 select   al.POID
 		,al.ReportNo
+		,o.BrandID
         ,a.SCIRefno
         ,WKNo = r.ExportId
         ,a.Refno
@@ -629,6 +630,7 @@ select   al.POID
 
 from AIR_Laboratory al WITH(NOLOCK)
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
+inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
 left join Supp s WITH(NOLOCK) on a.Suppid = s.ID
 left join PO_Supp_Detail psd WITH(NOLOCK) ON psd.ID = al.POID AND psd.Seq1 = al.Seq1 AND psd.Seq2 = al.Seq2
