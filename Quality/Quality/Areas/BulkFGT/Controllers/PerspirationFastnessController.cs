@@ -69,9 +69,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.POID = POID;
             return View("Index", model);
         }
-        public ActionResult Detail(string POID, string TestNo, string EditMode)
+        public ActionResult Detail(string POID, string TestNo, string EditMode, string BrandID)
         {
-            PerspirationFastness_Detail_Result model = _PerspirationFastnessService.GetPerspirationFastness_Detail_Result(POID, TestNo);
+            PerspirationFastness_Detail_Result model = _PerspirationFastnessService.GetPerspirationFastness_Detail_Result(POID, TestNo, BrandID);
 
             List<SelectListItem> ScaleIDList = new SetListItem().ItemListBinding(model.ScaleIDs);
             List<SelectListItem> ResultChangeList = new SetListItem().ItemListBinding(Results);
@@ -152,9 +152,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public ActionResult AddDetailRow(string POID, int lastNO, string GroupNO)
+        public ActionResult AddDetailRow(string POID, int lastNO, string GroupNO ,string BrandID)
         {
-            PerspirationFastness_Detail_Result model = _PerspirationFastnessService.GetPerspirationFastness_Detail_Result(POID, "");
+            PerspirationFastness_Detail_Result model = _PerspirationFastnessService.GetPerspirationFastness_Detail_Result(POID, "", BrandID);
 
 
             List<SelectListItem> ResultChangeList = new SetListItem().ItemListBinding(Results);

@@ -26,7 +26,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
         #endregion
 
-        public WaterFastness_Detail_Result GetWaterFastness_Detail(string poID, string TestNo)
+        public WaterFastness_Detail_Result GetWaterFastness_Detail(string poID, string TestNo ,string BrandID = "")
         {
             WaterFastness_Detail_Result WaterFastness_Detail_Result = new WaterFastness_Detail_Result();
 
@@ -34,6 +34,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             {
                 WaterFastness_Detail_Result.Main.Status = "";
                 WaterFastness_Detail_Result.Main.POID = poID;
+                WaterFastness_Detail_Result.Main.BrandID = BrandID;
                 return WaterFastness_Detail_Result;
             }
 
@@ -47,6 +48,7 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [POID] = o.POID,
         o.ID, 
         o.ReportNo,
+        od.BrandID,
 		[InspDate] = o.InspDate,
 		[Article] = o.Article,
 		[Inspector] = o.Inspector,
@@ -59,6 +61,7 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [TestBeforePicture] = (select top 1 TestBeforePicture from SciPMSFile_WaterFastness oi WITH(NOLOCK) where o.ID = oi.ID ),
         [TestAfterPicture] = (select top 1 TestAfterPicture from SciPMSFile_WaterFastness oi WITH(NOLOCK) where o.ID = oi.ID )
 from WaterFastness o with (nolock)
+inner join Orders od with (nolock) on od.ID = o.POID
 left join pass1 pass1Inspector WITH(NOLOCK) on o.Inspector = pass1Inspector.ID
 where o.POID = @POID and o.TestNo = @TestNo
 ";

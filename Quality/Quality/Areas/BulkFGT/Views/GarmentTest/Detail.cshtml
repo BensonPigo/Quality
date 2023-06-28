@@ -320,13 +320,20 @@
                                         <tr>
                                             <td><h4>Temperature(˚C)</h4></td>
                                             <td>
-                                                <select id="Detail_Temperature" name="Detail.Temperature">
-                                                    @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
-                                                    {
-                                                        string selected = item.Text.Equals(Model.Detail.Temperature.ToString()) ? "selected" : "";
-                                                        <option value="@item.Value" @selected>@item.Text</option>
-                                                    }
-                                                </select>
+                                                @if (Model.Main.BrandID == "ADIDAS" || Model.Main.BrandID == "REEBOK")
+                                                {
+                                                    <select id="Detail_Temperature" name="Detail.Temperature">
+                                                        @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
+                                                        {
+                                                            string selected = item.Text.Equals(Model.Detail.Temperature.ToString()) ? "selected" : "";
+                                                            <option value="@item.Value" @selected>@item.Text</option>
+                                                        }
+                                                    </select>
+                                                }
+                                                else
+                                                {                                                    
+                                                    @Html.TextBoxFor(o=>o.Detail.Temperature,"",new { @type="number", @onchange = "value=IntCheck(value)" })
+                                                }
                                             </td>
                                             <td><h4>Fabric Composition</h4></td>
                                             <td colspan="3">@Html.TextBoxFor(o => Model.Detail.Composition, "", new { @style = "width:100%;" })</td>
@@ -1677,5 +1684,9 @@
                 $(this).blur();
             });
         }
+    }
+
+    function IntCheck(value) {
+        return parseInt(value);
     }
 </script>

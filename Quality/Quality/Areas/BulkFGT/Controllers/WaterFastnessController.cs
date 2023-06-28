@@ -79,9 +79,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             UpdateModel(model);
             return View("Index", model);
         }
-        public ActionResult Detail(string POID, string TestNo, string EditMode)
+        public ActionResult Detail(string POID, string TestNo, string EditMode ,string BrandID)
         {
-            WaterFastness_Detail_Result model = _WaterFastnessService.GetWaterFastness_Detail_Result(POID, TestNo);
+            WaterFastness_Detail_Result model = _WaterFastnessService.GetWaterFastness_Detail_Result(POID, TestNo, BrandID);
 
             List<SelectListItem> ScaleIDList = new SetListItem().ItemListBinding(model.ScaleIDs);
             List<SelectListItem> ResultChangeList = new SetListItem().ItemListBinding(Results);
@@ -157,9 +157,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public ActionResult AddDetailRow(string POID, int lastNO, string GroupNO)
+        public ActionResult AddDetailRow(string POID, int lastNO, string GroupNO,string BrandID)
         {
-            WaterFastness_Detail_Result model = _WaterFastnessService.GetWaterFastness_Detail_Result(POID, "");
+            WaterFastness_Detail_Result model = _WaterFastnessService.GetWaterFastness_Detail_Result(POID, "", BrandID);
 
 
             List<SelectListItem> ResultChangeList = new SetListItem().ItemListBinding(Results);

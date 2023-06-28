@@ -125,7 +125,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
         }
 
-        public WaterFastness_Detail_Result GetWaterFastness_Detail_Result(string poID, string TestNo)
+        public WaterFastness_Detail_Result GetWaterFastness_Detail_Result(string poID, string TestNo, string BrandID)
         {
             try
             {
@@ -133,7 +133,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _WaterFastnessProvider = new WaterFastnessProvider(Common.ProductionDataAccessLayer);
                 _ScaleProvider = new ScaleProvider(Common.ProductionDataAccessLayer);
 
-                waterFastness_Detail_Result = _WaterFastnessProvider.GetWaterFastness_Detail(poID, TestNo);
+                waterFastness_Detail_Result = _WaterFastnessProvider.GetWaterFastness_Detail(poID, TestNo, BrandID);
 
                 waterFastness_Detail_Result.ScaleIDs = _ScaleProvider.Get().Select(s => s.ID).ToList();
 

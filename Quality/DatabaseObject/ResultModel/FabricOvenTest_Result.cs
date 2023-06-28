@@ -54,6 +54,7 @@ namespace DatabaseObject.ResultModel
     {
         public string TestNo { get; set; }
         public string POID { get; set; }
+        public string BrandID { get; set; }
         public string ReportNo { get; set; }
         public DateTime? InspDate { get; set; }
         public string Article { get; set; }

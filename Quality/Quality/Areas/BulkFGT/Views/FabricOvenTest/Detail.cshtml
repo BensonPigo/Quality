@@ -127,6 +127,7 @@
             .ReportAction > table > tbody > tr > td > input[type=button] {
                 cursor: pointer;
             }
+
     .width6vw {
         width: 6vw;
     }
@@ -148,7 +149,7 @@
         </h3>
         <div class="breadcrumb">
             <div>Home</div>
-            <div >Fabric Oven Test</div>
+            <div>Fabric Oven Test</div>
             <div class="current">Detail</div>
         </div>
     </header>
@@ -244,6 +245,7 @@
                                     <td style="width: 28vw;">
                                         @Html.DisplayFor(o => o.Main.POID, "", "")
                                         @Html.HiddenFor(o => o.Main.POID)
+                                        @Html.HiddenFor(o => o.Main.BrandID)
                                     </td>
 
                                     <td style="width: 10vw;"><h5>TestDate</h5></td>
@@ -418,13 +420,22 @@
                                             @Html.DisplayFor(o => Model.Details[i].LastUpdate, "", "")
                                         </td>
                                         <td style="width:10vw;">
-                                            <select id="Details_@{@i}__Temperature" name="Details[@{@i}].Temperature">
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Details[i].Temperature) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
+
+                                            @if (Model.Main.BrandID == "ADIDAS" || Model.Main.BrandID == "REEBOK")
+                                            {
+
+                                                <select id="Details_@{@i}__Temperature" name="Details[@{@i}].Temperature">
+                                                    @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
+                                                    {
+                                                        string selected = item.Text.Equals(Model.Details[i].Temperature) ? "selected" : "";
+                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                    }
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(o => o.Details[i].Temperature, "", new { @type = "number", @onchange = "value=IntCheck(value)" })
+                                            }
                                         </td>
                                         <td style="width:10vw;">
                                             <select id="Details_@{@i}__Time" name="Details[@{@i}].Time">
@@ -1035,11 +1046,12 @@
         }
 
         var POID = $('#Main_POID').val();
+        var brandID = $('#Main_BrandID').val();
         $.ajax({
             url: "@Url.Action("AddDetailRow", "FabricOvenTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ POID: POID, lastNO: lastNO, GroupNO: GroupNO }),
+            data: JSON.stringify({ POID: POID, lastNO: lastNO, GroupNO: GroupNO, BrandID: brandID }),
             async: false,
             success: function (data) {
                 $('.DetailTable > tbody').append(data);
@@ -1111,5 +1123,8 @@
         }
 
         return padLeft(parseInt(value).toString(), 2);
+    }
+    function IntCheck(value) {
+        return parseInt(value);
     }
 </script>
