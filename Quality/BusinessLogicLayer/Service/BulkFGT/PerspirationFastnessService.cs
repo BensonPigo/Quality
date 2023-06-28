@@ -38,7 +38,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _PerspirationFastnessProvider = new PerspirationFastnessProvider(Common.ProductionDataAccessLayer);
             try
             {
-                PerspirationFastness_Detail_Result PerspirationFastness_Detail_Result = _PerspirationFastnessProvider.GetPerspirationFastness_Detail(poID, TestNo);
+                PerspirationFastness_Detail_Result PerspirationFastness_Detail_Result = _PerspirationFastnessProvider.GetPerspirationFastness_Detail(poID, TestNo ,string.Empty);
 
                 if (PerspirationFastness_Detail_Result.Main.Status != "Confirmed")
                 {
@@ -132,7 +132,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
         }
 
-        public PerspirationFastness_Detail_Result GetPerspirationFastness_Detail_Result(string poID, string TestNo)
+        public PerspirationFastness_Detail_Result GetPerspirationFastness_Detail_Result(string poID, string TestNo, string BrandID)
         {
             try
             {
@@ -140,7 +140,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _PerspirationFastnessProvider = new PerspirationFastnessProvider(Common.ProductionDataAccessLayer);
                 _ScaleProvider = new ScaleProvider(Common.ProductionDataAccessLayer);
 
-                PerspirationFastness_Detail_Result = _PerspirationFastnessProvider.GetPerspirationFastness_Detail(poID, TestNo);
+                PerspirationFastness_Detail_Result = _PerspirationFastnessProvider.GetPerspirationFastness_Detail(poID, TestNo, BrandID);
 
                 PerspirationFastness_Detail_Result.ScaleIDs = _ScaleProvider.Get().Select(s => s.ID).ToList();
 

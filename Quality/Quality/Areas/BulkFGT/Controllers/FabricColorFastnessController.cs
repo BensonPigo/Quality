@@ -83,7 +83,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [SessionAuthorizeAttribute]
-        public ActionResult Detail(string PoID, string ID, string EditMode)
+        public ActionResult Detail(string PoID, string ID, string EditMode ,string BrandID)
         {
             FabricColorFastness_ViewModel FabricColorFastnessModel = new FabricColorFastness_ViewModel();
             Fabric_ColorFastness_Detail_ViewModel model = new Fabric_ColorFastness_Detail_ViewModel();
@@ -93,6 +93,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.Details = new List<Fabric_ColorFastness_Detail_Result>();
                 model.Main.Status = "New";
                 model.Main.POID = PoID;
+                model.Main.BrandID = BrandID;
             }
             else
             {

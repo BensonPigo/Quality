@@ -13,7 +13,7 @@ namespace ProductionDataAccessLayer.Interface
     {
         FabricOvenTest_Result GetFabricOvenTest_Main(string POID);
 
-        FabricOvenTest_Detail_Result GetFabricOvenTest_Detail(string poID, string TestNo);
+        FabricOvenTest_Detail_Result GetFabricOvenTest_Detail(string poID, string TestNo, string BrandID ="");
 
         void SaveFabricOvenTestMain(FabricOvenTest_Main fabricOvenTest_Main);
 

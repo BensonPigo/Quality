@@ -38,9 +38,11 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
 select c.* 
     ,[Name] = p.Name
     ,[InspectionName] = Concat (Inspector, ' ', p.Name)
+    ,o.BrandID
     ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) where pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo)
     ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) where pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo)
 from ColorFastness c WITH(NOLOCK)
+inner join Orders o WITH(NOLOCK) on c.POID = o.ID  
 left join pass1 p on c.Inspector = p.ID
 where c.id = @ID
 ";
