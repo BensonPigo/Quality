@@ -307,7 +307,7 @@ namespace BusinessLogicLayer.Service
             #region passFails
             List<object> passFails = new List<object>() {
                 new {
-                    title = "fabric_approval",
+                    title = "material_approval",
                     value = drFinalInspection.Field<bool>("FabricApprovalDoc") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
@@ -334,7 +334,43 @@ namespace BusinessLogicLayer.Service
                     comment = "",
                 },
                 new {
-                    title = "finished_good_testing",
+                    title = "factory_disclaimer",
+                    value = drFinalInspection.Field<bool>("IsFactoryDisclaimer") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "general",
+                    status = drFinalInspection.Field<bool>("IsFactoryDisclaimer") ? "pass" : "na",
+                    comment = "",
+                },
+                new {
+                    title = "a_01_compliance",
+                    value = drFinalInspection.Field<bool>("IsA01Compliance") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "general",
+                    status = drFinalInspection.Field<bool>("IsA01Compliance") ? "pass" : "na",
+                    comment = "",
+                },
+                new {
+                    title = "cpsia_compliance",
+                    value = drFinalInspection.Field<bool>("IsCPSIACompliance") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "general",
+                    status = drFinalInspection.Field<bool>("IsCPSIACompliance") ? "pass" : "na",
+                    comment = "",
+                },
+                new {
+                    title = "customer_country_specific_compliance",
+                    value = drFinalInspection.Field<bool>("IsCustomerCountrySpecificCompliance") ? "Confirm" : "N/A",
+                    type = "check-list",
+                    subsection = "validation_and_checklist",
+                    checkListSubsection = "general",
+                    status = drFinalInspection.Field<bool>("IsCustomerCountrySpecificCompliance") ? "pass" : "na",
+                    comment = "",
+                },
+                new {
+                    title = "finished_goods_testing",
                     value = "Confirm",
                     type = "check-list",
                     subsection = "validation_and_checklist",
@@ -352,7 +388,7 @@ namespace BusinessLogicLayer.Service
                     comment = "",
                 },
                 new {
-                    title = "moisture_control_garment",
+                    title = "moisture_control_product",
                     value = drFinalInspection.Field<string>("MoistureResult") == "na" ? "N/A" : "Confirm",
                     type = "check-list",
                     subsection = "validation_and_checklist",
