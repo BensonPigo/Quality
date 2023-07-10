@@ -367,6 +367,76 @@ where f.ID = @ID
 
         }
 
+        public List<Crocking_Excel> CrockingTest_ToExcel_Head(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sql = @"
+select fl.ReportNo
+	,f.POID
+	,Article=Article.Val
+	,SubmitDate = fl.CrockingDate
+	,o.SeasonID
+	,o.BrandID
+	,o.StyleID
+	,SCIRefno_Color = f.SCIRefno + ' ' + pc.SpecValue
+	,Color = pc.SpecValue
+	,Inspector = LabTech.Val
+	,CrockingTestBeforePicture = (select top 1 CrockingTestBeforePicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
+    ,CrockingTestAfterPicture = (select top 1 CrockingTestAfterPicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
+from FIR_Laboratory fl
+inner join Orders o with (nolock) on o.ID = fl.POID
+inner join FIR f with (nolock) on f.ID = fl.ID
+left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+outer apply(
+	select Val=STUFF((
+		select DISTINCT ',' + sa.Article
+		from Style_Article sa WITH(NOLOCK)
+		where o.StyleUkey=sa.StyleUkey
+		FOR XML PATH('')
+	),1,1,'')
+)Article
+outer apply(
+	select Val=STUFF((
+		select DISTINCT ',' + fd.Inspector
+		from FIR_Laboratory_Crocking fd WITH(NOLOCK) 
+		where fd.id = fl.id
+		FOR XML PATH('')
+	),1,1,'')
+)LabTech
+where fl.ID = @ID
+";
+
+            return ExecuteList<Crocking_Excel>(CommandType.Text, sql, listPar).ToList();
+
+        }
+        public List<Crocking_Excel> CrockingTest_ToExcel_Body(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sql = @"
+select   fd.Roll
+		,fd.Dyelot
+		,fd.DryScale
+		,fd.DryScale_Weft
+		,fd.WetScale
+		,fd.WetScale_Weft
+		,fd.ResultDry
+		,fd.ResultDry_Weft
+		,fd.ResultWet
+		,fd.ResultWet_Weft
+		,fd.Remark
+from FIR_Laboratory fl
+inner join FIR_Laboratory_Crocking fd WITH(NOLOCK) on fd.id = fl.id
+where fl.ID = @ID
+";
+
+            return ExecuteList<Crocking_Excel>(CommandType.Text, sql, listPar).ToList();
+
+        }
         public int GetCrockingTestOption(long ID)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
@@ -403,9 +473,17 @@ SET XACT_ABORT ON
 update  FIR_Laboratory set  CrockingRemark = @CrockingRemark
 where   ID = @ID 
 
-update  SciPMSFile_FIR_Laboratory set  CrockingTestBeforePicture = @CrockingTestBeforePicture,
-                            CrockingTestAfterPicture = @CrockingTestAfterPicture
-where   ID = @ID 
+if exists( select 1 from SciPMSFile_FIR_Laboratory where   ID = @ID )
+begin
+    update  SciPMSFile_FIR_Laboratory set  CrockingTestBeforePicture = @CrockingTestBeforePicture,
+                                CrockingTestAfterPicture = @CrockingTestAfterPicture
+    where   ID = @ID 
+END
+else
+begin
+    insert into SciPMSFile_FIR_Laboratory (ID  ,CrockingTestBeforePicture  ,CrockingTestAfterPicture)
+    VALUES(@ID  ,@CrockingTestBeforePicture  ,@CrockingTestAfterPicture )
+end
 ";
 
 

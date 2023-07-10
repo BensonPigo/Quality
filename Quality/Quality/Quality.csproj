@@ -197,6 +197,7 @@
     <Compile Include="Areas\BulkFGT\Controllers\SalivaFastnessTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\PerspirationFastnessController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\TPeelStrengthTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\WaterFastnessController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
@@ -448,6 +449,7 @@
     <Content Include="Areas\BulkFGT\Views\AgingHydrolysisTest\Detail.cshtml" />
     <Content Include="Areas\BulkFGT\Views\SalivaFastnessTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\PhenolicYellowTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\TPeelStrengthTest\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -988,6 +990,9 @@
     <Content Include="XLT\SalivaFastnessTest.xltx" />
     <Content Include="Views\PublicWondow\RollDyelotList.cshtml" />
     <Content Include="XLT\PhenolicYellowTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\TPeelStrengthTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
