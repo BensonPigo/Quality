@@ -205,6 +205,7 @@
     <Compile Include="ViewModel\BulkFGT\PullingTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\SalivaFastnessTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\SearchList_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\TPeelStrengthTest_ViewModel.cs" />
     <Compile Include="ViewModel\FinalInspection\AddDefect.cs" />
     <Compile Include="ViewModel\FinalInspection\Moisture.cs" />
     <Compile Include="ViewModel\FinalInspection\Measurement.cs" />
