@@ -45,6 +45,22 @@ AND FactoryID=@FactoryID
 
             return ExecuteList<SelectSewing>(CommandType.Text, SbSql.ToString(), paras);
         }
+        public IList<SelectSewing> GetSelectedSewingLineFromEndline(List<string> listOrderID)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            string whereOrderID = listOrderID.Select(s => $"'{s}'").JoinToString(",");
+            //台北
+            SbSql.Append($@"
+select distinct SewingLine = Line
+from Inspection
+where OrderID  in ({whereOrderID})
+");
+
+            return ExecuteList<SelectSewing>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
         public IList<SelectSewingTeam> GetSelectedSewingTeam()
         {
             StringBuilder SbSql = new StringBuilder();

@@ -561,6 +561,17 @@
                 ]
             });
 
+            // Line Header改成文字方塊
+            $('#SewingLineTable thead th').each(function () {
+                var idx = $(this).index();
+                var title = $(this).text();
+
+                if (idx == 1) {
+                    $(this).html('<input id="LineSearch" type="text" placeholder="Search ' + title + '" />');
+                }
+
+            });
+
             $("#SewingLineTable").DataTable({
                 "pageLength": 10,
                 "autoWidth": false,
@@ -692,6 +703,7 @@
                 },
             });
 
+            //Select SewingLine視窗
             $(".to-SewingLine-detail").dialog({
                 width: "70%",
                 dialogClass: "add-contact-box",
@@ -701,6 +713,7 @@
                         click: function () {
 
                             var checkedList = [];
+                            $("#LineSearch").val('').change();
 
                             $('[id^=SewingLine_Select_]').each(function () {
 
@@ -977,6 +990,7 @@
             $(".to-SewingLine-detail").dialog("open");
             ShowLoading();
 
+            // SewingLine的DataTable建立函式
             $("#SewingLineTable").DataTable({
                 "pageLength": 10,
                 //"autoWidth": false,
@@ -989,9 +1003,31 @@
                 "scrollCollapse": true,
                 columnDefs: [
                     { targets: 0 },
-                    { targets: 1 },
-                ]
+                    { targets: 1, orderable: false },
+                ],
+                initComplete: function () {
+                    this.api().columns().every(function () {
+
+                        // 只有第一個欄位要有選單
+                        if (this.data().length > 0 && this.index() == 1) {
+
+                            var that = this;
+                            $('input', this.header()).on('keyup change clear', function () {
+                                if (that.search() !== this.value) {
+                                    that
+                                        .search(this.value)
+                                        .draw();
+                                }
+                            });
+
+                        }
+                    });
+                }
             });
+
+
+            $("#LineSearch").val('');
+
 
             $("#SewingLineTable_filter").hide();
 

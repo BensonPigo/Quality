@@ -2,7 +2,6 @@ using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
-using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.FinalInspection;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using System;
@@ -116,10 +115,25 @@ where a.ID = @ID
 ";
             IList<FinalInspection> listResult = ExecuteList<FinalInspection>(CommandType.Text, sqlGetData, objParameter);
 
+            sqlGetData = "select * from FinalInspectionGeneral where FinalInspectionID = @ID ";
+            var Generaltmp = ExecuteList<FinalInspectionGeneral>(CommandType.Text, sqlGetData, objParameter);
+
+            sqlGetData = "select * from FinalInspectionCheckList where FinalInspectionID = @ID ";
+            var CheckListRTmp = ExecuteList<FinalInspectionCheckList>(CommandType.Text, sqlGetData, objParameter);
+
+
             if (listResult.Count > 0)
             {
-                listResult[0].Result = true;
-                return listResult[0];
+                FinalInspection result = listResult[0];
+                result.Result = true;
+
+                result.finalInspectionGeneral = Generaltmp.Any() ? Generaltmp.FirstOrDefault() : new FinalInspectionGeneral();
+                result.finalInspectionCheckList = CheckListRTmp.Any() ? CheckListRTmp.FirstOrDefault() : new FinalInspectionCheckList();
+
+                result.finalInspectionGeneral.FinalInspectionID = result.ID;
+                result.finalInspectionCheckList.FinalInspectionID = result.ID;
+
+                return result;
             }
             else
             {
@@ -132,6 +146,247 @@ where a.ID = @ID
 
         }
 
+        /// <summary>
+        /// 取得可用的關卡
+        /// </summary>
+        /// <param name="FinalInspectionID"></param>
+        /// <param name="CustPONO"></param>
+        /// <returns></returns>
+        public List<FinalInspection_Step> GetAllStep(string FinalInspectionID, string CustPONO)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+                { "@FinalInspectionID", DbType.String, FinalInspectionID },
+                { "@CustPONO", DbType.String, CustPONO }
+            };
+
+            string cmd = string.Empty;
+
+            if (!string.IsNullOrEmpty(FinalInspectionID))
+            {
+                cmd = $@"
+select DISTINCT FinalInspectionID = a.ID,b.BrandID,c.Seq,d.StepName,c.StepUkey
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+where a.ID = @FinalInspectionID
+";
+            }
+            else
+            {
+                cmd = $@"
+select DISTINCT FinalInspectionID = '',b.BrandID,c.Seq,d.StepName,c.StepUkey
+from Production..Orders b 
+inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+where b.CustPONO = @CustPONO
+
+                ";
+            }
+
+            var r = ExecuteList<FinalInspection_Step>(CommandType.Text, cmd, objParameter);
+
+            return r.Any() ? r.ToList() : new List<FinalInspection_Step>();
+        }
+
+        /// <summary>
+        /// 取得Final單子的上一關or 下一關 or 目前關卡
+        /// </summary>
+        /// <param name="FinalInspectionID"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        public List<FinalInspection_Step> GetAllStepByAction(string FinalInspectionID, FinalInspectionSStepAction action)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+                { "@FinalInspectionID", DbType.String, FinalInspectionID },
+
+            };
+
+            string cmd = $@"
+----該Final單的所有可用關卡
+select b.BrandID,Seq = 0 ,StepName = 'Insp-Setting',StepUkey=0 ----Setting是全世界必經之路，額外處理
+INTO #AllStep
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+where a.ID = @FinalInspectionID
+UNION
+select b.BrandID,c.Seq,d.StepName,c.StepUkey
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+where a.ID = @FinalInspectionID and a.SubmitDate is null
+
+
+----找出現在關卡
+select b.BrandID,Seq=0,StepName='Insp-Setting',StepUkey =0
+INTO #CurrentStep
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+where a.ID = @FinalInspectionID AND a.InspectionStep='Insp-Setting'
+UNION
+select b.BrandID,c.Seq,d.StepName,c.StepUkey 
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+outer apply(
+	select DISTINCT StepName = Data 
+	from SplitString(a.InspectionStep,'-') s
+	
+)currentStep
+where a.id = @FinalInspectionID and a.SubmitDate is null
+and currentStep.StepName IN (select REPLACE(q.StepName,' ','') from FinalInspectionBasicStep q with(NOLOCK) )
+and currentStep.StepName=REPLACE(d.StepName,' ','') 
+
+
+
+select TOP 1 a.BrandID ,a.Seq ,StepName = REPLACE(a.StepName,' ',''),a.StepUkey
+from #AllStep a
+where 1=1
+";
+
+            switch (action)
+            {
+                case FinalInspectionSStepAction.Next:
+                    cmd += $@"
+----下一關卡
+and Seq > (select Seq from #CurrentStep) order by Seq  
+";
+                    break;
+                case FinalInspectionSStepAction.Previous:
+                    cmd += $@"
+----上一關卡
+and Seq < (select Seq from #CurrentStep) order by Seq desc 
+";
+                    break;
+                case FinalInspectionSStepAction.Current:
+                    cmd += $@"
+----當下關卡
+and Seq = (select Seq from #CurrentStep) order by Seq  
+";
+                    break;
+                default:
+                    cmd += $@"
+----當下關卡
+and Seq = (select Seq from #CurrentStep) order by Seq  
+";
+                    break;
+            }
+
+            cmd += $@"drop table #AllStep,#CurrentStep";
+
+            var r = ExecuteList<FinalInspection_Step>(CommandType.Text, cmd, objParameter);
+
+            return r.Any() ? r.ToList() : new List<FinalInspection_Step>();
+        }
+
+        /// <summary>
+        /// 將Final單子前往下一關/回到上一關
+        /// </summary>
+        /// <param name="FinalInspectionID"></param>
+        /// <param name="action">前往下一關/回到上一關</param>
+        /// <returns></returns>
+        public void UpdateStepByAction(string FinalInspectionID, string UserID, FinalInspectionSStepAction action)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+                { "@FinalInspectionID", DbType.String, FinalInspectionID },
+                { "@UserID", DbType.String, UserID },
+
+            };
+
+            string sqlUpdCmd = $@"DECLARE @TargetStep as varchar(50) = ''
+
+----該Final單的所有可用關卡
+select b.BrandID,Seq = 0 ,StepName = 'Insp-Setting',StepUkey=0 ----Setting是全世界必經之路，額外處理
+INTO #AllStep
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+where a.ID = @FinalInspectionID
+UNION
+select b.BrandID,c.Seq,d.StepName,c.StepUkey
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+where a.ID = @FinalInspectionID and a.SubmitDate is null
+
+
+----找出現在關卡
+select b.BrandID,Seq=0,StepName='Insp-Setting',StepUkey =0
+INTO #CurrentStep
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+where a.ID = @FinalInspectionID AND a.InspectionStep='Insp-Setting'
+UNION
+select b.BrandID,c.Seq,d.StepName,c.StepUkey 
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+outer apply(
+	select DISTINCT StepName = Data 
+	from SplitString(a.InspectionStep,'-') s
+	
+)currentStep
+where a.id = @FinalInspectionID and a.SubmitDate is null
+and currentStep.StepName IN (select REPLACE(q.StepName,' ','') from FinalInspectionBasicStep q with(NOLOCK) )
+and currentStep.StepName=REPLACE(d.StepName,' ','') 
+
+select TOP 1 @TargetStep = 'Insp-' + REPLACE(a.StepName,' ','')
+from #AllStep a
+where 1=1
+";
+
+            switch (action)
+            {
+                case FinalInspectionSStepAction.Next:
+                    sqlUpdCmd += $@"
+----下一關卡
+and Seq > (select Seq from #CurrentStep) order by Seq  
+";
+                    break;
+                case FinalInspectionSStepAction.Previous:
+                    sqlUpdCmd += $@"
+----上一關卡
+and Seq < (select Seq from #CurrentStep) order by Seq desc 
+";
+                    break;
+                case FinalInspectionSStepAction.Current:
+                    sqlUpdCmd += $@"
+----當下關卡
+and Seq = (select Seq from #CurrentStep) order by Seq  
+";
+                    break;
+                default:
+                    sqlUpdCmd += $@"
+----當下關卡
+and Seq = (select Seq from #CurrentStep) order by Seq  
+";
+                    break;
+            }
+
+            sqlUpdCmd += $@"
+UPDATE FinalInspection 
+SET InspectionStep = @TargetStep
+    ,EditName= @UserID
+    ,EditDate= getdate()
+where ID = @FinalInspectionID
+
+drop table #AllStep,#CurrentStep
+";
+
+            ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
+        }
         public string GetInspectionTimes(string CustPONO)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
@@ -201,12 +456,23 @@ insert into FinalInspection(id                            ,
                        @AcceptQty                     ,
                        'On-going'              ,
                         'On Hold'                ,
-                       'Setting',
+                       'Insp-Setting',
                        @Shift                         ,
                        @Team                          ,
                        @UserID                       ,
                        GetDate()
                 )
+;
+INSERT INTO FinalInspectionGeneral
+           (FinalInspectionID)
+     VALUES
+           (@FinalInspectionID)
+;
+INSERT INTO FinalInspectionCheckList
+           (FinalInspectionID)
+     VALUES
+           (@FinalInspectionID)
+;
 
 ";
             }
@@ -220,7 +486,7 @@ set     InspectionStage = @InspectionStage                         ,
         AcceptableQualityLevelsUkey = @AcceptableQualityLevelsUkey              ,
         SampleSize = @SampleSize      ,
         AcceptQty = @AcceptQty          ,
-        InspectionStep = 'Setting',
+        InspectionStep = 'Insp-Setting',
         Shift = @Shift          ,
         Team = @Team,
         EditName = @UserID                  ,
@@ -282,26 +548,20 @@ insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo, Seq)
             return setting.FinalInspectionID;
         }
 
-
-        public void UpdateFinalInspectionByStep(FinalInspection finalInspection, string currentStep, string userID)
+        /// <summary>
+        /// 部分功能Back/Next按鈕按下時，要存檔的東西(Remark之類的)
+        /// </summary>
+        /// <param name="finalInspection"></param>
+        /// <param name="currentStep"></param>
+        /// <param name="userID"></param>
+        public void UpdateStepInfo(FinalInspection finalInspection, string currentStep, string userID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
             string sqlUpdCmd = string.Empty;
 
+            // ISP20230647 開始，關卡的轉移UPDATE透過其他Function異動，這邊只保留部分功能Back/Next按鈕按下時，要存檔的東西(Remark之類的)
             switch (currentStep)
             {
-                case "Setting":
-                    sqlUpdCmd += $@"
-update FinalInspection
- set    InspectionStep = @InspectionStep,
-        EditName= @userID,
-        EditDate= getdate()
-where   ID = @FinalInspectionID
-";
-                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
-                    objParameter.Add("@userID", userID);
-                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
-                    break;
                 case "Insp-General":
                     sqlUpdCmd += $@"
 update FinalInspection
@@ -309,7 +569,6 @@ update FinalInspection
         SealingSampleDoc= @SealingSampleDoc    ,
         MetalDetectionDoc= @MetalDetectionDoc   ,
         GarmentWashingDoc= @GarmentWashingDoc   ,
-        InspectionStep = @InspectionStep,
         CheckFGPT = @CheckFGPT,
         EditName= @userID,
         EditDate= getdate()
@@ -317,174 +576,32 @@ where   ID = @FinalInspectionID
 ";
                     objParameter.Add("@FinalInspectionID", finalInspection.ID);
                     objParameter.Add("@userID", userID);
-                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
                     objParameter.Add("@GarmentWashingDoc", finalInspection.GarmentWashingDoc);
                     objParameter.Add("@CheckFGPT", finalInspection.CheckFGPT);
                     objParameter.Add("@MetalDetectionDoc", finalInspection.MetalDetectionDoc);
                     objParameter.Add("@SealingSampleDoc", finalInspection.SealingSampleDoc);
                     objParameter.Add("@FabricApprovalDoc", finalInspection.FabricApprovalDoc);
                     break;
-                case "Insp-CheckList":
-                    sqlUpdCmd += $@"
-update FinalInspection
- set    CheckCloseShade = @CheckCloseShade  ,
-        CheckHandfeel = @CheckHandfeel  ,
-        CheckAppearance = @CheckAppearance  ,
-        CheckPrintEmbDecorations = @CheckPrintEmbDecorations  ,
-        CheckFiberContent = @CheckFiberContent  ,
-        CheckCareInstructions = @CheckCareInstructions  ,
-        CheckDecorativeLabel = @CheckDecorativeLabel  ,
-        CheckAdicomLabel = @CheckAdicomLabel  ,
-        CheckCountryofOrigion = @CheckCountryofOrigion  ,
-        CheckSizeKey = @CheckSizeKey  ,
-        Check8FlagLabel = @Check8FlagLabel  ,
-        CheckAdditionalLabel = @CheckAdditionalLabel  ,
-        CheckShippingMark = @CheckShippingMark  ,
-        CheckPolytagMarketing = @CheckPolytagMarketing  ,
-        CheckColorSizeQty = @CheckColorSizeQty  ,
-        CheckHangtag = @CheckHangtag  ,
-        InspectionStep = @InspectionStep,
-        EditName= @userID,
-        EditDate= getdate()
-where   ID = @FinalInspectionID
-";
-
-                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
-                    objParameter.Add("@userID", userID);
-                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
-                    objParameter.Add("@CheckCloseShade", finalInspection.CheckCloseShade);
-                    objParameter.Add("@CheckHandfeel", finalInspection.CheckHandfeel);
-                    objParameter.Add("@CheckAppearance", finalInspection.CheckAppearance);
-                    objParameter.Add("@CheckPrintEmbDecorations", finalInspection.CheckPrintEmbDecorations);
-                    objParameter.Add("@CheckFiberContent", finalInspection.CheckFiberContent);
-                    objParameter.Add("@CheckCareInstructions", finalInspection.CheckCareInstructions);
-                    objParameter.Add("@CheckDecorativeLabel", finalInspection.CheckDecorativeLabel);
-                    objParameter.Add("@CheckAdicomLabel", finalInspection.CheckAdicomLabel);
-                    objParameter.Add("@CheckCountryofOrigion", finalInspection.CheckCountryofOrigion);
-                    objParameter.Add("@CheckSizeKey", finalInspection.CheckSizeKey);
-                    objParameter.Add("@Check8FlagLabel", finalInspection.Check8FlagLabel);
-                    objParameter.Add("@CheckAdditionalLabel", finalInspection.CheckAdditionalLabel);
-                    objParameter.Add("@CheckShippingMark", finalInspection.CheckShippingMark);
-                    objParameter.Add("@CheckPolytagMarketing", finalInspection.CheckPolytagMarketing);
-                    objParameter.Add("@CheckColorSizeQty", finalInspection.CheckColorSizeQty);
-                    objParameter.Add("@CheckHangtag", finalInspection.CheckHangtag);
-                    break;
-                case "Insp-Measurement":
-                    sqlUpdCmd += $@"
-update FinalInspection
- set    InspectionStep = @InspectionStep,
-        EditName= @userID,
-        EditDate= getdate()
-where   ID = @FinalInspectionID
-";
-                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
-                    objParameter.Add("@userID", userID);
-                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
-                    break;
-                case "Insp-AddDefect":
-                    sqlUpdCmd += $@"
-update FinalInspection
- set    InspectionStep = @InspectionStep,
-        EditName= @userID,
-        EditDate= getdate()
-where   ID = @FinalInspectionID
-";
-                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
-                    objParameter.Add("@userID", userID);
-                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
-                    break;
-                case "Insp-BA":
-                    sqlUpdCmd += $@"
-update FinalInspection
- set    InspectionStep = @InspectionStep,
-        EditName= @userID,
-        EditDate= getdate()
-where   ID = @FinalInspectionID
-";
-                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
-                    objParameter.Add("@userID", userID);
-                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
-                    break;
-                case "Insp-Moisture":
-                    sqlUpdCmd += $@"
-update FinalInspection
- set    InspectionStep = @InspectionStep,
-        EditName= @userID,
-        EditDate= getdate()
-where   ID = @FinalInspectionID
-";
-                    objParameter.Add("@FinalInspectionID", finalInspection.ID);
-                    objParameter.Add("@userID", userID);
-                    objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
-                    break;
                 case "Insp-Others":
-                    if (finalInspection.InspectionStep == "Submit")
-                    {
-                        sqlUpdCmd += $@"
+                    sqlUpdCmd += $@"
 update FinalInspection
  set    ProductionStatus = @ProductionStatus  ,
-        OthersRemark= @OthersRemark    ,
-        CFA= @CFA   ,
-        InspectionResult= @InspectionResult   ,
-        InspectionStep = @InspectionStep,
-        ShipmentStatus= @ShipmentStatus   ,
-        SubmitDate=getdate(),
-        EditName= @userID,
-        EditDate= getdate()
-where   ID = @FinalInspectionID
-";
-                        objParameter.Add("@FinalInspectionID", finalInspection.ID);
-                        objParameter.Add("@userID", userID);
-                        objParameter.Add("@InspectionResult", finalInspection.InspectionResult);
-                        objParameter.Add("@ShipmentStatus", finalInspection.ShipmentStatus);
-                        objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
-                        objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
-                        objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
-                        objParameter.Add("@CFA", finalInspection.CFA);
-                    }
-                    else if (finalInspection.InspectionStep == "Insp-Moisture")
-                    {
-                        sqlUpdCmd += $@"
-update FinalInspection
- set    ProductionStatus = 0  ,
-        OthersRemark= ''    ,
+        OthersRemark = @OthersRemark    ,
         CFA= ''   ,
         InspectionResult= 'On-going'   ,
-        InspectionStep = @InspectionStep,
         ShipmentStatus= 'On Hold'   ,
         SubmitDate=null,
         EditName= @userID,
         EditDate= getdate()
 where   ID = @FinalInspectionID
 ";
-                        objParameter.Add("@FinalInspectionID", finalInspection.ID);
-                        objParameter.Add("@userID", userID);
-                        objParameter.Add("@InspectionResult", finalInspection.InspectionResult);
-                        objParameter.Add("@InspectionStep", finalInspection.InspectionStep);
-                    }
-                    break;
-                /*case "Submit": ISP20220081 不需要這個步驟，合併到case "Insp-Others"去
-                    sqlUpdCmd += $@"
-update FinalInspection
- set    ProductionStatus = @ProductionStatus  ,
-        OthersRemark= @OthersRemark    ,
-        CFA= @CFA   ,
-        InspectionResult= @InspectionResult   ,
-        ShipmentStatus= @ShipmentStatus   ,
-        InspectionStep = 'Insp-Others',
-        EditName= @userID,
-        EditDate= getdate(),
-        SubmitDate=getdate()
-where   ID = @FinalInspectionID
-";
                     objParameter.Add("@FinalInspectionID", finalInspection.ID);
                     objParameter.Add("@userID", userID);
                     objParameter.Add("@InspectionResult", finalInspection.InspectionResult);
                     objParameter.Add("@ShipmentStatus", finalInspection.ShipmentStatus);
-                    objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
                     objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
-                    objParameter.Add("@CFA", finalInspection.CFA);
-                    break;*/
+                    objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
+                    break;
                 default:
                     break;
             }
@@ -492,31 +609,174 @@ where   ID = @FinalInspectionID
             ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
         }
 
-        /*
-        public IList<byte[]> GetFinalInspectionDefectImage(long FinalInspection_DetailUkey)
+        public void SubmitFinalInspection(FinalInspection finalInspection, string userID)
         {
-            SQLParameterCollection objParameter = new SQLParameterCollection() {
-            { "@FinalInspection_DetailUkey", DbType.Int64, FinalInspection_DetailUkey }
-            };
-
-            string sqlGetData = @"
-select  Image
-    from PMSFile.dbo.FinalInspection_DetailImage with (nolock)
-    where   FinalInspection_DetailUkey = @FinalInspection_DetailUkey
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            string sqlUpdCmd = $@"
+update FinalInspection
+ set    ProductionStatus = @ProductionStatus  ,
+        OthersRemark= @OthersRemark    ,
+        CFA= @CFA   ,
+        InspectionResult= @InspectionResult   ,
+        InspectionStep = 'Submit' ,
+        ShipmentStatus= @ShipmentStatus   ,
+        SubmitDate=getdate(),
+        EditName= @userID,
+        EditDate= getdate()
+where   ID = @FinalInspectionID
 ";
+            objParameter.Add("@FinalInspectionID", finalInspection.ID);
+            objParameter.Add("@userID", userID);
+            objParameter.Add("@InspectionResult", finalInspection.InspectionResult);
+            objParameter.Add("@ShipmentStatus", finalInspection.ShipmentStatus);
+            objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
+            objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
+            objParameter.Add("@CFA", finalInspection.CFA);
 
-            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, objParameter);
-
-            if (dtResult.Rows.Count > 0)
-            {
-                return dtResult.AsEnumerable().Select(s => (byte[])s["Image"]).ToList();
-            }
-            else
-            {
-                return new List<byte[]>();
-            }
+            ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
         }
-        */
+        public void UpdateGeneral(FinalInspectionGeneral General)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@FinalInspectionID", General.FinalInspectionID);
+
+            objParameter.Add("@IsMaterialApproval", General.IsMaterialApproval);
+            objParameter.Add("@IsSealingSample", General.IsSealingSample);
+            objParameter.Add("@IsMetalDetection", General.IsMetalDetection);
+            objParameter.Add("@IsFGWT", General.IsFGWT);
+            objParameter.Add("@IsFGPT", General.IsFGPT);
+            objParameter.Add("@IsTopSample", General.IsTopSample);
+            objParameter.Add("@Is3rdPartyTestReport", General.Is3rdPartyTestReport);
+            objParameter.Add("@IsPPSample", General.IsPPSample);
+            objParameter.Add("@IsGBTestForChina", General.IsGBTestForChina);
+            objParameter.Add("@IsCPSIAForYounthStytle", General.IsCPSIAForYounthStytle);
+            objParameter.Add("@IsQRSSample", General.IsQRSSample);
+            objParameter.Add("@IsFactoryDisclaimer", General.IsFactoryDisclaimer);
+            objParameter.Add("@IsA01Compliance", General.IsA01Compliance);
+            objParameter.Add("@IsCPSIACompliance", General.IsCPSIACompliance);
+            objParameter.Add("@IsCustomerCountrySpecificCompliance", General.IsCustomerCountrySpecificCompliance);
+
+            string sqlInsertFinalInspection_Moisture = @"
+UPDATE dbo.FinalInspectionGeneral
+   SET IsMaterialApproval = @IsMaterialApproval
+      ,IsSealingSample = @IsSealingSample
+      ,IsMetalDetection = @IsMetalDetection
+      ,IsFGWT = @IsFGWT
+      ,IsFGPT = @IsFGPT
+      ,IsTopSample = @IsTopSample
+      ,Is3rdPartyTestReport = @Is3rdPartyTestReport
+      ,IsPPSample = @IsPPSample
+      ,IsGBTestForChina = @IsGBTestForChina
+      ,IsCPSIAForYounthStytle = @IsCPSIAForYounthStytle
+      ,IsQRSSample = @IsQRSSample
+      ,IsFactoryDisclaimer = @IsFactoryDisclaimer
+      ,IsA01Compliance = @IsA01Compliance
+      ,IsCPSIACompliance = @IsCPSIACompliance
+      ,IsCustomerCountrySpecificCompliance = @IsCustomerCountrySpecificCompliance
+WHERE FinalInspectionID = @FinalInspectionID
+";
+            ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_Moisture, objParameter);
+        }
+        public void UpdateCheckList(FinalInspectionCheckList CheckList)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@FinalInspectionID", CheckList.FinalInspectionID);
+            objParameter.Add("@IsCloseShade", CheckList.IsCloseShade);
+            objParameter.Add("@IsHandfeel", CheckList.IsHandfeel);
+            objParameter.Add("@IsAppearance", CheckList.IsAppearance);
+            objParameter.Add("@IsPrintEmbDecorations", CheckList.IsPrintEmbDecorations);
+            objParameter.Add("@IsEmbellishmentPrint", CheckList.IsEmbellishmentPrint);
+            objParameter.Add("@IsEmbellishmentBonding", CheckList.IsEmbellishmentBonding);
+            objParameter.Add("@IsEmbellishmentHT", CheckList.IsEmbellishmentHT);
+            objParameter.Add("@IsEmbellishmentEMB", CheckList.IsEmbellishmentEMB);
+            objParameter.Add("@IsFiberContent", CheckList.IsFiberContent);
+            objParameter.Add("@IsCareInstructions", CheckList.IsCareInstructions);
+            objParameter.Add("@IsDecorativeLabel", CheckList.IsDecorativeLabel);
+            objParameter.Add("@IsAdicomLabel", CheckList.IsAdicomLabel);
+            objParameter.Add("@IsCountryofOrigion", CheckList.IsCountryofOrigion);
+            objParameter.Add("@IsSizeKey", CheckList.IsSizeKey);
+            objParameter.Add("@Is8FlagLabel", CheckList.Is8FlagLabel);
+            objParameter.Add("@IsAdditionalLabel", CheckList.IsAdditionalLabel);
+            objParameter.Add("@IsIdLabel", CheckList.IsIdLabel);
+            objParameter.Add("@IsMainLabel", CheckList.IsMainLabel);
+            objParameter.Add("@IsSizeLabel", CheckList.IsSizeLabel);
+            objParameter.Add("@IsCareContentLabel", CheckList.IsCareContentLabel);
+            objParameter.Add("@IsBrandLabel", CheckList.IsBrandLabel);
+            objParameter.Add("@IsBlueSignLabel", CheckList.IsBlueSignLabel);
+            objParameter.Add("@IsLotLabel", CheckList.IsLotLabel);
+            objParameter.Add("@IsSecurityLabel", CheckList.IsSecurityLabel);
+            objParameter.Add("@IsSpecialLabel", CheckList.IsSpecialLabel);
+            objParameter.Add("@IsVIDLabel", CheckList.IsVIDLabel);
+            objParameter.Add("@IsCNC", CheckList.IsCNC);
+            objParameter.Add("@IsWovenlabel", CheckList.IsWovenlabel);
+            objParameter.Add("@IsTSize", CheckList.IsTSize);
+            objParameter.Add("@IsCCLayout", CheckList.IsCCLayout);
+            objParameter.Add("@IsShippingMark", CheckList.IsShippingMark);
+            objParameter.Add("@IsPolytagMarketing", CheckList.IsPolytagMarketing);
+            objParameter.Add("@IsColorSizeQty", CheckList.IsColorSizeQty);
+            objParameter.Add("@IsHangtag", CheckList.IsHangtag);
+            objParameter.Add("@IsJokerTag", CheckList.IsJokerTag);
+            objParameter.Add("@IsWWMT", CheckList.IsWWMT);
+            objParameter.Add("@IsChinaCIT", CheckList.IsChinaCIT);
+            objParameter.Add("@IsPolybagSticker", CheckList.IsPolybagSticker);
+            objParameter.Add("@IsUCCSticker", CheckList.IsUCCSticker);
+            objParameter.Add("@IsPESheetMicropak", CheckList.IsPESheetMicropak);
+            objParameter.Add("@IsAdditionalHantage", CheckList.IsAdditionalHantage);
+            objParameter.Add("@IsUPCStickierHantage", CheckList.IsUPCStickierHantage);
+            objParameter.Add("@IsGS1128Label", CheckList.IsGS1128Label);
+
+
+            string sqlInsertFinalInspection_Moisture = @"
+UPDATE dbo.FinalInspectionCheckList
+   SET IsCloseShade = @IsCloseShade
+      ,IsHandfeel = @IsHandfeel
+      ,IsAppearance = @IsAppearance
+      ,IsPrintEmbDecorations = @IsPrintEmbDecorations
+      ,IsEmbellishmentPrint = @IsEmbellishmentPrint
+      ,IsEmbellishmentBonding = @IsEmbellishmentBonding
+      ,IsEmbellishmentHT = @IsEmbellishmentHT
+      ,IsEmbellishmentEMB = @IsEmbellishmentEMB
+      ,IsFiberContent = @IsFiberContent
+      ,IsCareInstructions = @IsCareInstructions
+      ,IsDecorativeLabel = @IsDecorativeLabel
+      ,IsAdicomLabel = @IsAdicomLabel
+      ,IsCountryofOrigion = @IsCountryofOrigion
+      ,IsSizeKey = @IsSizeKey
+      ,Is8FlagLabel = @Is8FlagLabel
+      ,IsAdditionalLabel = @IsAdditionalLabel
+      ,IsIdLabel = @IsIdLabel
+      ,IsMainLabel = @IsMainLabel
+      ,IsSizeLabel = @IsSizeLabel
+      ,IsCareContentLabel = @IsCareContentLabel
+      ,IsBrandLabel = @IsBrandLabel
+      ,IsBlueSignLabel = @IsBlueSignLabel
+      ,IsLotLabel = @IsLotLabel
+      ,IsSecurityLabel = @IsSecurityLabel
+      ,IsSpecialLabel = @IsSpecialLabel
+      ,IsVIDLabel = @IsVIDLabel
+      ,IsCNC = @IsCNC
+      ,IsWovenlabel = @IsWovenlabel
+      ,IsTSize = @IsTSize
+      ,IsCCLayout = @IsCCLayout
+      ,IsShippingMark = @IsShippingMark
+      ,IsPolytagMarketing = @IsPolytagMarketing
+      ,IsColorSizeQty = @IsColorSizeQty
+      ,IsHangtag = @IsHangtag
+      ,IsJokerTag = @IsJokerTag
+      ,IsWWMT = @IsWWMT
+      ,IsChinaCIT = @IsChinaCIT
+      ,IsPolybagSticker = @IsPolybagSticker
+      ,IsUCCSticker = @IsUCCSticker
+      ,IsPESheetMicropak = @IsPESheetMicropak
+      ,IsAdditionalHantage = @IsAdditionalHantage
+      ,IsUPCStickierHantage = @IsUPCStickierHantage
+      ,IsGS1128Label = @IsGS1128Label
+WHERE FinalInspectionID = @FinalInspectionID
+";
+            ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_Moisture, objParameter);
+        }
+
+
         public IList<ImageRemark> GetFinalInspectionDetail(long FinalInspection_DetailUkey)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
@@ -893,16 +1153,30 @@ where foc.ID = @finalInspectionID
 
             string sqlGetViewMoistureResult = @"
 declare @FinalInspection_CTNMoistureStandard numeric(5,2)
+declare @BrandID as varchar(10) 
 
-select  @FinalInspection_CTNMoistureStandard = FinalInspection_CTNMoistureStandard
-from    System WITH(NOLOCK)
+select @BrandID = BrandID
+from FinalInspection a WITH(NOLOCK)
+inner join FinalInspection_Order b WITH(NOLOCK) on a.ID=b.ID
+inner join Production..Orders c WITH(NOLOCK) on c.ID=b.OrderID
+where a.ID = @finalInspectionID
+
+
+select @FinalInspection_CTNMoistureStandard = Standard
+from FinalInspectionMoistureStandard
+where Category = 'CTNMoisture' and BrandID = @BrandID
+
+select *
+into #EndlineMoisture
+from EndlineMoisture WITH(NOLOCK)
+where BrandID = @BrandID
 
 select  fm.Ukey,
         fm.Article,
         fo.CTNNo,
         fm.Instrument,
         fm.Fabrication,
-        [GarmentStandard] = em.Standard,
+        [GarmentStandard] = ISNULL(em.Standard ,emDefault.Standard),
         fm.GarmentTop,
         fm.GarmentMiddle,
         fm.GarmentBottom,
@@ -914,32 +1188,110 @@ select  fm.Ukey,
         fm.Remark
 from    FinalInspection_Moisture fm with (nolock)
 left join   FinalInspection_OrderCarton fo with (nolock) on fo.Ukey = fm.FinalInspection_OrderCartonUkey
-left join   EndlineMoisture em with (nolock) on em.Instrument = fm.Instrument and em.Fabrication = fm.Fabrication
+left join   #EndlineMoisture em on em.Instrument = fm.Instrument and em.Fabrication = fm.Fabrication
+left join   EndlineMoisture emDefault with (nolock) on emDefault.Instrument = fm.Instrument and emDefault.Fabrication = fm.Fabrication and emDefault.BrandID=''
 where fm.ID = @finalInspectionID
 
+drop table #EndlineMoisture
 ";
             return ExecuteList<ViewMoistureResult>(CommandType.Text, sqlGetViewMoistureResult, objParameter);
         }
 
-        public IList<EndlineMoisture> GetEndlineMoisture()
+        /// <summary>
+        /// 根據品牌尋找EndlineMoisture設定
+        /// </summary>
+        /// <param name="FinalInspectionID"></param>
+        /// <param name="BrandID"></param>
+        /// <returns></returns>
+        public IList<EndlineMoisture> GetEndlineMoistureByBrand(string FinalInspectionID, string BrandID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@FinalInspectionID", DbType.String, FinalInspectionID }
+            ,{ "@BrandID", DbType.String, BrandID }
+            };
+
+            string sqlGetEndlineMoisture = string.Empty;
+            if (!string.IsNullOrEmpty(FinalInspectionID))
+            {
+                sqlGetEndlineMoisture = $@"
+select distinct d.*
+from FinalInspection a WITH(NOLOCK)
+inner join FinalInspection_Order b WITH(NOLOCK) on a.ID=b.ID
+inner join Production..Orders c WITH(NOLOCK) on c.ID=b.OrderID
+inner join EndlineMoisture d WITH(NOLOCK) on d.BrandID=c.BrandID
+where a.ID = @FinalInspectionID
+";
+            }
+            else if (!string.IsNullOrEmpty(BrandID))
+            {
+                sqlGetEndlineMoisture = $@"
+select *
+from EndlineMoisture WITH(NOLOCK)
+where BrandID = @BrandID
+";
+            }
+
+            return ExecuteList<EndlineMoisture>(CommandType.Text, sqlGetEndlineMoisture, objParameter);
+        }
+
+        /// <summary>
+        /// 取得EndlineMoisture的預設值
+        /// </summary>
+        /// <param name="FinalInspectionID"></param>
+        /// <param name="BrandID"></param>
+        /// <returns></returns>
+        public IList<EndlineMoisture> GetEndlineMoistureDefault()
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
 
             string sqlGetEndlineMoisture = @"
-select  Instrument
-        ,Fabrication
-        ,Standard
-        ,Unit
-        ,Junk
-        ,Description
-        ,AddDate
-        ,AddName
-        ,EditDate
-        ,Editname
+select  *
 from    EndlineMoisture with (nolock)
-
+where BrandID = ''
 ";
             return ExecuteList<EndlineMoisture>(CommandType.Text, sqlGetEndlineMoisture, objParameter);
+        }
+
+        /// <summary>
+        /// 取得箱子濕度標準(FinalInspectionMoistureStandard)
+        /// </summary>
+        /// <param name="finalInspectionID"></param>
+        /// <returns></returns>
+        public List<FinalInspectionMoistureStandard> GetMoistureStandardSetting(string finalInspectionID)
+        {
+
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@FinalInspectionID", DbType.String, finalInspectionID }
+            };
+
+            string sqlGetEndlineMoisture = @"
+
+select distinct d.*
+into #BrandSetting
+from FinalInspection a  with (nolock)
+inner join FinalInspection_Order b with (nolock) on a.ID=b.ID
+inner join Production..Orders c on c.ID=b.OrderID
+inner join FinalInspectionMoistureStandard d with (nolock) on d.BrandID=c.BrandID
+where a.ID = @FinalInspectionID
+
+if not exists(
+    select 1 from #BrandSetting
+)
+begin    
+    select * 
+    from FinalInspectionMoistureStandard with (nolock)
+    where BrandID = 'Default'
+end
+else
+begin
+    select * from #BrandSetting
+end
+
+drop table #BrandSetting
+";
+
+            var tmp = ExecuteList<FinalInspectionMoistureStandard>(CommandType.Text, sqlGetEndlineMoisture, objParameter);
+            return tmp.Any() ? tmp.ToList() : new List<FinalInspectionMoistureStandard>();
         }
 
         public void UpdateMoisture(MoistureResult moistureResult)
@@ -1031,17 +1383,36 @@ values
 
 
             string sqlCheckMoistureExists = $@"
-select  [result] = 1 
-from    FinalInspection_Moisture with (nolock)
-where   ID = @FinalInspectionID {where}
+declare @BrandID as varchar(10)
+
+select  @BrandID = BrandID
+from FinalInspection a with (nolock)
+inner join FinalInspection_Order b with (nolock) on a.ID=b.ID
+inner join Production..Orders c with (nolock) on c.ID=b.OrderID
+where a.ID = @FinalInspectionID
+
+----LLL 最多可以驗三次，其餘只能一次
+if @BrandID  = 'LLL'
+BEGIN
+	select  [result] = IIF( COUNT(Ukey) >= 3,1,0)
+	from    FinalInspection_Moisture with (nolock)
+    where   ID = @FinalInspectionID {where}
+END
+ELSE
+BEGIN
+	select  [result] = 1 
+	from    FinalInspection_Moisture with (nolock)
+    where   ID = @FinalInspectionID {where}
+END
 ";
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlCheckMoistureExists, objParameter);
+            int ctn = Convert.ToInt32( ExecuteScalar(CommandType.Text, sqlCheckMoistureExists, objParameter));
 
-            return dtResult.Rows.Count > 0;
+            return ctn > 0;
         }
 
-        public void UpdateMeasurement(DatabaseObject.ViewModel.FinalInspection.Measurement measurement, string userID)
+        public void UpdateMeasurement(DatabaseObject.ViewModel.FinalInspection.ServiceMeasurement measurement, string userID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
             DataTable dtDateTime = ExecuteDataTableByServiceConn(CommandType.Text, "select [DateTime] = getdate()", objParameter);
@@ -2121,7 +2492,7 @@ where   IsExportToP88 = 0 and
 
         public BaseResult UpdateJunk(string ID)
         {
-            SQLParameterCollection Parameter = new SQLParameterCollection() 
+            SQLParameterCollection Parameter = new SQLParameterCollection()
             {
                 { "@FinalInspectionID", DbType.String, ID },
             };
@@ -2134,6 +2505,96 @@ where   IsExportToP88 = 0 and
             }
 
             return new BaseResult { Result = true };
+        }
+
+        public List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+                { "@FinalInspectionID", DbType.String, FinalInspectionID },
+                { "@BrandID", DbType.String, BrandID },
+
+            };
+
+            string cmd = $@"
+select distinct fb.*
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_General fbg on fbg.BrandID = b.BrandID
+inner join  FinalInspectionBasicGeneral fb on fbg.BasicGeneralUkey = fb.Ukey
+where fb.Junk = 0 and a.ID = @FinalInspectionID
+";
+            if (!string.IsNullOrEmpty(BrandID))
+            {
+                cmd = $@"
+select DISTINCT b.*
+from FinalInspectionBasicBrand_General a
+inner join  FinalInspectionBasicGeneral b on a.BasicGeneralUkey = b.Ukey
+where a.BrandID = @BrandID
+";
+            }
+
+            var r = ExecuteList<FinalInspectionBasicGeneral>(CommandType.Text, cmd, objParameter);
+
+            return r.Any() ? r.ToList() : new List<FinalInspectionBasicGeneral>();
+        }
+        public List<FinalInspectionBasicCheckList> GetCheckListByBrand(string FinalInspectionID, string BrandID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+                { "@FinalInspectionID", DbType.String, FinalInspectionID },
+                { "@BrandID", DbType.String, BrandID },
+
+            };
+
+            string cmd = $@"
+select distinct fb.*
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_CheckList fbg on fbg.BrandID = b.BrandID
+inner join  FinalInspectionBasicCheckList fb on fbg.BasicCheckListUkey = fb.Ukey
+where fb.Junk = 0 and a.ID = @FinalInspectionID
+";
+            if (!string.IsNullOrEmpty(BrandID))
+            {
+                cmd = $@"
+select DISTINCT b.*
+from FinalInspectionBasicBrand_CheckList a
+inner join  FinalInspectionBasicCheckList b on a.BasicCheckListUkey = b.Ukey
+where a.BrandID = @BrandID
+";
+            }
+
+            var r = ExecuteList<FinalInspectionBasicCheckList>(CommandType.Text, cmd, objParameter);
+
+            return r.Any() ? r.ToList() : new List<FinalInspectionBasicCheckList>();
+        }
+
+
+        public List<FinalInspectionBasicGeneral> GetAllGeneral()
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            string cmd = $@"
+select *
+from FinalInspectionBasicGeneral
+";
+            var r = ExecuteList<FinalInspectionBasicGeneral>(CommandType.Text, cmd, objParameter);
+
+            return r.Any() ? r.ToList() : new List<FinalInspectionBasicGeneral>();
+        }
+        public List<FinalInspectionBasicCheckList> GetAllCheckList()
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            string cmd = $@"
+select *
+from FinalInspectionBasicCheckList
+";
+
+            var r = ExecuteList<FinalInspectionBasicCheckList>(CommandType.Text, cmd, objParameter);
+
+            return r.Any() ? r.ToList() : new List<FinalInspectionBasicCheckList>();
         }
     }
 }

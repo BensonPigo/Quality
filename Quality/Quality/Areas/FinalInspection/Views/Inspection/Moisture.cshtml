@@ -413,6 +413,9 @@
                                 else if (Instrument == "B Machine") {
                                     $("#CTNMoistureStandard").text(@ViewBag.FinalInspection_CTNMoistureStandardBM);
                                 }
+                                else if (Instrument == "Landtek") {
+                                    $("#CTNMoistureStandard").text(@ViewBag.FinalInspection_CTNMoistureStandardLandtek);
+                                }
                                 else {
                                     Instrument = '';
                                 }
@@ -680,6 +683,9 @@
             }
             else if (Instrument == "B Machine") {
                 cartonsValue =@ViewBag.FinalInspection_CTNMoistureStandardBM;
+            }
+            else if (Instrument == "Landtek") {
+                cartonsValue =@ViewBag.FinalInspection_CTNMoistureStandardLandtek;
             }
             else {
 

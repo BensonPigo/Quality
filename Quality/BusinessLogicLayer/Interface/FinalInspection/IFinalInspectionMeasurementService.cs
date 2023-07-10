@@ -6,9 +6,9 @@ namespace BusinessLogicLayer.Interface
 {
     public interface IFinalInspectionMeasurementService
     {
-        Measurement GetMeasurementForInspection(string finalInspectionID, string userID);
+        ServiceMeasurement GetMeasurementForInspection(string finalInspectionID, string userID);
 
-        BaseResult UpdateMeasurement(Measurement measurement, string userID);
+        BaseResult UpdateMeasurement(ServiceMeasurement measurement, string userID);
 
         List<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID);
     }

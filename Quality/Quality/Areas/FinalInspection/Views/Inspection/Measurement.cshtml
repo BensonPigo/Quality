@@ -9,8 +9,8 @@
 
 @Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
 
-@model DatabaseObject.ViewModel.FinalInspection.Measurement
-
+@*@model DatabaseObject.ViewModel.FinalInspection.Measurement*@
+@model DatabaseObject.ViewModel.FinalInspection.ServiceMeasurement
 
 
 <style type="text/css">
@@ -718,7 +718,7 @@
 `;
 
                 if (relsizeUnit == "INCH") {
-                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='text' KeyIdx='" + KeyIdx + "' idx='ResultSizeSpec' placeholder= '__ __/__' style ='width:64%; height:3.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
+                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='text' KeyIdx='" + KeyIdx + "' idx='ResultSizeSpec' value='" + value.SizeSpec +"' placeholder= '__ __/__' style ='width:64%; height:3.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
                 }
                 else {
                     tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='number' KeyIdx='" + KeyIdx + "' step='any' idx='ResultSizeSpec' style ='width:64%; height:2.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";

@@ -31,10 +31,19 @@ namespace BusinessLogicLayer.Service
                 moisture.ActionSelectListItem = _FinalInspFromPMSProvider.GetActionSelectListItem().ToList();
 
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-                DatabaseObject.ProductionDB.System system = _FinalInspectionProvider.GetSystem()[0];
-                moisture.FinalInspection_CTNMoistureStandard = system.FinalInspection_CTNMoistureStandard;
-                moisture.FinalInspection_CTNMoistureStandardBM = system.FinalInspection_CTNMoistureStandardBM;
-                moisture.ListEndlineMoisture = _FinalInspectionProvider.GetEndlineMoisture().ToList();
+
+
+                List<FinalInspectionMoistureStandard> MoistureStandardSetting = _FinalInspectionProvider.GetMoistureStandardSetting(finalInspectionID);
+
+                moisture.FinalInspection_CTNMoistureStandard = MoistureStandardSetting.Where(o => o.Category == "CTNMoisture").FirstOrDefault().Standard;
+                moisture.FinalInspection_CTNMoistureStandardBM = MoistureStandardSetting.Where(o => o.Category == "CTNMoistureBM").FirstOrDefault().Standard;
+                moisture.FinalInspection_CTNMoistureStandardLandtek = MoistureStandardSetting.Where(o => o.Category == "CTNMoistureLandtek").FirstOrDefault().Standard;
+
+                // 取得EndlineMoisture個別品牌設定，如果沒特別的就用預設值
+                var ListEndlineMoisture = _FinalInspectionProvider.GetEndlineMoistureByBrand(finalInspectionID, string.Empty).ToList();
+                var ListEndlineMoistureDefault = _FinalInspectionProvider.GetEndlineMoistureDefault().ToList();
+
+                moisture.ListEndlineMoisture = ListEndlineMoisture.Any() ? ListEndlineMoisture : ListEndlineMoistureDefault;
 
                 moisture.ListCartonItem = _FinalInspectionProvider.GetMoistureListCartonItem(finalInspectionID).ToList();
             }
@@ -121,7 +130,7 @@ namespace BusinessLogicLayer.Service
                     return result;
                 }
 
-                if (moistureResult.Instrument != null && moistureResult.Fabrication != null && ( moistureResult.GarmentBottom == null || moistureResult.GarmentMiddle == null || moistureResult.GarmentTop == null))
+                if (moistureResult.Instrument != null && moistureResult.Fabrication != null && (moistureResult.GarmentBottom == null || moistureResult.GarmentMiddle == null || moistureResult.GarmentTop == null))
                 {
                     result.Result = false;
                     result.ErrorMessage = "Garment Moisture can not be empty.";
@@ -130,8 +139,8 @@ namespace BusinessLogicLayer.Service
 
                 bool isMoistureExists = _FinalInspectionProvider.CheckMoistureExists(moistureResult.FinalInspectionID, moistureResult.Article, moistureResult.FinalInspection_OrderCartonUkey);
 
-                if (!isMoistureExists && 
-                    !string.IsNullOrEmpty(moistureResult.Instrument) && 
+                if (!isMoistureExists &&
+                    !string.IsNullOrEmpty(moistureResult.Instrument) &&
                     !string.IsNullOrEmpty(moistureResult.Fabrication))
                 {
                     string newResult = string.Empty;
@@ -147,7 +156,7 @@ namespace BusinessLogicLayer.Service
                     _FinalInspectionProvider.UpdateMoisture(moistureResult);
                 }
 
-                if ((finalInspection.InspectionStage == "Stagger" || finalInspection.InspectionStage == "Final") && BrandIDs.Where(o=>o.ToUpper() == "ADIDAS").Any())
+                if ((finalInspection.InspectionStage == "Stagger" || finalInspection.InspectionStage == "Final") && BrandIDs.Where(o => o.ToUpper() == "ADIDAS").Any())
                 {
                     isMoistureExists = _FinalInspectionProvider.CheckMoistureExists(moistureResult.FinalInspectionID, string.Empty, null);
                     if (!isMoistureExists)
@@ -185,9 +194,18 @@ namespace BusinessLogicLayer.Service
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-                List<EndlineMoisture> listEndlineMoisture = _FinalInspectionProvider.GetEndlineMoisture().ToList();
-                decimal CTNMoisureStandard = _FinalInspectionProvider.GetSystem()[0].FinalInspection_CTNMoistureStandard;
-                decimal GMTMoisureStandard = listEndlineMoisture
+                List<EndlineMoisture> listEndlineMoisture = _FinalInspectionProvider.GetEndlineMoistureByBrand(moistureResult.FinalInspectionID, string.Empty).ToList();
+                List<EndlineMoisture> listDefaultEndlineMoisture = _FinalInspectionProvider.GetEndlineMoistureDefault().ToList();
+
+                List<FinalInspectionMoistureStandard> MoistureStandardSetting = _FinalInspectionProvider.GetMoistureStandardSetting(moistureResult.FinalInspectionID);
+
+                decimal CTNMoisureStandard = MoistureStandardSetting.Where(o => o.Category == "CTNMoisture").FirstOrDefault().Standard;
+
+                // 取得EndlineMoisture個別品牌設定，如果沒特別的就用預設值
+                decimal GMTMoisureStandard = listEndlineMoisture.Any() ? listEndlineMoisture
+                                            .Where(s => s.Instrument == moistureResult.Instrument &&
+                                                        s.Fabrication == moistureResult.Fabrication).First().Standard :
+                                                        listDefaultEndlineMoisture
                                             .Where(s => s.Instrument == moistureResult.Instrument &&
                                                         s.Fabrication == moistureResult.Fabrication).First().Standard;
 
@@ -203,7 +221,7 @@ namespace BusinessLogicLayer.Service
                 {
                     result = moistureResult.GarmentTop > GMTMoisureStandard ||
                             moistureResult.GarmentMiddle > GMTMoisureStandard ||
-                            moistureResult.GarmentBottom > GMTMoisureStandard  ? "F" : "P";
+                            moistureResult.GarmentBottom > GMTMoisureStandard ? "F" : "P";
                 }
 
                 if (result == "F" && string.IsNullOrEmpty(moistureResult.Action))

@@ -8,169 +8,50 @@
         vertical-align: middle;
     }
 
-    .CheckListClass
-    {
-        width:100%;
-        font-size:0.8em;
+    .CheckListClass {
+        width: 100%;
+        font-size: 0.8em;
     }
 
-    .CheckListClass table tr td{
-        text-align:left;
-    }
-    .checkListClass input {
-        height: 1.5vh;
-    }
+        .CheckListClass table tr td {
+            text-align: left;
+        }
+
+        .checkListClass input {
+            height: 1.5vh;
+        }
 </style>
 
+@{
+    List<string> TypeList = Model.FinalInspection.CheckListList.Select(o => o.Type).Distinct().ToList();
+}
 <div class="CheckListClass margin-c" style="padding-left:10%">
-    <div style="display:inline-block;width:50%">
-        <table class="checkListClass">
-            <tr>
-                <td colspan="2" style="font-size: 2em;font-weight:bold">Fabric Artwork Check List</td>
-            </tr>
-            <tr>
-                <td style="width:3vw">
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckCloseShade, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Close/Shade</label></div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckHandfeel, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Handfeel</label></div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckAppearance, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Appearance</label></div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckPrintEmbDecorations, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Print/Emb Decorations</label></div>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div style="display:inline-block;width:40%">
-        <table class="checkListClass">
-            <tr>
-                <td colspan="2" style="font-size: 2em;font-weight:bold">Packaging</td>
-            </tr>
-            <tr>
-                <td style="width:3vw">
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckShippingMark, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Shipping Mark</label></div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckPolytagMarketing, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Polybag/Marketing</label></div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckColorSizeQty, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Color/Size/Qty</label></div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckHangtag, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Hangtag</label></div>
-                </td>
-            </tr>
-        </table>
-    </div>
-    <div>
-        <table class="checkListClass">
-            <tr>
-                <td colspan="2" style="font-size: 2em;font-weight:bold">Label</td>
-            </tr>
-            <tr>
-                <td style="width:3vw">
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckFiberContent, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Fiber Content</label></div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckCareInstructions, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Care Instructions</label></div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckDecorativeLabel, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Decorative Label</label></div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckAdicomLabel, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Adicom Label</label></div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckCountryofOrigion, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Country of Origion</label></div>
-                </td>
-            </tr>
 
-            <tr>
-                <td>
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckSizeKey, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Size Key</label></div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.CheckBoxFor(o => o.FinalInspection.Check8FlagLabel, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">8-Flag Label</label></div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @Html.CheckBoxFor(o => o.FinalInspection.CheckAdditionalLabel, new { @disabled = "disabled", @class = "checkboxInput" })
-                </td>
-                <td>
-                    <div><label class="checkboxlabel">Additional Label</label></div>
-                </td>
-            </tr>
-        </table>
-    </div>
+
+    @foreach (var type in TypeList)
+    {
+        var datas = Model.FinalInspection.CheckListList.Where(o => o.Type == type).ToList();
+
+        <div style="display:inline-block;width:40%">
+            <table class="checkListClass">
+
+                <tr>
+                    <td colspan="2" style="font-size: 2em;font-weight:bold">@type</td>
+                </tr>
+                @foreach (var item in datas)
+                {
+                    bool IsChecked = Model.FinalInspection.CheckListListDic[item.CheckListColName];
+
+                    <tr>
+                        <td style="width:3vw">
+                            @Html.CheckBox($@"FinalInspection.{item.CheckListColName}", IsChecked, new { @disabled = "disabled", @class = "checkboxInput", @ID = $@"FinalInspection_{item.CheckListColName}" })
+                        </td>
+                        <td>
+                            <div><label class="checkboxlabel">@item.ItemName</label></div>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    }
 </div>

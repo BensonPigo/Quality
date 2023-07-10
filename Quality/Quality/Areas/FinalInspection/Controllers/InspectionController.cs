@@ -2,8 +2,10 @@
 using BusinessLogicLayer.Service;
 using BusinessLogicLayer.Service.FinalInspection;
 using DatabaseObject;
+using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel.EtoEFlowChart;
 using DatabaseObject.ResultModel.FinalInspection;
 using DatabaseObject.ViewModel.FinalInspection;
 using FactoryDashBoardWeb.Helper;
@@ -135,6 +137,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             // 預設值
             setting.Team = "A";
+            setting.AuditDate = DateTime.Now;
 
             ViewBag.AQLPlanList = new List<SelectListItem>()
             {
@@ -154,6 +157,69 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             TempData["Setting"] = setting;
             return View(setting);
+        }
+
+        #endregion
+        
+        #region 全功能共用
+
+        /// <summary>
+        /// 檢驗當前關卡是否有符合設定
+        /// </summary>
+        /// <param name="FinalInspectionID"></param>
+        /// <returns></returns>
+        public BaseResult AutoCheckStep(string FinalInspectionID)
+        {
+
+            FinalInspectionService sevice = new FinalInspectionService();
+
+            BaseResult checkStep = sevice.CheckStep(FinalInspectionID);
+            if (checkStep == false)
+            {
+                // 退回上一關
+                sevice.UpdateStepByAction(FinalInspectionID, this.UserID, DatabaseObject.ManufacturingExecutionDB.FinalInspectionSStepAction.Previous);
+
+                //// Action重新導向
+                //this.RedirectAction(FinalInspectionID);
+            }
+
+            return checkStep;
+        }
+
+        /// <summary>
+        /// 根據FinalInspectionID，取得當前關卡，導向對應的ActionResult
+        /// </summary>
+        /// <param name="FinalInspectionID"></param>
+        /// <returns></returns>
+        public ActionResult RedirectAction(string FinalInspectionID)
+        {
+            FinalInspectionService sevice = new FinalInspectionService();
+
+            // Action重新導向
+            DatabaseObject.ManufacturingExecutionDB.FinalInspection newModel = sevice.GetFinalInspection(FinalInspectionID);
+
+            switch (newModel.InspectionStep)
+            {
+                case "Insp-Setting":
+                    return RedirectToAction("Setting", new { FinalInspectionID = FinalInspectionID });
+                case "Insp-General":
+                    return RedirectToAction("General", new { FinalInspectionID = FinalInspectionID });
+                case "Insp-CheckList":
+                    return RedirectToAction("CheckList", new { FinalInspectionID = FinalInspectionID });
+                case "Insp-AddDefect":
+                    return RedirectToAction("AddDefect", new { FinalInspectionID = FinalInspectionID });
+                case "Insp-BeautifulProductAudit":
+                    return RedirectToAction("BeautifulProductAudit", new { FinalInspectionID = FinalInspectionID });
+                case "Insp-Moisture":
+                    return RedirectToAction("Moisture", new { FinalInspectionID = FinalInspectionID });
+                case "Insp-Measurement":
+                    return RedirectToAction("Measurement", new { FinalInspectionID = FinalInspectionID });
+                case "Insp-Others":
+                    return RedirectToAction("Others", new { FinalInspectionID = FinalInspectionID });
+                default:
+                    return RedirectToAction("Setting", new { FinalInspectionID = FinalInspectionID });
+
+            }
         }
 
         #endregion
@@ -249,7 +315,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                     {
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     }
-                    
+
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
@@ -263,7 +329,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                     {
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     }
-                    
+
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
@@ -277,7 +343,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                     {
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     }
-                    
+
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
@@ -291,7 +357,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                     {
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     }
-                    
+
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
@@ -393,18 +459,22 @@ namespace Quality.Areas.FinalInspection.Controllers
                 }
                 // 預設值
                 setting.Team = "A";
-                setting.ErrorMessage = $@"msg.WithError('{(string.IsNullOrEmpty(result.ErrorMessage) ? string.Empty : result.ErrorMessage.Replace("'", string.Empty))  }')";
+                setting.ErrorMessage = $@"msg.WithError('{(string.IsNullOrEmpty(result.ErrorMessage) ? string.Empty : result.ErrorMessage.Replace("'", string.Empty))}')";
 
                 return View("Setting", setting);
             }
 
-            fsevice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-            {
-                ID = finalInspectionID,
-                InspectionStep = "Insp-General"
-            }, "Setting", this.UserID);
 
-            return RedirectToAction("General", new { FinalInspectionID = finalInspectionID });
+            fsevice.UpdateStepByAction(finalInspectionID, this.UserID, FinalInspectionSStepAction.Next);
+            return this.RedirectAction(finalInspectionID);
+
+            //fsevice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+            //{
+            //    ID = finalInspectionID,
+            //    InspectionStep = "Insp-General"
+            //}, "Setting", this.UserID);
+
+            //return RedirectToAction("General", new { FinalInspectionID = finalInspectionID });
         }
 
         #endregion
@@ -413,8 +483,17 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         public ActionResult General(string FinalInspectionID)
         {
-            FinalInspectionService sevice = new FinalInspectionService();
-            DatabaseObject.ManufacturingExecutionDB.FinalInspection model = sevice.GetFinalInspection(FinalInspectionID);
+            BaseResult checkStep = this.AutoCheckStep(FinalInspectionID);
+            if (checkStep == false)
+            {
+                return this.RedirectAction(FinalInspectionID);
+            }
+
+            FinalInspectionService service = new FinalInspectionService();
+            DatabaseObject.ManufacturingExecutionDB.FinalInspection model = service.GetFinalInspection(FinalInspectionID);
+            model.GeneralList = service.GetGeneralByBrand(FinalInspectionID, string.Empty);
+
+            ViewData["FinalInspectionAllStep"] = service.GetAllStep(FinalInspectionID, string.Empty);
 
             return View(model);
         }
@@ -436,16 +515,20 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             if (goPage == "Back")
             {
-                model.InspectionStep = "Setting";
-                sevice.UpdateFinalInspectionByStep(model, "Insp-General", this.UserID);
-                return RedirectToAction("Setting", new { finalInspectionID = FinalInspectionID });
+                model.InspectionStep = "Insp-Setting";
+                sevice.UpdateStepInfo(model, "Insp-General", this.UserID);
+
+                sevice.UpdateStepByAction(FinalInspectionID, this.UserID, FinalInspectionSStepAction.Previous);
+
+                return this.RedirectAction(FinalInspectionID);
             }
             else if (goPage == "Next")
             {
-                model.InspectionStep = "Insp-CheckList";
-                sevice.UpdateFinalInspectionByStep(model, "Insp-General", this.UserID);
+                // 更新 General資料表
+                sevice.UpdateGeneral(model);
 
-                return RedirectToAction("CheckList", new { FinalInspectionID = FinalInspectionID });
+                sevice.UpdateStepByAction(FinalInspectionID, this.UserID, FinalInspectionSStepAction.Next);
+                return this.RedirectAction(FinalInspectionID);
             }
 
             return View(model);
@@ -455,9 +538,17 @@ namespace Quality.Areas.FinalInspection.Controllers
         #region CheckList頁面
         public ActionResult CheckList(string FinalInspectionID)
         {
-            FinalInspectionService sevice = new FinalInspectionService();
+            BaseResult checkStep = this.AutoCheckStep(FinalInspectionID);
+            if (checkStep == false)
+            {
+                return this.RedirectAction(FinalInspectionID);
+            }
 
-            DatabaseObject.ManufacturingExecutionDB.FinalInspection model = sevice.GetFinalInspection(FinalInspectionID);
+            FinalInspectionService service = new FinalInspectionService();
+
+            DatabaseObject.ManufacturingExecutionDB.FinalInspection model = service.GetFinalInspection(FinalInspectionID);
+            model.CheckListList = service.GetCheckListByBrand(FinalInspectionID, string.Empty);
+            ViewData["FinalInspectionAllStep"] = service.GetAllStep(FinalInspectionID, string.Empty);
 
             return View(model);
         }
@@ -471,17 +562,19 @@ namespace Quality.Areas.FinalInspection.Controllers
             FinalInspectionService sevice = new FinalInspectionService();
             if (goPage == "Back")
             {
-                finalinspection.InspectionStep = "Insp-General";
-                sevice.UpdateFinalInspectionByStep(finalinspection, "Insp-CheckList", this.UserID);
+                // 更新 CheckList資料表
+                sevice.UpdateCheckList(finalinspection);
 
-                return RedirectToAction("General", new { FinalInspectionID = finalinspection.ID });
+                sevice.UpdateStepByAction(finalinspection.ID, this.UserID, FinalInspectionSStepAction.Previous);
+                return this.RedirectAction(finalinspection.ID);
             }
             else if (goPage == "Next")
             {
-                finalinspection.InspectionStep = "Insp-Measurement";
-                sevice.UpdateFinalInspectionByStep(finalinspection, "Insp-CheckList", this.UserID);
+                // 更新 CheckList資料表
+                sevice.UpdateCheckList(finalinspection);
 
-                return RedirectToAction("Measurement", new { FinalInspectionID = finalinspection.ID });
+                sevice.UpdateStepByAction(finalinspection.ID, this.UserID, FinalInspectionSStepAction.Next);
+                return this.RedirectAction(finalinspection.ID);
             }
             return View();
         }
@@ -490,14 +583,22 @@ namespace Quality.Areas.FinalInspection.Controllers
         #region Measurement頁面
         public ActionResult Measurement(string FinalInspectionID)
         {
+            BaseResult checkStep = this.AutoCheckStep(FinalInspectionID);
+            if (checkStep.Result == false)
+            {
+                return this.RedirectAction(FinalInspectionID);
+            }
+
+            FinalInspectionService fservice = new FinalInspectionService();
             FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
-            Measurement model = service.GetMeasurementForInspection(FinalInspectionID, this.UserID);
+            ServiceMeasurement model = service.GetMeasurementForInspection(FinalInspectionID, this.UserID);
 
             List<string> listSize = model.ListSize.Select(O => O.SizeCode).Distinct().ToList();
 
             List<SelectListItem> sizeList = new SetListItem().ItemListBinding(listSize);
             ViewBag.ListSize = sizeList;
 
+            ViewData["FinalInspectionAllStep"] = fservice.GetAllStep(FinalInspectionID, string.Empty);
             TempData["AllSize"] = model.ListSize;
 
             return View(model);
@@ -510,7 +611,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         /// <returns></returns>
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public ActionResult MeasurementSingleSave(Measurement model)
+        public ActionResult MeasurementSingleSave(ServiceMeasurement model)
         {
             if (model.ListMeasurementItem != null && !model.ListMeasurementItem.Where(o => o.ResultSizeSpec != null && o.ResultSizeSpec != "").Any())
             {
@@ -524,11 +625,13 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 FinalInspectionService fservice = new FinalInspectionService();
 
-                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                {
-                    ID = model.FinalInspectionID,
-                    InspectionStep = "Insp-AddDefect"
-                }, "Insp-Measurement", this.UserID);
+                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                //{
+                //    ID = model.FinalInspectionID,
+                //    InspectionStep = "Insp-AddDefect"
+                //}, "Insp-Measurement", this.UserID);
+
+                //fservice.UpdateStepByAction(model.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Next);
             }
 
             return Json(result);
@@ -563,7 +666,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public ActionResult Measurement(Measurement model, string goPage)
+        public ActionResult Measurement(ServiceMeasurement model, string goPage)
         {
             this.CheckSession();
 
@@ -573,23 +676,28 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             if (goPage == "Back")
             {
-                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                {
-                    ID = model.FinalInspectionID,
-                    InspectionStep = "Insp-CheckList"
-                }, "Insp-Measurement", this.UserID);
-                return RedirectToAction("CheckList", new { FinalInspectionID = model.FinalInspectionID });
+                fservice.UpdateStepByAction(model.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Previous);
+                return this.RedirectAction(model.FinalInspectionID);
+
+                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                //{
+                //    ID = model.FinalInspectionID,
+                //    InspectionStep = "Insp-CheckList"
+                //}, "Insp-Measurement", this.UserID);
+                //return RedirectToAction("CheckList", new { FinalInspectionID = model.FinalInspectionID });
             }
             else if (goPage == "Next")
             {
+                fservice.UpdateStepByAction(model.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Next);
+                return this.RedirectAction(model.FinalInspectionID);
 
-                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                {
-                    ID = model.FinalInspectionID,
-                    InspectionStep = "Insp-AddDefect"
-                }, "Insp-Measurement", this.UserID);
+                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                //{
+                //    ID = model.FinalInspectionID,
+                //    InspectionStep = "Insp-AddDefect"
+                //}, "Insp-Measurement", this.UserID);
 
-                return RedirectToAction("AddDefect", new { FinalInspectionID = model.FinalInspectionID });
+                //return RedirectToAction("AddDefect", new { FinalInspectionID = model.FinalInspectionID });
             }
 
             return View();
@@ -603,9 +711,16 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         public ActionResult AddDefect(string FinalInspectionID)
         {
+            BaseResult checkStep = this.AutoCheckStep(FinalInspectionID);
+            if (checkStep == false)
+            {
+                return this.RedirectAction(FinalInspectionID);
+            }
+
             TmpFinalInspectionDefectItem_List = new List<FinalInspectionDefectItem>();
             FinalInspectionSettingService SettingService = new FinalInspectionSettingService();
             FinalInspectionAddDefectService Addsevice = new FinalInspectionAddDefectService();
+            FinalInspectionService fservice = new FinalInspectionService();
 
             Setting model = SettingService.GetSettingForInspection(FinalInspectionID);
 
@@ -616,6 +731,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             addDefct.SampleSize = model.SampleSize;
 
+            ViewData["FinalInspectionAllStep"] = fservice.GetAllStep(FinalInspectionID, string.Empty);
             return View(addDefct);
         }
 
@@ -644,9 +760,9 @@ namespace Quality.Areas.FinalInspection.Controllers
                             continue;
                         }
                         model.Add(new ImageRemark()
-                        { 
+                        {
                             Image = item.TempImage,
-                            Remark =item.TempRemark,
+                            Remark = item.TempRemark,
                         });
                     }
                 }
@@ -697,7 +813,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             if (list != null && list.Any())
             {
-                foreach (var data in list.Where(o=>o.TempImage != null))
+                foreach (var data in list.Where(o => o.TempImage != null))
                 {
                     data.LoginToken = this.LoginToken;
                     TmpFinalInspectionDefectItem_List.Add(data);
@@ -767,24 +883,29 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             if (goPage == "Back")
             {
-                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                {
-                    ID = addDefct.FinalInspectionID,
-                    InspectionStep = "Insp-Measurement"
-                }, "Insp-AddDefect", this.UserID);
+                fservice.UpdateStepByAction(addDefct.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Previous);
+                return this.RedirectAction(addDefct.FinalInspectionID);
 
-                return RedirectToAction("Measurement", new { FinalInspectionID = addDefct.FinalInspectionID });
+                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                //{
+                //    ID = addDefct.FinalInspectionID,
+                //    InspectionStep = "Insp-Measurement"
+                //}, "Insp-AddDefect", this.UserID);
+
+                //return RedirectToAction("Measurement", new { FinalInspectionID = addDefct.FinalInspectionID });
             }
             else if (goPage == "Next")
             {
+                fservice.UpdateStepByAction(addDefct.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Next);
+                return this.RedirectAction(addDefct.FinalInspectionID);
 
-                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                {
-                    ID = addDefct.FinalInspectionID,
-                    InspectionStep = "Insp-BA"
-                }, "Insp-AddDefect", this.UserID);
+                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                //{
+                //    ID = addDefct.FinalInspectionID,
+                //    InspectionStep = "Insp-BeautifulProductAudit"
+                //}, "Insp-AddDefect", this.UserID);
 
-                return RedirectToAction("BeautifulProductAudit", new { FinalInspectionID = addDefct.FinalInspectionID });
+                //return RedirectToAction("BeautifulProductAudit", new { FinalInspectionID = addDefct.FinalInspectionID });
             }
             return View(addDefct);
 
@@ -797,11 +918,19 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         public ActionResult BeautifulProductAudit(string FinalInspectionID)
         {
+            BaseResult checkStep = this.AutoCheckStep(FinalInspectionID);
+            if (checkStep == false)
+            {
+                return this.RedirectAction(FinalInspectionID);
+            }
+
             TmpBACriteriaItem_List = new List<BACriteriaItem>();
             FinalInspectionBeautifulProductAuditService Service = new FinalInspectionBeautifulProductAuditService();
+            FinalInspectionService fservice = new FinalInspectionService();
 
             BeautifulProductAudit model = new BeautifulProductAudit() { ListBACriteria = new List<BACriteriaItem>() };
             model = Service.GetBeautifulProductAuditForInspection(FinalInspectionID);
+            ViewData["FinalInspectionAllStep"] = fservice.GetAllStep(FinalInspectionID, string.Empty);
 
             return View(model);
         }
@@ -912,13 +1041,15 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             if (goPage == "Back")
             {
-                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                {
-                    ID = latestModel.FinalInspectionID,
-                    InspectionStep = "Insp-AddDefect"
-                }, "Insp-BA", this.UserID);
+                fservice.UpdateStepByAction(Req.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Previous);
+                return this.RedirectAction(Req.FinalInspectionID);
+                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                //{
+                //    ID = latestModel.FinalInspectionID,
+                //    InspectionStep = "Insp-AddDefect"
+                //}, "Insp-BeautifulProductAudit", this.UserID);
 
-                return RedirectToAction("AddDefect", new { FinalInspectionID = Req.FinalInspectionID });
+                //return RedirectToAction("AddDefect", new { FinalInspectionID = Req.FinalInspectionID });
             }
             else if (goPage == "Next")
             {
@@ -944,7 +1075,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                                 Image = ImageHelper.ImageCompress(data.TempImage),
                                 Remark = data.TempRemark,
                             });
-                        }                    
+                        }
                     }
                     else
                     {
@@ -969,13 +1100,15 @@ namespace Quality.Areas.FinalInspection.Controllers
                 FinalInspectionBeautifulProductAuditService Service = new FinalInspectionBeautifulProductAuditService();
                 Service.UpdateBeautifulProductAudit(Req, this.UserID);
 
-                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                {
-                    ID = latestModel.FinalInspectionID,
-                    InspectionStep = "Insp-Moisture"
-                }, "Insp-BA", this.UserID);
+                fservice.UpdateStepByAction(Req.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Next);
+                return this.RedirectAction(Req.FinalInspectionID);
+                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                //{
+                //    ID = latestModel.FinalInspectionID,
+                //    InspectionStep = "Insp-Moisture"
+                //}, "Insp-BeautifulProductAudit", this.UserID);
 
-                return RedirectToAction("Moisture", new { FinalInspectionID = Req.FinalInspectionID });
+                //return RedirectToAction("Moisture", new { FinalInspectionID = Req.FinalInspectionID });
             }
             return View(Req);
 
@@ -1002,8 +1135,15 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         public ActionResult Moisture(string FinalInspectionID)
         {
+            BaseResult checkStep = this.AutoCheckStep(FinalInspectionID);
+            if (checkStep == false)
+            {
+                return this.RedirectAction(FinalInspectionID);
+            }
+
             DatabaseObject.ViewModel.FinalInspection.Moisture model = new DatabaseObject.ViewModel.FinalInspection.Moisture();
             FinalInspectionMoistureService service = new FinalInspectionMoistureService();
+            FinalInspectionService fservice = new FinalInspectionService();
 
             model = service.GetMoistureForInspection(FinalInspectionID);
 
@@ -1013,10 +1153,13 @@ namespace Quality.Areas.FinalInspection.Controllers
             ViewBag.ActionSelectListItem = model.ActionSelectListItem;
 
             ViewBag.FinalInspectionID = model.FinalInspectionID;
+            ViewBag.BandID = model.BrandID;
             ViewBag.FinalInspection_CTNMoistureStandard = model.FinalInspection_CTNMoistureStandard;
             ViewBag.FinalInspection_CTNMoistureStandardBM = model.FinalInspection_CTNMoistureStandardBM;
+            ViewBag.FinalInspection_CTNMoistureStandardLandtek = model.FinalInspection_CTNMoistureStandardLandtek;
 
             DatabaseObject.ViewModel.FinalInspection.MoistureResult moistureResult = new DatabaseObject.ViewModel.FinalInspection.MoistureResult();
+            ViewData["FinalInspectionAllStep"] = fservice.GetAllStep(FinalInspectionID, string.Empty);
 
             return View(moistureResult);
         }
@@ -1051,12 +1194,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             if (result)
             {
                 FinalInspectionService fservice = new FinalInspectionService();
-
-                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                {
-                    ID = Req.FinalInspectionID,
-                    InspectionStep = "Insp-Moisture"
-                }, "Insp-Moisture", this.UserID);
             }
 
             return Json(result);
@@ -1081,13 +1218,15 @@ namespace Quality.Areas.FinalInspection.Controllers
             FinalInspectionService fservice = new FinalInspectionService();
             if (goPage == "Back")
             {
-                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                {
-                    ID = moistureResult.FinalInspectionID,
-                    InspectionStep = "Insp-BA"
-                }, "Insp-Moisture", this.UserID);
+                fservice.UpdateStepByAction(moistureResult.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Previous);
+                return this.RedirectAction(moistureResult.FinalInspectionID);
+                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                //{
+                //    ID = moistureResult.FinalInspectionID,
+                //    InspectionStep = "Insp-BeautifulProductAudit"
+                //}, "Insp-Moisture", this.UserID);
 
-                return RedirectToAction("BeautifulProductAudit", new { FinalInspectionID = moistureResult.FinalInspectionID });
+                //return RedirectToAction("BeautifulProductAudit", new { FinalInspectionID = moistureResult.FinalInspectionID });
             }
             else if (goPage == "Next")
             {
@@ -1097,17 +1236,19 @@ namespace Quality.Areas.FinalInspection.Controllers
                 // 完成資料才可以進入下一步
                 if (MoistureResult.Result)
                 {
-                    fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                    {
-                        ID = moistureResult.FinalInspectionID,
-                        InspectionStep = "Insp-Others"
-                    }, "Insp-Moisture", this.UserID);
+                    fservice.UpdateStepByAction(moistureResult.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Next);
+                    return this.RedirectAction(moistureResult.FinalInspectionID);
+                    //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                    //{
+                    //    ID = moistureResult.FinalInspectionID,
+                    //    InspectionStep = "Insp-Others"
+                    //}, "Insp-Moisture", this.UserID);
 
-                    return RedirectToAction("Others", new { FinalInspectionID = moistureResult.FinalInspectionID });
+                    //return RedirectToAction("Others", new { FinalInspectionID = moistureResult.FinalInspectionID });
                 }
                 else
                 {
-                    ViewData["ErrorMessage"] = $@"msg.WithInfo('{ (string.IsNullOrEmpty(MoistureResult.ErrorMessage) ? string.Empty : MoistureResult.ErrorMessage.Replace("'", string.Empty))  }');";
+                    ViewData["ErrorMessage"] = $@"msg.WithInfo('{(string.IsNullOrEmpty(MoistureResult.ErrorMessage) ? string.Empty : MoistureResult.ErrorMessage.Replace("'", string.Empty))}');";
 
                     Moisture model = service.GetMoistureForInspection(moistureResult.FinalInspectionID);
 
@@ -1116,9 +1257,11 @@ namespace Quality.Areas.FinalInspection.Controllers
                     ViewBag.ListEndlineMoisture = model.ListEndlineMoisture;
                     ViewBag.ActionSelectListItem = model.ActionSelectListItem;
 
+                    ViewBag.BandID = model.BrandID;
                     ViewBag.FinalInspectionID = model.FinalInspectionID;
                     ViewBag.FinalInspection_CTNMoistureStandard = model.FinalInspection_CTNMoistureStandard;
                     ViewBag.FinalInspection_CTNMoistureStandardBM = model.FinalInspection_CTNMoistureStandardBM;
+                    ViewBag.FinalInspection_CTNMoistureStandardLandtek = model.FinalInspection_CTNMoistureStandardLandtek;
                 }
             }
             return View(moistureResult);
@@ -1131,12 +1274,20 @@ namespace Quality.Areas.FinalInspection.Controllers
         public static List<OtherImage> TmpListOthersImageItem_List;
         public ActionResult Others(string FinalInspectionID)
         {
+            BaseResult checkStep = this.AutoCheckStep(FinalInspectionID);
+            if (checkStep == false)
+            {
+                return this.RedirectAction(FinalInspectionID);
+            }
+
             TmpListOthersImageItem_List = new List<OtherImage>();
             FinalInspectionOthersService service = new FinalInspectionOthersService();
+            FinalInspectionService fservice = new FinalInspectionService();
             Others model = new Others();
 
             model = service.GetOthersForInspection(FinalInspectionID);
             model.CFA = this.UserID;
+            ViewData["FinalInspectionAllStep"] = fservice.GetAllStep(FinalInspectionID, string.Empty);
             return View(model);
         }
 
@@ -1158,7 +1309,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 foreach (var item in list)
                 {
                     model.Add(new ImageRemark()
-                    { 
+                    {
                         Image = item.Image,
                         Remark = item.Remark,
                     });
@@ -1251,7 +1402,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
                 oService.UpdateOthersBack(model, this.UserID);
 
-                fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
+                fservice.UpdateStepInfo(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
                 {
                     ID = model.FinalInspectionID,
                     InspectionStep = "Insp-Moisture",
@@ -1262,7 +1413,11 @@ namespace Quality.Areas.FinalInspection.Controllers
                     OthersRemark = model.OthersRemark
                 }, "Insp-Others", this.UserID);
 
-                return RedirectToAction("Moisture", new { FinalInspectionID = model.FinalInspectionID });
+                fservice.UpdateStepByAction(model.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Previous);
+                return this.RedirectAction(model.FinalInspectionID);
+
+
+                //return RedirectToAction("Moisture", new { FinalInspectionID = model.FinalInspectionID });
             }
             else if (goPage == "Submit")
             {
@@ -1304,7 +1459,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 }
                 else
                 {
-                    model.ErrorMessage = $@"msg.WithError(""Submit Fail, { (string.IsNullOrEmpty(r.ErrorMessage) ? string.Empty : r.ErrorMessage.Replace("'", string.Empty)) }"");";
+                    model.ErrorMessage = $@"msg.WithError(""Submit Fail, {(string.IsNullOrEmpty(r.ErrorMessage) ? string.Empty : r.ErrorMessage.Replace("'", string.Empty))}"");";
                 }
             }
 
