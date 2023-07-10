@@ -87,6 +87,28 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             TPeelStrengthTest_ViewModel model = _Service.GetDefaultModel(true);
 
+            model.DetailList = new List<TPeelStrengthTest_Detail>()
+                {
+                    new TPeelStrengthTest_Detail()
+                    {
+                        EvaluationItem = "Before",
+                        AllResult = "Pass",
+                        WarpValue=(decimal)0.5,
+                        WarpResult="Pass",
+                        WeftValue=(decimal)0.5,
+                        WeftResult="Pass"
+                    },
+                    new TPeelStrengthTest_Detail()
+                    {
+                        EvaluationItem = "After",
+                        AllResult = "Pass",
+                        WarpValue=(decimal)0.5,
+                        WarpResult="Pass",
+                        WeftValue=(decimal)0.5,
+                        WeftResult="Pass"
+                    }
+            };
+
             model.Main.EditType = "New";
 
             return View("Index", model);
