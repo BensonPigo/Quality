@@ -261,8 +261,16 @@ insert into FinalInspection_Order(ID, OrderID, AvailableQty)
             foreach (SelectOrderShipSeq selectOrderShipSeq in setting.SelectOrderShipSeq)
             {
                 sqlUpdCmd += $@"
-insert into FinalInspection_Order_QtyShip(ID, OrderID, Seq, ShipmodeID)
-            values(@FinalInspectionID, '{selectOrderShipSeq.OrderID}', '{selectOrderShipSeq.Seq}', '{selectOrderShipSeq.ShipmodeID}')
+insert into FinalInspection_Order_QtyShip(ID, OrderID, Seq, ShipmodeID, InspectionTimes)
+            values(@FinalInspectionID, '{selectOrderShipSeq.OrderID}', '{selectOrderShipSeq.Seq}', '{selectOrderShipSeq.ShipmodeID}'
+, (
+	select [InspectionTimes] = ISNULL(MAX(foq.InspectionTimes), 0) + 1
+	from FinalInspection_Order_QtyShip foq
+	left join FinalInspection f on foq.ID = f.ID
+	where exists (select 1 from FinalInspection f2 where f2.ID = @FinalInspectionID and f2.AddDate > f.AddDate)
+	and foq.OrderID = '{selectOrderShipSeq.OrderID}'
+	and foq.Seq = '{selectOrderShipSeq.Seq}')
+)
 ";
             }
 
