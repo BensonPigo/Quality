@@ -25,5 +25,7 @@ namespace ProductionDataAccessLayer.Interface
 
         IList<SelectListItem> GetActionSelectListItem();
         IList<DatabaseObject.ProductionDB.System> GetSystem();
+
+        void UpdateOrderQtyShip(string finalInspectionID);
     }
 }
