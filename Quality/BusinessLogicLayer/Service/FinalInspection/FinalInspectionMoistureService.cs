@@ -37,7 +37,15 @@ namespace BusinessLogicLayer.Service
 
                 moisture.FinalInspection_CTNMoistureStandard = MoistureStandardSetting.Where(o => o.Category == "CTNMoisture").FirstOrDefault().Standard;
                 moisture.FinalInspection_CTNMoistureStandardBM = MoistureStandardSetting.Where(o => o.Category == "CTNMoistureBM").FirstOrDefault().Standard;
-                moisture.FinalInspection_CTNMoistureStandardLandtek = MoistureStandardSetting.Where(o => o.Category == "CTNMoistureLandtek").FirstOrDefault().Standard;
+                if (MoistureStandardSetting.Where(o => o.Category == "CTNMoistureLandtek").Any())
+                {
+                    moisture.FinalInspection_CTNMoistureStandardLandtek = MoistureStandardSetting.Where(o => o.Category == "CTNMoistureLandtek").FirstOrDefault().Standard;
+                }
+                else
+                {
+                    moisture.FinalInspection_CTNMoistureStandardLandtek = 0;
+                }
+                
 
                 // 取得EndlineMoisture個別品牌設定，如果沒特別的就用預設值
                 var ListEndlineMoisture = _FinalInspectionProvider.GetEndlineMoistureByBrand(finalInspectionID, string.Empty).ToList();
