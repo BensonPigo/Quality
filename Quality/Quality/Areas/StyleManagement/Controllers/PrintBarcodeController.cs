@@ -28,7 +28,11 @@ namespace Quality.Areas.StyleManagement
         {
             this.CheckSession();
 
-            List<PrintBarcode_ViewModel> model = new List<PrintBarcode_ViewModel>();
+            PrintBarcode_ViewModel model = new PrintBarcode_ViewModel()
+            {
+                Details = new List<PrintBarcode_Detail>(),
+                SampleStage_Source = new List<SelectListItem>()
+            };
             return View(model);
         }
 
@@ -38,7 +42,10 @@ namespace Quality.Areas.StyleManagement
         {
             this.CheckSession();
 
-            List<PrintBarcode_ViewModel> model = new List<PrintBarcode_ViewModel>();
+            PrintBarcode_ViewModel model = new PrintBarcode_ViewModel()
+            {
+                Details = new List<PrintBarcode_Detail>()
+            };
 
             try
             {
@@ -50,9 +57,10 @@ namespace Quality.Areas.StyleManagement
                     return View("index", model);
                 }
 
-                model = _Service.Get_PrintBarcodeStyleInfo(Req).ToList();
+                model.Details = _Service.Get_PrintBarcodeStyleInfo(Req).ToList();
+                model.SampleStage_Source = _Service.Get_SampleStage(Req).ToList();
 
-                if (!model.Any())
+                if (!model.Details.Any())
                 {
                     ViewData["MsgScript"] = $@"msg.WithInfo(""Data not found."");";
                 }
@@ -75,7 +83,7 @@ namespace Quality.Areas.StyleManagement
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public ActionResult PrintBarcode(List<PrintBarcode_ViewModel> DataList)
+        public ActionResult PrintBarcode(List<PrintBarcode_Detail> DataList)
         {
             this.CheckSession();
 

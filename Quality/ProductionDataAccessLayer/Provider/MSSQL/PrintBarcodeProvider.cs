@@ -3,6 +3,7 @@ using ADOHelper.Utility;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.SampleRFT;
 using ProductionDataAccessLayer.Interface;
+using Sci.Win.Tools;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -22,7 +23,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         #endregion
 
 
-        public IList<PrintBarcode_ViewModel> Get_StyleInfo(StyleManagement_Request styleResult_Request)
+        public List<PrintBarcode_Detail> Get_StyleInfo(StyleManagement_Request styleResult_Request)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
             string sqlWhere = string.Empty;
@@ -124,8 +125,26 @@ select  {sqlCol}
 from    Style s with (nolock)
 where   1 = 1 {sqlWhere}
 ";
-            return ExecuteList<PrintBarcode_ViewModel>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
+            var tmp = ExecuteList<PrintBarcode_Detail>(CommandType.Text, sqlGet_StyleResult_Browse, listPar);
+            return tmp.Any() ? tmp.ToList() : new List<PrintBarcode_Detail>();
         }
 
+        public List<SelectListItem> Get_SampleStage(StyleManagement_Request styleResult_Request)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            string sqlCol = $@"
+select DISTINCT Text=ID, Value = Cast( SerialKey as varchar(10) )
+from OrderType
+where junk =0 
+and Category = 'B'
+and BrandID = @BrandID
+";
+
+            listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
+
+            var tmp = ExecuteList<SelectListItem>(CommandType.Text, sqlCol, listPar);
+            return tmp.Any() ? tmp.ToList() : new List<SelectListItem>();
+        }
     }
 }

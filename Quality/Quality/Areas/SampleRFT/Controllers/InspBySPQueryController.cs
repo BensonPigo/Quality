@@ -1,6 +1,8 @@
-﻿using BusinessLogicLayer.Service.SampleRFT;
+﻿using ADOHelper.Utility;
+using BusinessLogicLayer.Service.SampleRFT;
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel;
 using DatabaseObject.ViewModel.SampleRFT;
@@ -480,8 +482,85 @@ namespace Quality.Areas.SampleRFT.Controllers
                 result.Result = false;
                 result.ErrorMessage = ex.Message;
             }
-
+            TempData["InspBySPQueryID"] = ID;
             return Json(new { Result = result.Result, reportPath = reportPath, FileName = zipName });
+        }
+
+        public ActionResult SendMailer(string TO, string CC, string subject, string body, string file)
+        {
+            SendMail_Request request = new SendMail_Request()
+            {
+                To = TO,
+                CC = CC,
+                Subject = subject,
+                Body = body,
+                FileonServer = new List<string>() { file }
+            };
+
+            ViewBag.JS = "";
+            ViewBag.InspBySPQueryID = TempData["InspBySPQueryID"];
+
+
+            return View(request);
+        }
+
+        [HttpPost]
+        public ActionResult SendMailer(SendMail_Request _Request, long InspBySPQueryID)
+        {
+            QueryReport model = _Service.GetQueryDetail(InspBySPQueryID, this.UserID);
+            var defectData = model.AddDefect.ListDefectItem.Where(o => o.Qty > 0);
+
+            string defectHtml = $@"";
+            foreach (var item in defectData)
+            {
+                defectHtml += $@"
+<tr>
+<td style=""width: 16.6667%;"">{item.DefectTypeDesc}</td>
+<td style=""width: 16.6667%;"">{item.DefectCodeDesc}</td>
+<td style=""width: 16.6667%;"">{item.AreaCodes}</td>
+<td style=""width: 16.6667%;"">{item.Qty}</td>
+<td style=""width: 16.6667%;"">{item.Responsibility}</td>
+<td style=""width: 16.6667%;"">{item.AIComment}</td>
+</tr>
+";
+            }
+
+            string html = $@"
+<table style=""border-collapse: collapse; width: 100%;"" border=""1"">
+<tbody>
+<tr>
+<td style=""width: 16.6667%; background-color: lightgray; text-align: center;"">Defect Type</td>
+<td style=""width: 16.6667%; background-color: lightgray; text-align: center;"">Defect Code</td>
+<td style=""width: 16.6667%; background-color: lightgray; text-align: center;"">Defect Area</td>
+<td style=""width: 16.6667%; background-color: lightgray; text-align: center;"">Defect Qty&nbsp;</td>
+<td style=""width: 16.6667%; background-color: lightgray; text-align: center;"">Reponsibility</td>
+<td style=""width: 16.6667%; background-color: lightgray; text-align: center;"">AI Comment</td>
+</tr>
+{defectHtml}
+</tbody>
+</table>
+";
+            _Request.Body = _Request.Body + "</br>" + html;
+
+            SendMail_Result result = MailTools.SendMail(_Request);
+
+            string js = "";
+
+            js += "<script src='/ThirdParty/SciCustom/js/jquery-3.4.1.min.js'></script> ";
+            js += "<script>  $(function () { ";
+            if (result.result)
+            {
+                js += "alert('Success'); ";
+            }
+            else
+            {
+                js += "alert('" + result.resultMsg + "'); ";
+            }
+
+            js += "window.close(); ";
+            js += " }); </script>";
+
+            return Content(js, "text/html");
         }
     }
 }

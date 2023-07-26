@@ -2,11 +2,11 @@
 @{
     ViewBag.Title = "PrintBarcode";
     Layout = null;
-    List<PrintBarcode_ViewModel> StyleUkeyList = new List<PrintBarcode_ViewModel>();
+    List<PrintBarcode_Detail> StyleUkeyList = new List<PrintBarcode_Detail>();
 
     if (ViewData["StyleUkeyList"] != null)
     {
-        StyleUkeyList = (List<PrintBarcode_ViewModel>)ViewData["StyleUkeyList"];
+        StyleUkeyList = (List<PrintBarcode_Detail>)ViewData["StyleUkeyList"];
     }
 }
 
@@ -35,7 +35,7 @@
 {
     <label style="font-weight:bold; font-family: monospace;">@item.StyleID</label>
     <div class="barcodeDiv">
-        <svg class="barcode" jsbarcode-format="CODE128" jsbarcode-value="@item.StyleUkey" jsbarcode-width="3" jsbarcode-height="60"></svg>
+        <svg class="barcode" jsbarcode-format="CODE128" jsbarcode-value="@item.StyleUkey-@item.SampleStageSerialKey" jsbarcode-width="3" jsbarcode-height="60"></svg>
     </div>
 
 }

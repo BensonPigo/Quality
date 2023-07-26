@@ -53,27 +53,32 @@ WHERE Junk=0 {where}
             SQLParameterCollection listPar = new SQLParameterCollection();
 
             SbSql.Append($@"
-SELECT StyleID=ID,StyleUkey=Cast(Ukey AS VARCHAR),BrandID,SeasonID
-FROM Production.dbo.Style with (nolock)
-WHERE Junk=0
-");
-            if (!string.IsNullOrWhiteSpace(Req.StyleUkey))
-            {
-                SbSql.Append($@"and Ukey = {Req.StyleUkey} ");
-            }
+select StyleID=a.ID,StyleUkey=Cast(a.Ukey AS VARCHAR),a.BrandID,a.SeasonID ,OrderTypeSerialKey = Cast( b.SerialKey as varchar(10) )
+from Production.dbo.Style a
+inner join Production.dbo.OrderType b on a.BrandID=b.BrandID
+where a.Junk = 0 AND b.Junk =0 
+and b.Category = 'B'
+AND a.Ukey = {Req.StyleUkey}
+AND b.SerialKey = {Req.OrderTypeSerialKey}
 
-            if (!string.IsNullOrWhiteSpace(Req.StyleID))
-            {
-                SbSql.Append($@"and ID = '{Req.StyleUkey}' ");
-            }
-            if (!string.IsNullOrWhiteSpace(Req.BrandID))
-            {
-                SbSql.Append($@"and BrandID = '{Req.BrandID}' ");
-            }
-            if (!string.IsNullOrWhiteSpace(Req.SeasonID))
-            {
-                SbSql.Append($@"and SeasonID = '{Req.SeasonID}' ");
-            }
+");
+            //if (!string.IsNullOrWhiteSpace(Req.StyleUkey))
+            //{
+            //    SbSql.Append($@"and Ukey = {Req.StyleUkey} ");
+            //}
+
+            //if (!string.IsNullOrWhiteSpace(Req.StyleID))
+            //{
+            //    SbSql.Append($@"and ID = '{Req.StyleUkey}' ");
+            //}
+            //if (!string.IsNullOrWhiteSpace(Req.BrandID))
+            //{
+            //    SbSql.Append($@"and BrandID = '{Req.BrandID}' ");
+            //}
+            //if (!string.IsNullOrWhiteSpace(Req.SeasonID))
+            //{
+            //    SbSql.Append($@"and SeasonID = '{Req.SeasonID}' ");
+            //}
 
             return ExecuteList<StyleResult_Request>(CommandType.Text, SbSql.ToString(), listPar);
         }
@@ -161,6 +166,8 @@ where s.BrandID = @BrandID
             listPar.Add(new SqlParameter("@StyleID", styleResult_Request.StyleID));
             listPar.Add(new SqlParameter("@BrandID", styleResult_Request.BrandID));
             listPar.Add(new SqlParameter("@SeasonID", styleResult_Request.SeasonID));
+            listPar.Add(new SqlParameter("@SerialKey", styleResult_Request.OrderTypeSerialKey));
+
 
             switch (styleResult_Request.CallType)
             {
@@ -238,6 +245,7 @@ where s.BrandID = @BrandID
             string sqlGet_StyleResult_Browse = $@"
 select  {sqlCol}
     ,StyleRRLRPath = (select StyleRRLRPath from System WITH(NOLOCK))
+    ,SampleStage = (select top 1  ot.ID from OrderType ot with (nolock) where ot.BrandID = s.BrandID and ot.SerialKey = @SerialKey)
 from    Style s with (nolock)
 OUTER APPLY(
 	{RftOuterApply}
@@ -740,6 +748,36 @@ where 1=1
             listPar.Add(new SqlParameter("@MDivisionID", styleResult_Request.MDivisionID));
 
             string sqlGet_StyleResult_Browse = $@"
+DECLARE @IsRRLR_ACH_Comment as bit = 0;
+DECLARE @IsRRLR_CF_Comment as bit = 0;
+
+IF EXISTS(
+	select 1
+	from Style s
+	inner join Style_RRLR_Report srr on s.Ukey=srr.StyleUkey
+	where  1=1
+	and s.ID = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
+	--AND StyleUkey =112904 
+	and (RRRemark like '%ACH%')
+)
+BEGIN
+	SET @IsRRLR_ACH_Comment = 1
+END
+
+IF EXISTS(
+	select 1
+	from Style s
+	inner join Style_RRLR_Report srr on s.Ukey=srr.StyleUkey
+	where  1=1
+	--and s.ID = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
+	--AND StyleUkey =112904 
+	and  RRRemark like '%CF%'
+)
+BEGIN
+	SET @IsRRLR_CF_Comment = 1
+END
+
+
 --每個Articl都會要有的Type，先準備好
 SELECT [Type] = '451'
 INTO #Type
@@ -897,7 +935,31 @@ select t.Article
 	, t.TestName
 	, [LastResult] = case when t.LastTestDate is not null then iif(isnull(t.LastResult, '') = '', 'N/A', t.LastResult) else t.LastResult end
 	, t.LastTestDate
+	, AIComment = IIF(t.LastResult = 'Fail', ISNULL(cmRRLR.Comment,cmNotRRLR.Comment) ,'')
 from #tmp_final t
+outer apply(
+	select TOP 1 ad.Comment
+	from ExtendServer.ManufacturingExecution.dbo.AIComment_Detail ad
+	where ad.AICommentUkey in (
+		select Ukey from ExtendServer.ManufacturingExecution.dbo.AIComment where FunctionName='QualityWeb'
+	)
+	and ad.IsRRLR = 0
+	and ad.Type LIKE '%' + t.TestName +'%'
+)cmNotRRLR
+outer apply(
+	select TOP 1 Comment = ad.Comment
+	                        +CASE   WHEN @IsRRLR_ACH_Comment = 1 AND @IsRRLR_CF_Comment = 1 THEN 'There is RR/LR (With shade achievability issue, please ensure shading within tolerance as agreement. Lower color fastness waring, please check if need to apply tissue paper.)'
+			                        WHEN @IsRRLR_ACH_Comment = 1 THEN  'There is RR/LR (With shade achievability issue, please ensure shading within tolerance as agreement.)'
+			                        WHEN @IsRRLR_CF_Comment = 1  THEN 'There is RR/LR (Lower color fastness waring, please check if need to apply tissue paper.)'
+			                        ELSE ''
+		                        END
+	from ExtendServer.ManufacturingExecution.dbo.AIComment_Detail ad
+	where ad.AICommentUkey in (
+		select Ukey from ExtendServer.ManufacturingExecution.dbo.AIComment where FunctionName='QualityWeb'
+	)
+	and ad.IsRRLR = 1
+	and ad.Type LIKE '%' + t.TestName +'%'
+)cmRRLR
 
 drop table #tmp_final, #Type
 ";
