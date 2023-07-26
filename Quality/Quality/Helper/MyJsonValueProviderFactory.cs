@@ -46,7 +46,7 @@ namespace Quality.Helper
                         return result;
                     }
                 }
-                return 1000;
+                return int.MaxValue;
             }
         }
 
