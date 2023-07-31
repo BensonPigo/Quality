@@ -124,8 +124,7 @@ namespace BusinessLogicLayer.Service
                 finalInspection.ShipmentStatus = others.ShipmentStatus;
                 finalInspection.InspectionResult = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "Fail" : "Pass";
 
-                finalInspection.InspectionStep = "Submit";
-                _FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, "Insp-Others", UserID);
+                _FinalInspectionProvider.SubmitFinalInspection(finalInspection, UserID);
                 List<OtherImage> imgList = others.ListOthersImageItem != null && others.ListOthersImageItem.Any() ? others.ListOthersImageItem : new List<OtherImage>();
                 _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, imgList);
                 

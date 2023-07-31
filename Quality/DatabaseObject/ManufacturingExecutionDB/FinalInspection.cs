@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 namespace DatabaseObject.ManufacturingExecutionDB
 {
@@ -226,6 +227,93 @@ namespace DatabaseObject.ManufacturingExecutionDB
         public string FGPT { get; set; }
 
         public bool ISFD { get; set; }
+         
+        public Dictionary<string, bool> GeneralDic
+        {
+            get 
+            { 
+                 Dictionary<string, bool> result = new Dictionary<string, bool>();
+                if (this.finalInspectionGeneral != null)
+                {
+                    result.Add("IsMaterialApproval", this.finalInspectionGeneral.IsMaterialApproval);
+                    result.Add("IsSealingSample", this.finalInspectionGeneral.IsSealingSample);
+                    result.Add("IsMetalDetection", this.finalInspectionGeneral.IsMetalDetection);
+                    result.Add("IsFGWT", this.finalInspectionGeneral.IsFGWT);
+                    result.Add("IsFGPT", this.finalInspectionGeneral.IsFGPT);
+                    result.Add("IsTopSample", this.finalInspectionGeneral.IsTopSample);
+                    result.Add("Is3rdPartyTestReport", this.finalInspectionGeneral.Is3rdPartyTestReport);
+                    result.Add("IsPPSample", this.finalInspectionGeneral.IsPPSample);
+                    result.Add("IsGBTestForChina", this.finalInspectionGeneral.IsGBTestForChina);
+                    result.Add("IsCPSIAForYounthStytle", this.finalInspectionGeneral.IsCPSIAForYounthStytle);
+                    result.Add("IsQRSSample", this.finalInspectionGeneral.IsQRSSample);
+                    result.Add("IsFactoryDisclaimer", this.finalInspectionGeneral.IsFactoryDisclaimer);
+                    result.Add("IsA01Compliance", this.finalInspectionGeneral.IsA01Compliance);
+                    result.Add("IsCPSIACompliance", this.finalInspectionGeneral.IsCPSIACompliance);
+                    result.Add("IsCustomerCountrySpecificCompliance", this.finalInspectionGeneral.IsCustomerCountrySpecificCompliance);
+                }
 
+                return result;
+            }
+        }
+        public Dictionary<string, bool> CheckListListDic
+        {
+            get
+            {
+                Dictionary<string, bool> result = new Dictionary<string, bool>();
+                if (this.finalInspectionCheckList != null)
+                {
+                    result.Add("IsCloseShade", this.finalInspectionCheckList.IsCloseShade);
+                    result.Add("IsHandfeel", this.finalInspectionCheckList.IsHandfeel);
+                    result.Add("IsAppearance", this.finalInspectionCheckList.IsAppearance);
+                    result.Add("IsPrintEmbDecorations", this.finalInspectionCheckList.IsPrintEmbDecorations);
+                    result.Add("IsEmbellishmentPrint", this.finalInspectionCheckList.IsEmbellishmentPrint);
+                    result.Add("IsEmbellishmentBonding", this.finalInspectionCheckList.IsEmbellishmentBonding);
+                    result.Add("IsEmbellishmentHT", this.finalInspectionCheckList.IsEmbellishmentHT);
+                    result.Add("IsEmbellishmentEMB", this.finalInspectionCheckList.IsEmbellishmentEMB);
+                    result.Add("IsFiberContent", this.finalInspectionCheckList.IsFiberContent);
+                    result.Add("IsCareInstructions", this.finalInspectionCheckList.IsCareInstructions);
+                    result.Add("IsDecorativeLabel", this.finalInspectionCheckList.IsDecorativeLabel);
+                    result.Add("IsAdicomLabel", this.finalInspectionCheckList.IsAdicomLabel);
+                    result.Add("IsCountryofOrigion", this.finalInspectionCheckList.IsCountryofOrigion);
+                    result.Add("IsSizeKey", this.finalInspectionCheckList.IsSizeKey);
+                    result.Add("Is8FlagLabel", this.finalInspectionCheckList.Is8FlagLabel);
+                    result.Add("IsAdditionalLabel", this.finalInspectionCheckList.IsAdditionalLabel);
+                    result.Add("IsIdLabel", this.finalInspectionCheckList.IsIdLabel);
+                    result.Add("IsMainLabel", this.finalInspectionCheckList.IsMainLabel);
+                    result.Add("IsSizeLabel", this.finalInspectionCheckList.IsSizeLabel);
+                    result.Add("IsCareContentLabel", this.finalInspectionCheckList.IsCareContentLabel);
+                    result.Add("IsBrandLabel", this.finalInspectionCheckList.IsBrandLabel);
+                    result.Add("IsBlueSignLabel", this.finalInspectionCheckList.IsBlueSignLabel);
+                    result.Add("IsLotLabel", this.finalInspectionCheckList.IsLotLabel);
+                    result.Add("IsSecurityLabel", this.finalInspectionCheckList.IsSecurityLabel);
+                    result.Add("IsSpecialLabel", this.finalInspectionCheckList.IsSpecialLabel);
+                    result.Add("IsVIDLabel", this.finalInspectionCheckList.IsVIDLabel);
+                    result.Add("IsCNC", this.finalInspectionCheckList.IsCNC);
+                    result.Add("IsWovenlabel", this.finalInspectionCheckList.IsWovenlabel);
+                    result.Add("IsTSize", this.finalInspectionCheckList.IsTSize);
+                    result.Add("IsCCLayout", this.finalInspectionCheckList.IsCCLayout);
+                    result.Add("IsShippingMark", this.finalInspectionCheckList.IsShippingMark);
+                    result.Add("IsPolytagMarketing", this.finalInspectionCheckList.IsPolytagMarketing);
+                    result.Add("IsColorSizeQty", this.finalInspectionCheckList.IsColorSizeQty);
+                    result.Add("IsHangtag", this.finalInspectionCheckList.IsHangtag);
+                    result.Add("IsJokerTag", this.finalInspectionCheckList.IsJokerTag);
+                    result.Add("IsWWMT", this.finalInspectionCheckList.IsWWMT);
+                    result.Add("IsChinaCIT", this.finalInspectionCheckList.IsChinaCIT);
+                    result.Add("IsPolybagSticker", this.finalInspectionCheckList.IsPolybagSticker);
+                    result.Add("IsUCCSticker", this.finalInspectionCheckList.IsUCCSticker);
+                    result.Add("IsPESheetMicropak", this.finalInspectionCheckList.IsPESheetMicropak);
+                    result.Add("IsAdditionalHantage", this.finalInspectionCheckList.IsAdditionalHantage);
+                    result.Add("IsUPCStickierHantage", this.finalInspectionCheckList.IsUPCStickierHantage);
+                    result.Add("IsGS1128Label", this.finalInspectionCheckList.IsGS1128Label);
+
+                }
+
+                return result;
+            }
+        }
+        public FinalInspectionGeneral finalInspectionGeneral { get; set; }
+        public FinalInspectionCheckList finalInspectionCheckList { get; set; }
+        public List<FinalInspectionBasicGeneral> GeneralList { get; set; }
+        public List<FinalInspectionBasicCheckList> CheckListList { get; set; }
     }
 }

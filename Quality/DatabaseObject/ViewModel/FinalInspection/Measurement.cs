@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace DatabaseObject.ViewModel.FinalInspection
 {
-    public class Measurement : BaseResult
+    public class ServiceMeasurement : BaseResult
     {
         public string FinalInspectionID { get; set; }
 

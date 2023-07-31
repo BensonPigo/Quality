@@ -452,7 +452,7 @@ where   ID = @ID
                     objParameter.Add("@userID", userID);
                     objParameter.Add("@InspectionStep", inspection.InspectionStep);
                     break;
-                case "Insp-BA":
+                case "Insp-BeautifulProductAudit":
                     sqlUpdCmd += $@"
 update SampleRFTInspection
  set    InspectionStep = @InspectionStep,

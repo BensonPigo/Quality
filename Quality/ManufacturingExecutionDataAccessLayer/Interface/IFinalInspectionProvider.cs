@@ -11,11 +11,49 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
     {
         FinalInspection GetFinalInspection(string FinalInspectionID);
 
+        /// <summary>
+        /// 取得可用的關卡
+        /// </summary>
+        /// <param name="FinalInspectionID"></param>
+        /// <param name="CustPONO"></param>
+        /// <returns></returns>
+        List<FinalInspection_Step> GetAllStep(string FinalInspectionID, string CustPONO);
+
+        /// <summary>
+        /// 取得Final單子的上一關or 下一關 or 目前關卡
+        /// </summary>
+        /// <param name="FinalInspectionID"></param>
+        /// <param name="action"></param>
+        /// <returns></returns>
+        List<FinalInspection_Step> GetAllStepByAction(string FinalInspectionID, FinalInspectionSStepAction action);
+
+        /// <summary>
+        /// 將Final單子前往下一關/回到上一關
+        /// </summary>
+        /// <param name="FinalInspectionID"></param>
+        /// <param name="action">前往下一關/回到上一關</param>
+        /// <returns></returns>
+        void UpdateStepByAction(string FinalInspectionID, string UserID, FinalInspectionSStepAction action);
+
+
         string GetInspectionTimes(string CustPONO);
 
         string UpdateFinalInspection(Setting setting, string userID, string factoryID, string MDivisionid, string NewFinalInspectionID);
 
-        void UpdateFinalInspectionByStep(FinalInspection finalInspection, string currentStep, string userID);
+        /// <summary>
+        /// 部分功能Back/Next按鈕按下時，要存檔的東西(Remark之類的)
+        /// </summary>
+        /// <param name="finalInspection"></param>
+        /// <param name="currentStep"></param>
+        /// <param name="userID"></param>
+        void UpdateStepInfo(FinalInspection finalInspection, string currentStep, string userID);
+
+        /// <summary>
+        /// 最後一關按下Submit按鈕
+        /// </summary>
+        /// <param name="finalInspection"></param>
+        /// <param name="userID"></param>
+        void SubmitFinalInspection(FinalInspection finalInspection, string userID);
 
         //IList<byte[]> GetFinalInspectionDefectImage(long FinalInspection_DetailUkey);
         IList<ImageRemark> GetFinalInspectionDetail(long FinalInspection_DetailUkey);
@@ -40,15 +78,28 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         IList<ViewMoistureResult> GetViewMoistureResult(string finalInspectionID);
 
-        IList<EndlineMoisture> GetEndlineMoisture();
+        /// <summary>
+        /// 根據品牌尋找EndlineMoisture設定
+        /// </summary>
+        /// <param name="FinalInspectionID"></param>
+        /// <param name="BrandID"></param>
+        /// <returns></returns>
+        IList<EndlineMoisture> GetEndlineMoistureByBrand(string FinalInspectionID, string BrandID);
 
+        /// <summary>
+        /// 取得EndlineMoisture的預設值
+        /// </summary>
+        /// <param name="FinalInspectionID"></param>
+        /// <param name="BrandID"></param>
+        /// <returns></returns>
+        IList<EndlineMoisture> GetEndlineMoistureDefault();
         void UpdateMoisture(MoistureResult moistureResult);
 
         bool CheckMoistureExists(string finalInspectionID, string article, long? finalInspection_OrderCartonUkey);
 
         void DeleteMoisture(long ukey);
 
-        void UpdateMeasurement(DatabaseObject.ViewModel.FinalInspection.Measurement measurement, string userID);
+        void UpdateMeasurement(DatabaseObject.ViewModel.FinalInspection.ServiceMeasurement measurement, string userID);
 
         IList<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID);
         DataTable GetMeasurement(string finalInspectionID, string article, string size, string productType);
@@ -89,5 +140,20 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         void ExecImp_EOLInlineInspectionReport();
 
         BaseResult UpdateJunk(string ID);
+
+        List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID);
+        List<FinalInspectionBasicCheckList> GetCheckListByBrand(string FinalInspectionID, string BrandID);
+        void UpdateGeneral(FinalInspectionGeneral General);
+        void UpdateCheckList(FinalInspectionCheckList CheckList);
+
+        /// <summary>
+        /// 取得濕度標準
+        /// </summary>
+        /// <param name="finalInspectionID"></param>
+        /// <returns></returns>
+        List<FinalInspectionMoistureStandard> GetMoistureStandardSetting(string finalInspectionID);
+
+        List<FinalInspectionBasicGeneral> GetAllGeneral();
+        List<FinalInspectionBasicCheckList> GetAllCheckList();
     }
 }

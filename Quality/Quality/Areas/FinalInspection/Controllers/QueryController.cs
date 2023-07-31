@@ -8,6 +8,7 @@ using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
+using DatabaseObject.ResultModel.EtoEFlowChart;
 using DatabaseObject.ViewModel;
 using DatabaseObject.ViewModel.FinalInspection;
 using FactoryDashBoardWeb.Helper;
@@ -30,6 +31,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace Quality.Areas.FinalInspection.Controllers
@@ -93,9 +95,12 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         public ActionResult Detail(string FinalInspectionID)
         {
+            FinalInspectionService fService = new FinalInspectionService();
             QueryReport model = Service.GetFinalInspectionReport(FinalInspectionID);
+            model.FinalInspection.GeneralList = fService.GetGeneralByBrand(FinalInspectionID, string.Empty);
+            model.FinalInspection.CheckListList = fService.GetCheckListByBrand(FinalInspectionID, string.Empty);
 
-            TempData["ModelQuery"] = model;
+            TempData["FinalInspectionQueryModel"] = model;
             return View(model);
         }
 
@@ -104,14 +109,18 @@ namespace Quality.Areas.FinalInspection.Controllers
             bool test = false;
             if (!test)
             {
-                if (TempData["ModelQuery"] == null)
+                if (TempData["FinalInspectionQueryModel"] == null)
                 {
                     return RedirectToAction("Index");
                 }
             }
 
-            QueryReport model = (QueryReport)TempData["ModelQuery"];
-            TempData["ModelQuery"] = model;
+            QueryReport model = (QueryReport)TempData["FinalInspectionQueryModel"];
+            TempData["FinalInspectionQueryModel"] = model;
+
+            FinalInspectionService fService = new FinalInspectionService();
+            List<FinalInspectionBasicGeneral> AllGeneral = fService.GetAllGeneral();
+            List<FinalInspectionBasicCheckList> AllCheckList = fService.GetAllCheckList();
 
             // GetForFinalInspection 取得 SeasonID
             _IOrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -147,52 +156,20 @@ namespace Quality.Areas.FinalInspection.Controllers
             worksheet.Cells[9, 7] = (double)(model.FinalInspection.AcceptQty.HasValue ? model.FinalInspection.AcceptQty + 1 : 1);
             #endregion
 
-            #region General
-            worksheet.Cells[13, 1] = "Fabric Approval: " + (model.FinalInspection.FabricApprovalDoc ? "Y" : "N");
-            worksheet.Cells[13, 3] = "Sealing Sample: " + (model.FinalInspection.SealingSampleDoc ? "Y" : "N");
-            worksheet.Cells[13, 5] = "Metal Detection: " + (model.FinalInspection.MetalDetectionDoc ? "Y" : "N");
-            worksheet.Cells[13, 7] = "Garment Washing Test: " + (model.FinalInspection.GarmentWashingDoc ? "Y" : "N");
-            worksheet.Cells[14, 1] = "FGPT: " + (model.FinalInspection.CheckFGPT ? "Y" : "N");
-            #endregion
-
-            #region Check List
-            // Fabric Artwork Check List
-            worksheet.Cells[17, 1] = "Close/ Shade: " + (model.FinalInspection.CheckCloseShade ? "Y" : "N");
-            worksheet.Cells[17, 3] = "Handfeel: " + (model.FinalInspection.CheckHandfeel ? "Y" : "N");
-            worksheet.Cells[17, 5] = "Appearance: " + (model.FinalInspection.CheckAppearance ? "Y" : "N");
-            worksheet.Cells[17, 7] = "Print/ Emb Decorations: " + (model.FinalInspection.CheckPrintEmbDecorations ? "Y" : "N");
-
-            // Label
-            worksheet.Cells[19, 1] = "Fiber Content: " + (model.FinalInspection.CheckFiberContent ? "Y" : "N");
-            worksheet.Cells[19, 3] = "Care Instructions: " + (model.FinalInspection.CheckCareInstructions ? "Y" : "N");
-            worksheet.Cells[19, 5] = "Decorative Label: " + (model.FinalInspection.CheckDecorativeLabel ? "Y" : "N");
-            worksheet.Cells[19, 7] = "Adicom Label: " + (model.FinalInspection.CheckAdicomLabel ? "Y" : "N");
-            worksheet.Cells[20, 1] = "Country of Origion: " + (model.FinalInspection.CheckCountryofOrigion ? "Y" : "N");
-            worksheet.Cells[20, 3] = "Size Key: " + (model.FinalInspection.CheckSizeKey ? "Y" : "N");
-            worksheet.Cells[20, 5] = "8-Flag Label: " + (model.FinalInspection.Check8FlagLabel ? "Y" : "N");
-            worksheet.Cells[20, 7] = "Additional Label: " + (model.FinalInspection.CheckAdditionalLabel ? "Y" : "N");
-
-            // Packaging
-            worksheet.Cells[22, 1] = "Shipping Mark: " + (model.FinalInspection.CheckShippingMark ? "Y" : "N");
-            worksheet.Cells[22, 3] = "Polybag/ Marketing: " + (model.FinalInspection.CheckPolytagMarketing ? "Y" : "N");
-            worksheet.Cells[22, 5] = "Color/ Size/ Qty: " + (model.FinalInspection.CheckColorSizeQty ? "Y" : "N");
-            worksheet.Cells[22, 7] = "Hangtag: " + (model.FinalInspection.CheckHangtag ? "Y" : "N");
-            #endregion
-
             #region Others
-            worksheet.Cells[45, 3] = model.FinalInspection.ProductionStatus.HasValue ? (double)model.FinalInspection.ProductionStatus * 0.01 : 0;
-            worksheet.Cells[46, 3] = model.FinalInspection.OthersRemark;
+            worksheet.Cells[39, 3] = model.FinalInspection.ProductionStatus.HasValue ? (double)model.FinalInspection.ProductionStatus * 0.01 : 0;
+            worksheet.Cells[40, 3] = model.FinalInspection.OthersRemark;
             #endregion
 
             #region Result
-            worksheet.Cells[49, 3] = model.FinalInspection.CFA;
-            worksheet.Cells[49, 7] = (double)(model.FinalInspection.PassQty.HasValue ? model.FinalInspection.PassQty : 0);
+            worksheet.Cells[43, 3] = model.FinalInspection.CFA;
+            worksheet.Cells[43, 7] = (double)(model.FinalInspection.PassQty.HasValue ? model.FinalInspection.PassQty : 0);
 
-            worksheet.Cells[50, 3] = model.FinalInspection.SubmitDate.HasValue ? ((DateTime)model.FinalInspection.SubmitDate).ToString("yyyy/MM/dd") : string.Empty;
-            worksheet.Cells[50, 7] = (double)(model.FinalInspection.RejectQty.HasValue ? model.FinalInspection.RejectQty : 0);
+            worksheet.Cells[44, 3] = model.FinalInspection.SubmitDate.HasValue ? ((DateTime)model.FinalInspection.SubmitDate).ToString("yyyy/MM/dd") : string.Empty;
+            worksheet.Cells[44, 7] = (double)(model.FinalInspection.RejectQty.HasValue ? model.FinalInspection.RejectQty : 0);
 
-            worksheet.Cells[51, 3] = model.FinalInspection.InspectionResult;
-            worksheet.Cells[52, 3] = model.FinalInspection.ShipmentStatus;
+            worksheet.Cells[45, 3] = model.FinalInspection.InspectionResult;
+            worksheet.Cells[46, 3] = model.FinalInspection.ShipmentStatus;
             #endregion
 
             #region Measurement 依資料增加
@@ -204,24 +181,24 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    worksheet.Rows[40].Delete(XlDeleteShiftDirection.xlShiftUp);
+                    worksheet.Rows[34].Delete(XlDeleteShiftDirection.xlShiftUp);
                 }
             }
             else
             {
                 var groupList = MeasurementList.GroupBy(g => new { g.Time, g.Article, g.SizeCode, g.Location }).ToList();
                 int copyCount = groupList.Count();
-                Range rngToCopy = worksheet.get_Range("A40:A43").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A34:A37").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A40", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A34", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
                 // 開始列40，預設4列
                 for (int i = copyCount - 1; i >= 0; i--)
                 {
-                    int row = i * 4 + 40;
+                    int row = i * 4 + 34;
                     string time = groupList[i].Select(s => s.Time).First();
                     string article = groupList[i].Select(s => s.Article).First();
                     string sizeCode = groupList[i].Select(s => s.SizeCode).First();
@@ -258,23 +235,23 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    worksheet.Rows[31].Delete(XlDeleteShiftDirection.xlShiftUp);
+                    worksheet.Rows[25].Delete(XlDeleteShiftDirection.xlShiftUp);
                 }
             }
             else
             {
                 int copyCount = model.ListViewMoistureResult.Count();
-                Range rngToCopy = worksheet.get_Range("A31:A38").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A25:A32").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A31", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A25", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
                 // 開始列 31，預設 8 列
                 for (int i = 0; i < copyCount; i++)
                 {
-                    int row = i * 8 + 31;
+                    int row = i * 8 + 25;
                     worksheet.Cells[row, 1] = $"Article: {model.ListViewMoistureResult[i].Article}, CTN: {model.ListViewMoistureResult[i].CTNNo}";
                     worksheet.Cells[row + 1, 3] = model.ListViewMoistureResult[i].Instrument;
                     worksheet.Cells[row + 1, 6] = model.ListViewMoistureResult[i].Fabrication;
@@ -299,53 +276,162 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    worksheet.Rows[27].Delete(XlDeleteShiftDirection.xlShiftUp);
+                    worksheet.Rows[21].Delete(XlDeleteShiftDirection.xlShiftUp);
                 }
             }
             else
             {
-                worksheet.Cells[27, 1] = $"Beautiful Product Qty: {model.FinalInspection.BAQty}";
+                worksheet.Cells[21, 1] = $"Beautiful Product Qty: {model.FinalInspection.BAQty}";
                 int copyCount = model.ListBACriteriaItem.Count;
-                Range rngToCopy = worksheet.get_Range("A29").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A23").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A29", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("AllGeneral", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
                 for (int i = 0; i < copyCount; i++)
                 {
-                    int row = i + 29;
+                    int row = i + 23;
                     worksheet.Cells[row, 1] = model.ListBACriteriaItem[i].BACriteria + ": " + model.ListBACriteriaItem[i].BACriteriaDesc;
                     worksheet.Cells[row, 9] = model.ListBACriteriaItem[i].Qty;
                 }
             }
             #endregion
+            
             #region Defect 依資料 依資料增加
             if (model.ListDefectItem == null || model.ListDefectItem.Count == 0)
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    worksheet.Rows[24].Delete(XlDeleteShiftDirection.xlShiftUp);
+                    worksheet.Rows[18].Delete(XlDeleteShiftDirection.xlShiftUp);
                 }
             }
             else
             {
                 int copyCount = model.ListDefectItem.Count;
-                Range rngToCopy = worksheet.get_Range("A25").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("19").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A25", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A19", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
                 for (int i = 0; i < copyCount; i++)
                 {
-                    int row = i + 25;
+                    int row = i + 19;
                     worksheet.Cells[row, 1] = model.ListDefectItem[i].DefectType;
                     worksheet.Cells[row, 3] = model.ListDefectItem[i].DefectCode;
                     worksheet.Cells[row, 9] = model.ListDefectItem[i].Qty;
                 }
+            }
+            #endregion
+
+            #region Check List 依資料增加
+
+            if (model.FinalInspection.CheckListListDic.Count > 0)
+            {
+                var CheckListType = AllCheckList.Select(o => o.Type).Distinct().ToList();
+                int CheckListRowCount = CheckListType.Count;
+
+                foreach (var t in CheckListType)
+                {
+                    var sameType = AllCheckList.Where(o => o.Type == t);
+                    int typCount = (sameType.Count() / 4) + 1;
+                    CheckListRowCount += typCount;
+                }
+
+                // 根據Type數量複製Row
+                Range rngToCopy = worksheet.get_Range("A15:A16").EntireRow; // 選取要被複製的資料
+                for (int i = 1; i < CheckListType.Count; i++)
+                {
+                    Excel.Range rngToInsert = worksheet.get_Range("A15", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
+                }
+
+                int eachTypeRowIdx = 15;
+                foreach (var type in CheckListType)
+                {
+                    // 填入Check List的Type
+                    worksheet.Cells[eachTypeRowIdx, 1] = type;
+
+                    var sameTypeData = model.FinalInspection.CheckListList.Where(o => o.Type == type).ToList();
+                    int typeRowCount = (sameTypeData.Count % 4) > 0 ? (sameTypeData.Count / 4) + 1 : (sameTypeData.Count / 4);
+
+
+                    // 根據這個Type有多少 CheckList 數量複製Row
+                    Range rngToCopy2 = worksheet.get_Range($@"A{eachTypeRowIdx + 1}:A{eachTypeRowIdx + 1}").EntireRow; // 選取要被複製的資料
+                    for (int i = 1; i < typeRowCount; i++)
+                    {
+                        Excel.Range rngToInsert = worksheet.get_Range($"A{eachTypeRowIdx + 1}", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                        rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy2.Copy(Type.Missing)); // 貼上
+                    }
+
+
+                    int columnCount = 0;
+                    int checkRowCount = 0;
+                    foreach (var checkItem in sameTypeData)
+                    {
+                        string isSelect = model.FinalInspection.CheckListListDic[checkItem.CheckListColName] ? "Y" : "N";
+
+                        int col = 1 + (columnCount * 2);
+                        worksheet.Cells[eachTypeRowIdx + 1 + checkRowCount, col] = $@"{checkItem.ItemName}: {isSelect}";
+                        columnCount++;
+
+                        // 一個Row只有四筆資料，超過換行
+                        if (columnCount > 3)
+                        {
+                            columnCount = 0;
+                            checkRowCount += 1;
+                        }
+                    }
+
+                    // 每個Type底下有幾Row的Check List
+                    eachTypeRowIdx += typeRowCount;
+                    // 換一個Type
+                    eachTypeRowIdx++;
+                }
+                
+            }
+
+            #endregion
+
+            #region General 依資料增加
+
+            if (model.FinalInspection.GeneralDic.Count > 0)
+            {
+                int GeneralRowCount = (AllGeneral.Count % 4) > 0 ? (AllGeneral.Count / 4) + 1 : (AllGeneral.Count / 4);
+
+                Range rngToCopy = worksheet.get_Range("A13:A13").EntireRow; // 選取要被複製的資料
+                for (int i = 1; i < GeneralRowCount; i++)
+                {
+                    Excel.Range rngToInsert = worksheet.get_Range("A13", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
+                }
+
+                int columnCount = 0;
+                GeneralRowCount = 0;
+                foreach (var g in AllGeneral)
+                {
+                    int col = 1 + (columnCount * 2);
+                    string isSelect = model.FinalInspection.GeneralDic[g.GeneralColName] ? "Y" : "N";
+
+                    worksheet.Cells[13 + GeneralRowCount, col] = $@"{g.ItemName}: {isSelect}";
+                    columnCount++;
+
+                    // 一個Row只有四筆資料，超過換行
+                    if (columnCount > 3)
+                    {
+                        columnCount = 0;
+                        GeneralRowCount += 1;
+                    }
+                }
+
+                //worksheet.Cells[13, 1] = "Fabric Approval: " + (model.FinalInspection.FabricApprovalDoc ? "Y" : "N");
+                //worksheet.Cells[13, 3] = "Sealing Sample: " + (model.FinalInspection.SealingSampleDoc ? "Y" : "N");
+                //worksheet.Cells[13, 5] = "Metal Detection: " + (model.FinalInspection.MetalDetectionDoc ? "Y" : "N");
+                //worksheet.Cells[13, 7] = "Garment Washing Test: " + (model.FinalInspection.GarmentWashingDoc ? "Y" : "N");
+                //worksheet.Cells[14, 1] = "FGPT: " + (model.FinalInspection.CheckFGPT ? "Y" : "N");
             }
             #endregion
 
@@ -393,8 +479,8 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             bool test = IsTest.ToLower() == "true";
 
-            QueryReport model = (QueryReport)TempData["ModelQuery"];
-            TempData["ModelQuery"] = model;
+            QueryReport model = (QueryReport)TempData["FinalInspectionQueryModel"];
+            TempData["FinalInspectionQueryModel"] = model;
             string WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
 
             var result = Service.SendMail(model.FinalInspection.ID, WebHost, test);
