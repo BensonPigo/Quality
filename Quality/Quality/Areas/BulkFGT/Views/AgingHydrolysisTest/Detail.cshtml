@@ -196,6 +196,7 @@
         z-index: 1001;
         opacity: .80;
     }
+
     input, select, a, div {
         font-size: 1rem;
     }
@@ -565,7 +566,7 @@
                                                     <option value="@item.Value" @selected>@item.Text</option>
                                                 }
                                             </select>*@
-                                        
+
                                         @Html.HiddenFor(o => Model.MockupList[i].ChangeScaleStandard)
                                         @if (Model.MockupList[i].ChangeResult == "Pass")
                                         {
@@ -854,9 +855,14 @@
                     async: false,
                     success: function (data) {
                         if (data.Result) {
-                            msg.WithSuccesCheck("Success", function () {
-                                location.reload();
-                            });
+                            if (data.AgingHydrolysisResult == "Fail") {
+                                FailMail();
+                            }
+                            else {
+                                msg.WithSuccesCheck("Success", function () {
+                                    location.reload();
+                                });
+                            }
                         }
                         else {
                             msg.WithError(data.ErrMsg);
@@ -900,6 +906,46 @@
 
         $('input ,select').unbind('blur').unbind('change');
 
+
+    }
+    function FailMail() {
+        var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
+        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+
+        $.ajax({
+            url: "@Url.Action("FailMail", "AgingHydrolysisTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ReportNo: '@Model.MainDetailData.ReportNo', TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.AgingHydrolysisResult) {
+                    msg.WithSuccesCheck("Success", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithWarningCheck(data.resultMsg, function () {
+                        location.reload();
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // console.log(xhr.responseText);
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
     }
 
     function TimeCheck(value) {

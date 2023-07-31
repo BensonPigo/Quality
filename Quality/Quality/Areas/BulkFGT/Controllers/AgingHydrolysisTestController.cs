@@ -208,6 +208,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             AgingHydrolysisTest_Detail_ViewModel model = _service.GetDetailPage(new AgingHydrolysisTest_Request() { ReportNo = ReportNo });
 
+            ViewBag.FactoryID = this.FactoryID;
             return View(model);
         }
         [HttpPost]
@@ -237,8 +238,9 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Status = "Confirmed",
                 Result = Result
             }, this.UserID);
+            AgingHydrolysisTest_Detail_ViewModel model = _service.GetDetailPage(new AgingHydrolysisTest_Request() { ReportNo = ReportNo });
 
-            return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+            return Json(new { result.Result, ErrMsg = result.ErrorMessage, AgingHydrolysisResult = model.MainDetailData.Result });
         }
         [HttpPost]
         [SessionAuthorizeAttribute]
@@ -291,6 +293,15 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult FailMail(string ReportNo, string TO, string CC)
+        {
+            SendMail_Result result = _service.FailSendMail(ReportNo, TO, CC);
+            return Json(result);
+        }
+
         public JsonResult SendMailToMR(string ReportNo)
         {
             this.CheckSession();

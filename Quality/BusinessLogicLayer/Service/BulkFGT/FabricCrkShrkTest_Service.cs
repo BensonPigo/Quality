@@ -5,6 +5,7 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Library;
+using Org.BouncyCastle.Ocsp;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
@@ -29,6 +30,7 @@ namespace BusinessLogicLayer.Service
         IOrdersProvider _OrdersProvider;
         IStyleProvider _StyleProvider;
         IFIRLaboratoryProvider _FIRLaboratoryProvider;
+        private MailToolsService _MailService;
         public BaseResult AmendFabricCrkShrkTestCrockingDetail(long ID)
         {
             BaseResult baseResult = new BaseResult();
@@ -676,7 +678,7 @@ namespace BusinessLogicLayer.Service
             return baseResult;
         }
 
-        public SendMail_Result SendCrockingFailResultMail(string toAddress, string ccAddress, long ID, bool isTest)
+        public SendMail_Result SendCrockingFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -694,7 +696,17 @@ namespace BusinessLogicLayer.Service
                     Body = mailBody,
                     alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Fabric Crocking & Shrinkage Test",
+                    OrderID = OrderID,
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+
                 result = MailTools.SendMail(sendMail_Request);
             }
             catch (Exception ex)
@@ -1629,7 +1641,7 @@ namespace BusinessLogicLayer.Service
             #endregion
         }
 
-        public SendMail_Result SendHeatFailResultMail(string toAddress, string ccAddress, long ID, bool isTest)
+        public SendMail_Result SendHeatFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -1647,7 +1659,16 @@ namespace BusinessLogicLayer.Service
                     Body = mailBody,
                     alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Fabric Crocking & Shrinkage Test",
+                    OrderID = OrderID,
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
                 result = MailTools.SendMail(sendMail_Request);
 
             }
@@ -1660,7 +1681,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public SendMail_Result SendWashFailResultMail(string toAddress, string ccAddress, long ID, bool isTest)
+        public SendMail_Result SendWashFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -1678,7 +1699,16 @@ namespace BusinessLogicLayer.Service
                     Body = mailBody,
                     alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Fabric Crocking & Shrinkage Test",
+                    OrderID = OrderID,
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
                 result = MailTools.SendMail(sendMail_Request);
 
             }

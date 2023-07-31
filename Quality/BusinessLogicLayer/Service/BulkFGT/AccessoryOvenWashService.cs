@@ -4,6 +4,7 @@ using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
+using Org.BouncyCastle.Asn1.Ocsp;
 using ProductionDataAccessLayer.Provider.MSSQL.BukkFGT;
 using Sci;
 using System;
@@ -22,6 +23,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
     public class AccessoryOvenWashService
     {
         private AccessoryOvenWashProvider _AccessoryOvenWashProvider;
+        private MailToolsService _MailService;
         private string IsTest = ConfigurationManager.AppSettings["IsTest"].ToString();
 
         public Accessory_ViewModel GetMainData(Accessory_ViewModel Req)
@@ -196,7 +198,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Body = mailBody,
                     alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Accessory Oven & Wash Test",
+                    OrderID = Req.POID,
+
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
                 result = MailTools.SendMail(sendMail_Request);
                 result.result = true;
             }
@@ -459,7 +471,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Body = mailBody,
                     alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Accessory Oven & Wash Test",
+                    OrderID = Req.POID,
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
                 result = MailTools.SendMail(sendMail_Request);
                 result.result = true;
             }
@@ -726,6 +747,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 string mailBody = MailTools.DataTableChangeHtml(dt, out System.Net.Mail.AlternateView plainView);
                 BaseResult baseResult = WashingFastnessExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
+
+
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = Req.ToAddress,
@@ -734,7 +757,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Body = mailBody,
                     alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Accessory Oven & Wash Test",
+                    OrderID = Req.POID,
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
                 result = MailTools.SendMail(sendMail_Request);
                 result.result = true;
             }

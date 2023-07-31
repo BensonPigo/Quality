@@ -33,6 +33,7 @@ namespace BusinessLogicLayer.Service
         private IOrderQtyProvider _OrderQtyProvider;
         private IScaleProvider _ScaleProvider;
         private IInspectionTypeProvider _InspectionTypeProvider;
+        private MailToolsService _MailService;
 
         private string IsTest = ConfigurationManager.AppSettings["IsTest"];
 
@@ -541,7 +542,18 @@ namespace BusinessLogicLayer.Service
                 Body = mailBody,
                 alternateView = plainView,
                 FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+                AICommentType = "Mockup Oven Test",
+                StyleID = model.StyleID,
+                SeasonID = model.SeasonID,
+                BrandID = model.BrandID,
             };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
             return MailTools.SendMail(sendMail_Request);
         }
     }

@@ -5,6 +5,7 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Library;
+using Org.BouncyCastle.Ocsp;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
@@ -29,6 +30,7 @@ namespace BusinessLogicLayer.Service
         IScaleProvider _ScaleProvider;
         IOrdersProvider _OrdersProvider;
         IStyleProvider _StyleProvider;
+        private MailToolsService _MailService;
 
         private string IsTest = ConfigurationManager.AppSettings["IsTest"];
 
@@ -302,7 +304,16 @@ namespace BusinessLogicLayer.Service
                     Body = mailBody,
                     alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Fabric Oven Test",
+                    OrderID = poID,
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
                 result = MailTools.SendMail(sendMail_Request);
 
             }

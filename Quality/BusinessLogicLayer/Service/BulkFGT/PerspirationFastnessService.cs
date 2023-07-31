@@ -19,6 +19,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using Excel = Microsoft.Office.Interop.Excel;
 
 
@@ -31,6 +32,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         public IScaleProvider _ScaleProvider;
         public IOrdersProvider _OrdersProvider;
         public IStyleProvider _StyleProvider;
+        private MailToolsService _MailService;
 
         public BaseResult AmendPerspirationFastnessDetail(string poID, string TestNo)
         {
@@ -413,7 +415,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Body = mailBody,
                     alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Perspiration Fastness Test",
+                    OrderID = poID,
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
                 result = MailTools.SendMail(sendMail_Request);
 
             }

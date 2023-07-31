@@ -2,18 +2,22 @@
 using ADOHelper.Utility.Interface;
 using BusinessLogicLayer.Helper;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Ict;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Newtonsoft.Json.Linq;
+using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +30,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
     public class AgingHydrolysisTestService
     {
         public AgingHydrolysisTest_Provider _Provider;
+        private MailToolsService _MailService;
 
         public AgingHydrolysisTest_ViewModel GetDefaultModel()
         {
@@ -665,6 +670,38 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Marshal.ReleaseComObject(excel);
             }
             return result;
+        }
+
+        public SendMail_Result FailSendMail(string ReportNo, string TO, string CC)
+        {
+            AgingHydrolysisTest_ViewModel main = this.GetMainPage(new AgingHydrolysisTest_Request()
+            {
+                ReportNo = ReportNo
+            });
+            AgingHydrolysisTest_Detail_ViewModel report = this.GetReport(ReportNo, false);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName) ;
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = "Accelerated Aging by Hydrolysis – Test Fail",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+                AICommentType = "Accelerated Aging by Hydrolysis",
+                StyleID = main.MainData.StyleID,
+                SeasonID = main.MainData.SeasonID,
+                BrandID = main.MainData.BrandID,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

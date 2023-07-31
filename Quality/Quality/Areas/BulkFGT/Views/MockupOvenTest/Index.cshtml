@@ -1233,6 +1233,9 @@
                         para += "&Subject=" + "Mockup Oven Test – ReportNo:" + $('#ReportNo').val() + " – Style: " + $('#StyleID').val();
                         para += "&Body=" + "Attachment is Mockup Oven Test– ReportNo:" + $('#ReportNo').val() + " detail data";
                         para += "&file=" + data.FileName;
+                        @*para += "&IsShowAIComment=true";
+                        para += "&Type=Mockup Oven Test";
+                        para += "&OrderID=" + '@Model.POID';*@
                         window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
                     }
                     else {
@@ -1293,7 +1296,7 @@
             $(this).val('');
         });
     }
-    
+
     function DetailDetailButtonBind() {
         $('.btnArtworkColorItem').on('click', function () {
             var brandid = $('#BrandID').val();

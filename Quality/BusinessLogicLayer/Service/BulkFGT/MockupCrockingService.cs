@@ -31,6 +31,7 @@ namespace BusinessLogicLayer.Service
         private IStyleArtworkProvider _IStyleArtworkProvider;
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
+        private MailToolsService _MailService;
 
         public MockupCrocking_ViewModel GetMockupCrocking(MockupCrocking_Request MockupCrocking)
         {
@@ -463,7 +464,18 @@ namespace BusinessLogicLayer.Service
                 Body = mailBody,
                 alternateView = plainView,
                 FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+                AICommentType = "Mockup Crocking Test",
+                StyleID = model.StyleID,
+                SeasonID = model.SeasonID,
+                BrandID = model.BrandID,
             };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
             return MailTools.SendMail(sendMail_Request);
         }
     }

@@ -7,6 +7,7 @@ using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using MICS.DataAccessLayer.Interface;
 using MICS.DataAccessLayer.Provider.MSSQL;
+using Org.BouncyCastle.Ocsp;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
@@ -28,6 +29,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         private IColorFastnessProvider _IColorFastnessProvider;
         private IColorFastnessDetailProvider _IColorFastnessDetailProvider;
         private IOrdersProvider _IOrdersProvider;
+        private MailToolsService _MailService;
 
         public enum DetailStatus
         {
@@ -327,7 +329,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Body = strHtml,
                     alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Washing Fastness",
+                    OrderID = POID,
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(request);
+                request.Body = request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
 
                 MailTools.SendMail(request);
                 result.Result = true;

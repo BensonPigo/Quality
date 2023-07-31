@@ -120,6 +120,8 @@
     .aiCommentTooltipText {
         visibility: hidden;
         position: fixed;
+        top: 70%; /* 距離上方50%的位置 */
+        left: 15%; /* 距離左邊50%的位置 */
         z-index: 9999;
         background-color: pink;
         border: 1px solid black;
@@ -780,6 +782,11 @@
                         var subject = "Garment Test - Style:" + $('#garmentTest_StyleID').val() + ", Season:" + $('#garmentTest_SeasonID').val();
                         var body = "Garment Test - Style:" + $('#garmentTest_StyleID').val() + ", Season:" + $('#garmentTest_SeasonID').val() + " had been sent, please receive and confirm";
                         var para = "?subject=" + subject + "&body=" + body;
+                        @*para += "&IsShowAIComment=true";
+                        para += "&Type=Garment Wash Test";
+                        para += "&BrandID=" + '@Model.garmentTest.BrandID';
+                        para += "&SeasonID=" + '@Model.garmentTest.SeasonID';
+                        para += "&StyleID=" + '@Model.garmentTest.StyleID';*@
                         window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
                     }
                     else {

@@ -5,11 +5,13 @@ using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Microsoft.Office.Interop.Excel;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Sci;
 using System;
 using System.Configuration;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Web.UI.WebControls;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -17,6 +19,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
     {
         private PullingTestProvider _PullingTestProvider;
         private bool IsTest = bool.Parse(ConfigurationManager.AppSettings["IsTest"]);
+        private MailToolsService _MailService;
 
         public PullingTest_ViewModel GetReportNoList(PullingTest_ViewModel Req)
         {
@@ -200,7 +203,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Subject = "Pulling Test - Test Fail",
                     Body = mailBody,
                     alternateView = plainView,
+                    IsShowAIComment = true,
+                    AICommentType = "Pulling test for Snap/Button/Rivet",
+                    StyleID = dt.Rows[0]["StyleID"].ToString(),
+                    SeasonID = dt.Rows[0]["SeasonID"].ToString(),
+                    BrandID = dt.Rows[0]["BrandID"].ToString(),
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
                 result = MailTools.SendMail(sendMail_Request);
                 result.result = true;
             }

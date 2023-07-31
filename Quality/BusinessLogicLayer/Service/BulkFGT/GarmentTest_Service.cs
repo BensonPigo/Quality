@@ -32,6 +32,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         private IGarmentTestDetailProvider _IGarmentTestDetailProvider;
         private IGarmentTestDetailShrinkageProvider _IGarmentTestDetailShrinkageProvider;
         private IGarmentDetailSpiralityProvider _IGarmentDetailSpiralityProvider;
+        private MailToolsService _MailService;
 
         public enum SelectType
         {
@@ -606,7 +607,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Body = strHtml,
                     alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Garment Wash Test,Seam Breakage,Odour Test",
+                    StyleID = dtContent.Rows[0]["StyleID"].ToString(),
+                    SeasonID = dtContent.Rows[0]["SeasonID"].ToString(),
+                    BrandID = dtContent.Rows[0]["BrandID"].ToString(),
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(request);
+                request.Body = request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
 
                 MailTools.SendMail(request);
                 result.Result = true;

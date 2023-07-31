@@ -31,6 +31,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         public IScaleProvider _ScaleProvider;
         public IOrdersProvider _OrdersProvider;
         public IStyleProvider _StyleProvider;
+        private MailToolsService _MailService;
 
         public BaseResult AmendWaterFastnessDetail(string poID, string TestNo)
         {
@@ -351,7 +352,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Body = mailBody,
                     alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Water Fastness Test",
+                    OrderID = poID,
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
                 result = MailTools.SendMail(sendMail_Request);
 
             }
