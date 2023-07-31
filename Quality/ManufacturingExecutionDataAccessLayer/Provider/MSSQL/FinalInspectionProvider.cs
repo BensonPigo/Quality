@@ -1507,11 +1507,11 @@ INTO #Style_Size
 from    Production.dbo.Style WITH(NOLOCK)
 where   Ukey IN (
 	select StyleUkey 
-	from Production.dbo.Orders  WITH(NOLOCK)
-	where ID IN (select ID
-					from Production.dbo.Orders WITH(NOLOCK)
-					where CustPONO = @CustPONO
-				) 
+	from Production.dbo.Orders o WITH(NOLOCK)
+	INNER JOIN FinalInspection_Order fo WITH(NOLOCK) on fo.OrderID=o.ID
+	INNER JOIN FinalInspection f WITH(NOLOCK) on f.ID=fo.ID
+	where f.ID =  @finalInspectionID
+    ----因為CustPONO會有空值的情況，所以不可以使用CustPONO去取Style，改成直接抓SP#
 )
 
 select  SizeSpec,        MeasurementUkey,        AddDate
