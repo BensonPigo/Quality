@@ -237,7 +237,7 @@
         <!--Detail-Cartons彈出視窗-->
         <!--多個Table forA001-->
         <input type="hidden" id="currnetSelectedPO" />
-        <div class="detail-dialog to-edit-detail" title="Select Carton">
+        <div class="detail-dialog to-Carton-detail" title="Select Carton">
             <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
                 <table cellspacing="100" id="CartonTable" class="table table-striped display">
                     <thead>
@@ -618,7 +618,7 @@
             });
 
             //Select Carton視窗
-            $(".to-edit-detail").dialog({
+            $(".to-Carton-detail").dialog({
                 width: "70%",
                 dialogClass: "add-contact-box",
                 buttons: {
@@ -846,7 +846,7 @@
                 return true;
             }
 
-            $(".to-edit-detail").dialog("open");
+            $(".to-Carton-detail").dialog("open");
             ShowLoading();
 
             // Carton的DataTable建立函式

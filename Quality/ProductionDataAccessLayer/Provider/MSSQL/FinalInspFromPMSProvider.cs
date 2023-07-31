@@ -160,7 +160,8 @@ select  [Selected] = Cast(0 as bit),
         [Seq] = pld.OrderShipmodeSeq
 		,ShipQty = SUM(pld.ShipQty)
  from PackingList_Detail pld WITH(NOLOCK)
- where  pld.OrderID in ({whereOrderID}) 
+ where  pld.OrderID in ({whereOrderID})  
+    and CTNStartNo <> ''
     --and CTNQty = 1
  group by  OrderID,ID,CTNStartNo,OrderShipmodeSeq
  ORDER BY Cast( CTNStartNo as int)

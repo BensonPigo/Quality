@@ -1,7 +1,7 @@
 ﻿@model DatabaseObject.ViewModel.FinalInspection.QueryReport
 <style type="text/css">
     .generalClass .checkboxlabel {
-        font-size: 3vh;
+        font-size: 2vh;
         font-weight: 900;
     }
     .generalClass tr td {
@@ -9,14 +9,14 @@
     }
 </style>
 
-<table class="generalClass al-m" style="transform: translate(-50%, -40%);width: 48%;">
+<table class="generalClass" style="width: 48%;">
 
     @foreach (var item in Model.FinalInspection.GeneralList)
     {
         bool IsChecked = Model.FinalInspection.GeneralDic[item.GeneralColName];
 
         <tr>
-            <td style="width:20%">
+            <td style="width:5%">
                 @Html.CheckBox($@"FinalInspection.{item.GeneralColName}", IsChecked, new { @class = "checkboxInput", @disabled = "disabled", @ID = $@"FinalInspection_{item.GeneralColName}" })
             </td>
             <td>

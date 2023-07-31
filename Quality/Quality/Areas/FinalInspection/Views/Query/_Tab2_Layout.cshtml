@@ -25,14 +25,14 @@
 @{
     List<string> TypeList = Model.FinalInspection.CheckListList.Select(o => o.Type).Distinct().ToList();
 }
-<div class="CheckListClass margin-c" style="padding-left:10%">
+<div class="CheckListClass margin-c" style="padding-left:5%">
 
 
     @foreach (var type in TypeList)
     {
         var datas = Model.FinalInspection.CheckListList.Where(o => o.Type == type).ToList();
 
-        <div style="display:inline-block;width:40%">
+        <div style="display:inline-block;width:33%;vertical-align:top;">
             <table class="checkListClass">
 
                 <tr>

@@ -1753,7 +1753,7 @@ where f.InspectionResult = @InspectionResult)";
             {
                 whereOrder += @" and ID IN (
 select ID
-from MainServer.Production.dbo.Orders WITH(NOLOCK)
+from Production.dbo.Orders WITH(NOLOCK)
 where CustPONO = @CustPONO
 )
 ";
@@ -1811,12 +1811,12 @@ select  ID,
         BrandID,
         Qty
 into    #tmpOrders
-from    MainServer.Production.dbo.Orders with (nolock)
+from    Production.dbo.Orders with (nolock)
 where   1 = 1 {whereOrder}
 
 select  ID, Article
 into    #tmpOrderArticle
-from    MainServer.Production.dbo.Order_Article with (nolock)
+from    Production.dbo.Order_Article with (nolock)
 where   ID in (select ID from #tmpOrders)
 
 select  [FinalInspectionID] = f.ID,
@@ -1841,7 +1841,7 @@ inner join #tmpOrders o on fo.OrderID = o.ID
 outer apply(
 	select val = iif(exists(
 		select ID 
-		from MainServer.Production.dbo.CFAInspectionRecord c with (nolock) 
+		from SciProduction_CFAInspectionRecord c with (nolock) 
 		where c.ID = f.ID
 	), 'Y', 'N')
 )c
@@ -1900,7 +1900,7 @@ inner join Production.dbo.Orders o with(nolock) on o.ID = fo.OrderID
 outer apply(
 	select val = iif(exists(
 		select ID 
-		from MainServer.Production.dbo.CFAInspectionRecord c with(nolock)
+		from SciProduction_CFAInspectionRecord c with(nolock)
 		where c.ID = f.ID
 	), 'Y', 'N')
 )c 
@@ -2107,7 +2107,7 @@ where   o.id in (select OrderID from {inspectionReportTable}_Breakdown where {in
 declare @AdidasSAPERPCode varchar(3)
 
 select top 1 @AdidasSAPERPCode = SUBSTRING(BrandAreaCode, 1, 3)
-from [MainServer].Production.dbo.Factory_BrandDefinition fb with (nolock)
+from SciProduction_Factory_BrandDefinition fb with (nolock)
 where   exists (select 1 from #tmpStyleInfo where fb.ID = FactoryID and fb.BrandID = BrandID and (fb.CDCodeID = CDCodeNew or fb.CDCodeID = ''))
 order by fb.CDCodeID desc
 
@@ -2245,7 +2245,7 @@ where fo.ID = @ID
 declare @AdidasSAPERPCode varchar(3)
 
 select top 1 @AdidasSAPERPCode = SUBSTRING(BrandAreaCode, 1, 3)
-from [MainServer].Production.dbo.Factory_BrandDefinition fb with (nolock)
+from SciProduction_Factory_BrandDefinition fb with (nolock)
 where   exists (select 1 from #tmpStyleInfo where fb.ID = FactoryID and fb.BrandID = BrandID and (fb.CDCodeID = CDCodeNew or fb.CDCodeID = ''))
 order by fb.CDCodeID desc
 
