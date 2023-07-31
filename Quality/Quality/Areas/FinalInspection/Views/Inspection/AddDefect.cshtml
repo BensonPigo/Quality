@@ -43,6 +43,7 @@
                 <h1 style="font-size: 2vh; font-weight: 900; ">
                     How many reject Qty(pcs)
                     @Html.TextBox("RejectQty", Model.RejectQty, new { @type = "number", @style = "width:10vw", @class = "form-control center-block" })
+                    <input id="txtSearchDefect" type="text" placeholder="Search Defect Code" style=" float: right;" name="name" value="" />
                 </h1>
             </div>
             <table id="CheckListTable" class="cell-border" style="width:100%"></table>
@@ -165,6 +166,31 @@
                 else {
                     row.child(format(row.data())).show();
                     tr.addClass('shown');
+                }
+            });
+
+            $("#txtSearchDefect").on('blur', function () {
+
+                var defectCode = $(this).val();
+                var foundGroup = [];
+                if (defectCode != '') {
+                    adata.filter(function (group1) {
+                        var isFoundit = false;
+                        group1[4].filter(function (group2) {
+                            var isExists = group2[1].includes(defectCode);                                                       
+                            if (isExists) {
+                                isFoundit = true;
+                            }
+                        });
+
+                        if (isFoundit) {
+                            foundGroup.push(group1[1].split('-')[0]);
+                        }
+                    });
+
+                    foundGroup.forEach(function (value, index) {
+                        $(`#CheckListTable_${value}`).click();
+                    });
                 }
             });
         });

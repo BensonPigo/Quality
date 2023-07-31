@@ -1093,20 +1093,54 @@ namespace BusinessLogicLayer.Service
         }
 
         /// <summary>
-        /// FinalInspection 進度紀錄
+        /// 部分功能Back/Next按鈕按下時，要存檔的東西(Remark之類的)
         /// </summary>
         /// <param name="finalInspection">FinalInspection.InspectionStep 存 「要去的Step」</param>
         /// <param name="currentStep">當下的Step</param>
         /// <param name="userID">登入者</param>
         /// <returns></returns>
-        public BaseResult UpdateFinalInspectionByStep(DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection, string currentStep, string userID)
+        public BaseResult UpdateStepInfo(DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection, string currentStep, string userID)
         {
             BaseResult result = new BaseResult();
             try
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-                _FinalInspectionProvider.UpdateFinalInspectionByStep(finalInspection, currentStep, userID);
+                _FinalInspectionProvider.UpdateStepInfo(finalInspection, currentStep, userID);
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+            return result;
+        }
+        public BaseResult UpdateGeneral(DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection)
+        {
+            BaseResult result = new BaseResult();
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                _FinalInspectionProvider.UpdateGeneral(finalInspection.finalInspectionGeneral);
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+            return result;
+        }
+        public BaseResult UpdateCheckList(DatabaseObject.ManufacturingExecutionDB.FinalInspection finalInspection)
+        {
+            BaseResult result = new BaseResult();
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                _FinalInspectionProvider.UpdateCheckList(finalInspection.finalInspectionCheckList);
             }
             catch (Exception ex)
             {
@@ -1122,6 +1156,91 @@ namespace BusinessLogicLayer.Service
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
             _FinalInspectionProvider.ExecImp_EOLInlineInspectionReport();
+        }
+
+        public List<FinalInspection_Step> GetAllStep(string FinalInspectionID, string CustPONO)
+        {
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            List<FinalInspection_Step>  allStep = _FinalInspectionProvider.GetAllStep(FinalInspectionID, CustPONO);
+
+            return allStep;
+        }
+        public List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string CustPONO)
+        {
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            List<FinalInspectionBasicGeneral> allStep = _FinalInspectionProvider.GetGeneralByBrand(FinalInspectionID, CustPONO);
+
+            return allStep;
+        }
+        public List<FinalInspectionBasicCheckList> GetCheckListByBrand(string FinalInspectionID, string CustPONO)
+        {
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            List<FinalInspectionBasicCheckList> allStep = _FinalInspectionProvider.GetCheckListByBrand(FinalInspectionID, CustPONO);
+
+            return allStep;
+        }
+
+        public List<FinalInspectionBasicGeneral> GetAllGeneral()
+        {
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            List<FinalInspectionBasicGeneral> allStep = _FinalInspectionProvider.GetAllGeneral();
+
+            return allStep;
+        }
+        public List<FinalInspectionBasicCheckList> GetAllCheckList()
+        {
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            List<FinalInspectionBasicCheckList> allStep = _FinalInspectionProvider.GetAllCheckList();
+
+            return allStep;
+        }
+        public BaseResult CheckStep(string FinalInspectionID)
+        {
+            BaseResult result = new BaseResult();
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+                var stepData = _FinalInspectionProvider.GetAllStepByAction(FinalInspectionID, FinalInspectionSStepAction.Current);
+
+
+                if (!stepData.Any())
+                {
+                    result.Result = false;
+                    result.ErrorMessage = "Located at an undefined [Inspection Step], will return to the previous valid [Inspection Step].";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+            return result;
+
+        }
+
+        public BaseResult UpdateStepByAction(string FinalInspectionID, string UserID, FinalInspectionSStepAction action)
+        {
+            BaseResult result = new BaseResult();
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _FinalInspectionProvider.UpdateStepByAction(FinalInspectionID, UserID, action);
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+            return result;
+
         }
     }
 }

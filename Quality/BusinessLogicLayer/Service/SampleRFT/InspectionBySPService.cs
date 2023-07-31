@@ -1027,7 +1027,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 case "Insp-AddDefect":
                     ActionName = "AddDefect";
                     break;
-                case "Insp-BA":
+                case "Insp-BeautifulProductAudit":
                     ActionName = "BeautifulProductAudit";
                     break;
                 case "Insp-Measurement":

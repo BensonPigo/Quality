@@ -70,6 +70,7 @@
     <Compile Include="ManufacturingExecutionDB\DQSReason.cs" />
     <Compile Include="ManufacturingExecutionDB\EndlineMoisture.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection.cs" />
+    <Compile Include="ManufacturingExecutionDB\FinalInspectionBasicStep.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Detail.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Measurement.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Moisture.cs" />

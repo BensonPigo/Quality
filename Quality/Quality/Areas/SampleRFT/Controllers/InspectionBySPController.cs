@@ -115,7 +115,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                             return RedirectToAction("Measurement", new { ID = InProcess.ID });
                         case "Insp-AddDefect":
                             return RedirectToAction("AddDefect", new { ID = InProcess.ID });
-                        case "Insp-BA":
+                        case "Insp-BeautifulProductAudit":
                             return RedirectToAction("BeautifulProductAudit", new { ID = InProcess.ID });
                         case "Insp-DummyFit":
                             return RedirectToAction("DummyFitting", new { ID = InProcess.ID });
@@ -1059,7 +1059,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                     _Service.UpdateSampleRFTInspectionByStep(new SampleRFTInspection()
                     {
                         ID = addDefct.ID,
-                        InspectionStep = "Insp-BA"
+                        InspectionStep = "Insp-BeautifulProductAudit"
                     }, "Insp-AddDefect", this.UserID);
                     return RedirectToAction("BeautifulProductAudit", new { ID = addDefct.ID });
                 }
@@ -1360,7 +1360,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 {
                     ID = Req.ID,
                     InspectionStep = "Insp-AddDefect"
-                }, "Insp-BA", this.UserID);
+                }, "Insp-BeautifulProductAudit", this.UserID);
                 return RedirectToAction("AddDefect", new { ID = Req.ID });
             }
 
@@ -1383,7 +1383,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 {
                     ID = Req.ID,
                     InspectionStep = "Insp-DummyFit"
-                }, "Insp-BA", this.UserID);
+                }, "Insp-BeautifulProductAudit", this.UserID);
                 return RedirectToAction("DummyFitting", new { ID = Req.ID });
             }
 
@@ -1442,7 +1442,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 _Service.UpdateSampleRFTInspectionByStep(new SampleRFTInspection()
                 {
                     ID = Req.ID,
-                    InspectionStep = "Insp-BA"
+                    InspectionStep = "Insp-BeautifulProductAudit"
                 }, "Insp-DummyFit", this.UserID);
                 return RedirectToAction("BeautifulProductAudit", new { ID = Req.ID });
             }

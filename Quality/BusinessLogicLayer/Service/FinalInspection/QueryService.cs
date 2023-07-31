@@ -129,7 +129,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
 
             switch (InspectionStep)
             {
-                case "Setting":
+                case "Insp-Setting":
                     ActionName = "Setting";
                     break;
                 case "Insp-General":
@@ -141,7 +141,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 case "Insp-AddDefect":
                     ActionName = "AddDefect";
                     break;
-                case "Insp-BA":
+                case "Insp-BeautifulProductAudit":
                     ActionName = "BeautifulProductAudit";
                     break;
                 case "Insp-Moisture":

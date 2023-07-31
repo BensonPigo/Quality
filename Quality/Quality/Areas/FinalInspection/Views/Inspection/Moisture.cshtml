@@ -118,18 +118,24 @@
                         <td>@Html.TextBoxFor(o => o.GarmentBottom, new { @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
                     </tr>
                     <tr>
-                        <td colspan="6">
-                            <label>Carton Moisture</label>
-                            <label style="font-weight: normal;">(Standard:<span id="CTNMoistureStandard">@ViewBag.FinalInspection_CTNMoistureStandard</span>)</label>
-                        </td>
+                        @if (ViewBag.FinalInspection_CTNMoistureStandardLandtek != 0)
+                        {
+                            <td colspan="6">
+                                <label>Carton Moisture</label>
+                                <label style="font-weight: normal;">(Standard:<span id="CTNMoistureStandard">@ViewBag.FinalInspection_CTNMoistureStandard</span>)</label>
+                            </td>
+                        }
                         @*<td colspan="4"><label>(Standard:@ViewBag.FinalInspection_CTNMoistureStandard)</label></td>*@
                     </tr>
                     <tr>
-                        <td style="text-align:right"><label class="cartonData">Inside</label></td>
-                        <td>@Html.TextBoxFor(o => o.CTNInside, new { @class = "cartonData", @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
-                        <td  style="text-align:right"><label>Outside</label></td>
-                        <td>@Html.TextBoxFor(o => o.CTNOutside, new { @class = "cartonData", @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
-                        <td colspan="2"></td>
+                        @if (ViewBag.FinalInspection_CTNMoistureStandardLandtek != 0)
+                        {
+                            <td style="text-align:right"><label class="cartonData">Inside</label></td>
+                            <td>@Html.TextBoxFor(o => o.CTNInside, new { @class = "cartonData", @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
+                            <td style="text-align:right"><label>Outside</label></td>
+                            <td>@Html.TextBoxFor(o => o.CTNOutside, new { @class = "cartonData", @type = "number", @step = "0.1", @onchange = "setColor();", @style = "width:100px" })</td>
+                            <td colspan="2"></td>
+                        }
                     </tr>
                 </table>
             </div>
@@ -413,6 +419,9 @@
                                 else if (Instrument == "B Machine") {
                                     $("#CTNMoistureStandard").text(@ViewBag.FinalInspection_CTNMoistureStandardBM);
                                 }
+                                else if (Instrument == "Landtek") {
+                                    $("#CTNMoistureStandard").text(@ViewBag.FinalInspection_CTNMoistureStandardLandtek);
+                                }
                                 else {
                                     Instrument = '';
                                 }
@@ -671,6 +680,7 @@
 
         function setColor() {
             var garmentStandard = $("#GarmentStandard").text();
+            var needValidCarton = true;
             var garmentStandardValue = 0;
 
             var cartonsValue = 0.0;
@@ -681,9 +691,18 @@
             else if (Instrument == "B Machine") {
                 cartonsValue =@ViewBag.FinalInspection_CTNMoistureStandardBM;
             }
+            else if (Instrument == "Landtek") {
+                cartonsValue =@ViewBag.FinalInspection_CTNMoistureStandardLandtek;
+            }
             else {
 
             }
+
+            //cartonsValue為0，代表沒有紙箱濕度標準，不需要檢驗
+            if (cartonsValue == 0) {
+                needValidCarton = false;
+            }
+
 
             $("#Result").text("Fail");
             $("#Result").css("color", "#E62513");
@@ -713,8 +732,8 @@
                     if (garmentStandardValue >= parseFloat($("#GarmentTop").val()) &&
                         garmentStandardValue >= parseFloat($("#GarmentMiddle").val()) &&
                         garmentStandardValue >= parseFloat($("#GarmentBottom").val()) &&
-                        cartonsValue >= parseFloat($("#CTNInside").val()) &&
-                        cartonsValue >= parseFloat($("#CTNOutside").val())) {
+                        (!needValidCarton || cartonsValue >= parseFloat($("#CTNInside").val()) )&&
+                        (!needValidCarton || cartonsValue >= parseFloat($("#CTNOutside").val()) ) ) {
                         $("#Result").text("Pass");
                         $("#Result").css("color", "#00CC00");
                     }
