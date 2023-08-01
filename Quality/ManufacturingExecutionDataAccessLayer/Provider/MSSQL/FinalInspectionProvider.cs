@@ -342,7 +342,7 @@ where a.id = @FinalInspectionID and a.SubmitDate is null
 and currentStep.StepName IN (select REPLACE(q.StepName,' ','') from FinalInspectionBasicStep q with(NOLOCK) )
 and currentStep.StepName=REPLACE(d.StepName,' ','') 
 
-select TOP 1 @TargetStep = 'Insp-' + REPLACE(a.StepName,' ','')
+select TOP 1 @TargetStep = 'Insp-' +  REPLACE((REPLACE(a.StepName,' ','')),'Insp-','')
 from #AllStep a
 where 1=1
 ";
@@ -376,6 +376,11 @@ and Seq = (select Seq from #CurrentStep) order by Seq
             }
 
             sqlUpdCmd += $@"
+
+IF @TargetStep=''
+	SET @TargetStep= 'Submit'
+
+
 UPDATE FinalInspection 
 SET InspectionStep = @TargetStep
     ,EditName= @UserID
