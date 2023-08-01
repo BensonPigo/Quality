@@ -573,12 +573,7 @@ insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo, Seq)
                 case "Insp-General":
                     sqlUpdCmd += $@"
 update FinalInspection
- set    FabricApprovalDoc = @FabricApprovalDoc  ,
-        SealingSampleDoc= @SealingSampleDoc    ,
-        MetalDetectionDoc= @MetalDetectionDoc   ,
-        GarmentWashingDoc= @GarmentWashingDoc   ,
-        CheckFGPT = @CheckFGPT,
-        EditName= @userID,
+ set    EditName= @userID,
         EditDate= getdate()
 where   ID = @FinalInspectionID
 ";
@@ -2183,30 +2178,7 @@ Select	[AuditDate] = format(f.AuditDate, 'yyyy-MM-ddTHH:mm:ss'),
         [DateStarted] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.AddDate), 'yyyy-MM-ddTHH:mm:ss'),
         [InspectionCompletedDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.EditDate), 'yyyy-MM-ddTHH:mm:ss'),
         f.OthersRemark,
-        f.FabricApprovalDoc,
-        f.SealingSampleDoc,
-        f.MetalDetectionDoc,
-        f.IsFactoryDisclaimer,
-        f.IsA01Compliance,
-        f.IsCPSIACompliance,
-        f.IsCustomerCountrySpecificCompliance,
         f.BAQty,
-        f.CheckCloseShade,
-        f.CheckHandfeel,
-        f.CheckAppearance,
-        f.CheckPrintEmbDecorations,
-        f.CheckFiberContent,
-        f.CheckCareInstructions,
-        f.CheckDecorativeLabel,
-        f.CheckAdicomLabel,
-        f.CheckCountryofOrigion,
-        f.CheckSizeKey,
-        f.Check8FlagLabel,
-        f.CheckAdditionalLabel,
-        f.CheckShippingMark,
-        f.CheckPolytagMarketing,
-        f.CheckColorSizeQty,
-        f.CheckHangtag,
         [MeasurementResult] = cast(iif(exists(select 1 from FinalInspection_Measurement fm with (nolock) where f.ID = fm.ID), 1, 0) as bit),
         [MoistureResult] = case when exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID and fmo.Result = 'F') then 'fail'
                                 when not exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID) then 'na'
@@ -2223,6 +2195,20 @@ outer apply (select	[POQty] = sum(o.Qty),
 outer apply (SELECT [val] = Stuff((select concat( ';',Remark)   
                 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID FOR XML PATH('')),1,1,'')) MoistureComment
 where f.ID = @ID 
+
+
+select IsMaterialApproval      ,IsSealingSample      ,IsMetalDetection      ,IsFGWT      ,IsFGPT      ,IsTopSample      ,Is3rdPartyTestReport      ,IsPPSample
+      ,IsGBTestForChina      ,IsCPSIAForYounthStytle      ,IsQRSSample      ,IsFactoryDisclaimer      ,IsA01Compliance      ,IsCPSIACompliance
+      ,IsCustomerCountrySpecificCompliance 
+from FinalInspectionGeneral with (nolock) where FinalInspectionID = @ID 
+
+SELECT IsCloseShade      ,IsHandfeel      ,IsAppearance      ,IsPrintEmbDecorations      ,IsEmbellishmentPrint      ,IsEmbellishmentBonding      ,IsEmbellishmentHT
+      ,IsEmbellishmentEMB      ,IsFiberContent      ,IsCareInstructions      ,IsDecorativeLabel      ,IsAdicomLabel      ,IsCountryofOrigion      ,IsSizeKey
+      ,Is8FlagLabel      ,IsAdditionalLabel      ,IsIdLabel      ,IsMainLabel      ,IsSizeLabel      ,IsCareContentLabel      ,IsBrandLabel      ,IsBlueSignLabel
+      ,IsLotLabel      ,IsSecurityLabel      ,IsSpecialLabel      ,IsVIDLabel      ,IsCNC      ,IsWovenlabel      ,IsTSize      ,IsCCLayout      ,IsShippingMark
+      ,IsPolytagMarketing      ,IsColorSizeQty      ,IsHangtag      ,IsJokerTag      ,IsWWMT      ,IsChinaCIT      ,IsPolybagSticker      ,IsUCCSticker
+      ,IsPESheetMicropak      ,IsAdditionalHantage      ,IsUPCStickierHantage      ,IsGS1128Label
+FROM FinalInspectionCheckList with (nolock) where FinalInspectionID = @ID 
 
 select	distinct
 		oc.ColorID
