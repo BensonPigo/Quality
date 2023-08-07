@@ -137,7 +137,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             // 預設值
             setting.Team = "A";
-            setting.AuditDate = DateTime.Now;
+            setting.AuditDate = DateTime.Now.AddDays(-1);
 
             ViewBag.AQLPlanList = new List<SelectListItem>()
             {

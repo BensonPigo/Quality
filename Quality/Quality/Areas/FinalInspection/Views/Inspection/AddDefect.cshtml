@@ -169,15 +169,18 @@
                 }
             });
 
-            $("#txtSearchDefect").on('blur', function () {
+            $("#txtSearchDefect").on('keyup', function () {
 
+                if (event.keyCode != 13) {
+                    return;
+                }
                 var defectCode = $(this).val();
                 var foundGroup = [];
                 if (defectCode != '') {
                     adata.filter(function (group1) {
                         var isFoundit = false;
                         group1[4].filter(function (group2) {
-                            var isExists = group2[1].includes(defectCode);                                                       
+                            var isExists = group2[1].includes(defectCode);
                             if (isExists) {
                                 isFoundit = true;
                             }

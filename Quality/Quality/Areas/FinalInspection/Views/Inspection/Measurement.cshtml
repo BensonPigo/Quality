@@ -546,107 +546,6 @@
         });
 
         ReloadData();
-
-        $(".iconPlus").click(function () {
-            var Keyidx = $(this).attr("KeyIdx");
-            var currentCol = $(`input[idx=ResultSizeSpec][KeyIdx=${Keyidx}]`);
-
-            if ($(currentCol).attr("readonly") == "readonly") {
-                return;
-            }
-
-            var tpye = $(currentCol).attr("type");
-            var oldValue = 0;
-
-            if (tpye == "number") {
-                if ($(currentCol).val() != '') {
-                    oldValue = parseFloat($(currentCol).val());
-                }
-                var newValue = oldValue + 1;
-                $(currentCol).val(newValue).change();
-            }
-            if (tpye == "text") {
-                var newValue = 0;
-                if ($(currentCol).val() != '') {
-
-                    //有分數，例如：1 1/2，把整數位獨立出來+1
-                    if ($(currentCol).val().split(' ').length == 2) {
-                        var interg = $(currentCol).val().split(' ')[0];
-                        var float = $(currentCol).val().split(' ')[1];
-                        var tmp = parseInt(interg) + 1;
-                        newValue = tmp + ` ${float}`;
-
-                    }
-                    else {
-                        // 其餘直接轉成整數
-                        oldValue = parseFloat($(currentCol).val());
-                        newValue = oldValue + 1;
-                    }
-
-                }
-                else {
-                    newValue = oldValue + 1;
-                }
-
-                $(currentCol).val(newValue).change();
-            }
-        });
-
-        $(".iconReduce").click(function () {
-            var Keyidx = $(this).attr("KeyIdx");
-            var currentCol = $(`input[idx=ResultSizeSpec][KeyIdx=${Keyidx}]`);
-
-            if ($(currentCol).attr("readonly") == "readonly") {
-                return;
-            }
-
-
-            var tpye = $(currentCol).attr("type");
-            var oldValue = 0;
-
-            if (tpye == "number") {
-
-                if ($(currentCol).val() != '') {
-                    oldValue = parseFloat($(currentCol).val());
-                }
-                var newValue = oldValue - 1;
-                $(currentCol).val(newValue).change();
-            }
-            if (tpye == "text") {
-
-                var newValue = 0;
-                if ($(currentCol).val() != '') {
-
-                    //有分數，例如：1 1/2，把整數位獨立出來-1
-                    if ($(currentCol).val().split(' ').length == 2) {
-                        var interg = $(currentCol).val().split(' ')[0];
-                        var float = $(currentCol).val().split(' ')[1];
-                        var tmp = parseInt(interg) - 1;
-
-                        // 若整數位<=1，新值直接歸0
-                        if (interg <= 1) {
-                            newValue = 0;
-                        }
-                        else {
-                            newValue = tmp + ` ${float}`;
-                        }
-
-                    }
-                    else {
-                        // 其餘直接轉成整數
-                        oldValue = parseFloat($(currentCol).val());
-                        newValue = oldValue - 1;
-                    }
-
-                }
-                else {
-                    newValue = oldValue - 1;
-                }
-
-                $(currentCol).val(newValue).change();
-
-            }
-        });
     });
 
 
@@ -787,6 +686,107 @@
             }
         });
 
+
+        $(".iconPlus").click(function () {
+            var Keyidx = $(this).attr("KeyIdx");
+            var currentCol = $(`input[idx=ResultSizeSpec][KeyIdx=${Keyidx}]`);
+
+            if ($(currentCol).attr("readonly") == "readonly") {
+                return;
+            }
+
+            var tpye = $(currentCol).attr("type");
+            var oldValue = 0;
+
+            if (tpye == "number") {
+                if ($(currentCol).val() != '') {
+                    oldValue = parseFloat($(currentCol).val());
+                }
+                var newValue = oldValue + 1;
+                $(currentCol).val(newValue).change();
+            }
+            if (tpye == "text") {
+                var newValue = 0;
+                if ($(currentCol).val() != '') {
+
+                    //有分數，例如：1 1/2，把整數位獨立出來+1
+                    if ($(currentCol).val().split(' ').length == 2) {
+                        var interg = $(currentCol).val().split(' ')[0];
+                        var float = $(currentCol).val().split(' ')[1];
+                        var tmp = parseInt(interg) + 1;
+                        newValue = tmp + ` ${float}`;
+
+                    }
+                    else {
+                        // 其餘直接轉成整數
+                        oldValue = parseFloat($(currentCol).val());
+                        newValue = oldValue + 1;
+                    }
+
+                }
+                else {
+                    newValue = oldValue + 1;
+                }
+
+                $(currentCol).val(newValue).change();
+            }
+        });
+
+        $(".iconReduce").click(function () {
+            var Keyidx = $(this).attr("KeyIdx");
+            var currentCol = $(`input[idx=ResultSizeSpec][KeyIdx=${Keyidx}]`);
+
+            if ($(currentCol).attr("readonly") == "readonly") {
+                return;
+            }
+
+
+            var tpye = $(currentCol).attr("type");
+            var oldValue = 0;
+
+            if (tpye == "number") {
+
+                if ($(currentCol).val() != '') {
+                    oldValue = parseFloat($(currentCol).val());
+                }
+                var newValue = oldValue - 1;
+                $(currentCol).val(newValue).change();
+            }
+            if (tpye == "text") {
+
+                var newValue = 0;
+                if ($(currentCol).val() != '') {
+
+                    //有分數，例如：1 1/2，把整數位獨立出來-1
+                    if ($(currentCol).val().split(' ').length == 2) {
+                        var interg = $(currentCol).val().split(' ')[0];
+                        var float = $(currentCol).val().split(' ')[1];
+                        var tmp = parseInt(interg) - 1;
+
+                        // 若整數位<=1，新值直接歸0
+                        if (interg <= 1) {
+                            newValue = 0;
+                        }
+                        else {
+                            newValue = tmp + ` ${float}`;
+                        }
+
+                    }
+                    else {
+                        // 其餘直接轉成整數
+                        oldValue = parseFloat($(currentCol).val());
+                        newValue = oldValue - 1;
+                    }
+
+                }
+                else {
+                    newValue = oldValue - 1;
+                }
+
+                $(currentCol).val(newValue).change();
+
+            }
+        });
     }
 
     // 傳入，OpenView 回傳的 Ajax 物件集合
