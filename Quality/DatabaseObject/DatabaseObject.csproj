@@ -219,6 +219,7 @@
     <Compile Include="ResultModel\GarmentTest_Result.cs" />
     <Compile Include="ViewModel\InspectionSave_ViewModel.cs" />
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
+    <Compile Include="ViewModel\JWTToken_ViewModel.cs" />
     <Compile Include="ViewModel\ReworkList_ViewModel.cs" />
     <Compile Include="ViewModel\SampleRFT\CFTComments_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\MockupCrocking_ViewModel.cs" />
