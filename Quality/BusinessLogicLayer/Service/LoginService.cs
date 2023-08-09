@@ -1,12 +1,19 @@
-﻿using BusinessLogicLayer.Interface;
+﻿using BusinessLogicLayer.Helper;
+using BusinessLogicLayer.Interface;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
+using DatabaseObject.ViewModel;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Text;
 
 namespace BusinessLogicLayer.Service
 {
@@ -131,6 +138,54 @@ namespace BusinessLogicLayer.Service
             FactoryProvider = new ProductionDataAccessLayer.Provider.MSSQL.FactoryProvider(Common.ProductionDataAccessLayer);
             List<string> factorys = FactoryProvider.GetFtyGroup().GroupBy(x => x.FTYGroup).Select(x => x.Key).ToList();
             return factorys;
+        }
+
+        public LogIn_Request LoginValidateOnlyID(string UserID, string FactoryID, DateTime EndTime)
+        {
+            if (EndTime < DateTime.Now)
+            {
+                return null;
+            }
+
+            QualityPass1Provider = new QualityPass1Provider(Common.ManufacturingExecutionDataAccessLayer);
+            List<Quality_Pass1> quality_Pass1s = QualityPass1Provider.Get(new Quality_Pass1() { ID = UserID }).ToList();
+            if (quality_Pass1s.Count == 0)
+            {
+                return null;
+            }
+
+            MESPass1Provider = new Pass1Provider(Common.ManufacturingExecutionDataAccessLayer);
+            List<Pass1> mesPass1 = MESPass1Provider.Get(new Pass1() { ID = UserID }).ToList();
+            LogIn_Request result = mesPass1.Select(p => new LogIn_Request { UserID = p.ID, Password = p.Password, FactoryID = FactoryID }).FirstOrDefault();
+
+            return result;
+        }
+
+        // 解密 JWT
+        public  JWTToken_ViewModel DecodeJWT(string token, string cryptoKey)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(Convert.FromBase64String(cryptoKey));
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = key,
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+
+            try
+            {
+                var claimsPrincipal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+                var jwtToken = (JwtSecurityToken)securityToken;
+                var value = jwtToken.Claims.FirstOrDefault(x => x.Type == "Value")?.Value;
+                var guid = jwtToken.Claims.FirstOrDefault(x => x.Type == "GUID")?.Value;
+                return JsonConvert.DeserializeObject<JWTToken_ViewModel>(StringEncryptHelper.AesDecryptBase64(value, cryptoKey));
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

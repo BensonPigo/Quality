@@ -64,6 +64,6 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         GarmentTest_Detail_Result ToReport(string ID, string No, ReportType type, bool IsToPDF, bool test = false);
         GarmentTest_ViewModel Import_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem);
         GarmentTest_ViewModel Delete_Original_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem);
-
+        GarmentTest_Detail_Result StyleResult_BulkFGTReport(string BrandID, string StyleID, string SeasonID, string Article, string Type);
     }
 }
