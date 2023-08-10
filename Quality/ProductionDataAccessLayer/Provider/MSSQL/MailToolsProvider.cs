@@ -64,15 +64,17 @@ select dbo.GetQualityWebAIComment(@Type,@StyleUkey,'','','')
                 paras.Add("@StyleUkey", Req.StyleUkey);
 
                 sqlCmd = $@"
-Select CASE WHEN  DATEDIFF(DAY,GETDATE(),BuyReadyDate) < 14 THEN CONVERT(VARCHAR, BuyReadyDate,111) + '(Less than 14 days from BR)'
-			WHEN DATEDIFF(DAY,GETDATE(),BuyReadyDate) >= 14 THEN CONVERT(VARCHAR, BuyReadyDate,111) + '(14 days below left for BR)'
+Select CASE WHEN  DATEDIFF(DAY,GETDATE(),sa.BuyReadyDate) < 14 THEN CONVERT(VARCHAR, sa.BuyReadyDate,111) + '(Less than 14 days from BR)'
+			WHEN DATEDIFF(DAY,GETDATE(),sa.BuyReadyDate) >= 14 THEN CONVERT(VARCHAR, sa.BuyReadyDate,111) + '(14 days below left for BR)'
 			ELSE''
 	    END
-From Style_Article with (nolock)
-where StyleUkey = @StyleUkey
+From Style_Article sa with (nolock)
+inner join Style s with (nolock) on s.Ukey = sa.StyleUkey
+where sa.StyleUkey = @StyleUkey
+and (s.BrandID = 'ADIDAS' OR s.BrandID ='REEBOK')
 ";
             }
-            else if (string.IsNullOrEmpty(Req.OrderID))
+            else if (!string.IsNullOrEmpty(Req.OrderID))
             {
                 paras.Add("@OrderID", Req.OrderID);
                 sqlCmd = $@"
@@ -84,6 +86,7 @@ From Style_Article sa with (nolock)
 inner join Style s with (nolock) on s.Ukey = sa.StyleUkey
 inner join Orders o on o.StyleUkey = s.Ukey
 where o.ID = @OrderID
+and (o.BrandID = 'ADIDAS' OR o.BrandID ='REEBOK')
 ";
             }
             else
@@ -100,6 +103,7 @@ Select CASE WHEN  DATEDIFF(DAY,GETDATE(),BuyReadyDate) < 14 THEN CONVERT(VARCHAR
 From Style_Article sa with (nolock)
 inner join Style s with (nolock) on s.Ukey = sa.StyleUkey
 where s.ID = @StyleID AND s.BrandID = @BrandID AND s.SeasonID = @SeasonID
+and (s.BrandID = 'ADIDAS' OR s.BrandID ='REEBOK')
 ";
             }
 

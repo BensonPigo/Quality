@@ -87,6 +87,7 @@
         color: black;
         font-size: 1rem;
         padding: 0.5rem;
+        text-align:left;
     }
 
     .aiCommentTooltip:hover .aiCommentTooltipText {
@@ -388,9 +389,9 @@
                                 <td style="color: @color" class="aiCommentTooltip">
                                     @Html.DisplayFor(modelItem => item.Result)
 
-                                    @if (item.Result == "Fail")
+                                    @if (item.Result == "Fail" && (item.BrandID == "ADIDAS" || item.BrandID == "REEBOK"))
                                     {
-                                        <div class="aiCommentTooltipText">@item.AIComment</div>
+                                        <div style="white-space: pre-line; " class="aiCommentTooltipText">@item.AIComment</div>
                                         <img src="~/Image/Icon/Warning.png" width="25" height="25" class="" />
                                     }
                                 </td>

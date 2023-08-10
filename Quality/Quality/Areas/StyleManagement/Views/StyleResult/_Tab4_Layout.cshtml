@@ -57,7 +57,7 @@
                     <td>@item.TestName</td>
                     <td style="color:@color">
                         @item.LastResult
-                        @if (item.LastResult == "Fail")
+                        @if (item.LastResult == "Fail" && (Model.BrandID == "ADIDAS" || Model.BrandID == "REEBOK"))
                         {
                             <img src="~/Image/Icon/Warning.png" width="25" height="25" class="" />
                             <span class="aiCommentTooltipText">@item.AIComment</span>

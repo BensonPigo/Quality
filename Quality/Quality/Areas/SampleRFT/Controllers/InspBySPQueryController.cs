@@ -520,7 +520,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 <td style=""width: 16.6667%;"">{item.AreaCodes}</td>
 <td style=""width: 16.6667%;"">{item.Qty}</td>
 <td style=""width: 16.6667%;"">{item.Responsibility}</td>
-<td style=""width: 16.6667%;"">{item.AIComment}</td>
+{(model.Setting.BrandID == "ADIDAS" || model.Setting.BrandID == "REEBOK" ? $@"<td style=""width: 16.6667%;"">{item.AIComment}</td>": "")}
 </tr>
 ";
             }
@@ -534,7 +534,7 @@ namespace Quality.Areas.SampleRFT.Controllers
 <td style=""width: 16.6667%; background-color: lightgray; text-align: center;"">Defect Area</td>
 <td style=""width: 16.6667%; background-color: lightgray; text-align: center;"">Defect Qty&nbsp;</td>
 <td style=""width: 16.6667%; background-color: lightgray; text-align: center;"">Reponsibility</td>
-<td style=""width: 16.6667%; background-color: lightgray; text-align: center;"">AI Comment</td>
+{(model.Setting.BrandID == "ADIDAS" || model.Setting.BrandID == "REEBOK" ? $@"<td style=""width: 16.6667%; background-color: lightgray; text-align: center;"">AI Comment</td>" : "")}
 </tr>
 {defectHtml}
 </tbody>

@@ -109,7 +109,7 @@ select Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
 	    , ReceivedDate = NULL
 	    , ReportDate = NULL
         , AddName = '' ----AddName不會是單一個人，故不顯示
-		, AIComment = IIF(f_Result.Result = 'Fail' ,( select dbo.GetQualityWebAIComment('Fabric Crocking & Shrinkage Test',0,@StyleID,@SeasonID,@BrandID) ) ,'')
+		, AIComment = IIF(f_Result.Result = 'Fail' ,( select dbo.GetQualityWebAIComment('Fabric Crocking & Shrinkage Test',0,o.StyleID,o.BrandID,o.SeasonID) ) ,'')
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = p.ID
 outer apply (
@@ -207,9 +207,9 @@ select  Type = 'Garment Test (450, 451, 701, 710)'
 	    , ReportDate = NULL
         , AddName = ISNULL(pa.Name, ma.Name)
 		, AIComment = IIF(gd.WashResult='F' ,(select dbo.GetQualityWebAIComment('Garment Wash Test',0,g.StyleID,g.BrandID,g.SeasonID)),'')
-                        + CHAR(10)+CHAR(13)
+                        --+ CHAR(10)+CHAR(13)
                         + IIF(gd.SeamBreakageResult='F' ,(select dbo.GetQualityWebAIComment('Seam Breakage',0,g.StyleID,g.BrandID,g.SeasonID)),'')
-                        + CHAR(10)+CHAR(13)
+                        --+ CHAR(10)+CHAR(13)
                         + IIF(gd.OdourResult='F' ,(select dbo.GetQualityWebAIComment('Odour Test',0,g.StyleID,g.BrandID,g.SeasonID)),'')
 from GarmentTest g WITH(NOLOCK)
 inner join GarmentTest_Detail gd WITH(NOLOCK) ON g.ID= gd.ID

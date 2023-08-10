@@ -472,7 +472,7 @@
                                                                     string.IsNullOrEmpty(Model.garmentTest_Details[i].WashResult) ? string.Empty : "Fail";
                                         }
                                         <td style="" class="aiCommentTooltip @SeamBreakageResultFontColor">
-                                            @if (SeamBreakageResultVal == "Fail")
+                                            @if (SeamBreakageResultVal == "Fail" && (Model.garmentTest.BrandID == "ADIDAS" || Model.garmentTest.BrandID == "REEBOK"))
                                             {
                                                 <div class="aiCommentTooltipText">@Model.garmentTest_Details[i].SeamBreakageAIComment</div>
                                                 <img src="~/Image/Icon/Warning.png" width="25" height="25" class="" />
@@ -480,7 +480,7 @@
                                             @SeamBreakageResultVal
                                         </td>
                                         <td style="" class="aiCommentTooltip @OdourResultDetailFontColor">
-                                            @if (OdourResultDetailVal == "Fail")
+                                            @if (OdourResultDetailVal == "Fail" && (Model.garmentTest.BrandID == "ADIDAS" || Model.garmentTest.BrandID == "REEBOK"))
                                             {
                                                 <div class="aiCommentTooltipText">@Model.garmentTest_Details[i].OdourAIComment</div>
                                                 <img src="~/Image/Icon/Warning.png" width="25" height="25" class="" />
@@ -488,7 +488,7 @@
                                             @OdourResultDetailVal
                                         </td>
                                         <td style="" class="aiCommentTooltip @WashResultDetailFontColor">
-                                            @if (WashResultDetailVal == "Fail")
+                                            @if (WashResultDetailVal == "Fail" && (Model.garmentTest.BrandID == "ADIDAS" || Model.garmentTest.BrandID == "REEBOK"))
                                             {
                                                 <div class="aiCommentTooltipText">@Model.garmentTest_Details[i].WashAIComment</div>
                                                 <img src="~/Image/Icon/Warning.png" width="25" height="25" class="" />

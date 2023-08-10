@@ -44,7 +44,10 @@
                 <td>
                     <img src="~/Image/Icon/Warning.png" width="25" height="25" class="" />
                     @item.DefectTypeDesc
-                    <span class="aiCommentTooltipText">@item.AIComment</span>
+                    @if (Model.Setting.BrandID == "ADIDAS" || Model.Setting.BrandID == "REEBOK")
+                    {
+                        <span class="aiCommentTooltipText">@item.AIComment</span>
+                    }
                 </td>
                 <td>@item.DefectCodeDesc</td>
                 <td>@item.AreaCodes</td>
