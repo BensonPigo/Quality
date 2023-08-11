@@ -30,7 +30,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             string sqlGetData = @"
 select  ID                             ,
-        CustPONO                       ,
+        [CustPONO] = o.val             ,
         InspectionStage                ,
         InspectionTimes                ,
         FactoryID                      ,
@@ -82,6 +82,13 @@ select  ID                             ,
         [FGPT] = iif(a.InspectionStage = 'Final', fgpt.Result, ''),
         [ISFD] = cast(I.ISFD as bit)
 from FinalInspection a with (nolock)
+outer apply (
+    SELECT val = Stuff((select distinct concat( ',',CustPONo) 
+                       from  FinalInspection_Order fo with (nolock) 
+                       inner join SciProduction_Orders o with (nolock) on fo.OrderID = o.ID
+                       where fo.ID = a.ID
+                       FOR XML PATH('')),1,1,'')
+)o
 outer apply (
 	select [GarmentTestID] = g.ID, [WashResult] = case g.WashResult when 'F' then 'Failed Test' when 'P' then 'Completed Test' else 'Lacking Test' end
 	from FinalInspection_Order o 
@@ -1765,7 +1772,7 @@ from Production.dbo.Orders WITH(NOLOCK)
 where CustPONO = @CustPONO
 )
 ";
-                whereFinalInspection += @" and f.CustPONO = @CustPONO";
+                whereFinalInspection += " and exists (select 1 from SciProduction_Orders o WITH(NOLOCK) where fo.OrderID = o.ID and o.CustPONO = @CustPONO) ";
                 parameter.Add("@CustPONO", request.CustPONO);
             }
 
@@ -2175,7 +2182,7 @@ Select	[AuditDate] = format(f.AuditDate, 'yyyy-MM-ddTHH:mm:ss'),
 		[CFA] = isnull((select Pivot88UserName from quality_pass1 with (nolock) where ID = f.CFA), ''),
 		OrderInfo.POQty,
 		[ETD_ETA] = format(OrderInfo.ETD_ETA, 'yyyy-MM-ddTHH:mm:ss'),
-		f.CustPONO,
+		[CustPONO] = o.val,
         OrderInfo.CustomerPo,
         [ReportTypeID] = case when OrderInfo.IsDestJP = 1 then 25
                             when f.AcceptableQualityLevelsUkey  = -1 then 26
@@ -2191,6 +2198,13 @@ Select	[AuditDate] = format(f.AuditDate, 'yyyy-MM-ddTHH:mm:ss'),
         [MoistureComment] = SUBSTRING(MoistureComment.val, 1, 255)
 from FinalInspection f with (nolock)
 cross join system
+outer apply (
+    SELECT val = Stuff((select distinct concat( ',',CustPONo) 
+                       from  FinalInspection_Order fo with (nolock) 
+                       inner join SciProduction_Orders o with (nolock) on fo.OrderID = o.ID
+                       where fo.ID = f.ID
+                       FOR XML PATH('')),1,1,'')
+)o
 outer apply (select	[POQty] = sum(o.Qty),
 					[ETD_ETA] = max(o.BuyerDelivery),
                     [CustomerPo] = max(o.CustCDID),
