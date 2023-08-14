@@ -29,7 +29,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
                 sqlCmd = "select dbo.GetQualityWebAIComment(@Type,@StyleUkey,'','','')";
             }
-            else if (string.IsNullOrEmpty(Req.OrderID))
+            else if (!string.IsNullOrEmpty(Req.OrderID))
             {
                 paras.Add("@OrderID", Req.OrderID);
                 sqlCmd = $@"
