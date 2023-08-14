@@ -197,7 +197,7 @@ namespace BusinessLogicLayer.Service
                 Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
                 excelApp.DisplayAlerts = false;
                 Worksheet worksheet = excelApp.Sheets[1];
-
+                Worksheet worksheet2 = excelApp.Sheets[2];
                 int htRow = 6;
                 int haveHTrow = haveHT ? htRow : 0;
 
@@ -250,28 +250,14 @@ namespace BusinessLogicLayer.Service
                 if (mockupOven.TestBeforePicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupOven.TestBeforePicture, mockupOven.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
-                    if (haveHT)
-                    {
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 377, 260);
-                    }
-                    else
-                    {
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 395, 290);
-                    }
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, cell.Width, cell.Height);
                 }
 
                 cell = worksheet.Cells[13 + haveHTrow + 3, 8];
                 if (mockupOven.TestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupOven.TestAfterPicture, mockupOven.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
-                    if (haveHT)
-                    {
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 387, 260);
-                    }
-                    else
-                    {
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 400, 290);
-                    }
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, cell.Width, cell.Height);
                 }
 
                 #region 表身資料
@@ -290,6 +276,25 @@ namespace BusinessLogicLayer.Service
                     Marshal.ReleaseComObject(rngToInsert);
                 }
 
+                // ISP20230792
+                if (mockupOven.HTPlate.HasValue || mockupOven.HTFlim.HasValue || mockupOven.HTTime.HasValue || mockupOven.HTPressure.HasValue ||
+                    !string.IsNullOrEmpty(mockupOven.HTPellOff) || mockupOven.HT2ndPressnoreverse.HasValue || mockupOven.HT2ndPressreversed.HasValue || mockupOven.HTCoolingTime.HasValue)
+                {
+                    int aRow = 11 + haveHTrow + mockupOven_Detail.Count - 1;
+                    Range rngToCopy = worksheet2.get_Range($"A1:N5", Type.Missing).EntireRow;
+                    Range rngToInsert = worksheet.get_Range($"A{aRow}", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    rngToInsert.Insert(XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
+
+                    worksheet.Cells[aRow + 1, 3] = mockupOven.HTPlate.HasValue ? mockupOven.HTPlate.Value : 0;
+                    worksheet.Cells[aRow + 2, 3] = mockupOven.HTFlim.HasValue ? mockupOven.HTFlim.Value : 0;
+                    worksheet.Cells[aRow + 3, 3] = mockupOven.HTTime.HasValue ? mockupOven.HTTime.Value : 0;
+                    worksheet.Cells[aRow + 4, 3] = mockupOven.HTPressure.HasValue ? mockupOven.HTPressure.Value : 0;
+                    worksheet.Cells[aRow + 1, 11] = mockupOven.HTPellOff;
+                    worksheet.Cells[aRow + 2, 11] = mockupOven.HT2ndPressnoreverse.HasValue ? mockupOven.HT2ndPressnoreverse.Value : 0;
+                    worksheet.Cells[aRow + 3, 11] = mockupOven.HT2ndPressreversed.HasValue ? mockupOven.HT2ndPressreversed.Value : 0;
+                    worksheet.Cells[aRow + 4, 11] = mockupOven.HTCoolingTime.HasValue ? mockupOven.HTCoolingTime.Value : 0;
+                }
+
                 // 塞進資料
                 int start_row = 10 + haveHTrow;
                 worksheet.Cells[start_row, 12] = mockupOven.Requirements.JoinToString(Environment.NewLine);
@@ -305,7 +310,7 @@ namespace BusinessLogicLayer.Service
                     worksheet.Cells[start_row, 6] = item.ResultChange;
                     worksheet.Cells[start_row, 7] = item.StainingScale;
                     worksheet.Cells[start_row, 8] = item.ResultStain;
-                    worksheet.Cells[start_row, 9] = item.Remark;
+                    worksheet.Cells[start_row, 9] = item.Remark;                    
                     worksheet.Rows[start_row].Font.Bold = false;
                     worksheet.Rows[start_row].WrapText = true;
                     worksheet.Rows[start_row].HorizontalAlignment = XlHAlign.xlHAlignCenter;
@@ -316,6 +321,8 @@ namespace BusinessLogicLayer.Service
 
                     start_row++;
                 }
+
+
                 #endregion
 
                 string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
@@ -337,10 +344,12 @@ namespace BusinessLogicLayer.Service
 
 
                 Workbook workbook = excelApp.ActiveWorkbook;
+                worksheet2.Visible = XlSheetVisibility.xlSheetHidden;
                 workbook.SaveAs(filepath);
                 workbook.Close();
                 excelApp.Quit();
                 Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(worksheet2);
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(excelApp);
 
