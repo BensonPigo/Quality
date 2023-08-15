@@ -310,7 +310,14 @@ from GarmentTest_Detail_FGWT f WITH(NOLOCK)
 where ID = @ID
 and No = @No
 
---
+
+UNION
+
+--Apperance
+select DISTINCT Result= IIF(Wash1='Rejected' OR Wash2='Rejected' OR Wash3='Rejected' ,'Fail','')
+from GarmentTest_Detail_Apperance WITH(NOLOCK)
+where id=75809  and no = 1 AND (Wash1='Rejected' OR Wash2='Rejected' OR Wash3='Rejected')
+
 ";
             DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
             if (dt != null && dt.Rows.Count > 0)

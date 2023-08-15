@@ -21,6 +21,7 @@ using System.Runtime.InteropServices;
 using Library;
 using System.Windows.Forms;
 using Ict;
+using System.Net.Mail;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -597,7 +598,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 DataTable dtContent = _IGarmentTestDetailProvider.Get_Mail_Content(ID, No);
-                string strHtml = MailTools.DataTableChangeHtml(dtContent, out System.Net.Mail.AlternateView plainView);
                 GarmentTest_Detail_Result baseResult = ToReport(ID, No, ReportType.Wash_Test_2018, true);
                 string FileName = baseResult.Result.Value ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.reportPath) : string.Empty;
                 SendMail_Request request = new SendMail_Request()
@@ -605,8 +605,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     To = ToAddress,
                     CC = CCAddress,
                     Subject = "Garment Test – Test Fail",
-                    Body = strHtml,
-                    alternateView = plainView,
+                    //Body = strHtml,
+                    //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
                     IsShowAIComment = true,
                     AICommentType = "Garment Wash Test,Seam Breakage,Odour Test",
@@ -618,7 +618,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(request);
-                request.Body = request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+                string mailBody = MailTools.DataTableChangeHtml(dtContent, comment, buyReadyDate, out AlternateView plainView);
+                request.Body = mailBody;
+                request.alternateView = plainView;
 
                 MailTools.SendMail(request);
                 result.Result = true;

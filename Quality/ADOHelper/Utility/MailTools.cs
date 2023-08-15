@@ -141,7 +141,7 @@ namespace ADOHelper.Utility
             return sendMail_Result;
         }
 
-        public static string DataTableChangeHtml(DataTable dt, out AlternateView plainView)
+        public static string DataTableChangeHtml(DataTable dt,string aiCiomment, string buyReadyDateComment, out AlternateView plainView)
         {
             plainView = null;
             int dtlen = dt.AsEnumerable().Where(dr => dr.Table.Columns.Contains("TestBeforePicture")
@@ -225,6 +225,19 @@ namespace ADOHelper.Utility
 
             html += "</tbody> ";
             html += "</table> ";
+
+            if (!string.IsNullOrEmpty(aiCiomment))
+            {
+                html += @"</br> ";
+                html += $@"<p>{aiCiomment}</p>";
+            }
+            if (!string.IsNullOrEmpty(buyReadyDateComment))
+            {
+                html += @"</br> ";
+                html += $@"<p>{buyReadyDateComment}</p>";
+            }
+
+
             html += "</body> ";
             html += "</html> ";
 

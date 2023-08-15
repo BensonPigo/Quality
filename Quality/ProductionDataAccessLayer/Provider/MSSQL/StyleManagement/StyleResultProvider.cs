@@ -935,31 +935,8 @@ select t.Article
 	, t.TestName
 	, [LastResult] = case when t.LastTestDate is not null then iif(isnull(t.LastResult, '') = '', 'N/A', t.LastResult) else t.LastResult end
 	, t.LastTestDate
-	, AIComment = IIF(t.LastResult = 'Fail', ISNULL(cmRRLR.Comment,cmNotRRLR.Comment) ,'')
+	, AIComment = IIF(t.LastResult = 'Fail', ( select dbo.GetQualityWebAIComment( IIF(t.Type='710' OR t.Type='701','Garment Wash Test',t.TestName),0,@StyleID,@BrandID,@SeasonID)),'')
 from #tmp_final t
-outer apply(
-	select TOP 1 ad.Comment
-	from ExtendServer.ManufacturingExecution.dbo.AIComment_Detail ad
-	where ad.AICommentUkey in (
-		select Ukey from ExtendServer.ManufacturingExecution.dbo.AIComment where FunctionName='QualityWeb'
-	)
-	and ad.IsRRLR = 0
-	and ad.Type LIKE '%' + IIF(t.Type='710' OR t.Type='701','Garment Wash Test',t.TestName)+'%'
-)cmNotRRLR
-outer apply(
-	select TOP 1 Comment = ad.Comment
-	                        +CASE   WHEN @IsRRLR_ACH_Comment = 1 AND @IsRRLR_CF_Comment = 1 THEN 'There is RR/LR (With shade achievability issue, please ensure shading within tolerance as agreement. Lower color fastness waring, please check if need to apply tissue paper.)'
-			                        WHEN @IsRRLR_ACH_Comment = 1 THEN  'There is RR/LR (With shade achievability issue, please ensure shading within tolerance as agreement.)'
-			                        WHEN @IsRRLR_CF_Comment = 1  THEN 'There is RR/LR (Lower color fastness waring, please check if need to apply tissue paper.)'
-			                        ELSE ''
-		                        END
-	from ExtendServer.ManufacturingExecution.dbo.AIComment_Detail ad
-	where ad.AICommentUkey in (
-		select Ukey from ExtendServer.ManufacturingExecution.dbo.AIComment where FunctionName='QualityWeb'
-	)
-	and ad.IsRRLR = 1
-	and ad.Type LIKE '%' + IIF(t.Type='710' OR t.Type='701','Garment Wash Test',t.TestName)+'%'
-)cmRRLR
 
 drop table #tmp_final, #Type
 ";

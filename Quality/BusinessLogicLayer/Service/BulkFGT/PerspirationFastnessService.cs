@@ -16,6 +16,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -404,7 +405,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 DataTable dtResult = _PerspirationFastnessProvider.GetFailMailContentData(poID, TestNo);
                 string ID = dtResult.Rows[0]["ID"].ToString();
                 dtResult.Columns.Remove("ID");
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
                 BaseResult baseResult = ToReport(ID, out string PDFFileName, true, isTest);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", PDFFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
@@ -412,8 +412,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     To = toAddress,
                     CC = ccAddress,
                     Subject = "Perspiration Fastness Test - Test Fail",
-                    Body = mailBody,
-                    alternateView = plainView,
+                    //Body = mailBody,
+                    //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
                     IsShowAIComment = true,
                     AICommentType = "Perspiration Fastness Test",
@@ -423,7 +423,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+
+                sendMail_Request.Body = mailBody;
+                sendMail_Request.alternateView = plainView;
 
                 result = MailTools.SendMail(sendMail_Request);
 

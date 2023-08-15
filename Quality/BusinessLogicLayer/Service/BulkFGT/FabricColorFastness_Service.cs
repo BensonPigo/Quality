@@ -318,7 +318,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 DataTable dtContent = _IColorFastnessProvider.Get_Mail_Content(POID, ID, TestNo);
-                string strHtml = MailTools.DataTableChangeHtml(dtContent, out System.Net.Mail.AlternateView plainView);
                 Fabric_ColorFastness_Detail_ViewModel ColorFastnessDetailView = ToPDF(ID, false);
                 string FileName = ColorFastnessDetailView.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", ColorFastnessDetailView.reportPath) : string.Empty;
                 SendMail_Request request = new SendMail_Request()
@@ -326,8 +325,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     To = ToAddress,
                     CC = CCAddress,
                     Subject = "Washing Fastness - Test Fail",
-                    Body = strHtml,
-                    alternateView = plainView,
+                    //Body = strHtml,
+                    //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
                     IsShowAIComment = true,
                     AICommentType = "Washing Fastness",
@@ -337,7 +336,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(request);
-                request.Body = request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+                string strHtml = MailTools.DataTableChangeHtml(dtContent, comment, buyReadyDate, out System.Net.Mail.AlternateView plainView);
+
+                request.Body = strHtml;
+                request.alternateView = plainView;
 
                 MailTools.SendMail(request);
                 result.Result = true;

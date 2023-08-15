@@ -13,6 +13,7 @@ using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -187,7 +188,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
                 DataTable dt = _AccessoryOvenWashProvider.GetData_OvenDataTable(Req);
-                string mailBody = MailTools.DataTableChangeHtml(dt, out System.Net.Mail.AlternateView plainView);
                 BaseResult baseResult = OvenTestExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
@@ -195,8 +195,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
                     Subject = "Accessory Oven Test - Test Fail",
-                    Body = mailBody,
-                    alternateView = plainView,
+                    //Body = mailBody,
+                    //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
                     IsShowAIComment = true,
                     AICommentType = "Accessory Oven & Wash Test",
@@ -207,7 +207,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+                string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate ,out System.Net.Mail.AlternateView plainView);
+
+                sendMail_Request.Body = mailBody;
+                sendMail_Request.alternateView = plainView;
 
                 result = MailTools.SendMail(sendMail_Request);
                 result.result = true;
@@ -460,7 +464,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
                 DataTable dt = _AccessoryOvenWashProvider.GetData_WashDataTable(Req);
-                string mailBody = MailTools.DataTableChangeHtml(dt, out System.Net.Mail.AlternateView plainView);
                 BaseResult baseResult = WashTestExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
@@ -468,8 +471,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
                     Subject = "Accessory Wash Test - Test Fail",
-                    Body = mailBody,
-                    alternateView = plainView,
+                    //Body = mailBody,
+                    //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
                     IsShowAIComment = true,
                     AICommentType = "Accessory Oven & Wash Test",
@@ -479,7 +482,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+                string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, out System.Net.Mail.AlternateView plainView);
+
+                sendMail_Request.Body = mailBody;
+                sendMail_Request.alternateView = plainView;
 
                 result = MailTools.SendMail(sendMail_Request);
                 result.result = true;
@@ -744,7 +751,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
                 DataTable dt = _AccessoryOvenWashProvider.GetData_WashingFastnessDataTable(Req);
-                string mailBody = MailTools.DataTableChangeHtml(dt, out System.Net.Mail.AlternateView plainView);
                 BaseResult baseResult = WashingFastnessExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
 
@@ -754,8 +760,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
                     Subject = "Accessory Washing Fastness Test - Test Fail",
-                    Body = mailBody,
-                    alternateView = plainView,
+                    //Body = mailBody,
+                    //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
                     IsShowAIComment = true,
                     AICommentType = "Accessory Oven & Wash Test",
@@ -765,7 +771,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+                string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, out AlternateView plainView);
+
+                sendMail_Request.Body = mailBody;
+                sendMail_Request.alternateView = plainView;
 
                 result = MailTools.SendMail(sendMail_Request);
                 result.result = true;

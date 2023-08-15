@@ -452,7 +452,8 @@ namespace BusinessLogicLayer.Service
         public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
         {
             _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
-            string mailBody = MailTools.DataTableChangeHtml(_MockupCrockingProvider.GetMockupCrockingFailMailContentData(mail_Request.ReportNo), out AlternateView plainView);
+            System.Data.DataTable dt = _MockupCrockingProvider.GetMockupCrockingFailMailContentData(mail_Request.ReportNo);
+            
             MockupCrocking_ViewModel model = GetMockupCrocking(new MockupCrocking_Request { ReportNo = mail_Request.ReportNo });
             Report_Result baseResult = GetPDF(model);
             string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
@@ -461,8 +462,8 @@ namespace BusinessLogicLayer.Service
                 Subject = "Mockup Crocking – Test Fail",
                 To = mail_Request.To,
                 CC = mail_Request.CC,
-                Body = mailBody,
-                alternateView = plainView,
+                //Body = mailBody,
+                //alternateView = plainView,
                 FileonServer = new List<string> { FileName },
                 IsShowAIComment = true,
                 AICommentType = "Mockup Crocking Test",
@@ -474,7 +475,10 @@ namespace BusinessLogicLayer.Service
             _MailService = new MailToolsService();
             string comment = _MailService.GetAICommet(sendMail_Request);
             string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+            string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, out AlternateView plainView);
+
+            sendMail_Request.Body = mailBody;
+            sendMail_Request.alternateView = plainView;
 
             return MailTools.SendMail(sendMail_Request);
         }
