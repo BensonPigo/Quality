@@ -277,8 +277,14 @@ namespace BusinessLogicLayer.Service
                 }
 
                 // ISP20230792
-                if (mockupOven.HTPlate.HasValue || mockupOven.HTFlim.HasValue || mockupOven.HTTime.HasValue || mockupOven.HTPressure.HasValue ||
-                    !string.IsNullOrEmpty(mockupOven.HTPellOff) || mockupOven.HT2ndPressnoreverse.HasValue || mockupOven.HT2ndPressreversed.HasValue || mockupOven.HTCoolingTime.HasValue)
+                if ((mockupOven.HTPlate.HasValue && mockupOven.HTPlate.Value > 0)
+                    || (mockupOven.HTFlim.HasValue && mockupOven.HTFlim.Value > 0)
+                    || (mockupOven.HTTime.HasValue && mockupOven.HTTime.Value > 0)
+                    || (mockupOven.HTPressure.HasValue && mockupOven.HTPressure.Value > 0)
+                    || !string.IsNullOrEmpty(mockupOven.HTPellOff) 
+                    || (mockupOven.HT2ndPressnoreverse.HasValue && mockupOven.HT2ndPressnoreverse.Value > 0)
+                    || (mockupOven.HT2ndPressreversed.HasValue && mockupOven.HT2ndPressreversed.Value > 0)
+                    || (mockupOven.HTCoolingTime.HasValue && mockupOven.HTCoolingTime.Value > 0))
                 {
                     int aRow = 11 + haveHTrow + mockupOven_Detail.Count - 1;
                     Range rngToCopy = worksheet2.get_Range($"A1:N5", Type.Missing).EntireRow;
