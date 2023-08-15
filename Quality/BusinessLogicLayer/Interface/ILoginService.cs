@@ -1,6 +1,7 @@
 ﻿using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
+using DatabaseObject.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +19,9 @@ namespace BusinessLogicLayer.Interface
         List<string> GetFactory();
 
         List<Quality_Menu> GetMenus(string UserID);
+
+        LogIn_Request LoginValidateOnlyID(string UserID, string FactoryID, DateTime EndTime);
+
+        JWTToken_ViewModel DecodeJWT(string token, string secretKey);
     }
 }

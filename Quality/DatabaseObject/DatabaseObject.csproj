@@ -70,6 +70,7 @@
     <Compile Include="ManufacturingExecutionDB\DQSReason.cs" />
     <Compile Include="ManufacturingExecutionDB\EndlineMoisture.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection.cs" />
+    <Compile Include="ManufacturingExecutionDB\FinalInspectionBasicStep.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Detail.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Measurement.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Moisture.cs" />
@@ -219,6 +220,7 @@
     <Compile Include="ResultModel\GarmentTest_Result.cs" />
     <Compile Include="ViewModel\InspectionSave_ViewModel.cs" />
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
+    <Compile Include="ViewModel\JWTToken_ViewModel.cs" />
     <Compile Include="ViewModel\ReworkList_ViewModel.cs" />
     <Compile Include="ViewModel\SampleRFT\CFTComments_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\MockupCrocking_ViewModel.cs" />

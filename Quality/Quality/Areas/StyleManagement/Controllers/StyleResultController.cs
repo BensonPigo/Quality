@@ -1,6 +1,9 @@
-﻿using BusinessLogicLayer.Service.StyleManagement;
+﻿using BusinessLogicLayer.Interface.BulkFGT;
+using BusinessLogicLayer.Service.BulkFGT;
+using BusinessLogicLayer.Service.StyleManagement;
 using DatabaseObject;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.SampleRFT;
 using Quality.Controllers;
 using Quality.Helper;
@@ -18,7 +21,7 @@ namespace Quality.Areas.StyleManagement.Controllers
     public class StyleResultController : BaseController
     {
         private StyleResultService _Service;
-
+        private IGarmentTest_Service _GarmentTest_Service;
         public StyleResultController()
         {
             _Service = new StyleResultService();
@@ -185,7 +188,6 @@ namespace Quality.Areas.StyleManagement.Controllers
 
         }
 
-
         public ActionResult DownloadRRLRFile(string FilePath,string BrandID, string SeasonID, string StyleID)
         {
 
@@ -227,6 +229,27 @@ namespace Quality.Areas.StyleManagement.Controllers
 
 
 
+        }
+
+        public ActionResult DownloadBulkReport(string BrandID, string StyleID, string SeasonID,  string Article, string Type)
+        {
+            _GarmentTest_Service = new GarmentTest_Service();
+            GarmentTest_Detail_Result result = _GarmentTest_Service.StyleResult_BulkFGTReport(BrandID, StyleID, SeasonID, Article, Type);
+            if (result.Result.Value)
+            {
+                using (WebClient wc = new WebClient())
+                {
+                    string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.reportPath;
+                    byte[] b = wc.DownloadData(reportPath);
+                    Response.Clear();
+                    Response.AddHeader("Content-Disposition", "attachment;filename=" + result.reportPath);
+                    Response.BinaryWrite(b);
+                    Response.End();
+                    return null;
+                }
+            }
+
+            return null;
         }
     }
 }

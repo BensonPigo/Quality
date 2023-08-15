@@ -111,6 +111,19 @@ namespace BusinessLogicLayer.Service
 
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
                 result.SelectedSewing = _FinalInspFromPMSProvider.GetSelectedSewingLine(FactoryID).ToList();
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
+                List<SelectSewing> endlineSewing = _FinalInspFromPMSProvider.GetSelectedSewingLineFromEndline(listOrderID).ToList();
+
+                foreach (var item in result.SelectedSewing)
+                {
+                    if (endlineSewing.Where(o=>o.SewingLine == item.SewingLine).Any())
+                    {
+                        item.Selected = true;
+                    }
+                }
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
+                result.SewingLineID = string.Join(",", result.SelectedSewing.Where(o => o.Selected).Select(o => o.SewingLine));
+
                 result.SelectedSewingTeam = _FinalInspFromPMSProvider.GetSelectedSewingTeam().ToList();
                 result.SelectedPO = _FinalInspFromPMSProvider.GetSelectedPOForInspection(listOrderID).ToList();
                 result.SelectOrderShipSeq = _FinalInspFromPMSProvider.GetSelectOrderShipSeqForSetting(listOrderID).ToList();

@@ -45,6 +45,22 @@ AND FactoryID=@FactoryID
 
             return ExecuteList<SelectSewing>(CommandType.Text, SbSql.ToString(), paras);
         }
+        public IList<SelectSewing> GetSelectedSewingLineFromEndline(List<string> listOrderID)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            string whereOrderID = listOrderID.Select(s => $"'{s}'").JoinToString(",");
+            //台北
+            SbSql.Append($@"
+select distinct SewingLine = Line
+from Inspection
+where OrderID  in ({whereOrderID})
+");
+
+            return ExecuteList<SelectSewing>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
         public IList<SelectSewingTeam> GetSelectedSewingTeam()
         {
             StringBuilder SbSql = new StringBuilder();
@@ -144,7 +160,8 @@ select  [Selected] = Cast(0 as bit),
         [Seq] = pld.OrderShipmodeSeq
 		,ShipQty = SUM(pld.ShipQty)
  from PackingList_Detail pld WITH(NOLOCK)
- where  pld.OrderID in ({whereOrderID}) 
+ where  pld.OrderID in ({whereOrderID})  
+    and CTNStartNo <> ''
     --and CTNQty = 1
  group by  OrderID,ID,CTNStartNo,OrderShipmodeSeq
  ORDER BY Cast( CTNStartNo as int)

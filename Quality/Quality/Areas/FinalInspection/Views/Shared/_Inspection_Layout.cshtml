@@ -2,14 +2,25 @@
     <div class="al-m" style="width:100%">
         @*<div style='float:left;'><h1 style="font-size:1.2em">Inspection Detail</h1></div>*@
         @{
+            List<DatabaseObject.ManufacturingExecutionDB.FinalInspection_Step> allStep = new List<DatabaseObject.ManufacturingExecutionDB.FinalInspection_Step>();
+            if (ViewData["FinalInspectionAllStep"] != null)
+            {
+                allStep = (List<DatabaseObject.ManufacturingExecutionDB.FinalInspection_Step>)ViewData["FinalInspectionAllStep"];
+            }
+
             Dictionary<string, string> list = new Dictionary<string, string>();
-            list.Add("General", "General");
-            list.Add("CheckList", "Check List");
-            list.Add("Measurement", "Measurement");
-            list.Add("AddDefect", "Add Defect");
-            list.Add("BeautifulProductAudit", "Beautiful Product Audit");
-            list.Add("Moisture", "Moisture");
-            list.Add("Others", "Others");
+
+            foreach (var item in allStep)
+            {
+                list.Add(item.StepName.Replace(" ", String.Empty), item.StepName);
+            }
+            //list.Add("General", "General");
+            //list.Add("CheckList", "Check List");
+            //list.Add("Measurement", "Measurement");
+            //list.Add("AddDefect", "Add Defect");
+            //list.Add("BeautifulProductAudit", "Beautiful Product Audit");
+            //list.Add("Moisture", "Moisture");
+            //list.Add("Others", "Others");
 
             List<string> result = new List<string>();
             string url = Request.Url.AbsoluteUri.ToLower();

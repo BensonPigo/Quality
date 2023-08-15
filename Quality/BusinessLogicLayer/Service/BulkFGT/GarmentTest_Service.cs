@@ -20,6 +20,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Library;
 using System.Windows.Forms;
+using Ict;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -2994,6 +2995,58 @@ and t.GarmentTest=1
             }
 
             return all_Data;
+        }
+
+        public GarmentTest_Detail_Result StyleResult_BulkFGTReport(string BrandID, string StyleID, string SeasonID, string Article, string Type)
+        {
+            _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
+            GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
+            try
+            {
+                GarmentTest_Request garment = new GarmentTest_Request
+                {
+                    Brand = BrandID,
+                    Style = StyleID,
+                    Season = SeasonID,
+                    Article = Article,
+                };
+
+                GarmentTest_Detail_ViewModel detail_ViewModel = _IGarmentTestProvider.GetDetail_LastTestNo(garment, Type).FirstOrDefault();
+                switch (Type)
+                {
+                    case "450":
+                    case "451":
+                        result = ToReport(detail_ViewModel.ID.ToString(), detail_ViewModel.No.ToString(), ReportType.Physical_Test, true);
+                        break;
+                    default:
+                        Ionic.Zip.ZipFile zipFile = new Ionic.Zip.ZipFile();
+                        string zipName = $"WashTest_Physical_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.zip";
+                        string zipPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", zipName);
+                        result = ToReport(detail_ViewModel.ID.ToString(), detail_ViewModel.No.ToString(), ReportType.Wash_Test_2018, true);                        
+                        if (result.Result.Value)
+                        {
+                            zipFile.AddFile(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", result.reportPath), string.Empty);
+                        }
+
+                        result = ToReport(detail_ViewModel.ID.ToString(), detail_ViewModel.No.ToString(), ReportType.Wash_Test_2020, true);
+                        if (result.Result.Value)
+                        {
+                            zipFile.AddFile(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", result.reportPath), string.Empty);
+                        }
+                        
+                        zipFile.Save(zipPath);
+                        result.reportPath = zipName;
+                        break;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrMsg= ex.Message;                
+            }
+
+            return result;
         }
     }
 }

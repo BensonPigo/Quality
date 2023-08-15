@@ -71,7 +71,7 @@ select b.ReportNo
 
       ,b.Instrument
       ,b.Fabrication
-	  ,Standard = CAST( ISNULL(e.Standard,0) as decimal(6,2))
+	  ,Standard = CAST( ISNULL(eBrand.Standard, ISNULL(eDefault.Standard,0) ) as decimal(6,2))
       ,b.Action
       ,b.Result
       ,b.Remark
@@ -83,7 +83,8 @@ select b.ReportNo
       ,b.Line
       ,MRHandleEmail = ISNULL(p.Email, p2.Email)
 from BulkMoistureTest b
-left join EndlineMoisture e on  e.Instrument=b.Instrument and b.Fabrication=e.Fabrication 
+left join EndlineMoisture eDefault on  eDefault.Instrument=b.Instrument and b.Fabrication=eDefault.Fabrication and eDefault.BrandID=''
+left join EndlineMoisture eBrand on  eBrand.Instrument=b.Instrument and b.Fabrication=eBrand.Fabrication and b.BrandID = eBrand.BrandID
 inner join SciProduction_Orders o on b.OrderID = o.ID
 left join SciProduction_Pass1 p on o.MRHandle = p.ID
 left join Pass1 p2 on o.MRHandle = p2.ID
@@ -430,6 +431,7 @@ select  Instrument
         ,AddName
         ,EditDate
         ,Editname
+        ,BrandID
 from    EndlineMoisture with (nolock)
 
 ";

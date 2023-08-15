@@ -22,6 +22,7 @@
         td.details-control {
             background: url('/Image/Icon/ChildRowOpen.png') no-repeat center center;
         }
+
         #CheckListTable {
             font-size: 1.4em;
         }
@@ -32,22 +33,27 @@
     </style>
 }
 @Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
-    <div class="DownWhiteBackgrond">
-        @using (Html.BeginForm("CheckList", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue(this.submitted);" }))
-        {
-            @Html.HiddenFor(o => o.ID)
-            @Html.HiddenFor(o => o.CustPONO)
-            <div style="padding:2em 3em 2em 3em;width:60%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
-                <table id="CheckListTable" class="cell-border" style="width:100%"></table>
-            </div>
-            <div style="width:100%">
-                <input type="hidden" id="goPage" name="goPage">
-                <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;">Back</button>
-                <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
-            </div>
-        }
+@{
+    List<string> TypeList = Model.CheckListList.Select(o => o.Type).Distinct().ToList();
+}
+<div class="DownWhiteBackgrond">
+    @using (Html.BeginForm("CheckList", "Inspection", FormMethod.Post, new { @id = "settingForm", onsubmit = "return checkSubmitValue(this.submitted);" }))
+    {
+        @Html.HiddenFor(o => o.ID)
+        @Html.HiddenFor(o => o.CustPONO)
+        @Html.HiddenFor(o => o.finalInspectionGeneral.FinalInspectionID)
+        @Html.HiddenFor(o => o.finalInspectionCheckList.FinalInspectionID)
+        <div style="padding:2em 3em 2em 3em;width:60%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
+            <table id="CheckListTable" class="cell-border" style="width:100%"></table>
+        </div>
+        <div style="width:100%">
+            <input type="hidden" id="goPage" name="goPage">
+            <button id="btnBack" onclick="this.form.submitted=this.value;" type="submit" value="Back" class="button" style="right:7em;">Back</button>
+            <button id="btnNext" onclick="this.form.submitted=this.value;" type="submit" value="Next" style="right:0;" class="button">Next</button>
+        </div>
+    }
 
-    </div>
+</div>
 @section FinalInspection_script
 {
     <script>
@@ -65,14 +71,50 @@
         var table;
 
         // name, td:value, td:checkbox
-        adata.push([null, 'Fabric Artwork Check List',false,
+        @foreach (var type in TypeList)
+        {
+            var datas = Model.CheckListList.Where(o => o.Type == type).ToList();
+
+            string innerStr = "";
+            foreach (var item in datas)
+            {
+                bool IsChecked = Model.CheckListListDic[item.CheckListColName];
+                innerStr += $@" ['finalInspectionCheckList.{item.CheckListColName}', '{item.ItemName}',{IsChecked}],{Environment.NewLine}            ";
+            }
+
+            string raw = $@"
+adata.push(
+    [null, '{type}', false,
+
+        [
+            {innerStr}
+        ]
+    ]
+);
+";
+
+            <text>
+                @Html.Raw(raw)
+            </text>
+        }
+
+        @*adata.push(
+
+        [null, 'Fabric Artwork Check List', false,
+
             [
+
                 ['CheckCloseShade', 'Color/Shade',@Model.CheckCloseShade],
+
                 ['CheckHandfeel', 'Handfeel', @Model.CheckHandfeel],
+
                 ['CheckAppearance', 'Appearance',@Model.CheckAppearance],
+
                 ['CheckPrintEmbDecorations', 'Print/Emb Decorations', @Model.CheckPrintEmbDecorations]
             ]
-        ]);
+                ]
+            );
+
         adata.push([null, 'Label', false,
             [
                 ['CheckFiberContent', 'Fiber Content', @Model.CheckFiberContent],
@@ -92,7 +134,7 @@
                 ['CheckColorSizeQty', 'Color/Size/Qty', @Model.CheckColorSizeQty],
                 ['CheckHangtag', 'Hangtag', @Model.CheckHangtag],
             ]
-        ]);
+        ]);*@
 
         $(function () {
             table = $('#CheckListTable').DataTable({
@@ -114,7 +156,7 @@
                     {
                         // Used欄位換成Check box
                         render: function (data, type, full, meta) {
-                            
+
                             var AllCheckedTxt = "checked";
                             var sameCodeItem = full[3];
                             $(sameCodeItem).each(function () {
@@ -139,7 +181,7 @@
                 "scrollCollapse": true,
                 "createdRow": function (row, data, index) {
                     $('td', row).css('background-color', '#FAA7A7');
-                    
+
                     $('td', row).attr('ID', 'CheckList_' + data[1].replaceAll(' ',''));
                 }
             });
@@ -165,7 +207,8 @@
                 var Code = $(this).attr("Code");
 
                 //取得勾選的子項目ID
-                var id = $(this).attr("id");
+                var reailId = $(this).attr("id")
+                var id = reailId.replace('_','.');
 
                 var partentTd = $("#CheckList_" + Code);
                 var header = $("#Head_" + Code);
@@ -174,9 +217,9 @@
 
                 $.each(row.data()[3], function () {
                     if (this[0] == id) {
-                        
-                        this[2] = $("#" + id).prop("checked");//$(this).find("input").val();
-                        
+
+                        this[2] = $("#" + reailId).prop("checked");//$(this).find("input").val();
+
                         if (this[2] == false) {
                             $(header).prop("checked", False);
                         }
@@ -213,12 +256,16 @@
             $(list).each(function (index, value) {
 
                 sTr = sTr + '<tr><td style="width:95%">' + value[1] + '</td>';
+
+                var idText = value[0].replace('.', '_');
+                var nameText = value[0];
+
                 if (value[2]) {
 
-                    sTr = sTr + `<td class="OpenDetail" style="vertical-align: middle"><input checked="checked" data-val="true" id="${value[0]}" name="${value[0]}" code="${parentID}" type="checkbox" value="true"></td></tr>`;
+                    sTr = sTr + `<td class="OpenDetail" style="vertical-align: middle"><input checked="checked" data-val="true" id="${idText}" name="${nameText}" code="${parentID}" type="checkbox" value="true"></td></tr>`;
                 }
                 else {
-                    sTr = sTr + `<td class="OpenDetail" style="vertical-align: middle"><input data-val="true"  id="${value[0]}" " name="${value[0]}" type="checkbox" code="${parentID}" value="true"><input name="${value[0]}" " type="hidden" value="false"></td></tr>`;
+                    sTr = sTr + `<td class="OpenDetail" style="vertical-align: middle"><input data-val="true"  id="${idText}" " name="${nameText}" type="checkbox" code="${parentID}" value="true"><input name="${nameText}" " type="hidden" value="false"></td></tr>`;
                 }
             });
             return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
@@ -248,7 +295,7 @@
                     tr.addClass('shown');
                 }
             });
-            
+
             return true;
         }
     </script>

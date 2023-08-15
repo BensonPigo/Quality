@@ -237,7 +237,7 @@
         <!--Detail-Cartons彈出視窗-->
         <!--多個Table forA001-->
         <input type="hidden" id="currnetSelectedPO" />
-        <div class="detail-dialog to-edit-detail" title="Select Carton">
+        <div class="detail-dialog to-Carton-detail" title="Select Carton">
             <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
                 <table cellspacing="100" id="CartonTable" class="table table-striped display">
                     <thead>
@@ -561,6 +561,17 @@
                 ]
             });
 
+            // Line Header改成文字方塊
+            $('#SewingLineTable thead th').each(function () {
+                var idx = $(this).index();
+                var title = $(this).text();
+
+                if (idx == 1) {
+                    $(this).html('<input id="LineSearch" type="text" placeholder="Search ' + title + '" />');
+                }
+
+            });
+
             $("#SewingLineTable").DataTable({
                 "pageLength": 10,
                 "autoWidth": false,
@@ -607,7 +618,7 @@
             });
 
             //Select Carton視窗
-            $(".to-edit-detail").dialog({
+            $(".to-Carton-detail").dialog({
                 width: "70%",
                 dialogClass: "add-contact-box",
                 buttons: {
@@ -692,6 +703,7 @@
                 },
             });
 
+            //Select SewingLine視窗
             $(".to-SewingLine-detail").dialog({
                 width: "70%",
                 dialogClass: "add-contact-box",
@@ -701,6 +713,7 @@
                         click: function () {
 
                             var checkedList = [];
+                            $("#LineSearch").val('').change();
 
                             $('[id^=SewingLine_Select_]').each(function () {
 
@@ -833,7 +846,7 @@
                 return true;
             }
 
-            $(".to-edit-detail").dialog("open");
+            $(".to-Carton-detail").dialog("open");
             ShowLoading();
 
             // Carton的DataTable建立函式
@@ -977,6 +990,7 @@
             $(".to-SewingLine-detail").dialog("open");
             ShowLoading();
 
+            // SewingLine的DataTable建立函式
             $("#SewingLineTable").DataTable({
                 "pageLength": 10,
                 //"autoWidth": false,
@@ -989,9 +1003,31 @@
                 "scrollCollapse": true,
                 columnDefs: [
                     { targets: 0 },
-                    { targets: 1 },
-                ]
+                    { targets: 1, orderable: false },
+                ],
+                initComplete: function () {
+                    this.api().columns().every(function () {
+
+                        // 只有第一個欄位要有選單
+                        if (this.data().length > 0 && this.index() == 1) {
+
+                            var that = this;
+                            $('input', this.header()).on('keyup change clear', function () {
+                                if (that.search() !== this.value) {
+                                    that
+                                        .search(this.value)
+                                        .draw();
+                                }
+                            });
+
+                        }
+                    });
+                }
             });
+
+
+            $("#LineSearch").val('');
+
 
             $("#SewingLineTable_filter").hide();
 

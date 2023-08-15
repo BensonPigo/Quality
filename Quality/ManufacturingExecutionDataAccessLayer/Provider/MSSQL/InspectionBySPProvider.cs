@@ -452,7 +452,7 @@ where   ID = @ID
                     objParameter.Add("@userID", userID);
                     objParameter.Add("@InspectionStep", inspection.InspectionStep);
                     break;
-                case "Insp-BA":
+                case "Insp-BeautifulProductAudit":
                     sqlUpdCmd += $@"
 update SampleRFTInspection
  set    InspectionStep = @InspectionStep,
@@ -505,9 +505,12 @@ where   ID = @ID
             listPar.Add("@OrderID", OrderID);
 
             string sqlGetMoistureArticleList = @"
-select distinct oqd.Article 
-from MainServer.Production.dbo.Order_Qty oqd with (nolock)
-where oqd.ID = @OrderID 
+select distinct oa.Article
+from Production..Orders o with (nolock)
+INNER JOIN Production.dbo.Orders op with (nolock) ON o.POID=op.POID
+inner join Production.dbo.Order_Article oa with (nolock) on oa.id = op.ID
+inner join Production.dbo.Order_SizeCode os with (nolock) on os.Id = op.ID
+where o.ID = @OrderID 
 ";
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetMoistureArticleList, listPar);
@@ -530,10 +533,12 @@ where oqd.ID = @OrderID
             listPar.Add("@OrderID", OrderID);
 
             string sqlGetMoistureArticleList = @"
-
-select distinct oqd.Article, oqd.SizeCode 
-from MainServer.Production.dbo.Order_QtyShip_Detail oqd with (nolock)
-where oqd.ID = @OrderID 
+select distinct oa.Article, os.SizeCode
+from Production..Orders o with (nolock)
+INNER JOIN Production..Orders op with (nolock) ON o.POID=op.POID
+inner join Production.dbo.Order_Article oa with (nolock) on oa.id = op.ID
+inner join Production.dbo.Order_SizeCode os with (nolock) on os.Id = op.ID
+where o.ID = @OrderID 
 ";
 
             return ExecuteList<ArticleSize>(CommandType.Text, sqlGetMoistureArticleList, listPar);
@@ -1601,10 +1606,13 @@ where   ID = @ID
             };
 
             string sqlcmd = $@"
-select distinct oqd.ID, oqd.Article, oqd.SizeCode 
+select distinct o.ID,oa.Article, os.SizeCode
 INTO #tmp
-from MainServer.Production.dbo.Order_QtyShip_Detail oqd with (nolock)
-where oqd.ID = @OrderID
+from Production.dbo.Orders o with (nolock)
+INNER JOIN Production.dbo.Orders op with (nolock) ON o.POID=op.POID
+inner join Production.dbo.Order_Article oa on oa.id = op.ID
+inner join Production.dbo.Order_SizeCode os on os.Id = op.ID
+where o.ID = @OrderID
 
 select distinct OrderID=oqd.ID ,oqd.Article, Size = oqd.SizeCode 
 		,d.Front
@@ -1615,6 +1623,8 @@ select distinct OrderID=oqd.ID ,oqd.Article, Size = oqd.SizeCode
 from #tmp oqd with (nolock)
 LEFT JOIN PMSFile.dbo.RFT_PicDuringDummyFitting d  WITH(NOLOCK) ON oqd.ID = d.OrderID AND oqd.Article=d.Article AND oqd.SizeCode=d.Size
 where oqd.ID = @OrderID
+
+drop table #tmp
 ";
 
             return ExecuteList<DummyFitImage>(CommandType.Text, sqlcmd, objParameter);

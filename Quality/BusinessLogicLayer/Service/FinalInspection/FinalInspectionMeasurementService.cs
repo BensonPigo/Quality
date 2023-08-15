@@ -22,9 +22,9 @@ namespace BusinessLogicLayer.Service
         public IFinalInspFromPMSProvider _FinalInspFromPMSProvider { get; set; }
         public IMeasurementProvider _MeasurementProvider { get; set; }
 
-        public Measurement GetMeasurementForInspection(string finalInspectionID, string userID)
+        public ServiceMeasurement GetMeasurementForInspection(string finalInspectionID, string userID)
         {
-            Measurement measurement = new Measurement();
+            ServiceMeasurement measurement = new ServiceMeasurement();
 
             try
             {
@@ -105,7 +105,7 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public BaseResult UpdateMeasurement(Measurement measurement, string userID)
+        public BaseResult UpdateMeasurement(ServiceMeasurement measurement, string userID)
         {
             BaseResult result = new BaseResult();
 
@@ -141,7 +141,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult Single_UpdateMeasurement(Measurement Head, MeasurementItem Body, string userID)
+        public BaseResult Single_UpdateMeasurement(ServiceMeasurement Head, MeasurementItem Body, string userID)
         {
             BaseResult result = new BaseResult();
 

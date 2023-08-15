@@ -188,6 +188,7 @@ order by EditDate desc
                 { "@Machine", DbType.String,  Req.Machine ?? "" } ,
                 { "@Remark", DbType.String, Req.Remark ?? "" } ,
                 { "@ArtworkTypeID", DbType.String, Req.ArtworkTypeID ?? "" } ,
+                { "@ReceivedDate", DbType.DateTime, Req.ReceivedDate } ,
                 //{ "@Temperature", DbType.Int32, Req.Temperature } ,
                 //{ "@Time", DbType.Int32, Req.Time } ,
                 //{ "@Pressure", DbType.Decimal, Req.Pressure } ,
@@ -228,6 +229,7 @@ INSERT INTO HeatTransferWash
            ,Line
            ,Machine
            ,Remark
+           ,ReceivedDate
            ,ArtworkTypeID
            ,Status
            ,Result
@@ -243,6 +245,7 @@ VALUES  (
            ,@Line
            ,@Machine
            ,@Remark
+           ,@ReceivedDate
            ,@ArtworkTypeID
            ,'New'
            ,@Result
