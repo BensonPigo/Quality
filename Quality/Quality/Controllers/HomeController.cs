@@ -2,6 +2,7 @@
 using BusinessLogicLayer.Service;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
+using DatabaseObject.ViewModel;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
@@ -200,6 +201,106 @@ namespace Quality.Controllers
             this.TargetPKey_Value = OriInfo.Split('+')[4];
 
             return RedirectToAction("Login");
+        }
+
+        public ActionResult RedirectToBulkPage(string Token)
+        {
+            string actionName = string.Empty;
+            string controllerName = string.Empty;
+            string area = "BulkFGT";
+            object routeValues = null;
+            try
+            {
+                JWTToken_ViewModel jWTToken_View = _LoginService.DecodeJWT(Token, CryptoKey);
+
+                LogIn_Request logIn_Request = _LoginService.LoginValidateOnlyID(jWTToken_View.UserID, jWTToken_View.FactoryID, jWTToken_View.EndTime);
+                if (logIn_Request == null)
+                {
+                    throw new Exception("Re-login required");
+                }
+
+                LogIn_Result result = _LoginService.LoginValidate(logIn_Request);
+
+                if (!result.Result)
+                {
+                    throw new Exception(result.ErrorMessage);
+                }
+
+                this.UserID = result.pass1.ID;
+                this.UserName = result.pass1.UserName;
+                this.BulkFGT_Brand = result.pass1.BulkFGT_Brand;
+                this.UserMail = result.UserMail;
+                this.MenuList = result.Menus;
+                this.Factorys = result.Factorys;
+                this.MDivisionID = result.MDivisionID;
+                this.FactoryID = result.FactoryID;
+                this.Lines = result.Lines;
+                this.Line = this.Lines.FirstOrDefault();
+                this.Brands = result.Brands;
+                this.Brand = this.Brands.Where(x => x.Equals("ADIDAS")).Select(x => x).FirstOrDefault();
+
+                controllerName = jWTToken_View.Program;
+                switch (jWTToken_View.Program)
+                {
+                    case "FabricCrkShrkTest":
+                        actionName = "IndexBack";
+                        routeValues = new { Area = area, jWTToken_View.POID };
+                        break;
+                    case "GarmentTest":
+                        actionName = "IndexBack";
+                        routeValues = new { Area = area, Brand = jWTToken_View.BrandID, Season = jWTToken_View.SeasonID, Style = jWTToken_View.StyleID, jWTToken_View.Article };
+                        break;
+                    case "MockupCrocking":
+                        actionName = "IndexGet";
+                        routeValues = new { Area = area, ReportNo = string.Empty, jWTToken_View.BrandID, jWTToken_View.SeasonID, jWTToken_View.StyleID, jWTToken_View.Article };
+                        break;
+                    case "MockupOvenTest":
+                        actionName = "IndexGet";
+                        routeValues = new { Area = area, ReportNo = string.Empty, jWTToken_View.BrandID, jWTToken_View.SeasonID, jWTToken_View.StyleID, jWTToken_View.Article };
+                        break;
+                    case "MockupWash":
+                        actionName = "IndexGet";
+                        routeValues = new { Area = area, ReportNo = string.Empty, jWTToken_View.BrandID, jWTToken_View.SeasonID, jWTToken_View.StyleID, jWTToken_View.Article };
+                        break;
+                    case "FabricOvenTest":
+                        actionName = "IndexBack";
+                        routeValues = new { Area = area, jWTToken_View.POID };
+                        break;
+                    case "FabricColorFastness":
+                        actionName = "IndexBack";
+                        routeValues = new { Area = area, jWTToken_View.POID };
+                        break;
+                    case "AccessoryOvenWash":
+                        actionName = "IndexGet";
+                        routeValues = new { Area = area, ReqOrderID = jWTToken_View.POID };                       
+                        break;
+                    case "PullingTest":
+                        actionName = "IndexGet";
+                        routeValues = new { Area = area, ReportNo = string.Empty, jWTToken_View.BrandID, jWTToken_View.SeasonID, jWTToken_View.StyleID, jWTToken_View.Article };
+                        break;
+                    case "WaterFastness":
+                        actionName = "IndexBack";
+                        routeValues = new { Area = area, jWTToken_View.POID };
+                        break;
+                    case "PerspirationFastness":
+                        actionName = "IndexBack";
+                        routeValues = new { Area = area, jWTToken_View.POID };
+                        break;
+                }
+
+                if (string.IsNullOrEmpty(actionName))
+                {
+                    throw new Exception("Re-login required");
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewData["Factorys"] = new FactoryDashBoardWeb.Helper.SetListItem().ItemListBinding(this.Factorys);
+                ViewData["Msg"] = ex.Message.ToString();
+                return View("Login", new LogIn_Request());
+            }
+
+            return RedirectToAction(actionName, controllerName, routeValues);
         }
     }
 }

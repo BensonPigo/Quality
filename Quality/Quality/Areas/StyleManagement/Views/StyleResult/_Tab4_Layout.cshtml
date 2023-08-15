@@ -27,6 +27,7 @@
             <th>Test Name</th>
             <th>Last Result</th>
             <th>Last Test Date</th>
+            <th>Test Report</th>
         </tr>
     </thead>
     <tbody>
@@ -45,6 +46,16 @@
                     <td>
                         @{ string LastTestDate = item.LastTestDate.HasValue ? item.LastTestDate.Value.ToShortDateString() : string.Empty;}
                         @LastTestDate
+                    </td>
+                    <td>
+                        @{ 
+                            if (!string.IsNullOrEmpty(LastTestDate))
+                            {
+                                <a href='@Url.Action("DownloadBulkReport", "StyleResult", new { BrandID = Model.BrandID, SeasonID = Model.SeasonID, StyleID = Model.StyleID, Article = item.Article, Type = item.Type })'>
+                                    <img class="BulkReport" src="~/Image/Icon/Document.png" width="15"/>
+                                </a>                                
+                            }
+                        }
                     </td>
                 </tr>
             }
