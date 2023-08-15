@@ -77,9 +77,9 @@
     }
     .aiCommentTooltipText {
         visibility: hidden;
-        position: absolute;
-        /*top: 30%;*/ /* 距離上方50%的位置 */
-        /*left: 15%;*/ /* 距離左邊50%的位置 */
+        position: fixed;
+        top: 40%; /* 距離上方50%的位置 */
+        left: 15%; /* 距離左邊50%的位置 */
         z-index: 9999;
         background-color: pink;
         border: 1px solid black;
@@ -87,7 +87,7 @@
         color: black;
         font-size: 1rem;
         padding: 0.5rem;
-        text-align:left;
+        text-align: left;
     }
 
     .aiCommentTooltip:hover .aiCommentTooltipText {

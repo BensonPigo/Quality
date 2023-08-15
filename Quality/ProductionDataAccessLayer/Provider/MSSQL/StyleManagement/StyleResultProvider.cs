@@ -944,7 +944,7 @@ outer apply(
 		select Ukey from ExtendServer.ManufacturingExecution.dbo.AIComment where FunctionName='QualityWeb'
 	)
 	and ad.IsRRLR = 0
-	and ad.Type LIKE '%' + t.TestName +'%'
+	and ad.Type LIKE '%' + IIF(t.Type='710' OR t.Type='701','Garment Wash Test',t.TestName)+'%'
 )cmNotRRLR
 outer apply(
 	select TOP 1 Comment = ad.Comment
@@ -958,7 +958,7 @@ outer apply(
 		select Ukey from ExtendServer.ManufacturingExecution.dbo.AIComment where FunctionName='QualityWeb'
 	)
 	and ad.IsRRLR = 1
-	and ad.Type LIKE '%' + t.TestName +'%'
+	and ad.Type LIKE '%' + IIF(t.Type='710' OR t.Type='701','Garment Wash Test',t.TestName)+'%'
 )cmRRLR
 
 drop table #tmp_final, #Type

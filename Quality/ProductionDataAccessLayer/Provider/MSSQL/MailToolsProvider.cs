@@ -64,8 +64,8 @@ select dbo.GetQualityWebAIComment(@Type,@StyleUkey,'','','')
                 paras.Add("@StyleUkey", Req.StyleUkey);
 
                 sqlCmd = $@"
-Select CASE WHEN  DATEDIFF(DAY,GETDATE(),sa.BuyReadyDate) < 14 THEN CONVERT(VARCHAR, sa.BuyReadyDate,111) + '(Less than 14 days from BR)'
-			WHEN DATEDIFF(DAY,GETDATE(),sa.BuyReadyDate) >= 14 THEN CONVERT(VARCHAR, sa.BuyReadyDate,111) + '(14 days below left for BR)'
+Select CASE WHEN  DATEDIFF(DAY,GETDATE(),sa.BuyReadyDate) < 14 THEN 'BR Date:' + CONVERT(VARCHAR, sa.BuyReadyDate,111) + '(Less than 14 days from BR)'
+			WHEN DATEDIFF(DAY,GETDATE(),sa.BuyReadyDate) >= 14 THEN 'BR Date:' + CONVERT(VARCHAR, sa.BuyReadyDate,111) + '(14 days below left for BR)'
 			ELSE''
 	    END
 From Style_Article sa with (nolock)
@@ -78,8 +78,8 @@ and (s.BrandID = 'ADIDAS' OR s.BrandID ='REEBOK')
             {
                 paras.Add("@OrderID", Req.OrderID);
                 sqlCmd = $@"
-Select CASE WHEN  DATEDIFF(DAY,GETDATE(),BuyReadyDate) < 14 THEN CONVERT(VARCHAR, BuyReadyDate,111) + '(Less than 14 days from BR)'
-			WHEN DATEDIFF(DAY,GETDATE(),BuyReadyDate) >= 14 THEN CONVERT(VARCHAR, BuyReadyDate,111) + '(14 days below left for BR)'
+Select CASE WHEN  DATEDIFF(DAY,GETDATE(),BuyReadyDate) < 14 THEN 'BR Date:' + CONVERT(VARCHAR, BuyReadyDate,111) + '(Less than 14 days from BR)'
+			WHEN DATEDIFF(DAY,GETDATE(),BuyReadyDate) >= 14 THEN 'BR Date:' + CONVERT(VARCHAR, BuyReadyDate,111) + '(14 days below left for BR)'
 			ELSE''
 	    END
 From Style_Article sa with (nolock)
@@ -96,8 +96,8 @@ and (o.BrandID = 'ADIDAS' OR o.BrandID ='REEBOK')
                 paras.Add("@SeasonID", Req.SeasonID);
 
                 sqlCmd = $@"
-Select CASE WHEN  DATEDIFF(DAY,GETDATE(),BuyReadyDate) < 14 THEN CONVERT(VARCHAR, BuyReadyDate,111) + '(Less than 14 days from BR)'
-			WHEN DATEDIFF(DAY,GETDATE(),BuyReadyDate) >= 14 THEN CONVERT(VARCHAR, BuyReadyDate,111) + '(14 days below left for BR)'
+Select CASE WHEN  DATEDIFF(DAY,GETDATE(),BuyReadyDate) < 14 THEN 'BR Date:' + CONVERT(VARCHAR, BuyReadyDate,111) + '(Less than 14 days from BR)'
+			WHEN DATEDIFF(DAY,GETDATE(),BuyReadyDate) >= 14 THEN 'BR Date:' + CONVERT(VARCHAR, BuyReadyDate,111) + '(14 days below left for BR)'
 			ELSE''
 	    END
 From Style_Article sa with (nolock)
