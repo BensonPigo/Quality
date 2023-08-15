@@ -1017,9 +1017,9 @@
             }
             // (HorizontalAverage - HorizontalOriginal) / HorizontalOriginal * 100
             var rate = Round(accMul(accDiv(accSubtr(avg, original), original), 100));
-            if (option == "1") {
-                rate = Math.abs(rate);
-            }
+            //if (option == "1") {
+            //    rate = Math.abs(rate);
+            //}
 
             $('#Wash_Detail_' + idx + '__HorizontalRate').val(rate > 100 ? 100 : rate);
         });
@@ -1046,9 +1046,9 @@
             var rate = Round(accMul(accDiv(accSubtr(avg, original), original), 100));
             // rate = Math.round(rate * 100) / 100;
 
-            if (option == "1") {
-                rate = Math.abs(rate);
-            }
+            //if (option == "1") {
+            //    rate = Math.abs(rate);
+            //}
 
             $('#Wash_Detail_' + idx + '__VerticalRate').val(rate > 100 ? 100 : rate);
         });
@@ -1070,7 +1070,7 @@
         switch (option) {
             case "1":
                 if (value1 + value2 != 0) {
-                    rate = Math.abs(Round(accMul(accMul(accDiv(accSubtr(value1, value2), accAdd(value1, value2)), 2), 100)));
+                    rate = Round(accMul(accMul(accDiv(accSubtr(value1, value2), accAdd(value1, value2)), 2), 100));
                 }
                 break;
             case "2":

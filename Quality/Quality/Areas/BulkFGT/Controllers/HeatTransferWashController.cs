@@ -70,7 +70,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (model.Result && !model.ReportNo_Source.Any())
             {
-                model.ErrorMessage = "Data not found.";
+                model.ErrorMessage = "msg.WithInfo('Data not found')";
             }
             else if (!model.Result)
             {
@@ -108,7 +108,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (model.Result && !model.ReportNo_Source.Any())
             {
-                model.ErrorMessage = "Data not found.";
+                model.ErrorMessage = "msg.WithInfo('Data not found')";
             }
             else if (!model.Result)
             {
