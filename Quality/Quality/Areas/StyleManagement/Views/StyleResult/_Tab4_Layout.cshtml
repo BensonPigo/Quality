@@ -18,6 +18,24 @@
     #row-name {
         color: black;
     }
+
+    .aiCommentTooltipText {
+        visibility: hidden;
+        position: fixed;
+        top: 70%; /* 距離上方50%的位置 */
+        left: 15%; /* 距離左邊50%的位置 */
+        z-index: 9999;
+        background-color: pink;
+        border: 1px solid black;
+        border-radius: 2px;
+        color: black;
+        font-size: 1rem;
+        padding: 0.5rem;
+    }
+
+    .aiCommentTooltip:hover .aiCommentTooltipText {
+        visibility: visible;
+    }
 </style>
 <table id="myTable4" class="table table-striped display">
     <thead>
@@ -36,12 +54,17 @@
             foreach (var item in Model.BulkFGT)
             {
                 string color = item.LastResult == "Pass" ? "blue" : "red";
-                <tr class="row-content" style="vertical-align: middle; text-align: center;">
+                <tr class="row-content aiCommentTooltip" style="vertical-align: middle; text-align: center;">
                     <td>@item.Article</td>
                     <td>@item.Type</td>
                     <td>@item.TestName</td>
                     <td style="color:@color">
                         @item.LastResult
+                        @if (item.LastResult == "Fail" && (Model.BrandID == "ADIDAS" || Model.BrandID == "REEBOK"))
+                        {
+                            <img src="~/Image/Icon/Warning.png" width="25" height="25" class="" />
+                            <span class="aiCommentTooltipText">@item.AIComment</span>
+                        }
                     </td>
                     <td>
                         @{ string LastTestDate = item.LastTestDate.HasValue ? item.LastTestDate.Value.ToShortDateString() : string.Empty;}

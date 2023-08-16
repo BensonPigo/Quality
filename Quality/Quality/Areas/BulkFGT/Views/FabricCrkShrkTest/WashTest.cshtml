@@ -784,12 +784,13 @@
             to += value.To + ';';
             cc += value.CC + ';';
         });
+        var poid = '@Model.Wash_Main.POID';
 
         $.ajax({
             url: "@Url.Action("FailMail_Wash", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ ID: $('#ID').val(), TO: to, CC: cc }),
+            data: JSON.stringify({ ID: $('#ID').val(), TO: to, CC: cc, OrderID: poid }),
             async: false,
             success: function (data) {
                 if (data.result) {

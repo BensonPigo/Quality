@@ -55,5 +55,11 @@ namespace DatabaseObject.ViewModel
         public string WashResult { get; set; }
         public Byte[] TestBeforePicture { get; set; }
         public Byte[] TestAfterPicture { get; set; }
+
+        public string WashAIComment { get; set; }
+
+        public string SeamBreakageAIComment { get; set; }
+
+        public string OdourAIComment { get; set; }
     }
 }

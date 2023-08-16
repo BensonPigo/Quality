@@ -21,6 +21,7 @@ using System.Runtime.InteropServices;
 using Library;
 using System.Windows.Forms;
 using Ict;
+using System.Net.Mail;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -33,6 +34,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         private IGarmentTestDetailProvider _IGarmentTestDetailProvider;
         private IGarmentTestDetailShrinkageProvider _IGarmentTestDetailShrinkageProvider;
         private IGarmentDetailSpiralityProvider _IGarmentDetailSpiralityProvider;
+        private MailToolsService _MailService;
 
         public enum SelectType
         {
@@ -596,7 +598,21 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 DataTable dtContent = _IGarmentTestDetailProvider.Get_Mail_Content(ID, No);
-                string strHtml = MailTools.DataTableChangeHtml(dtContent, out System.Net.Mail.AlternateView plainView);
+                DataTable allResult = _IGarmentTestDetailProvider.Get_AllResult(ID, No);
+                string aICommentType = string.Empty;
+                if (allResult.Rows[0]["WashResult"].ToString() == "F")
+                {
+                    aICommentType += "Garment Wash Test";
+                }
+                if (allResult.Rows[0]["SeamBreakageResult"].ToString() == "F")
+                {
+                    aICommentType += ",Seam Breakage";
+                }
+                if (allResult.Rows[0]["OdourResult"].ToString() == "F")
+                {
+                    aICommentType += ",Odour Test";
+                }
+
                 GarmentTest_Detail_Result baseResult = ToReport(ID, No, ReportType.Wash_Test_2018, true);
                 string FileName = baseResult.Result.Value ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.reportPath) : string.Empty;
                 SendMail_Request request = new SendMail_Request()
@@ -604,10 +620,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     To = ToAddress,
                     CC = CCAddress,
                     Subject = "Garment Test – Test Fail",
-                    Body = strHtml,
-                    alternateView = plainView,
+                    //Body = strHtml,
+                    //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = aICommentType,
+                    StyleID = dtContent.Rows[0]["StyleID"].ToString(),
+                    SeasonID = dtContent.Rows[0]["SeasonID"].ToString(),
+                    BrandID = dtContent.Rows[0]["BrandID"].ToString(),
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(request);
+                string mailBody = MailTools.DataTableChangeHtml(dtContent, comment, buyReadyDate, out AlternateView plainView);
+                request.Body = mailBody;
+                request.alternateView = plainView;
 
                 MailTools.SendMail(request);
                 result.Result = true;

@@ -958,6 +958,9 @@
                         para += "&Subject=" + "Fabric Oven Test – Report No:" + '@Model.Main.ReportNo';
                         para += "&Body=" + "Attachment is Fabric Oven Test – Report No:" + '@Model.Main.ReportNo' + " detail data";
                         para += "&file=" + data.FileName;
+                        @*para += "&IsShowAIComment=true";
+                        para += "&Type=Fabric Oven Test";
+                        para += "&OrderID=" + '@Model.Main.POID';*@
                         window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
                     }
                     else {

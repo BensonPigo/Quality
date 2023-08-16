@@ -75,6 +75,24 @@
         height: 70vh;
         overflow-y:scroll;
     }
+    .aiCommentTooltipText {
+        visibility: hidden;
+        position: fixed;
+        top: 40%; /* 距離上方50%的位置 */
+        left: 15%; /* 距離左邊50%的位置 */
+        z-index: 9999;
+        background-color: pink;
+        border: 1px solid black;
+        border-radius: 2px;
+        color: black;
+        font-size: 1rem;
+        padding: 0.5rem;
+        text-align: left;
+    }
+
+    .aiCommentTooltip:hover .aiCommentTooltipText {
+        visibility: visible;
+    }
 </style>
 <div class="main-content">
 
@@ -368,8 +386,14 @@
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Artwork)
                                 </td>
-                                <td style="color: @color">
+                                <td style="color: @color" class="aiCommentTooltip">
                                     @Html.DisplayFor(modelItem => item.Result)
+
+                                    @if (item.Result == "Fail" && (item.BrandID == "ADIDAS" || item.BrandID == "REEBOK"))
+                                    {
+                                        <div style="white-space: pre-line; " class="aiCommentTooltipText">@item.AIComment</div>
+                                        <img src="~/Image/Icon/Warning.png" width="25" height="25" class="" />
+                                    }
                                 </td>
                                 <td>
                                     @{string ReceivedDate = item.ReceivedDate.HasValue ? item.ReceivedDate.Value.ToShortDateString() : ""; }

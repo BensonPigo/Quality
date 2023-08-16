@@ -288,6 +288,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
 
         public string AreaCodes { get; set; }
         public int Qty { get; set; }
+        public string AIComment { get; set; }
         public string Responsibility { get; set; }
 
         public List<SelectListItem> Images_Source { get; set; }

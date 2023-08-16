@@ -86,6 +86,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Result { get; set; }
         public string Line { get; set; }
         public string AddName { get; set; }
+
+        public string AIComment { get; set; }
         public DateTime? TestDate { get; set; }
         public DateTime? ReceivedDate { get; set; }
         public DateTime? ReportDate { get; set; }

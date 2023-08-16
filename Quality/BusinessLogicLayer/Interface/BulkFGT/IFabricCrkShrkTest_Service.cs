@@ -24,7 +24,7 @@ namespace BusinessLogicLayer.Interface
 
         BaseResult EncodeFabricCrkShrkTestCrockingDetail(long ID, string userID, out string testResult);
 
-        SendMail_Result SendCrockingFailResultMail(string toAddress, string ccAddress, long ID, bool isTest);
+        SendMail_Result SendCrockingFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID);
 
         BaseResult AmendFabricCrkShrkTestCrockingDetail(long ID);
 
@@ -38,7 +38,7 @@ namespace BusinessLogicLayer.Interface
         BaseResult SaveFabricCrkShrkTestHeatDetail(FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result, string userID);
 
         BaseResult EncodeFabricCrkShrkTestHeatDetail(long ID, string userID, out string ovenTestResult);
-        SendMail_Result SendHeatFailResultMail(string toAddress, string ccAddress, long ID, bool isTest);
+        SendMail_Result SendHeatFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID);
         BaseResult AmendFabricCrkShrkTestHeatDetail(long ID);
 
         BaseResult ToExcelFabricCrkShrkTestHeatDetail(long ID, out string excelFileName);
@@ -50,7 +50,7 @@ namespace BusinessLogicLayer.Interface
 
         BaseResult EncodeFabricCrkShrkTestWashDetail(long ID, string userID, out string testResult);
 
-        SendMail_Result SendWashFailResultMail(string toAddress, string ccAddress, long ID, bool isTest);
+        SendMail_Result SendWashFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID);
 
         BaseResult AmendFabricCrkShrkTestWashDetail(long ID);
 

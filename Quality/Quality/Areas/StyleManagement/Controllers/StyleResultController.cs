@@ -111,6 +111,11 @@ namespace Quality.Areas.StyleManagement.Controllers
             model.BulkFGT = model.BulkFGT == null ? new List<StyleResult_BulkFGT>() : model.BulkFGT;
             model.PoList = model.PoList == null ? new List<StyleResult_PoList>() : model.PoList;
 
+            if (!string.IsNullOrEmpty(model.MsgScript))
+            {
+                model.MsgScript = $@"msg.WithInfo(""This is {model.MsgScript.Replace("\r\n", "<br />")}."");";
+            }
+
             return View("Index", model);
         }
 
@@ -122,7 +127,7 @@ namespace Quality.Areas.StyleManagement.Controllers
 
             try
             {
-                var list = _Service.GetStyle(new StyleResult_Request() { StyleUkey = Req.StyleUkey }).ToList();
+                var list = _Service.GetStyle(new StyleResult_Request() { StyleUkey = Req.StyleUkey, OrderTypeSerialKey = Req.OrderTypeSerialKey }).ToList();
 
                 if (list.Any())
                 {

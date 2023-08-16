@@ -91,9 +91,17 @@
 
 <script>
     function CheckStyleUkey() {       
-        var ukey = $("#ScanResult").val();
+        var scanData = $("#ScanResult").val();
+        if (scanData.split('-').length < 2) {
+            alert('Barcode must be [Style Key - OrderType SerialKey] format.');
+            return;
+        }
+        var styleUkey = scanData.split('-')[0];
+        var orderTypeSerialKey = scanData.split('-')[1];
+
         var Req = {
-            StyleUkey: ukey,
+            StyleUkey: styleUkey,
+            OrderTypeSerialKey: orderTypeSerialKey
         };
 
         var Response;
@@ -111,7 +119,7 @@
                     //alert("Success!");
                 }
                 else {
-                    alert("Cannot found style key " + ukey);
+                    alert("Cannot found style key " + styleUkey);
                 }
             }
         }).then(function () {
@@ -119,6 +127,7 @@
             var parent_Style = window.opener.document.getElementById("txtStyle");
             var parent_Brand = window.opener.document.getElementById("txtBrand");
             var parent_Season = window.opener.document.getElementById("txtSeason");
+            var parent_OrderTypeSerialKey = window.opener.document.getElementById("txtOrderTypeSerialKey");
             var parent_btnQuery = window.opener.document.getElementById("btnQuery");
             
             if (Response.StyleUkey != null) {
@@ -127,6 +136,7 @@
                 $(parent_Style).val(Response.StyleID);
                 $(parent_Brand).val(Response.BrandID);
                 $(parent_Season).val(Response.SeasonID);
+                $(parent_OrderTypeSerialKey).val(Response.OrderTypeSerialKey);
                 parent_btnQuery.click();
             }
             else {

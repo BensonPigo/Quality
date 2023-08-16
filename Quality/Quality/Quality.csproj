@@ -323,6 +323,7 @@
     <Content Include="Image\Icon\UnLock_White.png" />
     <Content Include="Image\Icon\Upload.png" />
     <Content Include="Image\Icon\View.png" />
+    <Content Include="Image\Icon\Warning.png" />
     <Content Include="Image\Icon\Washing.png" />
     <Content Include="Image\Icon\XLS.png" />
     <Content Include="Image\QA_Skewness1.png" />
@@ -453,6 +454,7 @@
     <Content Include="Areas\BulkFGT\Views\SalivaFastnessTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\PhenolicYellowTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\TPeelStrengthTest\Index.cshtml" />
+    <Content Include="Areas\SampleRFT\Views\InspBySPQuery\SendMailer.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
