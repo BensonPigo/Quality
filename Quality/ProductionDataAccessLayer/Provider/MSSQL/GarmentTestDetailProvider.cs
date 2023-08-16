@@ -513,6 +513,22 @@ where id = @ID and No = @No and OrderID <> ''
                 return false;
             }
         }
+        public DataTable Get_AllResult(string ID, string No)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+                { "@No", DbType.String, No } ,
+            };
+
+            string sqlcmd = @"
+select gd.WashResult ,gd.SeamBreakageResult ,gd.OdourResult
+from GarmentTest g WITH(NOLOCK)
+inner join GarmentTest_Detail gd WITH(NOLOCK) on g.ID = gd.ID
+where gd.ID = @ID and gd.No = @No
+";
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
+        }
         public DataTable Get_Mail_Content(string ID, string No)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection

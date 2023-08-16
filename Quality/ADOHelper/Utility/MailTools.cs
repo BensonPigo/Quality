@@ -2,6 +2,7 @@
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.IO;
@@ -228,8 +229,13 @@ namespace ADOHelper.Utility
 
             if (!string.IsNullOrEmpty(aiCiomment))
             {
+                List<string> aiComments = aiCiomment.Split('\r').ToList();
+
                 html += @"</br> ";
-                html += $@"<p>{aiCiomment}</p>";
+                foreach (var item in aiComments)
+                {
+                    html += $@"<p>{item}</p>";
+                }
             }
             if (!string.IsNullOrEmpty(buyReadyDateComment))
             {

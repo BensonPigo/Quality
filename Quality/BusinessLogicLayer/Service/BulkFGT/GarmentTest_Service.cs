@@ -598,6 +598,21 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 DataTable dtContent = _IGarmentTestDetailProvider.Get_Mail_Content(ID, No);
+                DataTable allResult = _IGarmentTestDetailProvider.Get_AllResult(ID, No);
+                string aICommentType = string.Empty;
+                if (allResult.Rows[0]["WashResult"].ToString() == "F")
+                {
+                    aICommentType += "Garment Wash Test";
+                }
+                if (allResult.Rows[0]["SeamBreakageResult"].ToString() == "F")
+                {
+                    aICommentType += ",Seam Breakage";
+                }
+                if (allResult.Rows[0]["OdourResult"].ToString() == "F")
+                {
+                    aICommentType += ",Odour Test";
+                }
+
                 GarmentTest_Detail_Result baseResult = ToReport(ID, No, ReportType.Wash_Test_2018, true);
                 string FileName = baseResult.Result.Value ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.reportPath) : string.Empty;
                 SendMail_Request request = new SendMail_Request()
@@ -609,7 +624,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
                     IsShowAIComment = true,
-                    AICommentType = "Garment Wash Test,Seam Breakage,Odour Test",
+                    AICommentType = aICommentType,
                     StyleID = dtContent.Rows[0]["StyleID"].ToString(),
                     SeasonID = dtContent.Rows[0]["SeasonID"].ToString(),
                     BrandID = dtContent.Rows[0]["BrandID"].ToString(),
