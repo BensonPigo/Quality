@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "General";
     string stage = Model == null ? string.Empty : Model.InspectionStage;
+    string brand = Model == null ? string.Empty : Model.BrandID;
 }
 <link href="~/Areas/FinalInspection/CSS/FinalInspection.css" rel="stylesheet" />
 @Html.Partial("~/Areas/FinalInspection/Views/Shared/_Inspection_Layout.cshtml")
@@ -198,7 +199,7 @@
 
             document.getElementById("goPage").value = self;
 
-            if (self == "Next") {
+            if (self == "Next" && ('@brand' == 'ADIDAS' || '@brand' == 'REEBOK')) {
 
                 if ('@stage' == "Inline" || '@stage' == "Stagger") {
 
@@ -206,9 +207,7 @@
                     {
                         msg.WithError('These items must be selected before go to next step.');
                         return false;
-
                     }
-
                 }
                 else {
                     var selected = [];
@@ -221,7 +220,6 @@
                         msg.WithError('These items must be selected before go to next step.');
                         return false;
                     }
-
                 }
             }
 
