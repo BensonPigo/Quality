@@ -509,6 +509,24 @@ namespace Quality.Controllers
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
+        public ActionResult AreaCodeList(string Title, string FinalInspectionID, string TargetID)
+        {
+            var model = _PublicWindowService.Get_AreaCode(FinalInspectionID, string.Empty);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult AreaCodeList(string Title, string FinalInspectionID, string AreaCode, string TargetID)
+        {
+            var model = _PublicWindowService.Get_AreaCode(FinalInspectionID, AreaCode);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
         public ActionResult FabricRefNoList(string Title, string OrderID, string TargetID)
         {
             var model = _PublicWindowService.Get_FabricRefNo(OrderID, string.Empty);

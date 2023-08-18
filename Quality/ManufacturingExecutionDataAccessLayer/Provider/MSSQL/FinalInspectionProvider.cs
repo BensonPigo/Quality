@@ -893,6 +893,7 @@ where   ID = @FinalInspectionID
                             { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
                             { "@GarmentDefectTypeID", DbType.String, defectItem.DefectType },
                             { "@GarmentDefectCodeID", DbType.String, defectItem.DefectCode },
+                            { "@AreaCode", DbType.String, defectItem.AreaCode },
                             { "@Ukey", DbType.Int64, defectItem.Ukey },
                             { "@Qty", DbType.Int32, defectItem.Qty }
                         };
@@ -905,9 +906,9 @@ where   ID = @FinalInspectionID
                         sqlUpdateFinalInspectionDetail = @"
     DECLARE @FinalInspection_DetailKey table (Ukey bigint)
 
-    insert into FinalInspection_Detail(ID, GarmentDefectTypeID, GarmentDefectCodeID, Qty)
+    insert into FinalInspection_Detail(ID, GarmentDefectTypeID, GarmentDefectCodeID ,AreaCode, Qty)
                 OUTPUT INSERTED.Ukey into @FinalInspection_DetailKey
-                values(@FinalInspectionID, @GarmentDefectTypeID, @GarmentDefectCodeID, @Qty)
+                values(@FinalInspectionID, @GarmentDefectTypeID, @GarmentDefectCodeID ,@AreaCode, @Qty)
 
     select  Ukey from @FinalInspection_DetailKey
 ";

@@ -272,6 +272,7 @@ select  GarmentDefectTypeID,
         GarmentDefectCodeID,
         Qty,
         Ukey,
+        AreaCode,
 		Operation = Operation.Operation,
 		Operator = Operation.Operator,
 		OperatorText = Operation.OperatorText
@@ -309,6 +310,7 @@ select  [Ukey] = isnull(fd.Ukey, -1),
         Operation = ISNULL( fd.Operation ,''),
         Operator = ISNULL( fd.Operator ,''),
         OperatorText = ISNULL( fd.OperatorText ,''),
+        AreaCode = ISNULL( fd.AreaCode ,''),
 		[RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
 		,HasImage = Cast(
 			IIF(EXISTS(

@@ -107,11 +107,12 @@
                         , items[i].Operation
                         , items[i].Operator
                         , items[i].OperatorText
+                        , items[i].AreaCode
                     ]);
                 }
             }
 
-            adata.push([null, result[keyCount], 'Operation', 'Operator', temp])
+            adata.push([null, result[keyCount], 'Operation', 'Operator', 'AreaCode', temp])
             keyCount++
         }
 
@@ -124,8 +125,9 @@
                 columnDefs: [
                     { targets: 0, width: "2%", orderable: false },
                     { targets: 1, width: "38%", orderable: false },
-                    { targets: 2, width: "30%", orderable: false },
-                    { targets: 3, width: "30%", orderable: false },
+                    { targets: 2, width: "20%", orderable: false },
+                    { targets: 3, width: "20%", orderable: false },
+                    { targets: 4, width: "15%", orderable: false },
                 ],
                 columns: [
                     {
@@ -133,6 +135,9 @@
                     },
                     {
                         "style": "color:#E62513",
+                    },
+                    {
+                        "className": "ColTitle",
                     },
                     {
                         "className": "ColTitle",
@@ -164,7 +169,7 @@
                     tr.removeClass('shown');
                 }
                 else {
-                    row.child(format(row.data())).show();
+                    row.child(formatChildTable(row.data())).show();
                     tr.addClass('shown');
                 }
             });
@@ -198,8 +203,8 @@
             });
         });
 
-        function format(d) {
-            var list = d[4];
+        function formatChildTable(dataList) {
+            var list = dataList[5];
             var sTr = "";
 
             $(list).each(function (index, value) {
@@ -208,6 +213,8 @@
                 var Operation = value[7];
                 var Operator = value[8];
                 var OperatorText = value[9];
+                var AreaCode = value[10];
+
                 sTr = sTr + "<tr><td style='width:30%'>" + value[1] + "</td>";
                 sTr = sTr + `<td style='vertical-align: middle'>
     <input type='hidden' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Ukey' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Ukey' value='${value[0]}'>
@@ -221,6 +228,9 @@
     <td><input type='text' style='width:100%' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].OperatorText' onchange='OperatorTextChange("${value[6]}",${index},this)'  readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].OperatorText' value='${OperatorText}'>
         <input type='hidden' style='width:100%' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operator' onchange='OperatorChange("${value[6]}",${index},this)'  readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operator' value='${Operator}'>
     </td>
+    <td>
+        <input type='text' style='width:100%' onclick="OpenAreaCode('${RowIndex}')" onchange='OperationChange("${value[6]}",${index},this)' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].AreaCode' readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].AreaCode' value='${AreaCode}'>
+    </td>
     </tr>`;
 
             });
@@ -233,6 +243,12 @@
             var para = `?FinalInspectionID=${$('#FinalInspectionID').val()}&TargetID=${targetID}&Title=Operation`;
             window.open('@Url.Action("OperationList", "PublicWondow",new{Area=""})' + para, 'Operation List', config = 'toolbar=no,status=no,location=no,width=800,height=750');
         }
+
+        function OpenAreaCode(targetID) {
+            var para = `?FinalInspectionID=${$('#FinalInspectionID').val()}&TargetID=${targetID}&Title=Operation`;
+            window.open('@Url.Action("AreaCodeList", "PublicWondow",new{Area=""})' + para, 'Operation List', config = 'toolbar=no,status=no,location=no,width=800,height=750');
+        }
+
 
         function GetOperationList(OperationObjs, targetID) {
             var strOperation = '';
@@ -258,6 +274,33 @@
             $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operation']`).change();
             $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].OperatorText']`).change();
             $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operator']`).change();
+        }
+
+
+        function GetAreaCodeList(AreaCodeObj, targetID) {
+            var strAreaCode = '';
+            //var strOperatorText = '';
+            //var strOperator = '';
+            var dataLength = AreaCodeObj.length;
+            var ctn = 0;
+            $.each(AreaCodeObj, function () {
+                ctn += 1;
+                var spliter = ',';
+                if (dataLength == ctn) {
+                    spliter = '';
+                }
+                strAreaCode += this.AreaCode + spliter;
+                //strOperatorText += this.Text + spliter;
+                //strOperator += this.Value + spliter;
+            });
+
+            $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].AreaCode']`).val(strAreaCode);
+            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].OperatorText']`).val(strOperatorText);
+            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operator']`).val(strOperator);
+
+            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operation']`).change();
+            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].OperatorText']`).change();
+            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operator']`).change();
         }
 
         // Qty改變時，把值寫回DataTable的Datasource
@@ -313,7 +356,7 @@
                     //tr.removeClass('shown');
                 }
                 else {
-                    row.child(format(row.data())).show();
+                    row.child(formatChildTable(row.data())).show();
                     tr.addClass('shown');
                 }
             });
