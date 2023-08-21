@@ -625,5 +625,73 @@ where   oqs.id in ({whereOrderID})
 
             return ExecuteList<DatabaseObject.ProductionDB.System>(CommandType.Text, SbSql.ToString(), objParameter);
         }
+
+        public void UpdateOrderQtyShip(string finalInspectionID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@FinalInspectionID", finalInspectionID }
+            };
+
+            string sqlUpdCmd = @"
+update q
+	set q.CFAUpdateDate = t.SubmitDate
+	, q.[CFAFinalInspectResult] = iif(t2.InspectionStage = 'Final', t2.InspectionResult, q.CFAFinalInspectResult )
+	, q.[CFAFinalInspectDate] = iif(t2.InspectionStage = 'Final', t2.AuditDate, q.CFAFinalInspectDate)
+	, q.[CFAFinalInspectHandle] = iif(t2.InspectionStage = 'Final', t2.CFA, q.CFAFinalInspectHandle )
+	, q.[CFA3rdInspectResult] = iif(t2.InspectionStage = '3rd Party', t2.InspectionResult, q.CFA3rdInspectResult )
+	, q.[CFA3rdInspectDate] = iif(t2.InspectionStage = '3rd Party', t2.AuditDate, q.CFA3rdInspectDate)
+	, q.[CFAIs3rdInspectHandle] = iif(t2.InspectionStage = '3rd Party', t2.CFA, q.CFAIs3rdInspectHandle )
+from Order_QtyShip q
+inner join (
+	select foq.OrderID, foq.Seq
+		, f.SubmitDate
+	from [ExtendServer].ManufacturingExecution.dbo.FinalInspection f
+	inner join [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip foq on f.ID = foq.ID
+	inner join (
+		select [InspectionTimes] = MAX(foq.InspectionTimes), foq.OrderID, foq.Seq
+		from [ExtendServer].ManufacturingExecution.dbo.FinalInspection f
+		inner join [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip foq on f.ID = foq.ID
+		where exists (
+			select 1 
+			from [ExtendServer].ManufacturingExecution.dbo.FinalInspection f2
+			inner join [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip foq2 on f2.ID = foq2.ID
+			where f2.ID = @FinalInspectionID
+			and foq.OrderID = foq2.OrderID 
+			and foq.Seq = foq2.Seq)
+		and f.InspectionStep = 'Submit' 
+		and f.SubmitDate is not null
+		group by foq.OrderID, foq.Seq
+	) t on foq.OrderID = t.OrderID and foq.Seq = t.Seq and foq.InspectionTimes = t.InspectionTimes
+)t on q.Id = t.OrderID and q.Seq = t.Seq
+left join (
+	select foq.OrderID, foq.Seq
+		, f.InspectionStage
+		, f.InspectionResult
+		, f.AuditDate
+		, f.CFA
+	from [ExtendServer].ManufacturingExecution.dbo.FinalInspection f
+	inner join [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip foq on f.ID = foq.ID
+	inner join (
+		select [InspectionTimes] = MAX(foq.InspectionTimes), f.InspectionStage, foq.OrderID, foq.Seq
+		from [ExtendServer].ManufacturingExecution.dbo.FinalInspection f
+		inner join [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip foq on f.ID = foq.ID
+		where exists (
+			select 1 
+			from [ExtendServer].ManufacturingExecution.dbo.FinalInspection f2
+			inner join [ExtendServer].ManufacturingExecution.dbo.FinalInspection_Order_QtyShip foq2 on f2.ID = foq2.ID
+			where f2.ID = @FinalInspectionID
+			and foq.OrderID = foq2.OrderID 
+			and foq.Seq = foq2.Seq)
+		and f.InspectionStep = 'Submit' 
+		and f.SubmitDate is not null
+		and f.InspectionStage in ('Final', '3rd Party')
+		group by f.InspectionStage, foq.OrderID, foq.Seq
+	) t on foq.OrderID = t.OrderID and foq.Seq = t.Seq and foq.InspectionTimes = t.InspectionTimes and f.InspectionStage = t.InspectionStage
+)t2 on q.Id = t2.OrderID and q.Seq = t2.Seq
+
+";
+            ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
+        }
     }
 }

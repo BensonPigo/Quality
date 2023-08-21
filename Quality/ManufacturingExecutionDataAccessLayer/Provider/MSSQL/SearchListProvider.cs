@@ -1127,6 +1127,65 @@ WHERE a.Result <> ''
 
             #endregion
 
+            #region Saliva Fastness Test (519)
+
+            string type18 = $@"
+select Type= 'T-Peel Strength Test (438)'
+	, a.ReportNo
+	, a.OrderID
+	, a.StyleID
+	, a.BrandID
+	, a.SeasonID
+	, a.Article
+	, Line = ''
+	, Artwork = ''
+	, a.Result	
+	, TestDate = Cast( NULL as date)
+	, ReceivedDate = a.SubmitDate
+	, ReportDate = a.ReportDate
+    , AddName = ISNULL(mp.Name, pp.Name)
+
+from [ExtendServer].ManufacturingExecution.dbo.TPeelStrengthTest a
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
+left join Pass1 pp on a.EditName = pp.ID
+WHERE a.Result <> ''
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type18 += "AND a.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type18 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type18 += "AND a.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type18 += "AND a.Article = @Article ";
+            }
+
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type18 += " AND @ReceivedDate_s <= a.SubmitDate ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type18 += " AND a.SubmitDate <= @ReceivedDate_e ";
+            }
+
+            if (Req.ReportDate_s.HasValue)
+            {
+                type18 += " AND @ReportDate_s <= a.ReportDate ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type18 += " AND a.ReportDate <= @ReportDate_e ";
+            }
+
+            #endregion
 
             switch (Req.Type)
             {
@@ -1178,6 +1237,9 @@ WHERE a.Result <> ''
                 case string a when a.Contains("Saliva Fastness Test"):
                     SbSql.Append(type17);
                     break;
+                case string a when a.Contains("T-Peel Strength Test"):
+                    SbSql.Append(type18);
+                    break;
                 default:
                     SbSql.Append(
                         type1 + " union all " + 
@@ -1195,7 +1257,8 @@ WHERE a.Result <> ''
                         type14 + " union all " +
                         type15 + " union all " +
                         type16 + " union all " +
-                        type17);
+                        type17 + " union all " +
+                        type18);
                     break;
             }
 

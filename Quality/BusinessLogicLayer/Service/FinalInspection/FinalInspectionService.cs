@@ -151,12 +151,14 @@ namespace BusinessLogicLayer.Service
             }
 
             DataRow drFinalInspection = resultPivot88.Tables[0].Rows[0];
-            DataTable dtColor = resultPivot88.Tables[1];
-            DataTable dtSizeArticle = resultPivot88.Tables[2];
-            DataRow drStyleInfo = resultPivot88.Tables[3].Rows[0];
-            DataTable dtDefectsDetail = resultPivot88.Tables[4];
-            DataTable dtDefectsDetailImage = resultPivot88.Tables[5];
-            DataTable dtOtherImage = resultPivot88.Tables[6];
+            DataRow drGeneral = resultPivot88.Tables[1].Rows[0];
+            DataRow drCheckList= resultPivot88.Tables[2].Rows[0];
+            DataTable dtColor = resultPivot88.Tables[3];
+            DataTable dtSizeArticle = resultPivot88.Tables[4];
+            DataRow drStyleInfo = resultPivot88.Tables[5].Rows[0];
+            DataTable dtDefectsDetail = resultPivot88.Tables[6];
+            DataTable dtDefectsDetailImage = resultPivot88.Tables[7];
+            DataTable dtOtherImage = resultPivot88.Tables[8];
 
             List<object> sections = new List<object>();
 
@@ -339,65 +341,65 @@ namespace BusinessLogicLayer.Service
             List<object> passFails = new List<object>() {
                 new {
                     title = "material_approval",
-                    value = drFinalInspection.Field<bool>("FabricApprovalDoc") ? "Confirm" : "N/A",
+                    value = drGeneral.Field<bool>("IsMaterialApproval") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
-                    status = drFinalInspection.Field<bool>("FabricApprovalDoc") ? "pass" : "na",
+                    status = drGeneral.Field<bool>("IsMaterialApproval") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "sealing_sample",
-                    value = drFinalInspection.Field<bool>("SealingSampleDoc") ? "Confirm" : "N/A",
+                    value = drGeneral.Field<bool>("IsSealingSample") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
-                    status = drFinalInspection.Field<bool>("SealingSampleDoc") ? "pass" : "na",
+                    status = drGeneral.Field<bool>("IsSealingSample") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "metal_detection",
-                    value = drFinalInspection.Field<bool>("MetalDetectionDoc") ? "Confirm" : "N/A",
+                    value = drGeneral.Field<bool>("IsMetalDetection") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
-                    status = drFinalInspection.Field<bool>("MetalDetectionDoc") ? "pass" : "na",
+                    status = drGeneral.Field<bool>("IsMetalDetection") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "factory_disclaimer",
-                    value = drFinalInspection.Field<bool>("IsFactoryDisclaimer") ? "Confirm" : "N/A",
+                    value = drGeneral.Field<bool>("IsFactoryDisclaimer") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
-                    status = drFinalInspection.Field<bool>("IsFactoryDisclaimer") ? "pass" : "na",
+                    status = drGeneral.Field<bool>("IsFactoryDisclaimer") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "a_01_compliance",
-                    value = drFinalInspection.Field<bool>("IsA01Compliance") ? "Confirm" : "N/A",
+                    value = drGeneral.Field<bool>("IsA01Compliance") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
-                    status = drFinalInspection.Field<bool>("IsA01Compliance") ? "pass" : "na",
+                    status = drGeneral.Field<bool>("IsA01Compliance") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "cpsia_compliance",
-                    value = drFinalInspection.Field<bool>("IsCPSIACompliance") ? "Confirm" : "N/A",
+                    value = drGeneral.Field<bool>("IsCPSIACompliance") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
-                    status = drFinalInspection.Field<bool>("IsCPSIACompliance") ? "pass" : "na",
+                    status = drGeneral.Field<bool>("IsCPSIACompliance") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "customer_country_specific_compliance",
-                    value = drFinalInspection.Field<bool>("IsCustomerCountrySpecificCompliance") ? "Confirm" : "N/A",
+                    value = drGeneral.Field<bool>("IsCustomerCountrySpecificCompliance") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "general",
-                    status = drFinalInspection.Field<bool>("IsCustomerCountrySpecificCompliance") ? "pass" : "na",
+                    status = drGeneral.Field<bool>("IsCustomerCountrySpecificCompliance") ? "pass" : "na",
                     comment = "",
                 },
                 new {
@@ -429,146 +431,146 @@ namespace BusinessLogicLayer.Service
                 },
                 new {
                     title = "color_shade",
-                    value = drFinalInspection.Field<bool>("CheckCloseShade") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsCloseShade") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "fabric_artwork_checklist",
-                    status = drFinalInspection.Field<bool>("CheckCloseShade") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsCloseShade") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "handfeel",
-                    value = drFinalInspection.Field<bool>("CheckHandfeel") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsHandfeel") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "fabric_artwork_checklist",
-                    status = drFinalInspection.Field<bool>("CheckHandfeel") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsHandfeel") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "appearance",
-                    value = drFinalInspection.Field<bool>("CheckAppearance") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsAppearance") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "fabric_artwork_checklist",
-                    status = drFinalInspection.Field<bool>("CheckAppearance") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsAppearance") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "print_emb_decorations",
-                    value = drFinalInspection.Field<bool>("CheckPrintEmbDecorations") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsPrintEmbDecorations") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "fabric_artwork_checklist",
-                    status = drFinalInspection.Field<bool>("CheckPrintEmbDecorations") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsPrintEmbDecorations") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "fiber_content",
-                    value = drFinalInspection.Field<bool>("CheckFiberContent") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsFiberContent") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
-                    status = drFinalInspection.Field<bool>("CheckFiberContent") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsFiberContent") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "care_instructions",
-                    value = drFinalInspection.Field<bool>("CheckCareInstructions") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsCareInstructions") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
-                    status = drFinalInspection.Field<bool>("CheckCareInstructions") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsCareInstructions") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "decorative_label",
-                    value = drFinalInspection.Field<bool>("CheckDecorativeLabel") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsDecorativeLabel") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
-                    status = drFinalInspection.Field<bool>("CheckDecorativeLabel") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsDecorativeLabel") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "adicom_label",
-                    value = drFinalInspection.Field<bool>("CheckAdicomLabel") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsAdicomLabel") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
-                    status = drFinalInspection.Field<bool>("CheckAdicomLabel") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsAdicomLabel") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "country_of_origin",
-                    value = drFinalInspection.Field<bool>("CheckCountryofOrigion") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsCountryofOrigion") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
-                    status = drFinalInspection.Field<bool>("CheckCountryofOrigion") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsCountryofOrigion") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "size_key",
-                    value = drFinalInspection.Field<bool>("CheckSizeKey") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsSizeKey") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
-                    status = drFinalInspection.Field<bool>("CheckSizeKey") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsSizeKey") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "8_flag_label",
-                    value = drFinalInspection.Field<bool>("Check8FlagLabel") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("Is8FlagLabel") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
-                    status = drFinalInspection.Field<bool>("Check8FlagLabel") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("Is8FlagLabel") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "additional_label",
-                    value = drFinalInspection.Field<bool>("CheckAdditionalLabel") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsAdditionalLabel") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "label",
-                    status = drFinalInspection.Field<bool>("CheckAdditionalLabel") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsAdditionalLabel") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "shipping_mark",
-                    value = drFinalInspection.Field<bool>("CheckShippingMark") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsShippingMark") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "packaging",
-                    status = drFinalInspection.Field<bool>("CheckShippingMark") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsShippingMark") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "polybag",
-                    value = drFinalInspection.Field<bool>("CheckPolytagMarketing") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsPolytagMarketing") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "packaging",
-                    status = drFinalInspection.Field<bool>("CheckPolytagMarketing") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsPolytagMarketing") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "color_size_qty",
-                    value = drFinalInspection.Field<bool>("CheckColorSizeQty") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsColorSizeQty") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "packaging",
-                    status = drFinalInspection.Field<bool>("CheckColorSizeQty") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsColorSizeQty") ? "pass" : "na",
                     comment = "",
                 },
                 new {
                     title = "hangtag",
-                    value = drFinalInspection.Field<bool>("CheckHangtag") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsHangtag") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "packaging",
-                    status = drFinalInspection.Field<bool>("CheckHangtag") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsHangtag") ? "pass" : "na",
                     comment = "",
                 },
                 new {
@@ -963,7 +965,7 @@ namespace BusinessLogicLayer.Service
             List<SentPivot88Result> sentPivot88Results = new List<SentPivot88Result>();
 
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-
+            GetPivot88Json(pivotTransferRequest.InspectionID);
             switch (pivotTransferRequest.InspectionType)
             {
                 case "FinalInspection":

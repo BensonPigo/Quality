@@ -206,6 +206,7 @@
     <Compile Include="ViewModel\BulkFGT\PullingTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\SalivaFastnessTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\SearchList_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\TPeelStrengthTest_ViewModel.cs" />
     <Compile Include="ViewModel\FinalInspection\AddDefect.cs" />
     <Compile Include="ViewModel\FinalInspection\Moisture.cs" />
     <Compile Include="ViewModel\FinalInspection\Measurement.cs" />
@@ -219,6 +220,7 @@
     <Compile Include="ResultModel\GarmentTest_Result.cs" />
     <Compile Include="ViewModel\InspectionSave_ViewModel.cs" />
     <Compile Include="ViewModel\Inspection_ViewModel.cs" />
+    <Compile Include="ViewModel\JWTToken_ViewModel.cs" />
     <Compile Include="ViewModel\ReworkList_ViewModel.cs" />
     <Compile Include="ViewModel\SampleRFT\CFTComments_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\MockupCrocking_ViewModel.cs" />

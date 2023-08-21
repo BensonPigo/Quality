@@ -26,5 +26,6 @@ namespace ProductionDataAccessLayer.Interface
         IList<SelectListItem> GetActionSelectListItem();
         IList<DatabaseObject.ProductionDB.System> GetSystem();
         int GetMeasurementRemainingAmount(string finalInspectionID);
+        void UpdateOrderQtyShip(string finalInspectionID);
     }
 }

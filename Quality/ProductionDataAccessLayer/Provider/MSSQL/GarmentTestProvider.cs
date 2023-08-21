@@ -13,6 +13,7 @@ using System.Data.SqlClient;
 using System.Transactions;
 using ToolKit;
 using DatabaseObject.Public;
+using Sci;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -22,8 +23,6 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public GarmentTestProvider(string ConString) : base(ConString) { }
         public GarmentTestProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
-
-        #region CRUD Base
 
         public IList<Style> GetStyleID()
         {
@@ -1026,6 +1025,86 @@ left join {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.Garment
 
             return ExecuteList<GarmentTest_Detail_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
-        #endregion
+
+        public IList<GarmentTest_Detail_ViewModel> GetDetail_LastTestNo(GarmentTest_Request filter, string Type)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@BrandID", DbType.String, filter.Brand } ,
+                { "@StyleID", DbType.String, filter.Style } ,
+                { "@SeasonID", DbType.String, filter.Season } ,
+                { "@Article", DbType.String, filter.Article },
+            };
+
+            string sql;
+            switch (Type)
+            {
+                case "450":
+                    sql = @"
+select *
+from GarmentTest_Detail gd WITH(NOLOCK)
+inner join (
+	select gd2.ID, NO = MAX(gd2.NO)
+	from GarmentTest_Detail gd2 WITH(NOLOCK)
+	where gd2.ID in (
+		select MAX(ID)
+		from GarmentTest g WITH(NOLOCK)
+		where g.BrandID = @BrandID
+		and g.StyleID = @StyleID
+		and g.SeasonID = @SeasonID
+		and g.SeamBreakageLastTestDate in (
+			select MAX(SeamBreakageLastTestDate)
+			from GarmentTest g2 WITH(NOLOCK)
+			where g2.StyleID = g.StyleID
+			and g2.BrandID = g.BrandID
+			and g2.SeasonID = g.SeasonID
+			and g2.SeamBreakageLastTestDate is not null
+		))
+	and isnull(gd2.SeamBreakageResult, '') <> ''
+	group by gd2.ID
+) gd2 on gd.ID = gd2.ID and gd.No = gd2.NO";
+                    break;
+                case "451":
+                    sql = @"
+select gd.ID, [No] = MAX(gd.No)
+from GarmentTest g WITH(NOLOCK)
+inner join GarmentTest_Detail gd WITH(NOLOCK) on g.ID = gd.ID
+inner join (
+	select gd.ID, gd.No, date = MAX(g.date)
+	from GarmentTest g WITH(NOLOCK)
+	inner join GarmentTest_Detail gd WITH(NOLOCK) on g.ID = gd.ID
+	where g.BrandID = @BrandID
+	and g.StyleID = @StyleID
+	and g.SeasonID = @SeasonID
+	and g.Article = @Article
+	and gd.OdourResult <> ''
+	group by gd.ID, gd.No
+)gd2 on gd.ID = gd2.ID and gd.No = gd2.No and g.date = gd2.date
+Group by gd.ID
+";
+                    break;
+                default:
+                    sql = @"
+select gd.ID, [No] = MAX(gd.No)
+from GarmentTest g WITH(NOLOCK)
+inner join GarmentTest_Detail gd WITH(NOLOCK) on g.ID = gd.ID
+inner join (
+	select gd.ID, gd.No, date = MAX(g.date)
+	from GarmentTest g WITH(NOLOCK)
+	inner join GarmentTest_Detail gd WITH(NOLOCK) on g.ID = gd.ID
+	where g.BrandID = @BrandID
+	and g.StyleID = @StyleID
+	and g.SeasonID = @SeasonID
+	and g.Article = @Article
+	and gd.WashResult <> ''
+	group by gd.ID, gd.No
+)gd2 on gd.ID = gd2.ID and gd.No = gd2.No and g.date = gd2.date
+Group by gd.ID
+";
+                    break;
+            }
+
+            return ExecuteList<GarmentTest_Detail_ViewModel>(CommandType.Text, sql, objParameter);
+        }
     }
 }

@@ -16,7 +16,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using Excel = Microsoft.Office.Interop.Excel;
+using Style = DatabaseObject.ProductionDB.Style;
 
 namespace BusinessLogicLayer.Service
 {
@@ -633,10 +635,10 @@ namespace BusinessLogicLayer.Service
 
                     if (fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID == "1")
                     {
-                        fabricCrkShrkTestWash_Detail.HorizontalRate = Math.Abs(fabricCrkShrkTestWash_Detail.HorizontalRate);
-                        fabricCrkShrkTestWash_Detail.VerticalRate = Math.Abs(fabricCrkShrkTestWash_Detail.VerticalRate);
+                        fabricCrkShrkTestWash_Detail.HorizontalRate = fabricCrkShrkTestWash_Detail.HorizontalRate;
+                        fabricCrkShrkTestWash_Detail.VerticalRate = fabricCrkShrkTestWash_Detail.VerticalRate;
                         fabricCrkShrkTestWash_Detail.SkewnessRate = MyUtility.Check.Empty(fabricCrkShrkTestWash_Detail.SkewnessTest1 + fabricCrkShrkTestWash_Detail.SkewnessTest2) ? 0 :
-                            Math.Abs((fabricCrkShrkTestWash_Detail.SkewnessTest1 - fabricCrkShrkTestWash_Detail.SkewnessTest2) / (fabricCrkShrkTestWash_Detail.SkewnessTest1 + fabricCrkShrkTestWash_Detail.SkewnessTest2) * 200);
+                            (fabricCrkShrkTestWash_Detail.SkewnessTest1 - fabricCrkShrkTestWash_Detail.SkewnessTest2) / (fabricCrkShrkTestWash_Detail.SkewnessTest1 + fabricCrkShrkTestWash_Detail.SkewnessTest2) * 200;
                     }
 
                     if (fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID == "2")
@@ -1707,11 +1709,13 @@ namespace BusinessLogicLayer.Service
         {
             BaseResult result = new BaseResult();
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
-            List<Crocking_Excel> dataList = new List<Crocking_Excel>();
+            List<Crocking_Excel> dataList_Head = new List<Crocking_Excel>();
+            List<Crocking_Excel> dataList_Body= new List<Crocking_Excel>();
             excelFileName = string.Empty;
 
-            dataList = _FabricCrkShrkTestProvider.CrockingTest_ToExcel(ID).ToList();
-            if (!dataList.Any())
+            dataList_Head = _FabricCrkShrkTestProvider.CrockingTest_ToExcel_Head(ID).ToList();
+            dataList_Body = _FabricCrkShrkTestProvider.CrockingTest_ToExcel_Body(ID).ToList();
+            if (!dataList_Head.Any())
             {
                 result.Result = false;
                 result.ErrorMessage = "Data not found!";
@@ -1726,87 +1730,70 @@ namespace BusinessLogicLayer.Service
             //excel.Visible = true;
             Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
-            Excel.Worksheet worksheetn;
-            // 複製分頁：表身幾筆，就幾個sheet
-            for (int j = 1; j < dataList.Count; j++)
-            {
-                //Excel.Worksheet worksheetFirst = excel.Worksheets[1];
-                worksheetn = (Excel.Worksheet)excel.ActiveWorkbook.Worksheets[j];
+            worksheet.Cells[2, 3] = dataList_Head.FirstOrDefault().ReportNo;
 
-                worksheet.Copy(worksheetn);
+            worksheet.Cells[3, 3] = dataList_Head.FirstOrDefault().SubmitDate.HasValue ? dataList_Head.FirstOrDefault().SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+            worksheet.Cells[3, 7] = DateTime.Now.ToString("yyyy/MM/dd");
+
+            worksheet.Cells[4, 3] = dataList_Head.FirstOrDefault().SeasonID;
+            worksheet.Cells[4, 7] = dataList_Head.FirstOrDefault().BrandID;
+
+            worksheet.Cells[5, 3] = dataList_Head.FirstOrDefault().StyleID;
+            worksheet.Cells[5, 7] = dataList_Head.FirstOrDefault().POID;
+
+            worksheet.Cells[6, 3] = dataList_Head.FirstOrDefault().Article;
+
+            worksheet.Cells[7, 3] = dataList_Head.FirstOrDefault().SCIRefno_Color;
+            worksheet.Cells[8, 7] = dataList_Head.FirstOrDefault().Color;
+
+            worksheet.Cells[72, 3] = dataList_Head.FirstOrDefault().Inspector;
+
+            #region 添加圖片
+            Excel.Range cellBeforePicture = worksheet.Cells[46, 1];
+            if (dataList_Head.FirstOrDefault().CrockingTestBeforePicture != null)
+            {
+                string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestBeforePicture, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
+                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
             }
 
-            //開始填資料
-            for (int j = 1; j <= dataList.Count; j++)
+            Excel.Range cellAfterPicture = worksheet.Cells[46, 5];
+            if (dataList_Head.FirstOrDefault().CrockingTestAfterPicture != null)
             {
-                Excel.Worksheet currenSheet = excel.ActiveWorkbook.Worksheets[j];
-                Crocking_Excel currenData = dataList[j - 1];
-                currenSheet.Select();
+                string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestAfterPicture, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
+                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 323, 255);
+            }
+            #endregion
 
-                currenSheet.Name = (currenData.Article + currenData.Roll + currenData.Dyelot)
-                    .Replace(":", "-")
-                    .Replace("/", "_")
-                    .Replace("\\", "_")
-                    .Replace("?", "~")
-                    .Replace("*", "~")
-                    .Replace("[", "(")
-                    .Replace("]", ")");
-
-                currenSheet.Cells[2, 3] = currenData.ReportNo;
-                currenSheet.Cells[3, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-                currenSheet.Cells[3, 8] = DateTime.Now.ToString("yyyy/MM/dd");
-
-                currenSheet.Cells[4, 3] = currenData.SeasonID;
-                currenSheet.Cells[4, 8] = currenData.BrandID;
-
-                currenSheet.Cells[5, 3] = currenData.StyleID;
-                currenSheet.Cells[5, 8] = currenData.POID;
-
-                currenSheet.Cells[6, 3] = currenData.Article;
-
-                currenSheet.Cells[7, 3] = currenData.Roll;
-                currenSheet.Cells[7, 8] = currenData.Dyelot;
-
-                currenSheet.Cells[8, 3] = currenData.SCIRefno_Color;
-                currenSheet.Cells[9, 8] = currenData.Color;
-
-                // Test Request
-
-                currenSheet.Cells[14, 2] = currenData.DryScale;
-                currenSheet.Cells[14, 4] = currenData.DryScale_Weft;
-                currenSheet.Cells[14, 6] = currenData.WetScale;
-                currenSheet.Cells[14, 8] = currenData.WetScale_Weft;
-
-                currenSheet.Cells[15, 2] = currenData.ResultDry;
-                currenSheet.Cells[15, 4] = currenData.ResultDry_Weft;
-                currenSheet.Cells[15, 6] = currenData.ResultWet;
-                currenSheet.Cells[15, 8] = currenData.ResultWet_Weft;
-
-                currenSheet.Cells[17, 2] = currenData.Remark;
-                currenSheet.Cells[73, 3] = currenData.Inspector;
-
-
-                #region 添加圖片
-                Excel.Range cellBeforePicture = currenSheet.Cells[47, 1];
-                if (currenData.CrockingTestBeforePicture != null)
+            // 複製Row：表身幾筆，就幾個Row
+            if (dataList_Body.Any() && dataList_Body.Count > 1)
+            {
+                int copyCtn = dataList_Body.Count - 1;
+                Excel.Range paste = worksheet.get_Range($"A13:A13", Type.Missing).EntireRow;
+                Excel.Range copyRange = worksheet.get_Range("A13:H14").EntireRow;
+                for (int j = 1; j <= copyCtn; j++)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.CrockingTestBeforePicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
+                    paste.Insert(Excel.XlInsertShiftDirection.xlShiftDown, copyRange.Copy(Type.Missing));
                 }
-
-                Excel.Range cellAfterPicture = currenSheet.Cells[47, 5];
-                if (currenData.CrockingTestAfterPicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.CrockingTestAfterPicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 323, 255);
-                }
-                #endregion
-
             }
 
-            // 游標回到第一頁
-            worksheet = excel.ActiveWorkbook.Worksheets[1];
-            worksheet.Select();
+            int ctn = 0;
+            foreach (var item in dataList_Body)
+            {
+                int rowIdx = ctn * 2;
+                worksheet.Cells[13 + rowIdx, 1] = item.Roll;
+                worksheet.Cells[13 + rowIdx, 2] = item.Dyelot;
+
+                worksheet.Cells[13 + rowIdx, 4] = item.DryScale;
+                worksheet.Cells[13 + rowIdx, 5] = item.DryScale_Weft;
+                worksheet.Cells[13 + rowIdx, 6] = item.WetScale;
+                worksheet.Cells[13 + rowIdx, 7] = item.WetScale_Weft;
+
+                worksheet.Cells[14 + rowIdx, 4] = item.ResultDry;
+                worksheet.Cells[14 + rowIdx, 5] = item.ResultDry_Weft;
+                worksheet.Cells[14 + rowIdx, 6] = item.ResultWet;
+                worksheet.Cells[14 + rowIdx, 7] = item.ResultWet_Weft;
+                ctn++;
+            }
 
             #region Save & Show Excel
 

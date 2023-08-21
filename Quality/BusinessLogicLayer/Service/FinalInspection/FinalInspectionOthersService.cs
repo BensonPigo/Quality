@@ -104,7 +104,7 @@ namespace BusinessLogicLayer.Service
             }
 
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
-
+           
             try
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(_ISQLDataTransaction);
@@ -127,7 +127,7 @@ namespace BusinessLogicLayer.Service
                 _FinalInspectionProvider.SubmitFinalInspection(finalInspection, UserID);
                 List<OtherImage> imgList = others.ListOthersImageItem != null && others.ListOthersImageItem.Any() ? others.ListOthersImageItem : new List<OtherImage>();
                 _FinalInspectionProvider.UpdateFinalInspection_OtherImage(others.FinalInspectionID, imgList);
-
+                
 
                 _ISQLDataTransaction.Commit();
             }
@@ -138,12 +138,37 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = ex.Message;
             }
             finally
-            {
+            {                
                 _ISQLDataTransaction.CloseConnection();
             }
 
             return result;
+        }
 
+        public BaseResult UpdateOthersSubmitPMS(Others others)
+        {
+            BaseResult result = new BaseResult();
+            SQLDataTransaction _ISQLDataTransactionPMS = new SQLDataTransaction(Common.ProductionDataAccessLayer);
+
+            try
+            {
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(_ISQLDataTransactionPMS);
+
+                _FinalInspFromPMSProvider.UpdateOrderQtyShip(others.FinalInspectionID);
+                _ISQLDataTransactionPMS.Commit();
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransactionPMS.RollBack();
+                result.Result = false;
+                result.ErrorMessage = ex.Message;
+            }
+            finally
+            {
+                _ISQLDataTransactionPMS.CloseConnection();               
+            }
+
+            return result;
         }
     }
 }

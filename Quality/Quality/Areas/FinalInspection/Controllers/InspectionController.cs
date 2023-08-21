@@ -1500,6 +1500,10 @@ namespace Quality.Areas.FinalInspection.Controllers
 
                 // Submit 紀錄
                 BaseResult r = oService.UpdateOthersSubmit(model, this.UserID);
+                if (r.Result)
+                {
+                    oService.UpdateOthersSubmitPMS(model);
+                }
 
                 // 取出剛剛的紀錄
                 FinalInspectionService sevice = new FinalInspectionService();

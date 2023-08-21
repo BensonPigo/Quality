@@ -326,6 +326,16 @@
                                                 Article = item.Article,
                                             });
                                             break;
+                                        case string a when a.Contains("T-Peel Strength Test"):
+                                            link = Url.Action("IndexGet", "TPeelStrengthTest", new
+                                            {
+                                                ReportNo = item.ReportNo,
+                                                BrandID = item.BrandID,
+                                                SeasonID = item.SeasonID,
+                                                StyleID = item.StyleID,
+                                                Article = item.Article,
+                                            });
+                                            break;
                                         default:
                                             link = "#";
                                             break;

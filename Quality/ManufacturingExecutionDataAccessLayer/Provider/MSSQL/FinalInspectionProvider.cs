@@ -30,8 +30,8 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             string sqlGetData = @"
 select  ID                             ,
-        CustPONO                       ,
         BrandID = (select top 1 BrandID from SciProduction_Orders o with (nolock) where o.CustPONO = a.CustPONO)                       ,
+        [CustPONO] = o.val             ,
         InspectionStage                ,
         InspectionTimes                ,
         FactoryID                      ,
@@ -83,6 +83,13 @@ select  ID                             ,
         [FGPT] = iif(a.InspectionStage = 'Final', fgpt.Result, ''),
         [ISFD] = cast(I.ISFD as bit)
 from FinalInspection a with (nolock)
+outer apply (
+    SELECT val = Stuff((select distinct concat( ',',CustPONo) 
+                       from  FinalInspection_Order fo with (nolock) 
+                       inner join SciProduction_Orders o with (nolock) on fo.OrderID = o.ID
+                       where fo.ID = a.ID
+                       FOR XML PATH('')),1,1,'')
+)o
 outer apply (
 	select [GarmentTestID] = g.ID, [WashResult] = case g.WashResult when 'F' then 'Failed Test' when 'P' then 'Completed Test' else 'Lacking Test' end
 	from FinalInspection_Order o 
@@ -343,7 +350,7 @@ where a.id = @FinalInspectionID and a.SubmitDate is null
 and currentStep.StepName IN (select REPLACE(q.StepName,' ','') from FinalInspectionBasicStep q with(NOLOCK) )
 and currentStep.StepName=REPLACE(d.StepName,' ','') 
 
-select TOP 1 @TargetStep = 'Insp-' + REPLACE(a.StepName,' ','')
+select TOP 1 @TargetStep = 'Insp-' +  REPLACE((REPLACE(a.StepName,' ','')),'Insp-','')
 from #AllStep a
 where 1=1
 ";
@@ -377,6 +384,11 @@ and Seq = (select Seq from #CurrentStep) order by Seq
             }
 
             sqlUpdCmd += $@"
+
+IF @TargetStep=''
+	SET @TargetStep= 'Submit'
+
+
 UPDATE FinalInspection 
 SET InspectionStep = @TargetStep
     ,EditName= @UserID
@@ -528,8 +540,16 @@ insert into FinalInspection_Order(ID, OrderID, AvailableQty)
             foreach (SelectOrderShipSeq selectOrderShipSeq in setting.SelectOrderShipSeq)
             {
                 sqlUpdCmd += $@"
-insert into FinalInspection_Order_QtyShip(ID, OrderID, Seq, ShipmodeID)
-            values(@FinalInspectionID, '{selectOrderShipSeq.OrderID}', '{selectOrderShipSeq.Seq}', '{selectOrderShipSeq.ShipmodeID}')
+insert into FinalInspection_Order_QtyShip(ID, OrderID, Seq, ShipmodeID, InspectionTimes)
+            values(@FinalInspectionID, '{selectOrderShipSeq.OrderID}', '{selectOrderShipSeq.Seq}', '{selectOrderShipSeq.ShipmodeID}'
+, (
+	select [InspectionTimes] = ISNULL(MAX(foq.InspectionTimes), 0) + 1
+	from FinalInspection_Order_QtyShip foq
+	left join FinalInspection f on foq.ID = f.ID
+	where exists (select 1 from FinalInspection f2 where f2.ID = @FinalInspectionID and f2.AddDate > f.AddDate)
+	and foq.OrderID = '{selectOrderShipSeq.OrderID}'
+	and foq.Seq = '{selectOrderShipSeq.Seq}')
+)
 ";
             }
 
@@ -566,12 +586,7 @@ insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo, Seq)
                 case "Insp-General":
                     sqlUpdCmd += $@"
 update FinalInspection
- set    FabricApprovalDoc = @FabricApprovalDoc  ,
-        SealingSampleDoc= @SealingSampleDoc    ,
-        MetalDetectionDoc= @MetalDetectionDoc   ,
-        GarmentWashingDoc= @GarmentWashingDoc   ,
-        CheckFGPT = @CheckFGPT,
-        EditName= @userID,
+ set    EditName= @userID,
         EditDate= getdate()
 where   ID = @FinalInspectionID
 ";
@@ -1759,7 +1774,7 @@ from Production.dbo.Orders WITH(NOLOCK)
 where CustPONO = @CustPONO
 )
 ";
-                whereFinalInspection += @" and f.CustPONO = @CustPONO";
+                whereFinalInspection += " and exists (select 1 from SciProduction_Orders o WITH(NOLOCK) where fo.OrderID = o.ID and o.CustPONO = @CustPONO) ";
                 parameter.Add("@CustPONO", request.CustPONO);
             }
 
@@ -2169,7 +2184,7 @@ Select	[AuditDate] = format(f.AuditDate, 'yyyy-MM-ddTHH:mm:ss'),
 		[CFA] = isnull((select Pivot88UserName from quality_pass1 with (nolock) where ID = f.CFA), ''),
 		OrderInfo.POQty,
 		[ETD_ETA] = format(OrderInfo.ETD_ETA, 'yyyy-MM-ddTHH:mm:ss'),
-		f.CustPONO,
+		[CustPONO] = o.val,
         OrderInfo.CustomerPo,
         [ReportTypeID] = case when OrderInfo.IsDestJP = 1 then 25
                             when f.AcceptableQualityLevelsUkey  = -1 then 26
@@ -2177,30 +2192,7 @@ Select	[AuditDate] = format(f.AuditDate, 'yyyy-MM-ddTHH:mm:ss'),
         [DateStarted] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.AddDate), 'yyyy-MM-ddTHH:mm:ss'),
         [InspectionCompletedDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.EditDate), 'yyyy-MM-ddTHH:mm:ss'),
         f.OthersRemark,
-        f.FabricApprovalDoc,
-        f.SealingSampleDoc,
-        f.MetalDetectionDoc,
-        f.IsFactoryDisclaimer,
-        f.IsA01Compliance,
-        f.IsCPSIACompliance,
-        f.IsCustomerCountrySpecificCompliance,
         f.BAQty,
-        f.CheckCloseShade,
-        f.CheckHandfeel,
-        f.CheckAppearance,
-        f.CheckPrintEmbDecorations,
-        f.CheckFiberContent,
-        f.CheckCareInstructions,
-        f.CheckDecorativeLabel,
-        f.CheckAdicomLabel,
-        f.CheckCountryofOrigion,
-        f.CheckSizeKey,
-        f.Check8FlagLabel,
-        f.CheckAdditionalLabel,
-        f.CheckShippingMark,
-        f.CheckPolytagMarketing,
-        f.CheckColorSizeQty,
-        f.CheckHangtag,
         [MeasurementResult] = cast(iif(exists(select 1 from FinalInspection_Measurement fm with (nolock) where f.ID = fm.ID), 1, 0) as bit),
         [MoistureResult] = case when exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID and fmo.Result = 'F') then 'fail'
                                 when not exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID) then 'na'
@@ -2208,6 +2200,13 @@ Select	[AuditDate] = format(f.AuditDate, 'yyyy-MM-ddTHH:mm:ss'),
         [MoistureComment] = SUBSTRING(MoistureComment.val, 1, 255)
 from FinalInspection f with (nolock)
 cross join system
+outer apply (
+    SELECT val = Stuff((select distinct concat( ',',CustPONo) 
+                       from  FinalInspection_Order fo with (nolock) 
+                       inner join SciProduction_Orders o with (nolock) on fo.OrderID = o.ID
+                       where fo.ID = f.ID
+                       FOR XML PATH('')),1,1,'')
+)o
 outer apply (select	[POQty] = sum(o.Qty),
 					[ETD_ETA] = max(o.BuyerDelivery),
                     [CustomerPo] = max(o.CustCDID),
@@ -2217,6 +2216,20 @@ outer apply (select	[POQty] = sum(o.Qty),
 outer apply (SELECT [val] = Stuff((select concat( ';',Remark)   
                 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID FOR XML PATH('')),1,1,'')) MoistureComment
 where f.ID = @ID 
+
+
+select IsMaterialApproval      ,IsSealingSample      ,IsMetalDetection      ,IsFGWT      ,IsFGPT      ,IsTopSample      ,Is3rdPartyTestReport      ,IsPPSample
+      ,IsGBTestForChina      ,IsCPSIAForYounthStytle      ,IsQRSSample      ,IsFactoryDisclaimer      ,IsA01Compliance      ,IsCPSIACompliance
+      ,IsCustomerCountrySpecificCompliance 
+from FinalInspectionGeneral with (nolock) where FinalInspectionID = @ID 
+
+SELECT IsCloseShade      ,IsHandfeel      ,IsAppearance      ,IsPrintEmbDecorations      ,IsEmbellishmentPrint      ,IsEmbellishmentBonding      ,IsEmbellishmentHT
+      ,IsEmbellishmentEMB      ,IsFiberContent      ,IsCareInstructions      ,IsDecorativeLabel      ,IsAdicomLabel      ,IsCountryofOrigion      ,IsSizeKey
+      ,Is8FlagLabel      ,IsAdditionalLabel      ,IsIdLabel      ,IsMainLabel      ,IsSizeLabel      ,IsCareContentLabel      ,IsBrandLabel      ,IsBlueSignLabel
+      ,IsLotLabel      ,IsSecurityLabel      ,IsSpecialLabel      ,IsVIDLabel      ,IsCNC      ,IsWovenlabel      ,IsTSize      ,IsCCLayout      ,IsShippingMark
+      ,IsPolytagMarketing      ,IsColorSizeQty      ,IsHangtag      ,IsJokerTag      ,IsWWMT      ,IsChinaCIT      ,IsPolybagSticker      ,IsUCCSticker
+      ,IsPESheetMicropak      ,IsAdditionalHantage      ,IsUPCStickierHantage      ,IsGS1128Label
+FROM FinalInspectionCheckList with (nolock) where FinalInspectionID = @ID 
 
 select	distinct
 		oc.ColorID
