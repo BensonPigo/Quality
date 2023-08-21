@@ -20,6 +20,7 @@ using Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -281,7 +282,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 // 表頭填入
 
-                worksheet.Cells[1, 1] = head.ArtworkTypeID_FullName + " - Daily wash test report";
+                worksheet.Cells[1, 1] = head.ArtworkTypeID + " - Daily wash test report";
 
                 worksheet.Cells[2, 2] = head.OrderID;
                 worksheet.Cells[2, 7] = head.ReportDate.HasValue ? head.ReportDate.Value.ToString("yyyy-MM-dd") : string.Empty;
@@ -300,7 +301,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 worksheet.Cells[7, 2] = head.ArtworkTypeID;
                 worksheet.Cells[7, 7] = head.Machine;
-                //worksheet.Cells[9, 3] = head.Temperature;
+
+
+                if (head.ArtworkTypeID == "BO" || head.ArtworkTypeID == "FU")
+                {
+                    worksheet.Cells[9, 2] = "Film ref#";
+                }
+                else if (head.ArtworkTypeID == "HT")
+                {
+                    worksheet.Cells[9, 2] = "HT ref#";
+                }
+
                 //worksheet.Cells[10, 3] = head.Time;
                 //worksheet.Cells[11, 3] = head.Pressure;
                 //worksheet.Cells[12, 3] = head.PeelOff;
@@ -441,12 +452,42 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 return null;
             }
         }
+
+        /// <summary>
+        /// Annotation取得，請參考 ISP20230789
+        /// </summary>
+        /// <param name="orders"></param>
+        /// <returns></returns>
         public List<SelectListItem> GetArtworkTypeList(Orders orders)
         {
+            List<SelectListItem> result = new List<SelectListItem>();
             _Provider = new HeatTransferWashProvider(Common.ProductionDataAccessLayer);
             try
             {
-                return _Provider.GetArtworkTypeList(orders).ToList();
+                List<string> list = new List<string>();
+
+                list= _Provider.GetArtworkTypeOri(orders).ToList();
+
+                foreach (var item in list)
+                {
+                    string[] Annotations = Regex.Replace(item, @"[\d]", string.Empty).Split('+'); // 剖析Annotation
+
+
+                    foreach (var Annotation in Annotations)
+                    {
+                        if (!result.Any(o => o.Value == Annotation))
+                        {
+
+                            result.Add(new SelectListItem()
+                            {
+                                Text = Annotation,
+                                Value = Annotation,
+                            });
+                        }
+                    }
+                }
+                result = result.OrderBy(o => o.Value).ToList();
+                return result;
             }
             catch (Exception)
             {
