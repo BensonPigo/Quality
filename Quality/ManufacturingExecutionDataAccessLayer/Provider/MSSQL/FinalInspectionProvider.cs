@@ -31,6 +31,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             string sqlGetData = @"
 select  ID                             ,
         CustPONO                       ,
+        BrandID = (select top 1 BrandID from SciProduction_Orders o with (nolock) where o.CustPONO = a.CustPONO)                       ,
         InspectionStage                ,
         InspectionTimes                ,
         FactoryID                      ,

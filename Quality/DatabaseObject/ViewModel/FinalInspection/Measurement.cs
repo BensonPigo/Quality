@@ -18,6 +18,8 @@ namespace DatabaseObject.ViewModel.FinalInspection
 
         public string SelectedArticle { get; set; }
 
+        public int MeasurementRemainingAmount { get; set; }
+
         public string SelectedSize { get; set; }
 
         public string SelectedProductType { get; set; }

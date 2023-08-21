@@ -177,12 +177,13 @@
                         <td>
                             @if (AQLPlanDisabled || Model.AQLPlan == null)
                             {
-                                @Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control", @disabled = "@disabled" })
+                                @Html.DropDownListFor(o => o.AQLPlan, Model.AQLPlanList, null, new { @class = "form-control", @disabled = "@disabled" })
                             }
                             else
                             {
-                                @Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control" })
+                                @Html.DropDownListFor(o => o.AQLPlan, Model.AQLPlanList, null, new { @class = "form-control" })
                             }
+
                         </td>
                     </tr>
                     <tr>
