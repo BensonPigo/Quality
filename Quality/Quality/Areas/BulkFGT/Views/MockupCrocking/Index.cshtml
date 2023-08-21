@@ -505,7 +505,7 @@
     $(function () {
         msg = new MessagerAlert();
         EditMode = false;
-        
+
         @Html.Raw(Model.ErrorMessage)
         IsEditModeChange();
 
@@ -1068,6 +1068,9 @@
                         para += "&Subject=" + "Mockup Crocking Test – ReportNo:" + $('#ReportNo').val() + " – Style: " + $('#StyleID').val();
                         para += "&Body=" + "Attachment is Mockup Crocking Test– ReportNo:" + $('#ReportNo').val() + " detail data";
                         para += "&file=" + data.FileName;
+                        @*para += "&IsShowAIComment=true";
+                        para += "&Type=Mockup Oven Test";
+                        para += "&OrderID=" + '@Model.POID';*@
                         window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
                     }
                     else {

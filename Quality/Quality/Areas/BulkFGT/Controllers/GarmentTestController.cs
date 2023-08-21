@@ -308,7 +308,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.TestResultPassList = TestResultPassList;
             ViewBag.TestResultmmList = TestResultmmList;
             ViewBag.MetalContentList = MetalContentList;
-            ViewBag.FactoryID = this.FactoryID;
+            //ViewBag.FactoryID = this.FactoryID;
             return View(Detail_Result);
         }
 

@@ -58,6 +58,8 @@ and p.ID='{Pass1ID}'
 
             string sqlWhseArrival = string.Empty;
             StringBuilder SbSql = new StringBuilder();
+            string tmptable = string.Empty;
+            string where = string.Empty;
 
             #region Fabric Crocking & Shrinkage Test (504, 405)
             if (Req.WhseArrival_s.HasValue || Req.WhseArrival_e.HasValue)
@@ -71,7 +73,29 @@ outer apply (
 )e ";
             }
 
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                where += "AND o.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                where += "AND o.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                where += "AND o.StyleID = @StyleID ";
+            }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                where += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                where += " AND @WhseArrival_e >= e.WhseArrival ";
+            }
+
             string type1 = $@"
+
 select Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
         , ReportNo=''
 		, OrderID = o.POID
@@ -85,6 +109,7 @@ select Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
 	    , ReceivedDate = NULL
 	    , ReportDate = NULL
         , AddName = '' ----AddName不會是單一個人，故不顯示
+		, AIComment = IIF(f_Result.Result = 'Fail' ,( select dbo.GetQualityWebAIComment('Fabric Crocking & Shrinkage Test',0,o.StyleID,o.BrandID,o.SeasonID) ) ,'')
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = p.ID
 outer apply (
@@ -119,27 +144,11 @@ outer apply (
 {sqlWhseArrival}
 WHERE exists (select 1 from FIR_Laboratory f WITH(NOLOCK) WHERE f.POID = p.ID)
 and f_Result.Result <> ''
+{where}
 ";
-            if (!string.IsNullOrEmpty(Req.BrandID))
-            {
-                type1 += "AND o.BrandID = @BrandID ";
-            }
-            if (!string.IsNullOrEmpty(Req.SeasonID))
-            {
-                type1 += "AND o.SeasonID = @SeasonID ";
-            }
-            if (!string.IsNullOrEmpty(Req.StyleID))
-            {
-                type1 += "AND o.StyleID = @StyleID ";
-            }
-            if (Req.WhseArrival_s.HasValue)
-            {
-                type1 += " AND @WhseArrival_s <= e.WhseArrival ";
-            }
-            if (Req.WhseArrival_e.HasValue)
-            {
-                type1 += " AND @WhseArrival_e >= e.WhseArrival ";
-            }
+
+            // 重置
+            where = string.Empty;
             #endregion
 
             #region Garment Test (450, 451, 701, 710)
@@ -153,6 +162,34 @@ outer apply (
 	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
 	where o.ID = g.OrderID
 )e ";
+            }
+            if (!string.IsNullOrEmpty(Req.MDivisionID))
+            {
+                where += "AND g.MDivisionID = @MDivisionID ";
+            }
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                where += "AND g.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                where += "AND g.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                where += "AND g.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                where += "AND g.Article = @Article ";
+            }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                where += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                where += " AND @WhseArrival_e >= e.WhseArrival ";
             }
 
             string type2 = $@"
@@ -169,42 +206,24 @@ select  Type = 'Garment Test (450, 451, 701, 710)'
 	    , ReceivedDate = NULL
 	    , ReportDate = NULL
         , AddName = ISNULL(pa.Name, ma.Name)
+		, AIComment = IIF(gd.WashResult='F' ,(select dbo.GetQualityWebAIComment('Garment Wash Test',0,g.StyleID,g.BrandID,g.SeasonID)),'')
+                        --+ CHAR(10)+CHAR(13)
+                        + IIF(gd.SeamBreakageResult='F' ,(select dbo.GetQualityWebAIComment('Seam Breakage',0,g.StyleID,g.BrandID,g.SeasonID)),'')
+                        --+ CHAR(10)+CHAR(13)
+                        + IIF(gd.OdourResult='F' ,(select dbo.GetQualityWebAIComment('Odour Test',0,g.StyleID,g.BrandID,g.SeasonID)),'')
 from GarmentTest g WITH(NOLOCK)
 inner join GarmentTest_Detail gd WITH(NOLOCK) ON g.ID= gd.ID
 left join Production.dbo.Pass1 pa on gd.AddName = pa.ID
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on gd.AddName = ma.ID
+
 {sqlWhseArrival}
 WHERE gd.Result <> ''
+{where}
+
 ";
 
-            if (!string.IsNullOrEmpty(Req.MDivisionID))
-            {
-                type2 += "AND g.MDivisionID = @MDivisionID ";
-            }
-            if (!string.IsNullOrEmpty(Req.BrandID))
-            {
-                type2 += "AND BrandID = @BrandID ";
-            }
-            if (!string.IsNullOrEmpty(Req.SeasonID))
-            {
-                type2 += "AND SeasonID = @SeasonID ";
-            }
-            if (!string.IsNullOrEmpty(Req.StyleID))
-            {
-                type2 += "AND StyleID = @StyleID ";
-            }
-            if (!string.IsNullOrEmpty(Req.Article))
-            {
-                type2 += "AND Article = @Article ";
-            }
-            if (Req.WhseArrival_s.HasValue)
-            {
-                type2 += " AND @WhseArrival_s <= e.WhseArrival ";
-            }
-            if (Req.WhseArrival_e.HasValue)
-            {
-                type2 += " AND @WhseArrival_e >= e.WhseArrival ";
-            }
+            // 重置
+            where = string.Empty;
             #endregion
 
             #region Mockup Crocking Test  (504)
@@ -218,6 +237,47 @@ outer apply (
 	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
 	where o.ID = m.POID
 )e ";
+            }
+
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                where += "AND BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                where += "AND SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                where += "AND StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                where += "AND Article = @Article ";
+            }
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                where += "AND ReceivedDate >= @ReceivedDate_s ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                where += "AND ReceivedDate <= @ReceivedDate_e ";
+            }
+            if (Req.ReportDate_s.HasValue)
+            {
+                where += "AND ReleasedDate >= @ReportDate_s ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                where += "AND ReleasedDate <= @ReportDate_e ";
+            }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                where += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                where += " AND @WhseArrival_e >= e.WhseArrival ";
             }
 
             string type3 = $@"
@@ -234,53 +294,19 @@ select DISTINCT  Type = 'Mockup Crocking Test  (504)'
         , m.ReceivedDate
         , ReportDate = m.ReleasedDate
         , AddName = ISNULL(pa.Name, ma.Name)
+		, AIComment = IIF(m.Result = 'Fail' ,(select dbo.GetQualityWebAIComment('Mockup Crocking Test',0,m.StyleID,m.BrandID,m.SeasonID)) ,'')
 from MockupCrocking m WITH(NOLOCK)
 left join Production.dbo.Pass1 pa on m.AddName = pa.ID
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on m.AddName = ma.ID
 {sqlWhseArrival}
 WHERE m.Result <> ''
+{where}
+
 ";
 
-            if (!string.IsNullOrEmpty(Req.BrandID))
-            {
-                type3 += "AND BrandID = @BrandID ";
-            }
-            if (!string.IsNullOrEmpty(Req.SeasonID))
-            {
-                type3 += "AND SeasonID = @SeasonID ";
-            }
-            if (!string.IsNullOrEmpty(Req.StyleID))
-            {
-                type3 += "AND StyleID = @StyleID ";
-            }
-            if (!string.IsNullOrEmpty(Req.Article))
-            {
-                type3 += "AND Article = @Article ";
-            }
-            if (Req.ReceivedDate_s.HasValue)
-            {
-                type3 += "AND ReceivedDate >= @ReceivedDate_s ";
-            }
-            if (Req.ReceivedDate_e.HasValue)
-            {
-                type3 += "AND ReceivedDate <= @ReceivedDate_e ";
-            }
-            if (Req.ReportDate_s.HasValue)
-            {
-                type3 += "AND ReleasedDate >= @ReportDate_s ";
-            }
-            if (Req.ReportDate_e.HasValue)
-            {
-                type3 += "AND ReleasedDate <= @ReportDate_e ";
-            }
-            if (Req.WhseArrival_s.HasValue)
-            {
-                type3 += " AND @WhseArrival_s <= e.WhseArrival ";
-            }
-            if (Req.WhseArrival_e.HasValue)
-            {
-                type3 += " AND @WhseArrival_e >= e.WhseArrival ";
-            }
+            // 重置
+            tmptable = string.Empty;
+            where = string.Empty;
             #endregion
 
             #region Mockup Oven Test (514)
@@ -294,6 +320,47 @@ outer apply (
 	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
 	where o.ID = m.POID
 )e ";
+            }
+
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                where += "AND m.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                where += "AND m.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                where += "AND m.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                where += "AND Article = @Article ";
+            }
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                where += "AND ReceivedDate >= @ReceivedDate_s ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                where += "AND ReceivedDate <= @ReceivedDate_e ";
+            }
+            if (Req.ReportDate_s.HasValue)
+            {
+                where += "AND ReleasedDate >= @ReportDate_s ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                where += "AND ReleasedDate <= @ReportDate_e ";
+            }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                where += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                where += " AND @WhseArrival_e >= e.WhseArrival ";
             }
 
             string type4 = $@"
@@ -310,54 +377,18 @@ select DISTINCT Type = 'Mockup Oven Test (514)'
     , m.ReceivedDate
     , ReportDate = m.ReleasedDate
     , AddName = ISNULL(pa.Name, ma.Name)
+	, AIComment = IIF(m.Result = 'Fail' ,( select dbo.GetQualityWebAIComment('Mockup Oven Test',0,m.StyleID,m.BrandID,m.SeasonID) ),'')
 from MockupOven m WITH(NOLOCK)
 left join Production.dbo.Pass1 pa on m.AddName = pa.ID
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on m.AddName = ma.ID
 {sqlWhseArrival}
 where m.Type = 'B'
 and m.Result <> ''
+{where}
 ";
 
-            if (!string.IsNullOrEmpty(Req.BrandID))
-            {
-                type4 += "AND BrandID = @BrandID ";
-            }
-            if (!string.IsNullOrEmpty(Req.SeasonID))
-            {
-                type4 += "AND SeasonID = @SeasonID ";
-            }
-            if (!string.IsNullOrEmpty(Req.StyleID))
-            {
-                type4 += "AND StyleID = @StyleID ";
-            }
-            if (!string.IsNullOrEmpty(Req.Article))
-            {
-                type4 += "AND Article = @Article ";
-            }
-            if (Req.ReceivedDate_s.HasValue)
-            {
-                type4 += "AND ReceivedDate >= @ReceivedDate_s ";
-            }
-            if (Req.ReceivedDate_e.HasValue)
-            {
-                type4 += "AND ReceivedDate <= @ReceivedDate_e ";
-            }
-            if (Req.ReportDate_s.HasValue)
-            {
-                type4 += "AND ReleasedDate >= @ReportDate_s ";
-            }
-            if (Req.ReportDate_e.HasValue)
-            {
-                type4 += "AND ReleasedDate <= @ReportDate_e ";
-            }
-            if (Req.WhseArrival_s.HasValue)
-            {
-                type4 += " AND @WhseArrival_s <= e.WhseArrival ";
-            }
-            if (Req.WhseArrival_e.HasValue)
-            {
-                type4 += " AND @WhseArrival_e >= e.WhseArrival ";
-            }
+            // 重置
+            where = string.Empty;
             #endregion
 
             #region Mockup Wash Test (701)
@@ -371,6 +402,46 @@ outer apply (
 	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
 	where o.ID = m.POID
 )e ";
+            }
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                where += "AND m.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                where += "AND m.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                where += "AND m.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                where += "AND m.Article = @Article ";
+            }
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                where += "AND ReceivedDate >= @ReceivedDate_s ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                where += "AND ReceivedDate <= @ReceivedDate_e ";
+            }
+            if (Req.ReportDate_s.HasValue)
+            {
+                where += "AND ReleasedDate >= @ReportDate_s ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                where += "AND ReleasedDate <= @ReportDate_e ";
+            }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                where += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                where += " AND @WhseArrival_e >= e.WhseArrival ";
             }
 
             string type5 = $@"
@@ -387,55 +458,17 @@ select DISTINCT Type = 'Mockup Wash Test (701)'
     , m.ReceivedDate
     , ReportDate = m.ReleasedDate
     , AddName = ISNULL(pa.Name, ma.Name)
+	, AIComment = IIF(m.Result = 'Fail' ,( select dbo.GetQualityWebAIComment('Mockup Wash Test',0,m.StyleID,m.BrandID,m.SeasonID) ),'')
 from MockupWash m WITH(NOLOCK)
 left join Production.dbo.Pass1 pa on m.AddName = pa.ID
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on m.AddName = ma.ID
 {sqlWhseArrival}
 where m.Type = 'B' 
 and m.Result <> ''
+{where}
 ";
-
-            if (!string.IsNullOrEmpty(Req.BrandID))
-            {
-                type5 += "AND BrandID = @BrandID ";
-            }
-            if (!string.IsNullOrEmpty(Req.SeasonID))
-            {
-                type5 += "AND SeasonID = @SeasonID ";
-            }
-            if (!string.IsNullOrEmpty(Req.StyleID))
-            {
-                type5 += "AND StyleID = @StyleID ";
-            }
-            if (!string.IsNullOrEmpty(Req.Article))
-            {
-                type5 += "AND Article = @Article ";
-            }
-            if (Req.ReceivedDate_s.HasValue)
-            {
-                type5 += "AND ReceivedDate >= @ReceivedDate_s ";
-            }
-            if (Req.ReceivedDate_e.HasValue)
-            {
-                type5 += "AND ReceivedDate <= @ReceivedDate_e ";
-            }
-            if (Req.ReportDate_s.HasValue)
-            {
-                type5 += "AND ReleasedDate >= @ReportDate_s ";
-            }
-            if (Req.ReportDate_e.HasValue)
-            {
-                type5 += "AND ReleasedDate <= @ReportDate_e ";
-            }
-            if (Req.WhseArrival_s.HasValue)
-            {
-                type5 += " AND @WhseArrival_s <= e.WhseArrival ";
-            }
-            if (Req.WhseArrival_e.HasValue)
-            {
-                type5 += " AND @WhseArrival_e >= e.WhseArrival ";
-            }
-
+            // 重置
+            where = string.Empty;
             #endregion
 
             #region Fabric Oven Test (515) 
@@ -448,6 +481,30 @@ outer apply (
 	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
 	where o.POID = ed.PoID
 )e ";
+            }
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                where += "AND o.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                where += "AND o.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                where += "AND o.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                where += "AND Article = @Article ";
+            }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                where += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                where += " AND @WhseArrival_e >= e.WhseArrival ";
             }
 
             string type6 = $@"
@@ -464,6 +521,7 @@ select DISTINCT Type= 'Fabric Oven Test (515)'
 	    , ReceivedDate = NULL
 	    , ReportDate = NULL
         , AddName = ISNULL(pa.Name, ma.Name)
+	    , AIComment = IIF(f.Result = 'Fail' ,( select dbo.GetQualityWebAIComment('Fabric Oven Test',0,o.StyleID,o.BrandID,o.SeasonID) ),'')
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
 inner join Oven f WITH(NOLOCK) ON f.POID = p.ID
@@ -471,31 +529,12 @@ left join Production.dbo.Pass1 pa on f.AddName = pa.ID
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on f.AddName = ma.ID
 {sqlWhseArrival}
 where f.Result <> ''
+{where}
+
 ";
-            if (!string.IsNullOrEmpty(Req.BrandID))
-            {
-                type6 += "AND o.BrandID = @BrandID ";
-            }
-            if (!string.IsNullOrEmpty(Req.SeasonID))
-            {
-                type6 += "AND o.SeasonID = @SeasonID ";
-            }
-            if (!string.IsNullOrEmpty(Req.StyleID))
-            {
-                type6 += "AND o.StyleID = @StyleID ";
-            }
-            if (!string.IsNullOrEmpty(Req.Article))
-            {
-                type6 += "AND Article = @Article ";
-            }
-            if (Req.WhseArrival_s.HasValue)
-            {
-                type6 += " AND @WhseArrival_s <= e.WhseArrival ";
-            }
-            if (Req.WhseArrival_e.HasValue)
-            {
-                type6 += " AND @WhseArrival_e >= e.WhseArrival ";
-            }
+
+            // 重
+            where = string.Empty;
             #endregion
 
             #region Washing Fastness (501)
@@ -508,6 +547,30 @@ outer apply (
 	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
 	where o.POID = ed.PoID
 )e ";
+            }
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                where += "AND o.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                where += "AND o.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                where += "AND o.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                where += "AND Article = @Article ";
+            }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                where += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                where += " AND @WhseArrival_e >= e.WhseArrival ";
             }
 
             string type7 = $@"
@@ -524,6 +587,7 @@ select DISTINCT Type= 'Washing Fastness (501)'
 	    , ReceivedDate = NULL
 	    , ReportDate = NULL
         , AddName = ISNULL(pa.Name, ma.Name)
+	    , AIComment = IIF(f.Result = 'Fail' ,( select dbo.GetQualityWebAIComment('Washing Fastness',0,o.StyleID,o.BrandID,o.SeasonID) ),'')
 from PO p WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.POID = p.ID
 INNER JOIN ColorFastness f WITH(NOLOCK) ON f.POID = p.ID
@@ -531,31 +595,11 @@ left join Production.dbo.Pass1 pa on f.AddName = pa.ID
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on f.AddName = ma.ID
 {sqlWhseArrival}
 WHERE f.Result <> ''
+{where}
 ";
-            if (!string.IsNullOrEmpty(Req.BrandID))
-            {
-                type7 += "AND o.BrandID = @BrandID ";
-            }
-            if (!string.IsNullOrEmpty(Req.SeasonID))
-            {
-                type7 += "AND o.SeasonID = @SeasonID ";
-            }
-            if (!string.IsNullOrEmpty(Req.StyleID))
-            {
-                type7 += "AND o.StyleID = @StyleID ";
-            }
-            if (!string.IsNullOrEmpty(Req.Article))
-            {
-                type7 += "AND Article = @Article ";
-            }
-            if (Req.WhseArrival_s.HasValue)
-            {
-                type7 += " AND @WhseArrival_s <= e.WhseArrival ";
-            }
-            if (Req.WhseArrival_e.HasValue)
-            {
-                type7 += " AND @WhseArrival_e >= e.WhseArrival ";
-            }
+
+            // 重置
+            where = string.Empty;
             #endregion
 
             #region Accessory Oven & Wash Test (515, 701)
@@ -568,6 +612,26 @@ outer apply (
 	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
 	where o.POID = ed.PoID
 )e ";
+            }
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                where += "AND o.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                where += "AND o.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                where += "AND o.StyleID = @StyleID ";
+            }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                where += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                where += " AND @WhseArrival_e >= e.WhseArrival ";
             }
 
             string type8 = $@"
@@ -584,6 +648,7 @@ select Type = 'Accessory Oven & Wash Test (515, 701)'
 		, ReceivedDate = NULL
 		, ReportDate = NULL
         , AddName = '' ----不會只有一個人，故空著
+	    , AIComment = IIF(f_Result.Result = 'Fail' ,( select dbo.GetQualityWebAIComment('Accessory Oven & Wash Test',0,o.StyleID,o.BrandID,o.SeasonID) ),'')
 from PO p
 inner join Orders o WITH(NOLOCK) ON o.ID = p.ID
 outer apply (
@@ -616,28 +681,11 @@ outer apply (
 {sqlWhseArrival}
 WHERE exists (select 1 from AIR_Laboratory f WITH(NOLOCK) WHERE f.POID = p.ID)
 and f_Result.Result <> ''
+{where}
 ";
-            if (!string.IsNullOrEmpty(Req.BrandID))
-            {
-                type8 += "AND o.BrandID = @BrandID ";
-            }
-            if (!string.IsNullOrEmpty(Req.SeasonID))
-            {
-                type8 += "AND o.SeasonID = @SeasonID ";
-            }
-            if (!string.IsNullOrEmpty(Req.StyleID))
-            {
-                type8 += "AND o.StyleID = @StyleID ";
-            }
-            if (Req.WhseArrival_s.HasValue)
-            {
-                type8 += " AND @WhseArrival_s <= e.WhseArrival ";
-            }
-            if (Req.WhseArrival_e.HasValue)
-            {
-                type8 += " AND @WhseArrival_e >= e.WhseArrival ";
-            }
 
+            // 重置
+            where = string.Empty;
             #endregion
 
             #region Pulling test for Snap/Botton/Rivet (437)
@@ -651,6 +699,30 @@ outer apply (
 	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
 	where o.ID = m.POID
 )e ";
+            }
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                where += "AND m.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                where += "AND m.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                where += "AND m.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                where += "AND m.Article = @Article ";
+            }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                where += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                where += " AND @WhseArrival_e >= e.WhseArrival ";
             }
 
             string type9 = $@"
@@ -667,36 +739,18 @@ select DISTINCT Type = 'Pulling test for Snap/Botton/Rivet (437)'
 	, ReceivedDate = NULL
 	, ReportDate = NULL
     , AddName = ISNULL(pa.Name, ma.Name)
+	, AIComment = IIF(m.Result = 'Fail' ,( select dbo.GetQualityWebAIComment('Pulling test for Snap/Button/Rivet',0,m.StyleID,m.BrandID,m.SeasonID) ),'')
 from [ExtendServer].ManufacturingExecution.dbo.PullingTest m WITH(NOLOCK)
 left join Production.dbo.Pass1 pa on m.AddName = pa.ID
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on m.AddName = ma.ID
 {sqlWhseArrival}
 where m.Result <> ''
+{where}
+
 ";
-            if (!string.IsNullOrEmpty(Req.BrandID))
-            {
-                type9 += "AND BrandID = @BrandID ";
-            }
-            if (!string.IsNullOrEmpty(Req.SeasonID))
-            {
-                type9 += "AND SeasonID = @SeasonID ";
-            }
-            if (!string.IsNullOrEmpty(Req.StyleID)) 
-            {
-                type9 += "AND StyleID = @StyleID ";
-            }
-            if (!string.IsNullOrEmpty(Req.Article))
-            {
-                type9 += "AND Article = @Article ";
-            }
-            if (Req.WhseArrival_s.HasValue)
-            {
-                type9 += " AND @WhseArrival_s <= e.WhseArrival ";
-            }
-            if (Req.WhseArrival_e.HasValue)
-            {
-                type9 += " AND @WhseArrival_e >= e.WhseArrival ";
-            }
+
+            // 重置
+            where = string.Empty;
             #endregion
 
             #region Water Fastness Test(503)
@@ -710,8 +764,73 @@ outer apply (
 	where o.POID = ed.PoID
 )e ";
             }
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                where += "AND o.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                where += "AND o.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                where += "AND o.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                where += "AND w.Article = @Article ";
+            }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                where += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                where += " AND @WhseArrival_e >= e.WhseArrival ";
+            }
+
+            tmptable = $@"----Search List查詢
+DECLARE @IsRRLR as bit = 0
+
+----取得AIComment
+select  ad.Type,ad.IsRRLR,ad.Comment
+INTO #AIComment
+from ExtendServer.ManufacturingExecution.dbo.AIComment_Detail ad
+where ad.AICommentUkey in (
+	select Ukey from ExtendServer.ManufacturingExecution.dbo.AIComment where FunctionName='QualityWeb'
+)
+and ad.Type ='Water Fastness Test'
+
+select TOP 1 @IsRRLR = isRRLR from #AIComment
+
+----取得 存在RR/LR的ReportNo
+select DISTINCT w.ReportNo
+INTO #RRLR_ACH
+from WaterFastness w WITH (NOLOCK) 
+inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
+inner join Style s ON s.ID = o.StyleID and s.BrandID=o.BrandID and s.SeasonID = o.SeasonID
+inner join Style_RRLR_Report srr on s.Ukey=srr.StyleUkey
+{sqlWhseArrival}
+WHERE w.Result='Fail'
+and RRRemark like '%ACH%'
+{where}
+
+----取得 存在RR/LR的LR的ReportNo
+select DISTINCT w.ReportNo
+INTO #RRLR_CF
+from WaterFastness w WITH (NOLOCK) 
+inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
+inner join Style s ON s.ID = o.StyleID and s.BrandID=o.BrandID and s.SeasonID = o.SeasonID
+inner join Style_RRLR_Report srr on s.Ukey=srr.StyleUkey
+{sqlWhseArrival}
+WHERE w.Result='Fail'
+and RRRemark like '%CF%'
+{where}
+";
 
             string type11 = $@"
+{tmptable}
+
 select DISTINCT Type= 'Water Fastness Test(503)'
         , w.ReportNo
 		, OrderID = w.POID
@@ -725,37 +844,34 @@ select DISTINCT Type= 'Water Fastness Test(503)'
 	    , ReceivedDate =NULL
 	    , ReportDate =NULL
         , AddName = ISNULL(pa.Name, ma.Name)
+	    , AIComment = IIF(w.Result = 'Fail' ,AIComment.Val,'')
 from WaterFastness w WITH (NOLOCK) 
 inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
 left join Production.dbo.Pass1 pa on w.AddName = pa.ID
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on w.AddName = ma.ID
+outer apply(
+    -----只秀出有Fail的AIComment訊息，再加上RR/LR訊息
+	SELECT Val=
+		ISNULL( (select Comment from #AIComment where w.Result = 'Fail' ) ,'')
+		+CHAR(10)+CHAR(13)+
+		+ (CASE  WHEN @IsRRLR = 0 THEN ''
+                 WHEN ((select COUNT(1) from #RRLR_ACH s where s.ReportNo = w.ReportNo )>0 and (select COUNT(1) from #RRLR_CF s where s.ReportNo = w.ReportNo ) > 0) THEN 'There is RR/LR (With shade achievability issue, please ensure shading within tolerance as agreement. Lower color fastness waring, please check if need to apply tissue paper.)'
+				 WHEN ((select COUNT(1) from #RRLR_ACH s where s.ReportNo = w.ReportNo ) > 0) THEN 'With shade achievability issue, please ensure shading within tolerance as agreement.'
+				 WHEN ((select COUNT(1) from #RRLR_CF s where s.ReportNo = w.ReportNo ) > 0) THEN 'Lower color fastness waring, please check if need to apply tissue paper.'
+				ELSE''
+			END
+		)
+)AIComment
 {sqlWhseArrival}
 WHERE w.Result <> ''
+{where}
+
+drop table #AIComment,#RRLR_ACH,#RRLR_CF
 ";
-            if (!string.IsNullOrEmpty(Req.BrandID))
-            {
-                type11 += "AND BrandID = @BrandID ";
-            }
-            if (!string.IsNullOrEmpty(Req.SeasonID))
-            {
-                type11 += "AND SeasonID = @SeasonID ";
-            }
-            if (!string.IsNullOrEmpty(Req.StyleID))
-            {
-                type11 += "AND StyleID = @StyleID ";
-            }
-            if (!string.IsNullOrEmpty(Req.Article))
-            {
-                type11 += "AND Article = @Article ";
-            }
-            if (Req.WhseArrival_s.HasValue)
-            {
-                type11 += " AND @WhseArrival_s <= e.WhseArrival ";
-            }
-            if (Req.WhseArrival_e.HasValue)
-            {
-                type11 += " AND @WhseArrival_e >= e.WhseArrival ";
-            }
+
+            // 重置
+            tmptable = string.Empty;
+            where = string.Empty;
             #endregion
 
             #region Perspiration Fastness Test(502)
@@ -768,6 +884,31 @@ outer apply (
 	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
 	where o.POID = ed.PoID
 )e ";
+            }
+
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                where += "AND o.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                where += "AND o.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                where += "AND o.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                where += "AND w.Article = @Article ";
+            }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                where += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                where += " AND @WhseArrival_e >= e.WhseArrival ";
             }
 
             string type12 = $@"
@@ -784,40 +925,59 @@ select DISTINCT Type= 'Perspiration Fastness (502)'
 	    , ReceivedDate = NULL
 	    , ReportDate = NULL
         , AddName = ISNULL(pa.Name, ma.Name)
+	    , AIComment = IIF(w.Result = 'Fail' ,( select dbo.GetQualityWebAIComment('Perspiration Fastness Test',0,o.StyleID,o.BrandID,o.SeasonID) ),'')
 from PerspirationFastness w WITH (NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
 left join Production.dbo.Pass1 pa on w.AddName = pa.ID
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on w.AddName = ma.ID
 {sqlWhseArrival}
 WHERE w.Result <> ''
+{where}
 ";
-            if (!string.IsNullOrEmpty(Req.BrandID))
-            {
-                type12 += "AND BrandID = @BrandID ";
-            }
-            if (!string.IsNullOrEmpty(Req.SeasonID))
-            {
-                type12 += "AND SeasonID = @SeasonID ";
-            }
-            if (!string.IsNullOrEmpty(Req.StyleID))
-            {
-                type12 += "AND StyleID = @StyleID ";
-            }
-            if (!string.IsNullOrEmpty(Req.Article))
-            {
-                type12 += "AND Article = @Article ";
-            }
-            if (Req.WhseArrival_s.HasValue)
-            {
-                type12 += " AND @WhseArrival_s <= e.WhseArrival ";
-            }
-            if (Req.WhseArrival_e.HasValue)
-            {
-                type12 += " AND @WhseArrival_e >= e.WhseArrival ";
-            }
+
+            // 重置
+            where = string.Empty;
             #endregion
 
             #region Daily HT Wash Test
+
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                where += "AND h.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                where += "AND h.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                where += "AND h.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                where += "AND h.Article = @Article ";
+            }
+            if (!string.IsNullOrEmpty(Req.Line))
+            {
+                where += "AND h.Line = @Line ";
+            }
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                where += " AND @ReceivedDate_s <= h.ReceivedDate ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                where += " AND h.ReceivedDate <= @ReceivedDate_e ";
+            }
+            if (Req.ReportDate_s.HasValue)
+            {
+                where += " AND @ReportDate_s <= h.ReportDate ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                where += " AND h.ReportDate <= @ReportDate_e ";
+            }
+
             string type13 = $@"
 select DISTINCT Type= 'Daily HT Wash Test'
         , h.ReportNo
@@ -832,47 +992,17 @@ select DISTINCT Type= 'Daily HT Wash Test'
 	    , ReceivedDate = h.ReceivedDate
 	    , ReportDate = h.ReportDate
         , AddName = ISNULL(pa.Name, ma.Name)
+	    , AIComment = ''
 from [ExtendServer].ManufacturingExecution.dbo.HeatTransferWash h WITH (NOLOCK)
 left join Production.dbo.Pass1 pa on h.AddName = pa.ID
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on h.AddName = ma.ID
 WHERE h.Result <> ''
+{where}
 ";
-            if (!string.IsNullOrEmpty(Req.BrandID))
-            {
-                type13 += "AND h.BrandID = @BrandID ";
-            }
-            if (!string.IsNullOrEmpty(Req.SeasonID))
-            {
-                type13 += "AND h.SeasonID = @SeasonID ";
-            }
-            if (!string.IsNullOrEmpty(Req.StyleID))
-            {
-                type13 += "AND h.StyleID = @StyleID ";
-            }
-            if (!string.IsNullOrEmpty(Req.Article))
-            {
-                type13 += "AND h.Article = @Article ";
-            }
-            if (!string.IsNullOrEmpty(Req.Line))
-            {
-                type13 += "AND h.Line = @Line ";
-            }
-            if (Req.ReceivedDate_s.HasValue)
-            {
-                type13 += " AND @ReceivedDate_s <= h.ReceivedDate ";
-            }
-            if (Req.ReceivedDate_e.HasValue)
-            {
-                type13 += " AND h.ReceivedDate <= @ReceivedDate_e ";
-            }
-            if (Req.ReportDate_s.HasValue)
-            {
-                type13 += " AND @ReportDate_s <= h.ReportDate ";
-            }
-            if (Req.ReportDate_e.HasValue)
-            {
-                type13 += " AND h.ReportDate <= @ReportDate_e ";
-            }
+
+            // 重置
+            tmptable = string.Empty;
+            where = string.Empty;
             #endregion
 
             #region Daily Bulk Moistur Test
@@ -885,6 +1015,42 @@ outer apply (
 	inner join Export e WITH(NOLOCK) on e.ID = ed.ID
 	where o.POID = ed.PoID
 )e ";
+            }
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                where += "AND h.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                where += "AND h.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                where += "AND h.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                where += "AND h.Article = @Article ";
+            }
+            if (!string.IsNullOrEmpty(Req.Line))
+            {
+                where += "AND h.Line = @Line ";
+            }
+            if (Req.ReportDate_s.HasValue)
+            {
+                where += " AND @ReportDate_s <= h.ReportDate ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                where += " AND h.ReportDate <= @ReportDate_e ";
+            }
+            if (Req.WhseArrival_s.HasValue)
+            {
+                where += " AND @WhseArrival_s <= e.WhseArrival ";
+            }
+            if (Req.WhseArrival_e.HasValue)
+            {
+                where += " AND @WhseArrival_e >= e.WhseArrival ";
             }
 
             string type14 = $@"
@@ -902,49 +1068,19 @@ select DISTINCT Type= 'Daily Bulk Moisture Test'
 	    , ReceivedDate = NULL
 	    , ReportDate = h.ReportDate
         , AddName = ISNULL(pa.Name, ma.Name)
+	    , AIComment = ''
 from [ExtendServer].ManufacturingExecution.dbo.BulkMoistureTest h WITH (NOLOCK)
 inner join Orders o WITH(NOLOCK) ON o.ID = h.OrderID
 left join Production.dbo.Pass1 pa on h.AddName = pa.ID
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on h.AddName = ma.ID
 {sqlWhseArrival}
 WHERE h.Result <> ''
+{where}
 ";
-            if (!string.IsNullOrEmpty(Req.BrandID))
-            {
-                type14 += "AND h.BrandID = @BrandID ";
-            }
-            if (!string.IsNullOrEmpty(Req.SeasonID))
-            {
-                type14 += "AND h.SeasonID = @SeasonID ";
-            }
-            if (!string.IsNullOrEmpty(Req.StyleID))
-            {
-                type14 += "AND h.StyleID = @StyleID ";
-            }
-            if (!string.IsNullOrEmpty(Req.Article))
-            {
-                type14 += "AND h.Article = @Article ";
-            }
-            if (!string.IsNullOrEmpty(Req.Line))
-            {
-                type14 += "AND h.Line = @Line ";
-            }
-            if (Req.ReportDate_s.HasValue)
-            {
-                type14 += " AND @ReportDate_s <= h.ReportDate ";
-            }
-            if (Req.ReportDate_e.HasValue)
-            {
-                type14 += " AND h.ReportDate <= @ReportDate_e ";
-            }
-            if (Req.WhseArrival_s.HasValue)
-            {
-                type14 += " AND @WhseArrival_s <= e.WhseArrival ";
-            }
-            if (Req.WhseArrival_e.HasValue)
-            {
-                type14 += " AND @WhseArrival_e >= e.WhseArrival ";
-            }
+
+            // 重置
+            tmptable = string.Empty;
+            where = string.Empty;
             #endregion
 
             #region AgingHydrolysisTest (461)
@@ -1127,7 +1263,7 @@ WHERE a.Result <> ''
 
             #endregion
 
-            #region Saliva Fastness Test (519)
+            #region T-Peel Strength Test (438)
 
             string type18 = $@"
 select Type= 'T-Peel Strength Test (438)'

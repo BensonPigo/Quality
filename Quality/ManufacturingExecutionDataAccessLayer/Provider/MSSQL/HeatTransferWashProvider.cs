@@ -414,7 +414,7 @@ where ReportNo = @ReportNo
             }
             if (Req.Main.Status.ToLower() == "confirmed")
             {
-                objParameter.Add("@ReportDate", DbType.DateTime,DateTime.Now);
+                objParameter.Add("@ReportDate", DbType.DateTime, DateTime.Now);
             }
 
             string head = $@"
@@ -556,6 +556,29 @@ where s.BrandID = @BrandID and s.SeasonID = @SeasonID  and s.ID = @StyleID
             IList<SelectListItem> res = ExecuteList<SelectListItem>(CommandType.Text, SbSql, objParameter);
 
             return res.Any() ? res.ToList() : new List<SelectListItem>();
+        }
+        public List<string> GetArtworkTypeOri(Orders orders)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            string SbSql = $@"
+select distinct pgl.Annotation 
+from Pattern_GL　pgl
+inner join Pattern p on p.id = pgl.id and p.Version = pgl.Version
+where StyleUkey IN (
+	select Ukey
+	from Style s 
+    where s.BrandID = @BrandID and s.SeasonID = @SeasonID  and s.ID = @StyleID
+)
+AND pgl.Annotation <> ''
+";
+
+            objParameter.Add("@BrandID", DbType.String, orders.BrandID);
+            objParameter.Add("@SeasonID", DbType.String, orders.SeasonID);
+            objParameter.Add("@StyleID", DbType.String, orders.StyleID);
+            DataTable dt = ExecuteDataTable(CommandType.Text, SbSql, objParameter);
+
+            return dt == null || dt.Rows.Count == 0 ? new List<string>() : dt.AsEnumerable().Select(o => o["Annotation"].ToString()).ToList<string>();
         }
     }
 }

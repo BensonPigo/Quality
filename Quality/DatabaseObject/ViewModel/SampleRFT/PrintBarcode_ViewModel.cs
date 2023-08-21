@@ -3,10 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace DatabaseObject.ViewModel.SampleRFT
 {
     public class PrintBarcode_ViewModel
+    {
+        public List<SelectListItem> SampleStage_Source { get; set; }
+        public List<PrintBarcode_Detail> Details { get; set; }
+    }
+
+    public class PrintBarcode_Detail
     {
         /// <summary>
         /// 以Barcode顯示
@@ -25,9 +32,9 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string RFT { get; set; }
         public string ProductType { get; set; }
         public string Article { get; set; }
+        public string SampleStageSerialKey { get; set; }
 
         public string MsgScript { get; set; }
 
     }
-
 }

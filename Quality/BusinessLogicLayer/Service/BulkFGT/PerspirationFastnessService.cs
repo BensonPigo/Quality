@@ -16,9 +16,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using Excel = Microsoft.Office.Interop.Excel;
 
 
@@ -31,6 +33,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         public IScaleProvider _ScaleProvider;
         public IOrdersProvider _OrdersProvider;
         public IStyleProvider _StyleProvider;
+        private MailToolsService _MailService;
 
         public BaseResult AmendPerspirationFastnessDetail(string poID, string TestNo)
         {
@@ -402,7 +405,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 DataTable dtResult = _PerspirationFastnessProvider.GetFailMailContentData(poID, TestNo);
                 string ID = dtResult.Rows[0]["ID"].ToString();
                 dtResult.Columns.Remove("ID");
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
                 BaseResult baseResult = ToReport(ID, out string PDFFileName, true, isTest);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", PDFFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
@@ -410,10 +412,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     To = toAddress,
                     CC = ccAddress,
                     Subject = "Perspiration Fastness Test - Test Fail",
-                    Body = mailBody,
-                    alternateView = plainView,
+                    //Body = mailBody,
+                    //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Perspiration Fastness Test",
+                    OrderID = poID,
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+
+                sendMail_Request.Body = mailBody;
+                sendMail_Request.alternateView = plainView;
+
                 result = MailTools.SendMail(sendMail_Request);
 
             }

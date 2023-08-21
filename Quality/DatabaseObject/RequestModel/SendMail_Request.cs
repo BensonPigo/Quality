@@ -11,6 +11,14 @@ namespace DatabaseObject.RequestModel
         public string Subject { get; set; }
         public string Body { get; set; }
 
+        public bool IsShowAIComment { get; set; }
+        public string StyleID { get; set; }
+        public string BrandID { get; set; }
+        public string SeasonID { get; set; }
+        public long StyleUkey{ get; set; }
+        public string OrderID { get; set; }
+        public string AICommentType { get; set; }
+
         /// <summary>
         /// 用於將產生報表自動夾上, EX:使用GetPDF回傳的 (路徑+檔案名稱) 填入此欄位
         /// </summary>

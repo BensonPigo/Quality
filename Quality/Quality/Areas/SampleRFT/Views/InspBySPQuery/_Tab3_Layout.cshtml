@@ -11,6 +11,22 @@
     #myTable3_wrapper, #myTable3_wrapper > .dataTables_scrollHeadInner {
         width: 100%
     }
+    .aiCommentTooltipText {
+        visibility: hidden;
+        position: fixed;
+        top: 70%; /* 距離上方50%的位置 */
+        left: 15%; /* 距離左邊50%的位置 */
+        z-index: 9999;
+        background-color: pink;
+        border: 1px solid black;
+        border-radius: 2px;
+        color: black;
+        font-size: 1rem;
+        padding: 0.5rem;
+    }
+    .aiCommentTooltip:hover .aiCommentTooltipText {
+        visibility: visible;
+    }
 </style>
 <table id="myTable3" class="table table-striped display">
     <thead>
@@ -26,8 +42,15 @@
     <tbody>
         @foreach (var item in Model.AddDefect.ListDefectItem.Where(o => o.Qty > 0))
         {
-            <tr class="row-content" style="vertical-align: middle; text-align: center;">
-                <td>@item.DefectTypeDesc</td>
+            <tr class="row-content aiCommentTooltip" style="vertical-align: middle; text-align: center;">
+                <td>
+                    <img src="~/Image/Icon/Warning.png" width="25" height="25" class="" />
+                    @item.DefectTypeDesc
+                    @if (Model.Setting.BrandID == "ADIDAS" || Model.Setting.BrandID == "REEBOK")
+                    {
+                        <span class="aiCommentTooltipText">@item.AIComment</span>
+                    }
+                </td>
                 <td>@item.DefectCodeDesc</td>
                 <td>@item.AreaCodes</td>
                 <td>@item.Qty</td>

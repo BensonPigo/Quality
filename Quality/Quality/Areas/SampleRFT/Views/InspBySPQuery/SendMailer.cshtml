@@ -1,0 +1,143 @@
+﻿@using DatabaseObject.RequestModel;
+
+@{
+    ViewBag.Title = "SendMailer";
+    Layout = null;
+}
+
+@model SendMail_Request
+<link href="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+
+<script src="~/ThirdParty/SciCustom/js/jquery-3.4.1.min.js"></script>
+<script src="~/ThirdParty/plugins/sweetalert2/promise.min.js"></script>
+<script src="~/ThirdParty/plugins/sweetalert2/sweetalert2.min.js"></script>
+<script src="~/ThirdParty/CustomScripts/common-1.0.0.js"></script>
+<script src="~/ThirdParty/CustomScripts/Message-1.0.0.js"></script>
+<script src="~/ThirdParty/CustomScripts/basic.js"></script>
+<script src="~/ThirdParty/SciCustom/js/jquery-ui.min.js"></script>
+<script src="~/ThirdParty/SciCustom/js/main.js"></script>
+
+<style>
+    .DataTable {
+        width: 100%;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+
+        .DataTable > tbody img {
+            cursor: pointer;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(odd) {
+            background-color: #ffffff;
+        }
+
+        .DataTable > tbody > tr:nth-of-type(even) {
+            background-color: #F0F2F2;
+        }
+
+        .DataTable > tbody > tr > td {
+            border: solid 1px gray;
+            padding: 1em;
+            text-align: left;
+            vertical-align: middle;
+        }
+</style>
+@using (@Html.BeginForm("SendMailer", "InspBySPQuery", FormMethod.Post, new { @id = "form1", @enctype = "multipart/form-data" }))
+{
+    <table class="DataTable">
+        <tr>
+            <td>
+                To:
+            </td>
+            <td>
+                @Html.Hidden("InspBySPQueryID", (long)ViewBag.InspBySPQueryID)
+                @Html.TextBoxFor(m => m.To, new { @style = "width:100%;" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                CC:
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.CC, new { @style = "width:87%;" })
+                <input type="button" id="btnGroup" name="name" style="width:12%;" value="Group" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Subject:
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.Subject, new { @style = "width:100%;" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Description:
+            </td>
+            <td>
+                @Html.TextBoxFor(m => m.Body, new { @style = "width:100%;" })
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Attachment
+            </td>
+            <td>
+                @for (int i = 0; i < Model.FileonServer.Count; i++)
+                {
+                    @Html.DisplayFor(model => Model.FileonServer[i])
+                    @Html.HiddenFor(model => Model.FileonServer[i])
+                    <br />
+                }
+                <input type="file" name="fileUploader" multiple="multiple" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="vertical-align: middle; text-align: center;">
+                <input type="submit" value="Send" />
+                <input class="sendMailExit" type="button" value="Exit" />
+            </td>
+        </tr>
+    </table>
+
+}
+
+
+<script type="text/javascript">
+    $(function () {
+        $('.sendMailExit').on('click', function () {
+            window.close();
+        });
+
+        $("#btnGroup").click(function () {
+            FailMail();
+        });
+    });
+
+    function FailMail() {
+        var para = "?Title=Group&Type=BulkFGT&ExitReload=False";
+
+        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            if (value.To != '') {
+                to += value.To + ';';
+            }
+            if (value.CC != '') {
+                cc += value.CC + ';';
+            }
+        });
+
+        if (to != "") {
+            $("#CC").val(cc);
+        }
+    }
+</script>

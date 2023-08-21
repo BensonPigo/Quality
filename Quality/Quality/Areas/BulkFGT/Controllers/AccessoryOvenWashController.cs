@@ -1,5 +1,7 @@
-﻿using BusinessLogicLayer.Service.BulkFGT;
+﻿using BusinessLogicLayer.Service;
+using BusinessLogicLayer.Service.BulkFGT;
 using DatabaseObject;
+using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using FactoryDashBoardWeb.Helper;

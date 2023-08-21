@@ -1505,6 +1505,9 @@
                         para += "&Subject=" + "Perspiration Fastness Test – ReportNo:" + '@Model.Main.ReportNo';
                         para += "&Body=" + "Attachment is Perspiration Fastness Test– ReportNo:" + '@Model.Main.ReportNo' + " detail data";
                         para += "&file=" + data.FileName;
+                        @*para += "&IsShowAIComment=true";
+                        para += "&Type=Perspiration Fastness Test";
+                        para += "&OrderID=" + '@Model.Main.POID';*@
                         window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
                     }
                     else {
@@ -1592,8 +1595,8 @@
             GroupNO = "01";
         }
 
-        var POID = $('#Main_POID').val(); 
-        var brandID = $('#Main_BrandID').val(); 
+        var POID = $('#Main_POID').val();
+        var brandID = $('#Main_BrandID').val();
         $.ajax({
             url: "@Url.Action("AddDetailRow", "PerspirationFastness", new { Area = "BulkFGT" })",
             type: 'POST',

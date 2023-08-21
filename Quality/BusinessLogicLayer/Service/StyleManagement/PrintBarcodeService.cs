@@ -17,14 +17,14 @@ namespace BusinessLogicLayer.Service.StyleManagement
         public PrintBarcodeProvider _Provider { get; set; }
 
 
-        public List<PrintBarcode_ViewModel> Get_PrintBarcodeStyleInfo(StyleManagement_Request styleResult_Request)
+        public List<PrintBarcode_Detail> Get_PrintBarcodeStyleInfo(StyleManagement_Request styleResult_Request)
         {
             try
             {
                 _Provider = new PrintBarcodeProvider(Common.ProductionDataAccessLayer);
 
                 styleResult_Request.CallType = StyleManagement_Request.EnumCallType.StyleResult;
-                List<PrintBarcode_ViewModel> result = _Provider.Get_StyleInfo(styleResult_Request).ToList();
+                List<PrintBarcode_Detail> result = _Provider.Get_StyleInfo(styleResult_Request).ToList();
 
                 return result;
             }
@@ -34,5 +34,21 @@ namespace BusinessLogicLayer.Service.StyleManagement
             }
         }
 
+        public List<SelectListItem> Get_SampleStage(StyleManagement_Request styleResult_Request)
+        {
+            try
+            {
+                _Provider = new PrintBarcodeProvider(Common.ProductionDataAccessLayer);
+
+                styleResult_Request.CallType = StyleManagement_Request.EnumCallType.StyleResult;
+                List<SelectListItem> result = _Provider.Get_SampleStage(styleResult_Request).ToList();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

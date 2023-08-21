@@ -32,6 +32,7 @@ namespace BusinessLogicLayer.Service
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
         private IInspectionTypeProvider _InspectionTypeProvider;
+        private MailToolsService _MailService;
 
         public MockupWash_ViewModel GetMockupWash(MockupWash_Request MockupWash)
         {
@@ -540,7 +541,7 @@ namespace BusinessLogicLayer.Service
         public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
         {
             _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
-            string mailBody = MailTools.DataTableChangeHtml(_MockupWashProvider.GetMockupWashFailMailContentData(mail_Request.ReportNo), out AlternateView plainView);
+            System.Data.DataTable dt = _MockupWashProvider.GetMockupWashFailMailContentData(mail_Request.ReportNo);
             MockupWash_ViewModel model = GetMockupWash(new MockupWash_Request { ReportNo = mail_Request.ReportNo });
             Report_Result baseResult = GetPDF(model);
             string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
@@ -549,10 +550,24 @@ namespace BusinessLogicLayer.Service
                 Subject = "Mockup Wash – Test Fail",
                 To = mail_Request.To,
                 CC = mail_Request.CC,
-                Body = mailBody,
-                alternateView = plainView,
+                //Body = mailBody,
+                //alternateView = plainView,
                 FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+                AICommentType = "Mockup Wash Test",
+                StyleID = model.StyleID,
+                SeasonID = model.SeasonID,
+                BrandID = model.BrandID,
             };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, out AlternateView plainView);
+
+            sendMail_Request.Body = mailBody;
+            sendMail_Request.alternateView = plainView;
+
             return MailTools.SendMail(sendMail_Request);
         }
     }

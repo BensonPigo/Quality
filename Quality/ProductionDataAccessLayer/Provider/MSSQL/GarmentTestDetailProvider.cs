@@ -83,6 +83,33 @@ order by ID
                 { "@ID", DbType.String, filter.ID } ,
             };
             string sqlcmd = @"
+DECLARE @IsRRLR_ACH_Comment as bit = 0;
+DECLARE @IsRRLR_CF_Comment as bit = 0;
+
+IF EXISTS(
+	select 1
+    from GarmentTest a
+    inner join Style s ON a.StyleID=s.ID and a.BrandID=s.BrandID and a.SeasonID = s.SeasonID
+    inner join Style_RRLR_Report srr on s.Ukey=srr.StyleUkey
+    where a.ID = @ID
+	and (RRRemark like '%ACH%')
+)
+BEGIN
+	SET @IsRRLR_ACH_Comment = 1
+END
+
+IF EXISTS(
+	select 1
+    from GarmentTest a
+    inner join Style s ON a.StyleID=s.ID and a.BrandID=s.BrandID and a.SeasonID = s.SeasonID
+    inner join Style_RRLR_Report srr on s.Ukey=srr.StyleUkey
+    where a.ID = @ID
+	and  RRRemark like '%CF%'
+)
+BEGIN
+	SET @IsRRLR_CF_Comment = 1
+END
+
 select 
 gd.No
 ,gd.ReportNo
@@ -117,6 +144,11 @@ gd.No
 ,gd.Composition,gd.Neck,gd.Status,gd.LOtoFactory,gd.MtlTypeID,gd.Above50NaturalFibres,gd.Above50SyntheticFibres
 ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_GarmentTest_Detail gdi WITH(NOLOCK) where gd.ID = gdi.ID AND gd.No = gdi.No)
 ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_GarmentTest_Detail gdi WITH(NOLOCK) where gd.ID = gdi.ID AND gd.No = gdi.No)
+
+,WashAIComment = IIF(gd.WashResult = 'F', WashAIComment.Comment ,'')
+,SeamBreakageAIComment = IIF(gd.SeamBreakageResult = 'F', SeamBreakageAIComment.Comment ,'')
+,OdourAIComment = IIF(gd.OdourResult = 'F', OdourAIComment.Comment ,'')
+
 from GarmentTest_Detail gd WITH(NOLOCK)
 left join Pass1 CreatBy WITH(NOLOCK) on CreatBy.ID = gd.AddName
 left join Pass1 EditBy WITH(NOLOCK) on EditBy.ID = gd.EditName
@@ -125,6 +157,36 @@ outer apply(
 	from View_ShowName
 	where ID=gd.inspector
 )InspectorName
+outer apply(
+	select TOP 1 Comment = ad.Comment
+	                        +CASE   WHEN @IsRRLR_ACH_Comment = 1 AND @IsRRLR_CF_Comment = 1 THEN 'There is RR/LR (With shade achievability issue, please ensure shading within tolerance as agreement. Lower color fastness waring, please check if need to apply tissue paper.)'
+			                        WHEN @IsRRLR_ACH_Comment = 1 THEN  'There is RR/LR (With shade achievability issue, please ensure shading within tolerance as agreement.)'
+			                        WHEN @IsRRLR_CF_Comment = 1  THEN 'There is RR/LR (Lower color fastness waring, please check if need to apply tissue paper.)'
+			                        ELSE ''
+		                        END
+	from ExtendServer.ManufacturingExecution.dbo.AIComment_Detail ad
+    where ad.AICommentUkey in (
+	    select Ukey from ExtendServer.ManufacturingExecution.dbo.AIComment where FunctionName='QualityWeb'
+    )AND IsRRLR=1
+    AND Type='Garment Wash Test'
+)WashAIComment
+outer apply(
+	select TOP 1 ad.Comment
+	from ExtendServer.ManufacturingExecution.dbo.AIComment_Detail ad
+	where ad.AICommentUkey in (
+		select Ukey from ExtendServer.ManufacturingExecution.dbo.AIComment where FunctionName='QualityWeb'
+	)
+    AND Type='Seam Breakage'
+)SeamBreakageAIComment
+outer apply(
+	select TOP 1 ad.Comment
+	from ExtendServer.ManufacturingExecution.dbo.AIComment_Detail ad
+	where ad.AICommentUkey in (
+		select Ukey from ExtendServer.ManufacturingExecution.dbo.AIComment where FunctionName='QualityWeb'
+	)
+    AND Type='Odour Test'
+)OdourAIComment
+
 where gd.ID = @ID
 " + Environment.NewLine;
             
@@ -248,7 +310,14 @@ from GarmentTest_Detail_FGWT f WITH(NOLOCK)
 where ID = @ID
 and No = @No
 
---
+
+UNION
+
+--Apperance
+select DISTINCT Result= IIF(Wash1='Rejected' OR Wash2='Rejected' OR Wash3='Rejected' ,'Fail','')
+from GarmentTest_Detail_Apperance WITH(NOLOCK)
+where id=75809  and no = 1 AND (Wash1='Rejected' OR Wash2='Rejected' OR Wash3='Rejected')
+
 ";
             DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
             if (dt != null && dt.Rows.Count > 0)
@@ -443,6 +512,22 @@ where id = @ID and No = @No and OrderID <> ''
             {
                 return false;
             }
+        }
+        public DataTable Get_AllResult(string ID, string No)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, ID } ,
+                { "@No", DbType.String, No } ,
+            };
+
+            string sqlcmd = @"
+select gd.WashResult ,gd.SeamBreakageResult ,gd.OdourResult
+from GarmentTest g WITH(NOLOCK)
+inner join GarmentTest_Detail gd WITH(NOLOCK) on g.ID = gd.ID
+where gd.ID = @ID and gd.No = @No
+";
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlcmd, objParameter);
         }
         public DataTable Get_Mail_Content(string ID, string No)
         {

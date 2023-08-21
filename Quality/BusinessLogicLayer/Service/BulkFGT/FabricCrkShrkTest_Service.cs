@@ -5,6 +5,7 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Library;
+using Org.BouncyCastle.Ocsp;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +31,7 @@ namespace BusinessLogicLayer.Service
         IOrdersProvider _OrdersProvider;
         IStyleProvider _StyleProvider;
         IFIRLaboratoryProvider _FIRLaboratoryProvider;
+        private MailToolsService _MailService;
         public BaseResult AmendFabricCrkShrkTestCrockingDetail(long ID)
         {
             BaseResult baseResult = new BaseResult();
@@ -676,14 +679,13 @@ namespace BusinessLogicLayer.Service
             return baseResult;
         }
 
-        public SendMail_Result SendCrockingFailResultMail(string toAddress, string ccAddress, long ID, bool isTest)
+        public SendMail_Result SendCrockingFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID)
         {
             SendMail_Result result = new SendMail_Result();
             try
             {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetCrockingFailMailContentData(ID);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
                 BaseResult baseResult = Crocking_ToExcel(ID, true, out string excelFileName);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
@@ -691,10 +693,23 @@ namespace BusinessLogicLayer.Service
                     To = toAddress,
                     CC = ccAddress,
                     Subject = "Fabric Crocking Test - Test Fail",
-                    Body = mailBody,
-                    alternateView = plainView,
+                    //Body = mailBody,
+                    //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Fabric Crocking & Shrinkage Test",
+                    OrderID = OrderID,
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+
+                sendMail_Request.Body = mailBody;
+                sendMail_Request.alternateView = plainView;
+
+
                 result = MailTools.SendMail(sendMail_Request);
             }
             catch (Exception ex)
@@ -1629,14 +1644,13 @@ namespace BusinessLogicLayer.Service
             #endregion
         }
 
-        public SendMail_Result SendHeatFailResultMail(string toAddress, string ccAddress, long ID, bool isTest)
+        public SendMail_Result SendHeatFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID)
         {
             SendMail_Result result = new SendMail_Result();
             try
             {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetHeatFailMailContentData(ID);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
                 BaseResult baseResult = ToExcelFabricCrkShrkTestHeatDetail(ID, out string excelFileName);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
@@ -1644,10 +1658,22 @@ namespace BusinessLogicLayer.Service
                     To = toAddress,
                     CC = ccAddress,
                     Subject = "Fabric Heat Test - Test Fail",
-                    Body = mailBody,
-                    alternateView = plainView,
+                    //Body = mailBody,
+                    //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Fabric Crocking & Shrinkage Test",
+                    OrderID = OrderID,
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+
+                sendMail_Request.Body = mailBody;
+                sendMail_Request.alternateView = plainView;
+
                 result = MailTools.SendMail(sendMail_Request);
 
             }
@@ -1660,14 +1686,13 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public SendMail_Result SendWashFailResultMail(string toAddress, string ccAddress, long ID, bool isTest)
+        public SendMail_Result SendWashFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID)
         {
             SendMail_Result result = new SendMail_Result();
             try
             {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetWashFailMailContentData(ID);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
                 BaseResult baseResult = ToExcelFabricCrkShrkTestWashDetail(ID, out string excelFileName);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
@@ -1675,10 +1700,22 @@ namespace BusinessLogicLayer.Service
                     To = toAddress,
                     CC = ccAddress,
                     Subject = "Fabric Wash Test - Test Fail",
-                    Body = mailBody,
-                    alternateView = plainView,
+                    //Body = mailBody,
+                    //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Fabric Crocking & Shrinkage Test",
+                    OrderID = OrderID,
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+
+                sendMail_Request.Body = mailBody;
+                sendMail_Request.alternateView = plainView;
+
                 result = MailTools.SendMail(sendMail_Request);
 
             }
