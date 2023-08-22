@@ -247,18 +247,19 @@ namespace BusinessLogicLayer.Service
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
                 }
 
+                Range pic = worksheet.get_Range($"B{16 + haveHTrow}:E{34 + haveHTrow}");
                 cell = worksheet.Cells[13 + haveHTrow + 3, 2];
                 if (mockupOven.TestBeforePicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupOven.TestBeforePicture, mockupOven.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, cell.Width, cell.Height);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, pic.Left, pic.Top, pic.Width, pic.Height);
                 }
 
-                cell = worksheet.Cells[13 + haveHTrow + 3, 8];
+                pic = worksheet.get_Range($"H{16 + haveHTrow}:N{34 + haveHTrow}");
                 if (mockupOven.TestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupOven.TestAfterPicture, mockupOven.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, cell.Width, cell.Height);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, pic.Left, pic.Top, pic.Width, pic.Height);
                 }
 
                 #region 表身資料
