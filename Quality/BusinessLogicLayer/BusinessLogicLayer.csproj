@@ -198,6 +198,7 @@
     <Compile Include="Service\BulkFGT\MockupCrockingService.cs" />
     <Compile Include="Service\BulkFGT\PhenolicYellowTestService.cs" />
     <Compile Include="Service\BulkFGT\PullingTestService.cs" />
+    <Compile Include="Service\BulkFGT\MartindalePillingTestService.cs" />
     <Compile Include="Service\BulkFGT\SalivaFastnessTestService.cs" />
     <Compile Include="Service\BulkFGT\SearchListService.cs" />
     <Compile Include="Service\BulkFGT\PerspirationFastnessService.cs" />

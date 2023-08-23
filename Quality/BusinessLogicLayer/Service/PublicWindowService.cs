@@ -392,6 +392,31 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public Window_MartindalePillingTest Get_MartindalePillingTestPicture(string ReportNo)
+        {
+            Window_MartindalePillingTest result = new Window_MartindalePillingTest();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                //取得登入資訊
+                var r = _Provider.Get_MartindalePillingTestPicture(ReportNo).ToList();
+
+                if (r.Any())
+                {
+                    result = r.FirstOrDefault();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
         public Window_SinglePicture Get_SinglePicture(string Table, string ColumnName, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val)
         {
             Window_SinglePicture result = new Window_SinglePicture();

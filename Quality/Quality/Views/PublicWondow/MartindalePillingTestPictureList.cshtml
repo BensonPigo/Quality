@@ -1,0 +1,418 @@
+﻿@using DatabaseObject.Public
+
+@{
+    Layout = null;
+    string title = ViewData["Title"] == null ? "Picture" : ViewData["Title"].ToString();
+    string EditMode = ViewData["EditMode"] == null ? "EditMode" : ViewData["EditMode"].ToString();
+
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
+
+    string BeforeColumn = "Main_"+ (ViewData["TestBeforePicture"] == null ? string.Empty : ViewData["TestBeforePicture"].ToString());
+    string After500Column = "Main_" + (ViewData["Test500AfterPicture"] == null ? string.Empty : ViewData["Test500AfterPicture"].ToString());
+    string After2000Column = "Main_" + (ViewData["Test2000AfterPicture"] == null ? string.Empty : ViewData["Test2000AfterPicture"].ToString());
+}
+
+@model Window_MartindalePillingTest
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+<link href="~/ThirdParty/SciCustom/css/style.css" rel="stylesheet" />
+<style>
+
+    ul {
+        padding: 0;
+    }
+
+    li {
+        list-style-type: none;
+        border: 1px solid black;
+        padding: 2px;
+    }
+
+    td {
+        border-style: ridge;
+    }
+
+    .leftDiv {
+        width: 45%;
+        height: 90%;
+        float: left;
+        margin-right: 2%;
+    }
+    #cont {
+        width:100%;
+        height:60vw;
+        display: flex;
+        flex-direction: row;
+    }
+    .outerDiv {
+        width: 32%;
+        height: 100%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    .grayDiv {
+        width: 100%;
+        height: 4vh;
+        background-color: lightgray;
+        text-align: center;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+
+
+    #loading {
+        position: fixed;
+        top: 50%;
+        left: 40%;
+        transform: translate(-50%, -50%);
+        border: 20px solid #f3f3f3;
+        border-top: 20px solid #ff8000;
+        border-radius: 50%;
+        width: 200px;
+        height: 200px;
+        animation: spin 2s linear infinite;
+    }
+</style>
+<br />
+<header>
+    <h3 style="width:85%;float:left;margin:0">@title</h3>
+    <input id="btnKeep" type="button" value="Keep" />
+    <input id="btnExit" type="button" value="Exit" />
+</header>
+<br />
+
+<div id="cont">
+    <div class="outerDiv" style="margin-right:2%;">
+        <div class="grayDiv">
+            <h2 style="width:80%;float:left;padding-top:5px">Before</h2>
+            <input type="file" id="BeforeUpload" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+            <img id="BeforeUploadIcon" class="pointer uploadIcon" style="height: 90%; vertical-align: top;margin-right:5px;" src="~/Image/Icon/Upload.png" />
+            <img id="BeforeCam" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+            <img id="BeforeDel" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+
+        </div>
+        @{
+            var BrforeImage = Model.TestBeforePicture is null ? new byte[1] : Model.TestBeforePicture;
+            var base64_Brfore = Convert.ToBase64String(BrforeImage);
+            var imgSrc_Brfore = String.Format("data:image/png;base64,{0}", base64_Brfore);
+
+            var After500Image = Model.Test500AfterPicture is null ? new byte[1] : Model.Test500AfterPicture;
+            var base64_After500 = Convert.ToBase64String(After500Image);
+            var imgSrc_After500 = String.Format("data:image/png;base64,{0}", base64_After500);
+
+            var After2000Image = Model.Test2000AfterPicture is null ? new byte[1] : Model.Test2000AfterPicture;
+            var base64_After2000 = Convert.ToBase64String(After2000Image);
+            var imgSrc_After2000 = String.Format("data:image/png;base64,{0}", base64_After2000);
+        }
+        @if (BrforeImage[0] != 0)
+        {
+            <img id="BeforePic" Type="Before" style="width:100%;" src="@imgSrc_Brfore" />
+            <img id="OriBeforePic" style="width:100%;display:none;" src="@imgSrc_Brfore" />
+        }
+        else
+        {
+            <img id="BeforePic" Type="Before" style="width:100%;" />
+            <img id="OriBeforePic" style="width:100%;display:none;" />
+        }
+    </div>
+
+    <div class="outerDiv">
+        <div class="grayDiv">
+            <h2 style="width:80%;float:left;padding-top:5px">500 After</h2>
+            <input type="file" id="After500Upload" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+            <img id="After500UploadIcon" class="pointer uploadIcon" style="height: 90%; vertical-align: top;margin-right:5px;" src="~/Image/Icon/Upload.png" />
+            <img Type="After500" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+            <img id="After500Del" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+        </div>
+        @if (After500Image[0] != 0)
+        {
+            <img id="After500Pic" style="width:100%;" src="@imgSrc_After500" />
+            <img id="OriAfter500Pic" style="width:100%;display:none;" src="@imgSrc_After500" />
+        }
+        else
+        {
+            <img id="After500Pic" style="width:100%;" />
+            <img id="OriAfter500Pic" style="width:100%;display:none;" />
+        }
+
+    </div>
+
+    <div class="outerDiv">
+        <div class="grayDiv">
+            <h2 style="width:80%;float:left;padding-top:5px">2000 After</h2>
+            <input type="file" id="After2000Upload" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+            <img id="After2000UploadIcon" class="pointer uploadIcon" style="height: 90%; vertical-align: top;margin-right:5px;" src="~/Image/Icon/Upload.png" />
+            <img Type="After2000" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+            <img id="After2000Del" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+        </div>
+        @if (After2000Image[0] != 0)
+        {
+            <img id="After2000Pic" style="width:100%;" src="@imgSrc_After2000" />
+            <img id="OriAfter2000Pic" style="width:100%;display:none;" src="@imgSrc_After2000" />
+        }
+        else
+        {
+            <img id="After2000Pic" style="width:100%;" />
+            <img id="OriAfter2000Pic" style="width:100%;display:none;" />
+        }
+
+    </div>
+
+</div>
+
+<div id="loading" style="display:none;"></div>
+
+@{
+    Html.RenderPartial("ScreenShot");
+}
+
+<script>
+
+    var ID_List = [];
+    var Name_List = [];
+    $(function () {
+
+        // 找出父頁面的照片
+        const CurrentBefore = window.opener.document.querySelector("#@BeforeColumn");
+        const CurrentAfter500 = window.opener.document.querySelector("#@After500Column");
+        const CurrentAfter2000 = window.opener.document.querySelector("#@After2000Column");
+
+        //如果父頁面有照片，則顯示父頁面照片，如果沒有則顯示DB的照片
+        if (CurrentBefore != null && CurrentBefore.value != '' && CurrentBefore.value != 'System.Byte[]') {
+            var before = document.querySelector("#BeforePic");
+            before.src = 'data:image/png;base64,' + CurrentBefore.value;
+        }
+        if (CurrentAfter500 != null && CurrentAfter500.value != '' && CurrentAfter500.value != 'System.Byte[]') {
+            var after = document.querySelector("#After500Pic");
+            after.src = 'data:image/png;base64,' + CurrentAfter500.value;
+        }
+        if (CurrentAfter2000 != null && CurrentAfter2000.value != '' && CurrentAfter2000.value != 'System.Byte[]') {
+            var after = document.querySelector("#After2000Pic");
+            after.src = 'data:image/png;base64,' + CurrentAfter2000.value;
+        }
+
+        // Screenshot Exit
+        $('#btnScreenshotExit').on('click', function () {
+            StopScreen();
+            $('#Screenshot').addClass("display-None");
+        });
+
+
+        $("#btnKeep").click(async function () {
+            var BeforePicturePic = document.querySelector("#BeforePic").src.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+            var After500PicturePic = document.querySelector("#After500Pic").src.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+            var After2000PicturePic = document.querySelector("#After2000Pic").src.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+
+            var Picture = {
+                BeforePicture: BeforePicturePic,
+                After500Picture: After500PicturePic,
+                After2000Picture: After2000PicturePic,
+            }
+
+            window.opener.GetMartindalePillingTestPicture(Picture);
+            window.close();
+        });
+
+
+        $("#btnExit").click(function () {
+            window.close();
+        });
+
+        $("#BeforeUploadIcon").click(function () {
+
+            $("#BeforeUpload").click();
+        });
+
+        BeforeUpload.onchange = async evt => {
+            $('#loading').show();
+            const file = evt.target.files[0];
+            if (file) {
+                const compressedBase64 = await compressImage(file);
+                $('#BeforePic').attr('src', compressedBase64);
+                $('#loading').hide();
+            }
+        }
+
+        $("#After500UploadIcon").click(function () {
+
+            $("#After500Upload").click();
+        });
+        $("#After2000UploadIcon").click(function () {
+
+            $("#After2000Upload").click();
+        });
+
+        After500Upload.onchange = async evt => {
+            $('#loading').show();
+            const file = evt.target.files[0];
+            if (file) {
+                const compressedBase64 = await compressImage(file);
+                $('#After500Pic').attr('src', compressedBase64);
+                $('#loading').hide();
+            }
+        }
+
+        After2000Upload.onchange = async evt => {
+            $('#loading').show();
+            const file = evt.target.files[0];
+            if (file) {
+                const compressedBase64 = await compressImage(file);
+                $('#After2000Pic').attr('src', compressedBase64);
+                $('#loading').hide();
+            }
+        }
+
+        $("#BeforeDel").click(function () {
+
+            // DB的圖檔
+            const Ori = document.querySelector("#OriBeforePic");
+
+            // User拍下的圖片
+            const Setting = document.querySelector("#BeforePic");
+
+
+            document.querySelector("#BeforePic").removeAttribute('src');
+            // 如果User沒拍，則刪除原本的
+            //if (Ori == "" || Ori == null || Ori == undefined) {
+            //    document.querySelector("#BeforePic").removeAttribute('src');
+            //}
+            //else {
+            //    Setting.src = Ori.src;
+            //}
+        });
+
+        $("#After500Del").click(function () {
+
+            // DB的圖檔
+            const Ori = document.querySelector("#OriAfter500Pic");
+
+            // User拍下的圖片
+            const Setting = document.querySelector("#After500Pic");
+
+            document.querySelector("#After500Pic").removeAttribute('src');
+            // 如果User沒拍，則刪除原本的
+        });
+        $("#After2000Del").click(function () {
+
+            // DB的圖檔
+            const Ori = document.querySelector("#OriAfter2000Pic");
+
+            // User拍下的圖片
+            const Setting = document.querySelector("#After2000Pic");
+
+            document.querySelector("#After2000Pic").removeAttribute('src');
+            // 如果User沒拍，則刪除原本的
+        });
+
+        CamInit();
+
+
+        if ('@EditMode' == 'False') {
+            $("#BeforeDel, #After500Del, #After2000Del, .OpenCamera ,.uploadIcon").hide();
+        }
+    });
+
+    function CamInit() {
+        $('.OpenCamera').on('click', function () {
+
+            if ('@EditMode' == 'True') {
+                var Type = $(this).attr('Type');
+                var sentID = "BeforePic";
+                switch (Type) {
+                    case "Befroe":
+                        sentID = "BeforePic";
+                        break;
+                    case "After500":
+                        sentID = "After500Pic";
+                        break;
+                    case "After2000":
+                        sentID = "After2000Pic";
+                        break;
+                }
+
+                $('#Screenshot').removeClass("display-None");
+                Screenshot(sentID);
+            }
+        });
+    }
+
+    function convertFile(file) {
+        return new Promise((resolve, reject) => {
+            // 建立FileReader物件
+            let reader = new FileReader()
+            // 註冊onload事件，取得result則resolve (會是一個Base64字串)
+            reader.onload = () => { resolve(reader.result) }
+            // 註冊onerror事件，若發生error則reject
+            reader.onerror = () => { reject(reader.error) }
+            // 讀取檔案
+            reader.readAsDataURL(file)
+        })
+    }
+
+    async function compressImage(imageFile) {
+        const MAX_FILE_SIZE = 500 * 1024; // 最大檔案大小為 500KB
+        const MAX_COMPRESSION_TRIES = 20; // 最大壓縮次數
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        let resizedFile = imageFile;
+        let compressionTries = 0;
+
+        while (resizedFile.size > MAX_FILE_SIZE && compressionTries < MAX_COMPRESSION_TRIES) {
+            compressionTries++;
+            const reader = new FileReader();
+            const img = new Image();
+            reader.readAsDataURL(resizedFile);
+            resizedFile = await new Promise((resolve) => {
+                reader.onload = function (event) {
+                    img.src = event.target.result;
+                    img.onload = function () {
+                        const originalWidth = img.width;
+                        const originalHeight = img.height;
+                        const resizingFactor = 0.8;
+                        const canvasWidth = originalWidth * resizingFactor;
+                        const canvasHeight = originalHeight * resizingFactor;
+                        canvas.width = canvasWidth;
+                        canvas.height = canvasHeight;
+
+                        context.clearRect(0, 0, canvasWidth, canvasHeight);
+                        context.drawImage(
+                            img,
+                            0,
+                            0,
+                            originalWidth * resizingFactor,
+                            originalHeight * resizingFactor
+                        );
+
+                        canvas.toBlob(
+                            (blob) => {
+                                if (blob) {
+                                    resolve(blob);
+                                } else {
+                                    resolve(imageFile);
+                                }
+                            },
+                            "image/png",
+                            0.8
+                        );
+                    };
+                };
+            });
+        }
+
+        const base64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(resizedFile);
+            reader.onload = function () {
+                resolve(reader.result);
+            };
+        });
+
+        return base64;
+    }
+
+</script>
