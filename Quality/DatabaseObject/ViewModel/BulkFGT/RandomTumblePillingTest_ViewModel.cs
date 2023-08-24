@@ -9,52 +9,32 @@ using System.Web.Mvc;
 
 namespace DatabaseObject.ViewModel.BulkFGT
 {
-    public class MartindalePillingTest_ViewModel : BaseResult
+    public class RandomTumblePillingTest_ViewModel : BaseResult
     {
-        public MartindalePillingTest_Request Request { get; set; }
-        public MartindalePillingTest_Main Main { get; set; }
-        public List<MartindalePillingTest_Detail> DetailList { get; set; }
+        public RandomTumblePillingTest_Request Request { get; set; }
+        public RandomTumblePillingTest_Main Main { get; set; }
+        public List<RandomTumblePillingTest_Detail> DetailList { get; set; }
         public List<SelectListItem> ReportNo_Source { get; set; }
         public List<SelectListItem> TestStandard_Source 
         {
             get
             {
                 List<SelectListItem> result = new List<SelectListItem>();
-                if (this.Main != null && this.Main.FabricType == "WOVEN")
+                result.Add(new SelectListItem()
                 {
-                    result.Add(new SelectListItem()
-                    {
-                        Text="W1",Value="W1"
-                    });
-                    result.Add(new SelectListItem()
-                    {
-                        Text = "W2",
-                        Value = "W2"
-                    });
-                    result.Add(new SelectListItem()
-                    {
-                        Text = "W3",
-                        Value = "W3"
-                    });
-                }
-                else if (this.Main != null && this.Main.FabricType == "KNIT")
+                    Text = "Fleece/Polar Fleece",
+                    Value = "Fleece/Polar Fleece"
+                });
+                result.Add(new SelectListItem()
                 {
-                    result.Add(new SelectListItem()
-                    {
-                        Text = "K1",
-                        Value = "K1"
-                    });
-                    result.Add(new SelectListItem()
-                    {
-                        Text = "K2",
-                        Value = "K2"
-                    });
-                    result.Add(new SelectListItem()
-                    {
-                        Text = "K3",
-                        Value = "K3"
-                    });
-                }
+                    Text = "French Terry",
+                    Value = "French Terry"
+                });
+                result.Add(new SelectListItem()
+                {
+                    Text = "Normal Fabric",
+                    Value = "Normal Fabric"
+                });
 
                 return result;
             }
@@ -67,13 +47,13 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public List<SelectListItem> Scale_Source { get; set; }
 
         // 預設摩擦的項目
-        public List<string> DefaultRubTimes 
+        public List<string> DefaultSide
         {
             get
             {
                 List<string> result = new List<string>()
                 {
-                    "500 Rub","2000 Rub"
+                    "Face Side","Back Side"
                 };
                 return result;
             }
@@ -82,7 +62,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
         public string TempFileName { get; set; }
     }
-    public class MartindalePillingTest_Request
+    public class RandomTumblePillingTest_Request
     {
         public string BrandID { get; set; }
         public string SeasonID { get; set; }
@@ -91,7 +71,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string OrderID { get; set; }
         public string ReportNo { get; set; }
     }
-    public class MartindalePillingTest_Main
+    public class RandomTumblePillingTest_Main
     {
         public string ReportNo { get; set; }
         public string BrandID { get; set; }
@@ -113,9 +93,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         }
         public string FabricRefNo { get; set; }
         public string FabricColor { get; set; }
-        public string FabricType { get; set; }
         
-        // 分W1,W2,W3,K1,K2,K3
         public string TestStandard { get; set; }
         public string Result { get; set; }
         public string Status { get; set; }
@@ -155,11 +133,10 @@ namespace DatabaseObject.ViewModel.BulkFGT
             }
 
         }
-
-
-        public byte[] TestBeforePicture { get; set; }
-        public byte[] Test500AfterPicture { get; set; }
-        public byte[] Test2000AfterPicture { get; set; }
+        public byte[] TestFaceSideBeforePicture { get; set; }
+        public byte[] TestFaceSideAfterPicture { get; set; }
+        public byte[] TestBackSideBeforePicture { get; set; }
+        public byte[] TestBackSideAfterPicture { get; set; }
 
 
         public string AddName { get; set; }
@@ -185,14 +162,16 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string EditType { get; set; }
     }
 
-    public class MartindalePillingTest_Detail : CompareBase
+    public class RandomTumblePillingTest_Detail : CompareBase
     {
         public long Ukey { get; set; }
         public string ReportNo { get; set; }
+        public string Side { get; set; }
         public string EvaluationItem { get; set; }
-        public string RubTimes { get; set; }
         public string Result { get; set; }
-        public string Scale { get; set; }
+        public string FirstScale { get; set; }
+        public string SecondScale { get; set; }
+        public bool IsEvenly { get; set; }
         public string Remark { get; set; }
         public string EditName { get; set; }
         public DateTime? EditDate { get; set; }
