@@ -617,7 +617,7 @@ AND EXISTS(
 	--PatternUKEY,p.Version,SEQ
 	from Pattern QQ
 	inner join Pattern_GL pg on pg.PatternUKEY = QQ.UKey
-	where UKey =440027 and Annotation like '%'+ @Artwork +'%'
+	where UKey = @PatternUkey and Annotation like '%'+ @Artwork +'%'
 	AND pga.PatternUKEY = pg.PatternUKEY
 	and pgl.Version = qq.Version
 	and pgl.SEQ =pg.SEQ
