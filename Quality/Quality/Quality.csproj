@@ -1000,6 +1000,7 @@
     <Content Include="XLT\TPeelStrengthTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\PublicWondow\HeatTransferWash_RefnoList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
