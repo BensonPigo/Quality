@@ -1108,7 +1108,7 @@
                 return;
             }
 
-            HTRefNoAutoChange();
+            //HTRefNoAutoChange();
 
             if (orderID == '') {
                 $(this).val('');
@@ -1299,7 +1299,7 @@
             success: function (data) {
                 $('.DetailTable > tbody').append(data);
                 DetailDetailButtonBind();
-                HTRefNoAutoChange();
+                //HTRefNoAutoChange();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
@@ -1377,23 +1377,23 @@
         else {
             isHeatTransfer = false;
         }
-        HTRefNoAutoChange();
+        //HTRefNoAutoChange();
     }
 
-    function HTRefNoAutoChange() {
+    //function HTRefNoAutoChange() {
 
-        isHeatTransfer = $("#Main_ArtworkTypeID").val() == 'HEAT TRANSFER';
+    //    isHeatTransfer = $("#Main_ArtworkTypeID").val() == 'HEAT TRANSFER';
 
-        if (!isHeatTransfer) {
-            $('.HTRefNoTxt').val('').attr("readonly", "readonly");
-            $('.btnHTRefNoSelectItem').attr("disabled", "disabled");
-        }
-        else {
-            $('.HTRefNoTxt').removeAttr("readonly");
-            $('.btnHTRefNoSelectItem').removeAttr("disabled");
-        }
+    //    if (!isHeatTransfer) {
+    //        $('.HTRefNoTxt').val('').attr("readonly", "readonly");
+    //        $('.btnHTRefNoSelectItem').attr("disabled", "disabled");
+    //    }
+    //    else {
+    //        $('.HTRefNoTxt').removeAttr("readonly");
+    //        $('.btnHTRefNoSelectItem').removeAttr("disabled");
+    //    }
 
-    }
+    //}
 
     function PressureCheck(value) {
         if (parseFloat(value) >= 100) {
