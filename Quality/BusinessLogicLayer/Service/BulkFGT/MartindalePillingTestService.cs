@@ -47,7 +47,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     // 預設每個rubTimes 各三筆
                     int idx = 1;
-                    foreach (var rubTimes in model.DefaultRevolution)
+                    foreach (var rubTimes in model.DefaultRubTimes)
                     {
                         for (int i = 0; i <= 2; i++)
                         {
@@ -541,7 +541,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 if (model.DetailList.Any() && model.DetailList.Count > 1)
                 {
                     int rowIdx = 0;
-                    foreach (var rubTimes in model.DefaultRevolution)
+                    foreach (var rubTimes in model.DefaultRubTimes)
                     {
                         // Rub Times
                         worksheet.Cells[10 + rowIdx, 1] = rubTimes;

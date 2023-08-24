@@ -67,7 +67,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public List<SelectListItem> Scale_Source { get; set; }
 
         // 預設摩擦的項目
-        public List<string> DefaultRevolution 
+        public List<string> DefaultRubTimes
         {
             get
             {
