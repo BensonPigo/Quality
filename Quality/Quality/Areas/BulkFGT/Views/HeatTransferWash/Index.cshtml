@@ -1053,22 +1053,22 @@
                 }, null);
         });
 
+        // Fabric Ref No.
         $('.btnRefnoSelectItem').on('click', function () {
             var targetID = $(this).attr("targetID");
             var OrderID = $("#Main_OrderID").val();
-            var artWork = $("#Main_ArtworkTypeID").val();
             if (OrderID == '') {
                 msg.WithError('Please input SP#.');
                 return;
             }
-            var para = `?TargetID=${targetID}&OrderID=${OrderID}&ArtWork=${artWork}`;
-            window.open('@Url.Action("HeatTransferWash_RefnoList", "PublicWondow",new{Area=""})' + para, 'Refno', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            var para = `?TargetID=${targetID}&OrderID=${OrderID}`;
+            window.open('@Url.Action("Po_Supp_Detail_RefnoList", "PublicWondow",new{Area=""})' + para, 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
+        // Fabric Ref No.
         $('.FabricRefNoTxt').unbind('blur').blur(function () {
             var targetID = $(this).attr("ID");
             var orderID = $('#Main_OrderID').val();
-            var artWork = $("#Main_ArtworkTypeID").val();
             var refno = $(this).val();
             if (refno == '') {
                 return;
@@ -1079,10 +1079,10 @@
                 return;
             }
             $.ajax({
-                url: "@Url.Action("HeatTransferWash_RefnoList", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("Po_Supp_Detail_RefnoList", "PublicWondow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ OrderID: orderID, Refno: refno, TargetID: targetID, ReturnType: "JSON", ArtWork: artWork }),
+                data: JSON.stringify({ OrderID: orderID, Refno: refno, TargetID: targetID, ReturnType: "JSON" }),
                 async: true,
                 success: function (data) {
                     if (data == '') {
@@ -1098,18 +1098,7 @@
             });
         });
 
-        $('.btnRefnoSelectItem').on('click', function () {
-            var targetID = $(this).attr("targetID");
-            var OrderID = $("#Main_OrderID").val();
-            var artWork = $("#Main_ArtworkTypeID").val();
-            if (OrderID == '') {
-                msg.WithError('Please input SP#.');
-                return;
-            }
-            var para = `?TargetID=${targetID}&OrderID=${OrderID}&ArtWork=${artWork}`;
-            window.open('@Url.Action("HeatTransferWash_RefnoList", "PublicWondow",new{Area=""})' + para, 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
-        });
-
+        // Artwork Ref No.
         $('.HTRefNoTxt').unbind('blur').blur(function () {
             var targetID = $(this).attr("ID");
             var orderID = $('#Main_OrderID').val();
@@ -1147,6 +1136,7 @@
             });
         });
 
+        // Artwork Ref No.
         $('.btnHTRefNoSelectItem').on('click', function () {
             var targetID = $(this).attr("targetID");
             var OrderID = $("#Main_OrderID").val();
@@ -1211,6 +1201,11 @@
     }
 
     function GetPo_Supp_Detail_Refno(data, targetID) {
+        $('#' + targetID).val(data);
+
+        //GetDetailByHTRefNo(data, targetID.replace('HTRefNo', ''));
+    }
+    function Get_HeatTransferWash_Refno(data, targetID) {
         $('#' + targetID).val(data);
 
         GetDetailByHTRefNo(data, targetID.replace('HTRefNo', ''));
