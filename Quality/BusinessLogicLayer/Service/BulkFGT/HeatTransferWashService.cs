@@ -302,6 +302,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 worksheet.Cells[7, 2] = head.ArtworkTypeID;
                 worksheet.Cells[7, 7] = head.Machine;
 
+                worksheet.Cells[8, 3] = head.ArtworkTypeID + " machine parameter";
 
                 if (head.ArtworkTypeID == "BO" || head.ArtworkTypeID == "FU")
                 {

@@ -266,6 +266,25 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+        public List<Window_Po_Supp_Detail> Get_HeatTransferWash_Refno(string OrderID, string Artwork, string Refno)
+        {
+            List<Window_Po_Supp_Detail> result = new List<Window_Po_Supp_Detail>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_HeatTransferWash_Refno(OrderID, Artwork, Refno).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
 
         public List<Window_FtyInventory> Get_FtyInventory(string POID, string Seq1, string Seq2, string Roll, bool IsExact)
         {
