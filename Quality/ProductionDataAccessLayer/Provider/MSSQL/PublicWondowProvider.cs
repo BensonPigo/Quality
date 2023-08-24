@@ -588,6 +588,51 @@ Where o.ID = @OrderID
             }
             return ExecuteList<Window_Po_Supp_Detail>(CommandType.Text, SbSql.ToString(), paras);
         }
+        public IList<Window_Po_Supp_Detail> Get_HeatTransferWash_Refno(string OrderID, string Artwork, string Refno)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+            SbSql.Append($@"
+
+DECLARE @StyleUkey as bigint 
+DECLARE @POID as VARCHAR(13)
+DECLARE @Artwork as VARCHAR(30) ='{Artwork}'
+DECLARE @PatternUkey as bigint 
+
+select @StyleUkey=StyleUkey,@POID=POID
+from Orders
+where id = '{OrderID}'
+
+select @PatternUkey = PatternUkey from dbo.GetPatternUkey(@POID,'','',@StyleUkey,'')
+
+select distinct bof.Refno 
+from Pattern_GL_Article pga
+inner join Pattern_GL_LectraCode pgl on pgl.PatternUKEY = pga.PatternUKEY and pgl.ArticleGroup = pga.ArticleGroup
+inner join Order_EachCons oe on oe.FabricCode = pgl.FabricCode and oe.id = @POID
+left join dbo.Order_BOF bof WITH (NOLOCK) on bof.Id = oe.Id and bof.FabricCode = oe.FabricCode
+left join dbo.Fabric WITH (NOLOCK) on Fabric.SCIRefno = bof.SCIRefno
+where 1=1
+AND EXISTS(
+	select 1
+	--PatternUKEY,p.Version,SEQ
+	from Pattern QQ
+	inner join Pattern_GL pg on pg.PatternUKEY = QQ.UKey
+	where UKey =440027 and Annotation like '%'+ @Artwork +'%'
+	AND pga.PatternUKEY = pg.PatternUKEY
+	and pgl.Version = qq.Version
+	and pgl.SEQ =pg.SEQ
+	----注意: 這邊會用Like是因為我們的Artwork的值是加工過的，但他原始欄位的值有可能會是A+B，或是A01這種狀況。當初變更Artwork來源的需求在ISP20230789		
+)
+");
+
+            if (!string.IsNullOrEmpty(Refno))
+            {
+                SbSql.Append($@" AND bof.Refno = @Refno ");
+                paras.Add("@Refno", DbType.String, Refno);
+            }
+
+            return ExecuteList<Window_Po_Supp_Detail>(CommandType.Text, SbSql.ToString(), paras);
+        }
 
         public IList<Window_FtyInventory> Get_FtyInventory(string POID, string Seq1, string Seq2, string Roll, bool IsExact)
         {
