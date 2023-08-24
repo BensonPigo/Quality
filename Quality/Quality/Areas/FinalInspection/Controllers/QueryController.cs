@@ -286,7 +286,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 Range rngToCopy = worksheet.get_Range("A23").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("AllGeneral", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A23", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
@@ -310,7 +310,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             else
             {
                 int copyCount = model.ListDefectItem.Count;
-                Range rngToCopy = worksheet.get_Range("19").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A19").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
                     Excel.Range rngToInsert = worksheet.get_Range("A19", Type.Missing).EntireRow; // 選擇要被貼上的位置

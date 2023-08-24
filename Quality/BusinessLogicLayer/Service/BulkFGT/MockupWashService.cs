@@ -248,14 +248,14 @@ namespace BusinessLogicLayer.Service
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
                 }
 
-                Range cellBefore = worksheet.Cells[16 + haveHTrow, 1];
+                Range cellBefore = worksheet.get_Range($"A{18 + haveHTrow}:C{39 + haveHTrow}");
                 if (mockupWash.TestBeforePicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupWash.TestBeforePicture, mockupWash.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left, cellBefore.Top, cell.Width, cell.Height);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left, cellBefore.Top, cellBefore.Width, cellBefore.Height);
                 }
 
-                Range cellAfter = worksheet.Cells[16 + haveHTrow, 4];
+                Range cellAfter = worksheet.get_Range($"D{18 + haveHTrow}:J{39 + haveHTrow}");
                 if (mockupWash.TestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupWash.TestAfterPicture, mockupWash.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
