@@ -310,7 +310,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             else
             {
                 int copyCount = model.ListDefectItem.Count;
-                Range rngToCopy = worksheet.get_Range("19").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A19").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
                     Excel.Range rngToInsert = worksheet.get_Range("A19", Type.Missing).EntireRow; // 選擇要被貼上的位置
@@ -320,8 +320,8 @@ namespace Quality.Areas.FinalInspection.Controllers
                 for (int i = 0; i < copyCount; i++)
                 {
                     int row = i + 19;
-                    worksheet.Cells[row, 1] = model.ListDefectItem[i].DefectType;
-                    worksheet.Cells[row, 3] = model.ListDefectItem[i].DefectCode;
+                    worksheet.Cells[row, 1] = model.ListDefectItem[i].DefectTypeDesc;
+                    worksheet.Cells[row, 3] = model.ListDefectItem[i].DefectCodeDesc;
                     worksheet.Cells[row, 9] = model.ListDefectItem[i].Qty;
                 }
             }

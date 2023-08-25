@@ -9,6 +9,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
     public class ServiceMeasurement : BaseResult
     {
         public string FinalInspectionID { get; set; }
+        public string BrandID { get; set; }
 
         public List<SelectListItem> ListArticle { get; set; }
 

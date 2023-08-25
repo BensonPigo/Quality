@@ -41,7 +41,7 @@ namespace BusinessLogicLayer.Service
                 }
 
                 measurement.FinalInspectionID = finalInspectionID;
-
+                measurement.BrandID = finalInspection.BrandID;
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
                 measurement.ListArticle = _FinalInspFromPMSProvider.GetArticleList(finalInspectionID)
                             .Select(s => new SelectListItem() { 

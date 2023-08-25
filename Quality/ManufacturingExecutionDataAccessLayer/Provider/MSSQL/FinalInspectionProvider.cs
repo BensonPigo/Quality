@@ -179,6 +179,14 @@ inner join Production..Orders b on b.ID = fo.OrderID
 inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
 inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
 where a.ID = @FinalInspectionID
+UNION----無客製，則抓預設關卡
+select DISTINCT FinalInspectionID = a.ID,b.BrandID,c.Seq,d.StepName,c.StepUkey
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+where a.ID = @FinalInspectionID
 ";
             }
             else
@@ -187,6 +195,12 @@ where a.ID = @FinalInspectionID
 select DISTINCT FinalInspectionID = '',b.BrandID,c.Seq,d.StepName,c.StepUkey
 from Production..Orders b 
 inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+where b.CustPONO = @CustPONO
+UNION----無客製，則抓預設關卡
+select DISTINCT FinalInspectionID = '',b.BrandID,c.Seq,d.StepName,c.StepUkey
+from Production..Orders b 
+inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
 inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
 where b.CustPONO = @CustPONO
 
@@ -219,7 +233,7 @@ from FinalInspection a
 inner join FinalInspection_Order fo on a.ID = fo.ID
 inner join Production..Orders b on b.ID = fo.OrderID
 where a.ID = @FinalInspectionID
-UNION
+UNION  ----品牌客製關卡
 select b.BrandID,c.Seq,d.StepName,c.StepUkey
 from FinalInspection a
 inner join FinalInspection_Order fo on a.ID = fo.ID
@@ -227,7 +241,14 @@ inner join Production..Orders b on b.ID = fo.OrderID
 inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
 inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
 where a.ID = @FinalInspectionID and a.SubmitDate is null
-
+UNION  ----無客製，則抓預設關卡
+select b.BrandID,c.Seq,d.StepName,c.StepUkey
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+where a.ID = @FinalInspectionID and a.SubmitDate is null
 
 ----找出現在關卡
 select b.BrandID,Seq=0,StepName='Insp-Setting',StepUkey =0
@@ -251,7 +272,21 @@ outer apply(
 where a.id = @FinalInspectionID and a.SubmitDate is null
 and currentStep.StepName IN (select REPLACE(q.StepName,' ','') from FinalInspectionBasicStep q with(NOLOCK) )
 and currentStep.StepName=REPLACE(d.StepName,' ','') 
-
+UNION  ----無客製，則抓預設關卡
+select b.BrandID,c.Seq,d.StepName,c.StepUkey 
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+outer apply(
+	select DISTINCT StepName = Data 
+	from SplitString(a.InspectionStep,'-') s
+	
+)currentStep
+where a.id = @FinalInspectionID and a.SubmitDate is null
+and currentStep.StepName IN (select REPLACE(q.StepName,' ','') from FinalInspectionBasicStep q with(NOLOCK) )
+and currentStep.StepName=REPLACE(d.StepName,' ','') 
 
 
 select TOP 1 a.BrandID ,a.Seq ,StepName = REPLACE(a.StepName,' ',''),a.StepUkey
@@ -317,12 +352,20 @@ from FinalInspection a
 inner join FinalInspection_Order fo on a.ID = fo.ID
 inner join Production..Orders b on b.ID = fo.OrderID
 where a.ID = @FinalInspectionID
-UNION
+UNION  ----品牌客製關卡
 select b.BrandID,c.Seq,d.StepName,c.StepUkey
 from FinalInspection a
 inner join FinalInspection_Order fo on a.ID = fo.ID
 inner join Production..Orders b on b.ID = fo.OrderID
 inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+where a.ID = @FinalInspectionID and a.SubmitDate is null
+UNION----無客製，則抓預設關卡
+select b.BrandID,c.Seq,d.StepName,c.StepUkey
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
 inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
 where a.ID = @FinalInspectionID and a.SubmitDate is null
 
@@ -340,6 +383,21 @@ from FinalInspection a
 inner join FinalInspection_Order fo on a.ID = fo.ID
 inner join Production..Orders b on b.ID = fo.OrderID
 inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+outer apply(
+	select DISTINCT StepName = Data 
+	from SplitString(a.InspectionStep,'-') s
+	
+)currentStep
+where a.id = @FinalInspectionID and a.SubmitDate is null
+and currentStep.StepName IN (select REPLACE(q.StepName,' ','') from FinalInspectionBasicStep q with(NOLOCK) )
+and currentStep.StepName=REPLACE(d.StepName,' ','') 
+UNION  ----無客製，則抓預設關卡
+select b.BrandID,c.Seq,d.StepName,c.StepUkey 
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
 inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
 outer apply(
 	select DISTINCT StepName = Data 
@@ -1557,6 +1615,10 @@ INNER JOIN #Style_Size ss WITH(NOLOCK) ON m.StyleUkey = ss.StyleUkey
 left join #tmp_Inspection_Measurement im WITH(NOLOCK) on im.MeasurementUkey = m.Ukey 
 LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b WITH(NOLOCK) ON  m.MeasurementTranslateUkey = b.UKey
 where  m.SizeCode = @size and m.junk = 0
+AND (m.SizeSpec NOT LIKE '%!%' AND m.SizeSpec NOT LIKE '%@%' AND m.SizeSpec NOT LIKE '%#%' 
+AND m.SizeSpec NOT LIKE '%$%'  AND m.SizeSpec NOT LIKE '%^%'  AND m.SizeSpec NOT LIKE '%&%' 
+AND m.SizeSpec NOT LIKE '%*%' AND m.SizeSpec NOT LIKE '%=%' AND m.SizeSpec NOT LIKE '%-%' 
+AND m.SizeSpec NOT LIKE '%(%' AND m.SizeSpec NOT LIKE '%)%')
 group by m.Ukey,iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN),m.Tol1,m.Tol2,m.Code,m.SizeCode,m.SizeSpec,im.SizeSpec,im.AddDate
 
 drop table #tmp_Inspection_Measurement
@@ -2535,7 +2597,7 @@ select distinct fb.*
 from FinalInspection a
 inner join FinalInspection_Order fo on a.ID = fo.ID
 inner join Production..Orders b on b.ID = fo.OrderID
-inner join FinalInspectionBasicBrand_General fbg on fbg.BrandID = b.BrandID
+inner join FinalInspectionBasicBrand_General fbg on fbg.BrandID = 'DEFAULT'
 inner join  FinalInspectionBasicGeneral fb on fbg.BasicGeneralUkey = fb.Ukey
 where fb.Junk = 0 and a.ID = @FinalInspectionID
 ";
@@ -2566,7 +2628,7 @@ select distinct fb.*
 from FinalInspection a
 inner join FinalInspection_Order fo on a.ID = fo.ID
 inner join Production..Orders b on b.ID = fo.OrderID
-inner join FinalInspectionBasicBrand_CheckList fbg on fbg.BrandID = b.BrandID
+inner join FinalInspectionBasicBrand_CheckList fbg on fbg.BrandID = 'DEFAULT'
 inner join  FinalInspectionBasicCheckList fb on fbg.BasicCheckListUkey = fb.Ukey
 where fb.Junk = 0 and a.ID = @FinalInspectionID
 ";

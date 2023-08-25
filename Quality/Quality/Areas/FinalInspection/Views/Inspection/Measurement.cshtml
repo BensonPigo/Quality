@@ -90,10 +90,12 @@
             </tbody>
         </table>
         <div style="border:0px;padding:2vh;">
-            @*<h1 style="font-size: 2.5vh; font-weight: 900; color: #999999 ">At least @Model.MeasurementRemainingAmount more pieces of clothing need to be inspected.</h1>*@
-            <span style="font-size: 2vh; font-weight: 900; color: #999999 ">At least</span>
-            <span id="txtMeasurementRemainingAmount" style="font-size: 2vh; font-weight: 900; color: red ">@Model.MeasurementRemainingAmount</span>
-            <span style="font-size: 2vh; font-weight: 900; color: #999999 "> more pieces of clothing need to be inspected.</span>
+            @if (Model.BrandID == "LLL")
+            {
+                <span style="font-size: 2vh; font-weight: 900; color: #999999 ">At least</span>
+                <span id="txtMeasurementRemainingAmount" style="font-size: 2vh; font-weight: 900; color: red ">@Model.MeasurementRemainingAmount</span>
+                <span style="font-size: 2vh; font-weight: 900; color: #999999 "> more pieces of clothing need to be inspected.</span>
+            }
         </div>
     </div>
     <div class="DownRightWhiteBackgrond">
