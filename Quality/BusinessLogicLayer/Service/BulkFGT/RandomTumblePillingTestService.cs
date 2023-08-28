@@ -449,20 +449,35 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Microsoft.Office.Interop.Excel.Shapes shapes = worksheet.Shapes;
 
                 // 根據名稱，搜尋文字方塊物件
-                Microsoft.Office.Interop.Excel.Shape Woven_TextBox = shapes.Item("Woven_TextBox");
-                Microsoft.Office.Interop.Excel.Shape Knit_TextBox = shapes.Item("Knit_TextBox");
+                Microsoft.Office.Interop.Excel.Shape ADIDAS_TextBox = shapes.Item("ADIDAS_TextBox");
+                Microsoft.Office.Interop.Excel.Shape REEBOK_TextBox = shapes.Item("REEBOK_TextBox");
+                Microsoft.Office.Interop.Excel.Shape Fleece_TextBox = shapes.Item("Fleece_TextBox");
+                Microsoft.Office.Interop.Excel.Shape Frencht_TextBox = shapes.Item("Frencht_TextBox");
+                Microsoft.Office.Interop.Excel.Shape Normal_TextBox = shapes.Item("Normal_TextBox");
+
+                if (model.Main.BrandID == "ADIDAS")
+                {
+                    ADIDAS_TextBox.TextFrame.Characters().Text = "V";
+                }
+                if (model.Main.BrandID == "REEBOK")
+                {
+                    REEBOK_TextBox.TextFrame.Characters().Text = "V";
+                }
+
+                if (model.Main.TestStandard == "Fleece/Polar Fleece")
+                {
+                    Fleece_TextBox.TextFrame.Characters().Text = "V";
+                }
+                if (model.Main.TestStandard == "French Terry")
+                {
+                    Frencht_TextBox.TextFrame.Characters().Text = "V";
+                }
+                if (model.Main.TestStandard == "Normal Fabric")
+                {
+                    Normal_TextBox.TextFrame.Characters().Text = "V";
+                }
 
                 // 固定欄位
-
-                // FabricType
-                //if (model.Main.FabricType.ToUpper() == "WOVEN")
-                //{
-                //    Woven_TextBox.TextFrame.Characters().Text = "V";
-                //}
-                //if (model.Main.FabricType.ToUpper() == "KNIT")
-                //{
-                //    Knit_TextBox.TextFrame.Characters().Text = "V";
-                //}
 
                 string reportNo = model.Main.ReportNo;
                 worksheet.Cells[3, 2] = model.Main.ReportNo;
@@ -495,10 +510,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
 
                     // 姓名
-                    worksheet.Cells[45, 5] = TechnicianName;
+                    worksheet.Cells[48, 5] = TechnicianName;
 
                     // Signture 圖片
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[45, 6];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[48, 6];
                     if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
                     {
 
@@ -518,55 +533,65 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // TestBeforePicture、TestAfterPicture 圖片
                 if (model.Main.TestFaceSideBeforePicture != null && model.Main.TestFaceSideBeforePicture.Length > 1)
                 {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[18, 1];
-                    Microsoft.Office.Interop.Excel.Range cell2 = worksheet.Cells[31, 1];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[21, 1];
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestFaceSideBeforePicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell2.Left + 5, cell2.Top + 5, 200, 300);
                 }
                 if (model.Main.TestFaceSideAfterPicture != null && model.Main.TestFaceSideAfterPicture.Length > 1)
                 {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[18, 6];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[21, 6];
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestFaceSideAfterPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
                 if (model.Main.TestBackSideBeforePicture != null && model.Main.TestBackSideBeforePicture.Length > 1)
                 {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[31, 6];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[34, 1];
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestBackSideBeforePicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
                 if (model.Main.TestBackSideAfterPicture != null && model.Main.TestBackSideAfterPicture.Length > 1)
                 {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[31, 6];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[34, 6];
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestBackSideAfterPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
 
+                int rowIdx = 0;
                 // 表身處理
                 if (model.DetailList.Any() && model.DetailList.Count > 1)
                 {
-                    int rowIdx = 0;
-                    //foreach (var side in model.DefaultSide)
-                    //{
-                    //    // Rub Times
-                    //    worksheet.Cells[10 + rowIdx, 1] = side;
+                    foreach (var item in model.DetailList)
+                    {
+                        List<string> WorstScale = new List<string>();
 
-                    //    RandomTumblePillingTest_Detail WorstDetail = model.DetailList.Where(o => o.Side == side).OrderBy(o => o.Scale).FirstOrDefault();
+                        // 每個Side 開始填入時，先填Worst Scale
+                        if (rowIdx == 0 || rowIdx == 3)
+                        {
+                            if (item.Side == "Face Side")
+                            {
+                                string WorstFirst = model.DetailList.Where(o => o.Side == item.Side).OrderBy(o => o.FirstScale).FirstOrDefault().FirstScale;
+                                string WorstSecond = model.DetailList.Where(o => o.Side == item.Side).OrderBy(o => o.SecondScale).FirstOrDefault().SecondScale;
 
-                    //    //
-                    //    worksheet.Cells[10 + rowIdx, 6] = $@"{model.Main.TestStandard} {WorstDetail.Scale}";
+                                WorstScale.Add(WorstFirst);
+                                WorstScale.Add(WorstSecond);
+                            }
+                            if (item.Side == "Back Side")
+                            {
+                                string WorstFirst = model.DetailList.Where(o => o.Side == item.Side).OrderBy(o => o.FirstScale).FirstOrDefault().FirstScale;
+                                string WorstSecond = model.DetailList.Where(o => o.Side == item.Side).OrderBy(o => o.SecondScale).FirstOrDefault().SecondScale;
 
-                    //    rowIdx += 3;
-                    //}
-                    //rowIdx = 0;
-                    //foreach (var detailData in model.DetailList)
-                    //{
-                    //    worksheet.Cells[10 + rowIdx, 2] = detailData.EvaluationItem;
-                    //    worksheet.Cells[10 + rowIdx, 4] = $@"{model.Main.TestStandard} {detailData.Scale}";
-                    //    rowIdx += 1;
-                    //}
+                                WorstScale.Add(WorstFirst);
+                                WorstScale.Add(WorstSecond);
+                            }
 
+                            worksheet.Cells[10 + rowIdx, 7] = WorstScale.OrderBy(o => o).FirstOrDefault();
+                        }
+                        worksheet.Cells[10 + rowIdx, 2] = item.EvaluationItem;
+                        worksheet.Cells[10 + rowIdx, 4] = item.FirstScale;
+                        worksheet.Cells[10 + rowIdx, 6] = item.SecondScale;
+
+                        rowIdx++;
+                    }
                 }
 
                 string fileName = $"RandomTumblePillingTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";

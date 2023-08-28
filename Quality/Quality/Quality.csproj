@@ -1009,6 +1009,10 @@
     </Content>
     <Content Include="Views\PublicWondow\MartindalePillingTestPictureList.cshtml" />
     <Content Include="Views\Shared\ScreenShot_MartindalePillingTest.cshtml" />
+    <Content Include="Views\PublicWondow\RandomTumblePillingTestPictureList.cshtml" />
+    <Content Include="XLT\RandomTumblePillingTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

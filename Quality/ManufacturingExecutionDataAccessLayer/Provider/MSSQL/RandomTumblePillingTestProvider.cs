@@ -399,6 +399,7 @@ DELETE FROM RandomTumblePillingTest_Detail where ReportNo = @ReportNo AND Ukey =
 
                         break;
                     case CompareStateType.Edit:
+                        listDetailPar.Add(new SqlParameter($"@Ukey", detailItem.Ukey));
                         listDetailPar.Add(new SqlParameter($"@Side", detailItem.Side));
                         listDetailPar.Add(new SqlParameter($"@EvaluationItem", detailItem.EvaluationItem));
                         listDetailPar.Add(new SqlParameter($"@Result", detailItem.Result ?? string.Empty));
@@ -462,7 +463,7 @@ WHERE ReportNo = @ReportNo
                 sqlCmd = $@"
 UPDATE RandomTumblePillingTest
 SET EditDate = GETDATE() , EditName = @EditName
-    , Status = 'New'
+    , Status = 'New' ,Result=''
     , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ";

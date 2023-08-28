@@ -459,7 +459,7 @@
                         <h4 class="colTitle">Test Standard</h4>
                     </div>
                     <div class="MainAreaItem odd">
-                        <select id="Main_TestStandard" name="Main.TestStandard" class="CanEdit OnlyNew" onchange="TestStandardChange(this)">
+                        <select id="Main_TestStandard" name="Main.TestStandard" class="CanEdit" onchange="TestStandardChange(this)">
                             @foreach (var item in Model.TestStandard_Source)
                             {
                                 string selected = item.Value.Equals(Model.Main.TestStandard) ? "selected" : "";
@@ -600,7 +600,7 @@
                                                 bool IsEvenlyVal = Model.DetailList[i].IsEvenly;
                                             }
                                             @*<input id="DetailList_@{@i}__IsEvenly" name="DetailList[@i].IsEvenly" type="checkbox" class="bigSize Evenly" checked="@IsEvenlyVal">*@
-                                            @Html.CheckBox($@"DetailList[{i}].IsEvenly", IsEvenlyVal, new { @class = "bigSize Evenly"})
+                                            @Html.CheckBox($@"DetailList[{i}].IsEvenly", IsEvenlyVal, new { @class = "bigSize CanEdit Evenly" })
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
                                             @{ resultColor = Model.DetailList[i].Result == "Fail" ? "red" : "blue";}
@@ -668,6 +668,10 @@
                 $('.CanEdit').removeAttr("disabled");
                 $('.CanEdit').removeAttr("readonly");
 
+                if ($("#Main_TestStandard").val() != 'Fleece/Polar Fleece') {
+                    $('.DetailDataAreaItem1 input[type="checkbox"]').attr("disabled", true);
+                }
+
                 // Report No不為空，表示不是新建單，部分欄位不可異動
                 if ($("#Main_ReportNo").val() != '') {
                     $('select.OnlyNew').attr("disabled",true);
@@ -684,7 +688,7 @@
             }
             else {
                 // 可編輯欄位關閉
-                $('.MainArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select').attr("disabled", true);
+                $('.MainArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select,.DetailDataAreaItem1 input[type="checkbox"]').attr("disabled", true);
                 $('.MainArea input ,.MainArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
                 $(".detailDelete").hide();
 
@@ -884,9 +888,10 @@
     }
 
     function GetRandomTumblePillingTestPicture(data) {
-        $('#Main_TestBeforePicture').val(data.BeforePicture.replace("data:image/png;base64,", ""));
-        $('#Main_Test500AfterPicture').val(data.After500Picture.replace("data:image/png;base64,", ""));
-        $('#Main_Test2000AfterPicture').val(data.After2000Picture.replace("data:image/png;base64,", ""));
+        $('#Main_TestFaceSideBeforePicture').val(data.FaceSideBeforePic.replace("data:image/png;base64,", ""));
+        $('#Main_TestFaceSideAfterPicture').val(data.FaceSideAfterPic.replace("data:image/png;base64,", ""));
+        $('#Main_TestBackSideBeforePicture').val(data.BackSideBeforePic.replace("data:image/png;base64,", ""));
+        $('#Main_TestBackSideAfterPicture').val(data.BackSideAfterPic.replace("data:image/png;base64,", ""));
     }
     function ClickEventBind() {
 
@@ -945,7 +950,7 @@
             }
             if ($("#Main_ReportNo").val() != '') {
                 // 重新Query 一次Detail
-                window.location.reload();
+                $('#btnQuery').unbind('click').click();
             }
             else {
                 EditMode = false;

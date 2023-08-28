@@ -479,6 +479,18 @@ namespace Quality.Controllers
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
+        public ActionResult RandomTumblePillingTestPictureList(string Title, bool EditMode, string TargetID, string ReportNo)
+        {
+            var model = _PublicWindowService.Get_RandomTumblePillingTestPicture(ReportNo);
+            ViewData["Title"] = Title;
+            ViewData["EditMode"] = EditMode;
+            ViewData["TestFaceSideBeforePicture"] = "TestFaceSideBeforePicture";
+            ViewData["TestFaceSideAfterPicture"] = "TestFaceSideAfterPicture";
+            ViewData["TestBackSideBeforePicture"] = "TestBackSideBeforePicture";
+            ViewData["TestBackSideAfterPicture"] = "TestBackSideAfterPicture";
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
         public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string TargetID, bool ExitReload = true)
         {
             var model = _PublicWindowService.Get_TestFailMail(FactoryID, Type, string.Empty);

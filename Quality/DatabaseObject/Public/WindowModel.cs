@@ -164,6 +164,14 @@ namespace DatabaseObject.Public
         public byte[] Test500AfterPicture { get; set; }
         public byte[] Test2000AfterPicture { get; set; }
     }
+    public class Window_RandomTumblePillingTest
+    {
+        public string ReportNo { get; set; }
+        public byte[] TestFaceSideBeforePicture { get; set; }
+        public byte[] TestFaceSideAfterPicture { get; set; }
+        public byte[] TestBackSideBeforePicture { get; set; }
+        public byte[] TestBackSideAfterPicture { get; set; }
+    }
     public class Window_SinglePicture
     {
 
