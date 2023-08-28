@@ -57,7 +57,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                                 EvaluationItem = $"Specimen {idx}",
                                 FirstScale = "1",
                                 SecondScale = "1",
-                                Result = "Pass",
+                                Result = "Fail",
                             };
                             model.DetailList.Add(nData);
                             idx++;

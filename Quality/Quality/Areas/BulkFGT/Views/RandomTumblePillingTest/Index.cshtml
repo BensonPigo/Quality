@@ -459,7 +459,7 @@
                         <h4 class="colTitle">Test Standard</h4>
                     </div>
                     <div class="MainAreaItem odd">
-                        <select id="Main_TestStandard" name="Main.TestStandard" class="CanEdit OnlyNew">
+                        <select id="Main_TestStandard" name="Main.TestStandard" class="CanEdit OnlyNew" onchange="TestStandardChange(this)">
                             @foreach (var item in Model.TestStandard_Source)
                             {
                                 string selected = item.Value.Equals(Model.Main.TestStandard) ? "selected" : "";
@@ -578,7 +578,7 @@
                                             @Html.TextBoxFor(o => Model.DetailList[i].EvaluationItem, new { @class = "" })
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
-                                            <select id="DetailList[@i]_FirstScale" name="DetailList[@i].FirstScale" class="CanEdit" onchange="ScaleChange('@i', this, 'Result', '3-4')">
+                                            <select id="DetailList_@Html.Raw(i)__FirstScale" name="DetailList[@i].FirstScale" class="CanEdit FirstScale" onchange="ScaleChange('@i', 'Result')">
                                                 @foreach (var item in Model.Scale_Source)
                                                 {
                                                     string selected = item.Value.Equals(Model.DetailList[i].FirstScale) ? "selected" : "";
@@ -587,7 +587,7 @@
                                             </select>
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
-                                            <select id="DetailList[@i]_SecondScale" name="DetailList[@i].SecondScale" class="CanEdit" onchange="ScaleChange('@i', this, 'Result', '3-4')">
+                                            <select id="DetailList_@Html.Raw(i)__SecondScale" name="DetailList[@i].SecondScale" class="CanEdit SecondScale" onchange="ScaleChange('@i', 'Result')">
                                                 @foreach (var item in Model.Scale_Source)
                                                 {
                                                     string selected = item.Value.Equals(Model.DetailList[i].SecondScale) ? "selected" : "";
@@ -599,8 +599,8 @@
                                             @{
                                                 bool IsEvenlyVal = Model.DetailList[i].IsEvenly;
                                             }
-                                            <input id="DetailList_@{@i}__IsEvenly" name="DetailList[@i].IsEvenly" type="checkbox" class="bigSize" checked="@IsEvenlyVal">
-
+                                            @*<input id="DetailList_@{@i}__IsEvenly" name="DetailList[@i].IsEvenly" type="checkbox" class="bigSize Evenly" checked="@IsEvenlyVal">*@
+                                            @Html.CheckBox($@"DetailList[{i}].IsEvenly", IsEvenlyVal, new { @class = "bigSize Evenly"})
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
                                             @{ resultColor = Model.DetailList[i].Result == "Fail" ? "red" : "blue";}
@@ -1282,8 +1282,11 @@
                 $(this).attr('name', newName);
 
                 // 跟RowIndex有關的事件也要更新
-                if (newName.endsWith('Scale')) {
-                    $(this).attr('onchange', `ScaleChange(${newIndex}, this, 'Result', '4-5')`);
+                if (newName.endsWith('FisrtScale')) {
+                    $(this).attr('onchange', `ScaleChange(${newIndex}, 'Result')`);
+                }
+                if (newName.endsWith('SecondScale')) {
+                    $(this).attr('onchange', `ScaleChange(${newIndex}, 'Result')`);
                 }
             })
 
@@ -1297,50 +1300,80 @@
         $('#btnQuery').unbind('click').click();
     }
 
-    function ScaleChange(rowIdx, thisObj, columnName, standard) {
-        var target = $(`#DetailList_${rowIdx}__${columnName}`);
+    function ScaleChange(rowIdx, resultColumnName) {
+        var resultColumn = $(`#DetailList_${rowIdx}__${resultColumnName}`);
 
-        if ($(thisObj).val() >= standard) {
-            $(target).val('Pass');
-            $(target).css('color','blue');
+
+        var firstScale = $(`#DetailList_${rowIdx}__FirstScale`);
+        var secondScale = $(`#DetailList_${rowIdx}__SecondScale`);
+        var allResult = true;
+        var standard = '3';
+
+        // firstScale
+        if ($(firstScale).val() >= standard) {
         }
         else {
-            $(target).val('Fail');
-            $(target).css('color', 'Red');
+            allResult = false;
         }
-        $(target).change();
-        AllResultUpdate(rowIdx);
+
+        // secondScale
+        var testStander = $("#Main_TestStandard").val();
+
+        if (testStander == 'Fleece/Polar Fleece') {
+            standard = '2';
+        }
+        if (testStander == 'French Terry') {
+            standard = '2-3';
+        }
+        if (testStander == 'Normal Fabric') {
+            standard = '3';
+        }
+        if ($(secondScale).val() >= standard) {
+        }
+        else {
+            allResult = false;
+        }
+
+        if (allResult) {
+            $(resultColumn).val('Pass');
+            $(resultColumn).css('color', 'blue');
+        }
+        else {
+            $(resultColumn).val('Fail');
+            $(resultColumn).css('color', 'Red');
+        }
+
+        $(resultColumn).change();
     }
 
-    function AllResultUpdate(rowIdx) {
-        let isAnyFail = false;
-        if ($(`#DetailList_${rowIdx}__AcetateResult`).val() == "Fail") {
-            isAnyFail = true;
-        }
-        if ($(`#DetailList_${rowIdx}__CottonResult`).val() == "Fail") {
-            isAnyFail = true;
-        }
-        if ($(`#DetailList_${rowIdx}__NylonResult`).val() == "Fail") {
-            isAnyFail = true;
-        }
-        if ($(`#DetailList_${rowIdx}__PolyesterResult`).val() == "Fail") {
-            isAnyFail = true;
-        }
-        if ($(`#DetailList_${rowIdx}__AcrylicResult`).val() == "Fail") {
-            isAnyFail = true;
-        }
-        if ($(`#DetailList_${rowIdx}__WoolResult`).val() == "Fail") {
-            isAnyFail = true;
-        }
 
-        if (isAnyFail) {
-            $(`#DetailList_${rowIdx}__AllResult`).val('Fail');
-            $(`#DetailList_${rowIdx}__AllResult`).css('color', 'Red');
+
+    function TestStandardChange(obj) {
+        var firstScales = $(".FisrtScale");
+        var secondScales = $(".SecondScale");
+        var evenlys = $(".Evenly");
+
+        // 只有Test Standard 為Fleece/Polar Fleece才可以用 Evenly
+        if ($(obj).val() != 'Fleece/Polar Fleece') {
+
+            evenlys.each(function () {
+                $(this).prop('checked', false);
+                $(this).attr('disabled', 'disabled');
+            });
         }
         else {
-            $(`#DetailList_${rowIdx}__AllResult`).val('Pass');
-            $(`#DetailList_${rowIdx}__AllResult`).css('color', 'blue');
+            evenlys.each(function () {
+                $(this).removeAttr('disabled');
+            });
         }
-        $(`#DetailList_${rowIdx}__AllResult`).change();
+
+
+        firstScales.each(function () {
+            $(this).change();
+        });
+
+        secondScales.each(function () {
+            $(this).change();
+        });
     }
 </script>

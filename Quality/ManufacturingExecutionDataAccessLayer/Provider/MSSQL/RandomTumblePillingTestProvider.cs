@@ -216,7 +216,6 @@ INSERT INTO dbo.RandomTumblePillingTest
            ,Seq2
            ,FabricRefNo
            ,FabricColor
-           ,FabricType
            ,TestStandard
            ,Status
            ,Result
@@ -235,7 +234,6 @@ VALUES
            ,@Seq2
            ,@FabricRefNo
            ,@FabricColor
-           ,@FabricType
            ,@TestStandard
            ,'New'
            ,@Result
@@ -315,7 +313,6 @@ UPDATE RandomTumblePillingTest
       ,Seq2 = @Seq2
       ,FabricRefNo = @FabricRefNo
       ,FabricColor = @FabricColor
-      ,FabricType = @FabricType
       ,TestStandard = @TestStandard
 WHERE ReportNo = @ReportNo
 ;
@@ -389,6 +386,7 @@ DELETE FROM RandomTumblePillingTest_Detail where ReportNo = @ReportNo AND Ukey =
                 switch (detailItem.StateType)
                 {
                     case CompareStateType.Add:
+                        listDetailPar.Add(new SqlParameter($"@Side", detailItem.Side));
                         listDetailPar.Add(new SqlParameter($"@EvaluationItem", detailItem.EvaluationItem));
                         listDetailPar.Add(new SqlParameter($"@Result", detailItem.Result ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? string.Empty));
@@ -401,6 +399,7 @@ DELETE FROM RandomTumblePillingTest_Detail where ReportNo = @ReportNo AND Ukey =
 
                         break;
                     case CompareStateType.Edit:
+                        listDetailPar.Add(new SqlParameter($"@Side", detailItem.Side));
                         listDetailPar.Add(new SqlParameter($"@EvaluationItem", detailItem.EvaluationItem));
                         listDetailPar.Add(new SqlParameter($"@Result", detailItem.Result ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? string.Empty));
