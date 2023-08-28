@@ -1498,7 +1498,7 @@ WHERE a.Result <> ''
                     SbSql.Append(type18);
                     break;
                 case string a when a.Contains("Martindale Pilling Test"):
-                    SbSql.Append(type18);
+                    SbSql.Append(type19);
                     break;
                 case string a when a.Contains("Random Tumble Pilling Test"):
                     SbSql.Append(type20);
