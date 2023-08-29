@@ -411,6 +411,31 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public Window_Picture Get_Picture(string Table, string OneColumn, string TwoColumn, string ThreeColumn, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val)
+        {
+            Window_Picture result = new Window_Picture();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                var r = _Provider.Get_Picture(Table, OneColumn, TwoColumn, ThreeColumn, PKey_1, PKey_2, PKey_3, PKey_4, PKey_1_Val, PKey_2_Val, PKey_3_Val, PKey_4_Val).ToList();
+
+                if (r.Any())
+                {
+                    result = r.FirstOrDefault();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
         public Window_SinglePicture Get_SinglePicture(string Table, string ColumnName, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val)
         {
             Window_SinglePicture result = new Window_SinglePicture();

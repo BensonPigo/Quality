@@ -150,10 +150,15 @@ namespace DatabaseObject.Public
         public string Table { get; set; }
         public string BeforeColumn { get; set; }
         public string AfterColumn { get; set; }
-
+        public string OneColumn { get; set; }
+        public string TwoColumn { get; set; }
+        public string ThreeColumn { get; set; }
 
         public byte[] BrforeImage { get; set; }
         public byte[] AfterImage { get; set; }
+        public byte[] OneImage { get; set; }
+        public byte[] TwoImage { get; set; }
+        public byte[] ThreeImage { get; set; }
     }
     public class Window_SinglePicture
     {
