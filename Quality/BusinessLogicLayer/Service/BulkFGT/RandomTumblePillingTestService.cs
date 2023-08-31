@@ -490,7 +490,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 worksheet.Cells[5, 6] = model.Main.ReportDateText;
 
                 worksheet.Cells[6, 2] = model.Main.Article;
-                worksheet.Cells[6, 2] = model.Main.SeasonID;
+                worksheet.Cells[6, 6] = model.Main.SeasonID;
 
                 worksheet.Cells[7, 2] = model.Main.SeasonID;
                 worksheet.Cells[7, 6] = model.Main.FabricColor;

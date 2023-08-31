@@ -578,7 +578,7 @@
                                             @Html.TextBoxFor(o => Model.DetailList[i].EvaluationItem, new { @class = "" })
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
-                                            <select id="DetailList_@Html.Raw(i)__FirstScale" name="DetailList[@i].FirstScale" class="CanEdit FirstScale" onchange="ScaleChange('@i', 'Result')">
+                                            <select id="DetailList_@Html.Raw(i)__FirstScale" name="DetailList[@i].FirstScale" class="CanEdit FirstScale" onchange="ScaleChange('@i', 'Result', '@Model.DetailList[i].Side')">
                                                 @foreach (var item in Model.Scale_Source)
                                                 {
                                                     string selected = item.Value.Equals(Model.DetailList[i].FirstScale) ? "selected" : "";
@@ -587,7 +587,7 @@
                                             </select>
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
-                                            <select id="DetailList_@Html.Raw(i)__SecondScale" name="DetailList[@i].SecondScale" class="CanEdit SecondScale" onchange="ScaleChange('@i', 'Result')">
+                                            <select id="DetailList_@Html.Raw(i)__SecondScale" name="DetailList[@i].SecondScale" class="CanEdit SecondScale" onchange="ScaleChange('@i', 'Result', '@Model.DetailList[i].Side')">
                                                 @foreach (var item in Model.Scale_Source)
                                                 {
                                                     string selected = item.Value.Equals(Model.DetailList[i].SecondScale) ? "selected" : "";
@@ -1305,7 +1305,7 @@
         $('#btnQuery').unbind('click').click();
     }
 
-    function ScaleChange(rowIdx, resultColumnName) {
+    function ScaleChange(rowIdx, resultColumnName ,side) {
         var resultColumn = $(`#DetailList_${rowIdx}__${resultColumnName}`);
 
 
@@ -1313,6 +1313,24 @@
         var secondScale = $(`#DetailList_${rowIdx}__SecondScale`);
         var allResult = true;
         var standard = '3';
+        var testStander = $("#Main_TestStandard").val();
+
+        // 不同Side 有不同標準
+        if (side=='Face Side') {
+
+        }
+
+        if (side == 'Back Side') {
+            if (testStander == 'Fleece/Polar Fleece') {
+                standard = '2';
+            }
+            if (testStander == 'French Terry') {
+                standard = '2-3';
+            }
+            if (testStander == 'Normal Fabric') {
+                standard = '3';
+            }
+        }
 
         // firstScale
         if ($(firstScale).val() >= standard) {
@@ -1322,18 +1340,8 @@
         }
 
         // secondScale
-        var testStander = $("#Main_TestStandard").val();
-
-        if (testStander == 'Fleece/Polar Fleece') {
-            standard = '2';
-        }
-        if (testStander == 'French Terry') {
-            standard = '2-3';
-        }
-        if (testStander == 'Normal Fabric') {
-            standard = '3';
-        }
         if ($(secondScale).val() >= standard) {
+
         }
         else {
             allResult = false;
@@ -1371,7 +1379,6 @@
                 $(this).removeAttr('disabled');
             });
         }
-
 
         firstScales.each(function () {
             $(this).change();
