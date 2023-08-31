@@ -536,7 +536,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             FinalInspectionService service = new FinalInspectionService();
             DatabaseObject.ManufacturingExecutionDB.FinalInspection model = service.GetFinalInspection(FinalInspectionID);
-            model.GeneralList = service.GetGeneralByBrand(FinalInspectionID, string.Empty);
+            model.GeneralList = service.GetGeneralByBrand(FinalInspectionID, model.BrandID);
 
             ViewData["FinalInspectionAllStep"] = service.GetAllStep(FinalInspectionID, string.Empty);
 
@@ -592,7 +592,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             FinalInspectionService service = new FinalInspectionService();
 
             DatabaseObject.ManufacturingExecutionDB.FinalInspection model = service.GetFinalInspection(FinalInspectionID);
-            model.CheckListList = service.GetCheckListByBrand(FinalInspectionID, string.Empty);
+            model.CheckListList = service.GetCheckListByBrand(FinalInspectionID, model.BrandID);
             ViewData["FinalInspectionAllStep"] = service.GetAllStep(FinalInspectionID, string.Empty);
 
             return View(model);

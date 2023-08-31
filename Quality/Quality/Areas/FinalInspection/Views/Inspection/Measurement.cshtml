@@ -90,7 +90,7 @@
             </tbody>
         </table>
         <div style="border:0px;padding:2vh;">
-            @if (Model.BrandID == "LLL")
+            @if (Model.BrandID == "LLL" && Model.InspectionStage == "Final")
             {
                 <span style="font-size: 2vh; font-weight: 900; color: #999999 ">At least</span>
                 <span id="txtMeasurementRemainingAmount" style="font-size: 2vh; font-weight: 900; color: red ">@Model.MeasurementRemainingAmount</span>

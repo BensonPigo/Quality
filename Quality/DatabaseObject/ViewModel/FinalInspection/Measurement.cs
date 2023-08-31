@@ -10,6 +10,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
     {
         public string FinalInspectionID { get; set; }
         public string BrandID { get; set; }
+        public string InspectionStage { get; set; }
 
         public List<SelectListItem> ListArticle { get; set; }
 

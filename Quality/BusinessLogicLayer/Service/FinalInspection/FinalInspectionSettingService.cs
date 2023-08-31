@@ -336,6 +336,10 @@ namespace BusinessLogicLayer.Service
                     setting.AcceptQty = AQLResult.First().AcceptedQty;
                     setting.AcceptableQualityLevelsUkey = AQLResult.First().Ukey.ToString();
                 }
+                else
+                {
+                    setting.AcceptableQualityLevelsUkey = null;
+                }
                 #endregion
 
                 if (setting.AcceptQty > setting.SampleSize)
