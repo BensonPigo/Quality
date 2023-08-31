@@ -187,6 +187,9 @@ inner join Production..Orders b on b.ID = fo.OrderID
 inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
 inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
 where a.ID = @FinalInspectionID
+AND NOT EXISTS(
+	select 1 from  FinalInspectionBasicBrand_Step where BrandID = b.BrandID
+)
 ";
             }
             else
@@ -203,6 +206,9 @@ from Production..Orders b
 inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
 inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
 where b.CustPONO = @CustPONO
+AND NOT EXISTS(
+	select 1 from  FinalInspectionBasicBrand_Step where BrandID = b.BrandID
+)
 
                 ";
             }
@@ -249,6 +255,9 @@ inner join Production..Orders b on b.ID = fo.OrderID
 inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
 inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
 where a.ID = @FinalInspectionID and a.SubmitDate is null
+AND NOT EXISTS(
+	select 1 from  FinalInspectionBasicBrand_Step where BrandID = b.BrandID
+)
 
 ----找出現在關卡
 select b.BrandID,Seq=0,StepName='Insp-Setting',StepUkey =0
@@ -287,6 +296,9 @@ outer apply(
 where a.id = @FinalInspectionID and a.SubmitDate is null
 and currentStep.StepName IN (select REPLACE(q.StepName,' ','') from FinalInspectionBasicStep q with(NOLOCK) )
 and currentStep.StepName=REPLACE(d.StepName,' ','') 
+AND NOT EXISTS(
+	select 1 from  FinalInspectionBasicBrand_Step where BrandID = b.BrandID
+)
 
 
 select TOP 1 a.BrandID ,a.Seq ,StepName = REPLACE(a.StepName,' ',''),a.StepUkey
@@ -368,6 +380,9 @@ inner join Production..Orders b on b.ID = fo.OrderID
 inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
 inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
 where a.ID = @FinalInspectionID and a.SubmitDate is null
+AND NOT EXISTS(
+	select 1 from  FinalInspectionBasicBrand_Step where BrandID = b.BrandID
+)
 
 
 ----找出現在關卡
@@ -407,6 +422,9 @@ outer apply(
 where a.id = @FinalInspectionID and a.SubmitDate is null
 and currentStep.StepName IN (select REPLACE(q.StepName,' ','') from FinalInspectionBasicStep q with(NOLOCK) )
 and currentStep.StepName=REPLACE(d.StepName,' ','') 
+AND NOT EXISTS(
+	select 1 from  FinalInspectionBasicBrand_Step where BrandID = b.BrandID
+)
 
 select TOP 1 @TargetStep = 'Insp-' +  REPLACE((REPLACE(a.StepName,' ','')),'Insp-','')
 from #AllStep a
