@@ -458,7 +458,7 @@
                             <h4 class="colTitle">Test Standard</h4>
                         </div>
                         <div class="MainAreaItem odd">
-                            <select id="Main_TestStandard" name="Main.TestStandard" class="CanEdit OnlyNew">
+                            <select id="Main_TestStandard" name="Main.TestStandard" class="CanEdit">
                                 @foreach (var item in Model.TestStandard_Source)
                                 {
                                     string selected = item.Value.Equals(Model.Main.TestStandard) ? "selected" : "";
