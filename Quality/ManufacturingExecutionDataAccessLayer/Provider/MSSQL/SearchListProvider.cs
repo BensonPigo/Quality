@@ -1323,6 +1323,127 @@ WHERE a.Result <> ''
 
             #endregion
 
+            #region Martindale Pilling Test (452)
+
+            string type19 = $@"
+select Type= 'Martindale Pilling Test (452)'
+	, a.ReportNo
+	, a.OrderID
+	, a.StyleID
+	, a.BrandID
+	, a.SeasonID
+	, a.Article
+	, Line = ''
+	, Artwork = ''
+	, a.Result	
+	, TestDate = Cast( NULL as date)
+	, ReceivedDate = a.SubmitDate
+	, ReportDate = a.ReportDate
+    , AddName = ISNULL(mp.Name, pp.Name)
+
+from [ExtendServer].ManufacturingExecution.dbo.MartindalePillingTest a
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
+left join Pass1 pp on a.EditName = pp.ID
+WHERE a.Result <> ''
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type19 += "AND a.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type19 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type19 += "AND a.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type19 += "AND a.Article = @Article ";
+            }
+
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type19 += " AND @ReceivedDate_s <= a.SubmitDate ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type19 += " AND a.SubmitDate <= @ReceivedDate_e ";
+            }
+
+            if (Req.ReportDate_s.HasValue)
+            {
+                type19 += " AND @ReportDate_s <= a.ReportDate ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type19 += " AND a.ReportDate <= @ReportDate_e ";
+            }
+
+            #endregion
+
+            #region Random Tumble Pilling Test (407)
+
+            string type20 = $@"
+select Type= 'Random Tumble Pilling Test (407)'
+	, a.ReportNo
+	, a.OrderID
+	, a.StyleID
+	, a.BrandID
+	, a.SeasonID
+	, a.Article
+	, Line = ''
+	, Artwork = ''
+	, a.Result	
+	, TestDate = Cast( NULL as date)
+	, ReceivedDate = a.SubmitDate
+	, ReportDate = a.ReportDate
+    , AddName = ISNULL(mp.Name, pp.Name)
+
+from [ExtendServer].ManufacturingExecution.dbo.RandomTumblePillingTest a
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
+left join Pass1 pp on a.EditName = pp.ID
+WHERE a.Result <> ''
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type20 += "AND a.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type20 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type20 += "AND a.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type20 += "AND a.Article = @Article ";
+            }
+
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type20 += " AND @ReceivedDate_s <= a.SubmitDate ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type20 += " AND a.SubmitDate <= @ReceivedDate_e ";
+            }
+
+            if (Req.ReportDate_s.HasValue)
+            {
+                type20 += " AND @ReportDate_s <= a.ReportDate ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type20 += " AND a.ReportDate <= @ReportDate_e ";
+            }
+
+            #endregion
+
+
             switch (Req.Type)
             {
                 case string a when a.Contains("Fabric Crocking & Shrinkage Test"):
@@ -1376,6 +1497,12 @@ WHERE a.Result <> ''
                 case string a when a.Contains("T-Peel Strength Test"):
                     SbSql.Append(type18);
                     break;
+                case string a when a.Contains("Martindale Pilling Test"):
+                    SbSql.Append(type19);
+                    break;
+                case string a when a.Contains("Random Tumble Pilling Test"):
+                    SbSql.Append(type20);
+                    break;
                 default:
                     SbSql.Append(
                         type1 + " union all " + 
@@ -1394,7 +1521,9 @@ WHERE a.Result <> ''
                         type15 + " union all " +
                         type16 + " union all " +
                         type17 + " union all " +
-                        type18);
+                        type18 + " union all " +
+                        type19 + " union all " +
+                        type20);
                     break;
             }
 

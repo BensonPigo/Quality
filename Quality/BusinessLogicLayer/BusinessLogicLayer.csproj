@@ -193,11 +193,13 @@
     <Compile Include="Service\BulkFGT\FabricOvenTestService.cs" />
     <Compile Include="Service\BulkFGT\FabricCrkShrkTest_Service.cs" />
     <Compile Include="Service\BulkFGT\HeatTransferWashService.cs" />
+    <Compile Include="Service\BulkFGT\RandomTumblePillingTestService.cs" />
     <Compile Include="Service\BulkFGT\MockupOvenService.cs" />
     <Compile Include="Service\BulkFGT\MockupWashService.cs" />
     <Compile Include="Service\BulkFGT\MockupCrockingService.cs" />
     <Compile Include="Service\BulkFGT\PhenolicYellowTestService.cs" />
     <Compile Include="Service\BulkFGT\PullingTestService.cs" />
+    <Compile Include="Service\BulkFGT\MartindalePillingTestService.cs" />
     <Compile Include="Service\BulkFGT\SalivaFastnessTestService.cs" />
     <Compile Include="Service\BulkFGT\SearchListService.cs" />
     <Compile Include="Service\BulkFGT\PerspirationFastnessService.cs" />
