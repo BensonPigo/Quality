@@ -304,6 +304,28 @@ namespace Quality.Controllers
             }
             return View(model);
         }
+        public ActionResult HeatTransferWash_RefnoList(string OrderID, string Artwork, string Refno, string TargetID)
+        {
+            var model = _PublicWindowService.Get_HeatTransferWash_Refno(OrderID, Artwork, string.Empty);
+            ViewData["OrderID"] = OrderID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult HeatTransferWash_RefnoList(string OrderID, string Artwork, string Refno, string TargetID, string ReturnType = "")
+        {
+            bool IsExact = ReturnType.ToUpper() == "JSON";
+            var model = _PublicWindowService.Get_HeatTransferWash_Refno(OrderID, Artwork, Refno);
+            ViewData["OrderID"] = OrderID;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
+            return View(model);
+        }
+
 
         public ActionResult FtyInventoryList(string Title, string POID, string Seq1, string Seq2, string TargetID)
         {
