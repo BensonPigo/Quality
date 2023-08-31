@@ -87,15 +87,19 @@
         width: 92vw;
     }
 
+    .DetailTable {
+        width: 170vw;
+    }
+
     .DataTable {
-        width: 92vw;
         font-size: 1rem;
         font-weight: bold;
         border: solid 1px black;
         background-color: white;
     }
-        .DataTable > tbody img{
-            cursor:pointer;
+
+        .DataTable > tbody img {
+            cursor: pointer;
         }
 
         .DataTable > tbody > tr:nth-of-type(odd) {
@@ -112,6 +116,24 @@
             text-align: left;
             vertical-align: middle;
         }
+
+    .aiCommentTooltipText {
+        visibility: hidden;
+        position: fixed;
+        top: 70%; /* 距離上方50%的位置 */
+        left: 15%; /* 距離左邊50%的位置 */
+        z-index: 9999;
+        background-color: pink;
+        border: 1px solid black;
+        border-radius: 2px;
+        color: black;
+        font-size: 1rem;
+        padding: 0.5rem;
+    }
+
+    .aiCommentTooltip:hover .aiCommentTooltipText {
+        visibility: visible;
+    }
 </style>
 
 <div class="main-content">
@@ -160,7 +182,7 @@
                     </div>
                 }
 
-                <div style="margin-top: 1em;">
+                <div style="">
                     <table id="ButtonMode">
                         <tbody>
                             <tr>
@@ -194,9 +216,9 @@
                         </tbody>
                     </table>
                 </div>
-
-                <div style="margin-top: 1em;">
-                    <table class="DataTable">
+                <br />
+                <div style="">
+                    <table class="DataTable" style="width:92vw;">
                         <tbody>
                             <tr>
                                 <td style="width: 10vw;"><h5>Style#</h5></td>
@@ -328,7 +350,8 @@
                         </tbody>
                     </table>
                 </div>
-                <div style="margin-top: 1em; overflow:auto;">
+                <br />
+                <div style="overflow:auto;">
                     <table class="DetailTable DataTable">
                         <thead>
                             @{
@@ -378,7 +401,7 @@
                                     string status = string.IsNullOrEmpty(Model.garmentTest_Details[i].Status) ? string.Empty : Model.garmentTest_Details[i].Status.ToLower();
                                     string aHref = "";
                                     <tr idx="@i">
-                                        <td style="width:10vw;text-align-last:center;">
+                                        <td style="text-align-last:center;">
 
                                             @if (Model.garmentTest_Details[i].ID > 0)
                                             {
@@ -398,10 +421,10 @@
                                                 </a>
                                             }
                                         </td>
-                                        <td style="width:10vw;">
-                                            @Html.TextBoxFor(o => Model.garmentTest_Details[i].OrderID, "", new { @class = "Detail_OrderID",@idx=i })
+                                        <td style="">
+                                            @Html.TextBoxFor(o => Model.garmentTest_Details[i].OrderID, "", new { @class = "Detail_OrderID", @idx = i })
                                         </td>
-                                        <td style="width:10vw;">
+                                        <td style="">
                                             <select class="Detail_SizeCode" id="Model.garmentTest_Details_@{@i}__.SizeCode" name="Model.garmentTest_Details[@i].SizeCode" disabled="disabled">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.SizeCodeList)
                                                 {
@@ -410,10 +433,10 @@
                                                 }
                                             </select>
                                         </td>
-                                        <td style="width:10vw;">
+                                        <td style="">
                                             @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspdate, "{0:yyyy/MM/dd HH:mm:ss}", new { @readonly = "readonly" })
                                         </td>
-                                        <td style="width:10vw;">
+                                        <td style="">
                                             <select id="Model_garmentTest_Details_@{@i}__MtlTypeID" name="Model.garmentTest_Details[@i].MtlTypeID" disabled="disabled">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.MtlTypeIDList)
                                                 {
@@ -427,10 +450,10 @@
                                             string garmentTest_DetailsVal = Model.garmentTest_Details[i].Result == "P" || Model.garmentTest_Details[i].Result == "Pass" ? "Pass" :
                                                             string.IsNullOrEmpty(Model.garmentTest_Details[i].Result) ? string.Empty : "Fail";
                                         }
-                                        <td class="@garmentTest_DetailsFontColor" style="width:10vw;">
+                                        <td class="@garmentTest_DetailsFontColor" style="">
                                             @garmentTest_DetailsVal
                                         </td>
-                                        <td style="width:10vw;">
+                                        <td style="">
                                             @{
                                                 bool NonSeamBreakageTestVal = Model.garmentTest_Details[i].NonSeamBreakageTest;
                                             }
@@ -448,13 +471,28 @@
                                             string WashResultDetailVal = Model.garmentTest_Details[i].WashResult == "P" || Model.garmentTest_Details[i].WashResult == "Pass" ? "Pass" :
                                                                     string.IsNullOrEmpty(Model.garmentTest_Details[i].WashResult) ? string.Empty : "Fail";
                                         }
-                                        <td style="width:10vw;" class="@SeamBreakageResultFontColor">
+                                        <td style="" class="aiCommentTooltip @SeamBreakageResultFontColor">
+                                            @if (SeamBreakageResultVal == "Fail" && (Model.garmentTest.BrandID == "ADIDAS" || Model.garmentTest.BrandID == "REEBOK"))
+                                            {
+                                                <div class="aiCommentTooltipText">@Model.garmentTest_Details[i].SeamBreakageAIComment</div>
+                                                <img src="~/Image/Icon/Warning.png" width="25" height="25" class="" />
+                                            }
                                             @SeamBreakageResultVal
                                         </td>
-                                        <td style="width:10vw;" class="@OdourResultDetailFontColor">
+                                        <td style="" class="aiCommentTooltip @OdourResultDetailFontColor">
+                                            @if (OdourResultDetailVal == "Fail" && (Model.garmentTest.BrandID == "ADIDAS" || Model.garmentTest.BrandID == "REEBOK"))
+                                            {
+                                                <div class="aiCommentTooltipText">@Model.garmentTest_Details[i].OdourAIComment</div>
+                                                <img src="~/Image/Icon/Warning.png" width="25" height="25" class="" />
+                                            }
                                             @OdourResultDetailVal
                                         </td>
-                                        <td style="width:10vw;" class="@WashResultDetailFontColor">
+                                        <td style="" class="aiCommentTooltip @WashResultDetailFontColor">
+                                            @if (WashResultDetailVal == "Fail" && (Model.garmentTest.BrandID == "ADIDAS" || Model.garmentTest.BrandID == "REEBOK"))
+                                            {
+                                                <div class="aiCommentTooltipText">@Model.garmentTest_Details[i].WashAIComment</div>
+                                                <img src="~/Image/Icon/Warning.png" width="25" height="25" class="" />
+                                            }
                                             @WashResultDetailVal
                                         </td>
                                         <td style="width:10vw;">
@@ -463,45 +501,45 @@
                                                 <input class="btnDetailInspectorSelectItem site-btn btn-blue" type="button" style="margin:0;border:0;" value="..." />
                                             </div>
                                         </td>
-                                        <td style="width:10vw;">
+                                        <td style="">
                                             @Html.TextBoxFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_Inspector, "", new { @readonly = "readonly", @style = "width: 8vw", @class = "inspectorName" })
                                         </td>
-                                        <td style="width:10vw;">
+                                        <td style="">
                                             @Html.TextBoxFor(o => Model.garmentTest_Details[i].Remark, "", "")
                                         </td>
-                                        <td style="width:10vw;">
+                                        <td style="">
                                             <img class="SendMail" src="~/Image/Icon/Mail.png" width="30" />
                                         </td>
-                                        <td class="Sender" style="width:10vw;">
+                                        <td class="Sender" style="">
                                             @Html.DisplayFor(o => Model.garmentTest_Details[i].Sender, "", "")
                                         </td>
-                                        <td class="SendDate" style="width:10vw;">
+                                        <td class="SendDate" style="">
                                             @{
                                                 var SendDateVal = Model.garmentTest_Details[i].SendDate.HasValue ? Model.garmentTest_Details[i].SendDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : "";
                                             }
 
                                             @SendDateVal
                                         </td>
-                                        <td style="width:10vw;">
+                                        <td style="">
                                             <img class="ReceiveMail" src="~/Image/Icon/Mail.png" width="30" />
                                         </td>
-                                        <td class="Receiver" style="width:10vw;">
+                                        <td class="Receiver" style="">
                                             @Html.DisplayFor(o => Model.garmentTest_Details[i].Receiver, "", "")
                                         </td>
-                                        <td class="ReceiveDate" style="width:10vw;">
+                                        <td class="ReceiveDate" style="">
                                             @{
                                                 var ReceiveDateVal = Model.garmentTest_Details[i].ReceiveDate.HasValue ? Model.garmentTest_Details[i].ReceiveDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : "";
                                             }
 
                                             @ReceiveDateVal
                                         </td>
-                                        <td style="width:10vw;">
+                                        <td style="">
                                             @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_AddName, "", "")
                                         </td>
-                                        <td style="width:10vw;">
+                                        <td style="">
                                             @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_EditName, "", "")
                                         </td>
-                                        <td style="width:10vw;">
+                                        <td style="">
                                             @if (status == "new")
                                             {
                                                 <img class="detailEdit" src="~/Image/Icon/Edit.png" width="30" />
@@ -514,7 +552,7 @@
                                                 </a>
                                             }
                                         </td>
-                                        <td style="width:10vw;">
+                                        <td style="">
                                             @if (status == "new")
                                             {
                                                 <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />
@@ -744,6 +782,11 @@
                         var subject = "Garment Test - Style:" + $('#garmentTest_StyleID').val() + ", Season:" + $('#garmentTest_SeasonID').val();
                         var body = "Garment Test - Style:" + $('#garmentTest_StyleID').val() + ", Season:" + $('#garmentTest_SeasonID').val() + " had been sent, please receive and confirm";
                         var para = "?subject=" + subject + "&body=" + body;
+                        @*para += "&IsShowAIComment=true";
+                        para += "&Type=Garment Wash Test";
+                        para += "&BrandID=" + '@Model.garmentTest.BrandID';
+                        para += "&SeasonID=" + '@Model.garmentTest.SeasonID';
+                        para += "&StyleID=" + '@Model.garmentTest.StyleID';*@
                         window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
                     }
                     else {

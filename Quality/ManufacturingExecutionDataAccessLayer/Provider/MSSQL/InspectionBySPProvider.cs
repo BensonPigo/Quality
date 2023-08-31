@@ -951,6 +951,7 @@ select [RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
 
 	,AreaCodes = ISNULL( Areas.Val ,'')
 	,Qty= Qty.Val
+	,AIComment = AIComment.Comment
 	,Responsibility = (
 		select top 1 Responsibility
 		from #SampleRFTInspection_Detail a
@@ -982,6 +983,12 @@ outer apply(
 	from #SampleRFTInspection_Detail a
 	where a.GarmentDefectTypeID=gdt.ID AND a.GarmentDefectCodeID=gdc.ID and a.Qty > 0
 )Qty
+outer apply(
+	select TOP 1 acd.Comment
+	from AIComment ac
+	inner join AIComment_Detail acd on ac.Ukey = acd.AICommentUkey
+	where ac.FunctionName ='DefectCategory'  AND Type= gdt.ID
+)AIComment
 where 1=1 and gdt.Junk =0 and gdc.Junk =0
 order by gdt.id,gdc.id
 

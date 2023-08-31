@@ -5,6 +5,7 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Library;
+using Org.BouncyCastle.Ocsp;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
@@ -16,6 +17,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,6 +31,7 @@ namespace BusinessLogicLayer.Service
         IScaleProvider _ScaleProvider;
         IOrdersProvider _OrdersProvider;
         IStyleProvider _StyleProvider;
+        private MailToolsService _MailService;
 
         private string IsTest = ConfigurationManager.AppSettings["IsTest"];
 
@@ -291,7 +294,6 @@ namespace BusinessLogicLayer.Service
             {
                 _FabricOvenTestProvider = new FabricOvenTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricOvenTestProvider.GetFailMailContentData(poID, TestNo);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, out System.Net.Mail.AlternateView plainView);
                 BaseResult baseResult = ToPdfFabricOvenTestDetail(poID, TestNo, out string pdfFileName, isTest);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", pdfFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
@@ -299,10 +301,22 @@ namespace BusinessLogicLayer.Service
                     To = toAddress,
                     CC = ccAddress,
                     Subject = "Fabric Oven Test - Test Fail",
-                    Body = mailBody,
-                    alternateView = plainView,
+                    //Body = mailBody,
+                    //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Fabric Oven Test",
+                    OrderID = poID,
                 };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+
+                sendMail_Request.Body = mailBody;
+                sendMail_Request.alternateView = plainView;
+
                 result = MailTools.SendMail(sendMail_Request);
 
             }

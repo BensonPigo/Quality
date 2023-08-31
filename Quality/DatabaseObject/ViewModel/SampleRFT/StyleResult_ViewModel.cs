@@ -26,7 +26,9 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string RFT { get; set; }
         public string ProductType { get; set; }
         public string BuyReadyDate { get; set; }
-
+        public string SampleStage { get; set; }
+        public string OrderTypeSerialKey { get; set; }
+        
         public bool Result { get; set; }
         public string MsgScript { get; set; }
         public string StyleRRLRPath { get; set; }
@@ -81,6 +83,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string Type { get; set; }
         public string TestName { get; set; }
         public string LastResult { get; set; }
+        public string AIComment { get; set; }
         public DateTime? LastTestDate { get; set; }
     }
     public class StyleResult_PoList

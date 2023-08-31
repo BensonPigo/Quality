@@ -743,6 +743,9 @@
                         para += "&Subject=" + "Fabric Crocking Test – Seq:" + '@Model.Crocking_Main.SEQ';
                         para += "&Body=" + "Attachment is Fabric Crocking Test– Seq:" + '@Model.Crocking_Main.SEQ' + " detail data";
                         para += "&file=" + data.FileName;
+                        @*para += "&IsShowAIComment=true";
+                        para += "&Type=Fabric Crocking & Shrinkage Test";
+                        para += "&OrderID=" + '@Model.Crocking_Main.POID';*@
                         window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
                     }
                     else {
@@ -854,12 +857,12 @@
             to += value.To + ';';
             cc += value.CC + ';';
         });
-
+        var poid = '@Model.Crocking_Main.POID';
         $.ajax({
             url: "@Url.Action("FailMail_Crocking", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ ID: $('#ID').val(), TO: to, CC: cc }),
+            data: JSON.stringify({ ID: $('#ID').val(), TO: to, CC: cc, OrderID: poid }),
             async: false,
             success: function (data) {
                 if (data.result) {

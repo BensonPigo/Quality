@@ -5,7 +5,7 @@
     string MsgScript = ViewData["MsgScript"] == null ? "" : ViewData["MsgScript"].ToString();
 }
 
-@model List<PrintBarcode_ViewModel>
+@model PrintBarcode_ViewModel
 
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
 <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
@@ -127,25 +127,25 @@
                 <div>
                     @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @class = "", @name = "SearchFrom", @id = "SearchFrom" }))
                     {
-                    <div>
-                        @Html.Hidden("StyleUkey")
-                        <label class="QueryLab">Brand</label>
-                        <input type="text" name="BrandID" class="searchText8vw" id="txtBrand" />
-                        <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="BrandSelectItem" value="..." />
-                        &nbsp;&nbsp;
-                        <label class="QueryLab">Season</label>
-                        <input type="text" name="SeasonID" class="searchText5vw" id="txtSeason" />
-                        <input id="btnSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SeasonSelectItem" value="..." />
-                        &nbsp;&nbsp;
-                        <label class="QueryLab">Style</label>
-                        <input type="text" name="StyleID" class="searchText12vw" id="txtStyle" />
-                        <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="StyleSelectItem" value="..." />
-                        &nbsp;&nbsp;
-                        <input type="submit" name="name" id="btnQuery" value="Query" />
+                        <div>
+                            @Html.Hidden("StyleUkey")
+                            <label class="QueryLab">Brand</label>
+                            <input type="text" name="BrandID" class="searchText8vw" id="txtBrand" />
+                            <input id="btnBrandSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="BrandSelectItem" value="..." />
+                            &nbsp;&nbsp;
+                            <label class="QueryLab">Season</label>
+                            <input type="text" name="SeasonID" class="searchText5vw" id="txtSeason" />
+                            <input id="btnSeasonSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="SeasonSelectItem" value="..." />
+                            &nbsp;&nbsp;
+                            <label class="QueryLab">Style</label>
+                            <input type="text" name="StyleID" class="searchText12vw" id="txtStyle" />
+                            <input id="btnStyleSelectItem" type="button" class="site-btn btn-blue" style="margin:0;border:0;" name="StyleSelectItem" value="..." />
+                            &nbsp;&nbsp;
+                            <input type="submit" name="name" id="btnQuery" value="Query" />
 
-                        &nbsp;&nbsp;
-                        <input type="button" name="name" id="btnPrintBarcode" value="Print Barcode" />
-                    </div>
+                            &nbsp;&nbsp;
+                            <input type="button" name="name" id="btnPrintBarcode" value="Print Barcode" />
+                        </div>
                     }
                 </div>
                 <br />
@@ -162,14 +162,16 @@
                                 <th>Style Name</th>
                                 <th>Description</th>
                                 <th>Product Type</th>
+                                <th>Sample Stage</th>
                         </thead>
 
                         <tbody>
-                            @foreach (var item in Model)
+                            @{ int rowIdx = 0;}
+                            @foreach (var item in Model.Details)
                             {
                                 <tr class="row-content">
                                     <td>
-                                        <input type="checkbox" name="StyleUkey" value="@item.StyleUkey" idx="@item.StyleID" />
+                                        <input type="checkbox" name="StyleUkey" rowIdx="@rowIdx" value="@item.StyleUkey" idx="@item.StyleID" />
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.StyleID)
@@ -189,7 +191,16 @@
                                     <td>
                                         @Html.DisplayFor(modelItem => item.ProductType)
                                     </td>
+                                    <td>
+                                        <select rowIdx="@rowIdx">
+                                            @foreach (var option in Model.SampleStage_Source)
+                                            {
+                                                <option value="@option.Value">@option.Text</option>
+                                            }
+                                        </select>
+                                    </td>
                                 </tr>
+                                rowIdx++;
                             }
                         </tbody>
                     </table>
@@ -248,10 +259,14 @@
 
             selectList.each(function (obj) {
                 var styleUkey = $(this).val();
+                var rowIdx = $(this).attr("rowIdx");
+                var sampleStageKey = $(`select[rowIdx=${rowIdx}]`).val();
+
                 var styleID = $(this).attr('idx');
                 var list = {
                     StyleUkey: styleUkey,
-                    StyleID: styleID
+                    StyleID: styleID,
+                    SampleStageSerialKey: sampleStageKey,
                 };
 
                 DataList.push(list);

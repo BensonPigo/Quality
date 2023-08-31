@@ -20,6 +20,7 @@ namespace DatabaseObject.RequestModel
         public string MDivisionID { get; set; }
         public string InspectionTableName { get; set; }
         public string StyleUkey { get; set; }
+        public string OrderTypeSerialKey { get; set; }
 
         public EnumCallType CallType { get; set; }
     }

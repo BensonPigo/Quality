@@ -1195,6 +1195,9 @@
                         para += "&Subject=" + "Water Fastness Test – ReportNo:" + '@Model.Main.ReportNo';
                         para += "&Body=" + "Attachment is Water Fastness Test– ReportNo:" + '@Model.Main.ReportNo' + " detail data";
                         para += "&file=" + data.FileName;
+                        @*para += "&IsShowAIComment=true";
+                        para += "&Type=Water Fastness Test";
+                        para += "&OrderID=" + '@Model.Main.POID';*@
                         window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
                     }
                     else {

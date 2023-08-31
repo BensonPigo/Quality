@@ -8,16 +8,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 
 namespace Quality.Controllers
 {
     public class SendMailAttachfilesController : BaseController
     {
         private MailTools _SendMail;
+        private MailToolsService _Service;
 
         public SendMailAttachfilesController()
         {
             _SendMail = new MailTools();
+            _Service = new MailToolsService();
         }
 
         public ActionResult SendMailer(string TO, string CC, string subject, string body, string file)
@@ -39,6 +42,13 @@ namespace Quality.Controllers
         [HttpPost]
         public ActionResult SendMailer(SendMail_Request _Request)
         {
+            if (_Request.IsShowAIComment)
+            {
+                string comment = _Service.GetAICommet(_Request);
+                string buyReadyDate = _Service.GetBuyReadyDate(_Request);
+                _Request.Body = _Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+            }
+
             SendMail_Result result = MailTools.SendMail(_Request);
 
             string js = "";

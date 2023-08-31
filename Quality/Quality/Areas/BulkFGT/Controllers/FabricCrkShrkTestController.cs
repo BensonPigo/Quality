@@ -111,7 +111,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
             ViewBag.ScaleIDsList = new SetListItem().ItemListBinding(fabricCrkShrkTestCrocking_Result.ScaleIDs);
-            ViewBag.FactoryID = this.FactoryID;
+            //ViewBag.FactoryID = this.FactoryID;
             ViewBag.UserMail = this.UserMail;
             return View(fabricCrkShrkTestCrocking_Result);
         }
@@ -274,9 +274,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult FailMail_Crocking(long ID, string TO, string CC)
+        public JsonResult FailMail_Crocking(long ID, string TO, string CC, string OrderID)
         {
-            SendMail_Result result = _FabricCrkShrkTest_Service.SendCrockingFailResultMail(TO, CC, ID, false);
+            SendMail_Result result = _FabricCrkShrkTest_Service.SendCrockingFailResultMail(TO, CC, ID, false, OrderID);
             return Json(result);
         }
 
@@ -472,9 +472,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult FailMail_Heat(long ID, string TO, string CC)
+        public JsonResult FailMail_Heat(long ID, string TO, string CC, string OrderID)
         {
-            SendMail_Result result = _FabricCrkShrkTest_Service.SendHeatFailResultMail(TO, CC, ID, false);
+            SendMail_Result result = _FabricCrkShrkTest_Service.SendHeatFailResultMail(TO, CC, ID, false, OrderID);
             return Json(result);
         }
 
@@ -688,9 +688,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult FailMail_Wash(long ID, string TO, string CC)
+        public JsonResult FailMail_Wash(long ID, string TO, string CC, string OrderID)
         {
-            SendMail_Result result = _FabricCrkShrkTest_Service.SendWashFailResultMail(TO, CC, ID, false);
+            SendMail_Result result = _FabricCrkShrkTest_Service.SendWashFailResultMail(TO, CC, ID, false, OrderID);
             return Json(result);
         }
 

@@ -148,6 +148,7 @@
     <Compile Include="Provider\MSSQL\GarmentTestDetailShrinkageProvider.cs" />
     <Compile Include="Provider\MSSQL\GarmentTestProvider.cs" />
     <Compile Include="Provider\MSSQL\InspectionTypeProvider.cs" />
+    <Compile Include="Provider\MSSQL\MailToolsProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupCrockingDetailProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupCrockingProvider.cs" />
     <Compile Include="Provider\MSSQL\MockupOvenDetailProvider.cs" />
