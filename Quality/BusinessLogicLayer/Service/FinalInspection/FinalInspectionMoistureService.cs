@@ -175,6 +175,16 @@ namespace BusinessLogicLayer.Service
                     }
                 }
 
+                if (finalInspection.InspectionStage == "Final" && BrandIDs.Where(o => o.ToUpper() == "LLL").Any())
+                {
+                    isMoistureExists = _FinalInspectionProvider.CheckMoistureExists(moistureResult.FinalInspectionID, string.Empty, null);
+                    if (!isMoistureExists)
+                    {
+                        result.Result = false;
+                        result.ErrorMessage = "Must be inspected 3 garments..";
+                        return result;
+                    }
+                }
             }
             catch (Exception ex)
             {

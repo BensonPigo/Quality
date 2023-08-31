@@ -985,7 +985,7 @@ where   ID = @FinalInspectionID
                             { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
                             { "@GarmentDefectTypeID", DbType.String, defectItem.DefectType },
                             { "@GarmentDefectCodeID", DbType.String, defectItem.DefectCode },
-                            { "@AreaCode", DbType.String, defectItem.AreaCode },
+                            { "@AreaCode", DbType.String, defectItem.AreaCode ?? string.Empty},
                             { "@Ukey", DbType.Int64, defectItem.Ukey },
                             { "@Qty", DbType.Int32, defectItem.Qty }
                         };

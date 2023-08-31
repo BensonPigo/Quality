@@ -1281,13 +1281,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 fservice.UpdateStepByAction(moistureResult.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Previous);
                 return this.RedirectAction(moistureResult.FinalInspectionID);
-                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                //{
-                //    ID = moistureResult.FinalInspectionID,
-                //    InspectionStep = "Insp-BeautifulProductAudit"
-                //}, "Insp-Moisture", this.UserID);
-
-                //return RedirectToAction("BeautifulProductAudit", new { FinalInspectionID = moistureResult.FinalInspectionID });
             }
             else if (goPage == "Next")
             {
@@ -1299,13 +1292,6 @@ namespace Quality.Areas.FinalInspection.Controllers
                 {
                     fservice.UpdateStepByAction(moistureResult.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Next);
                     return this.RedirectAction(moistureResult.FinalInspectionID);
-                    //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                    //{
-                    //    ID = moistureResult.FinalInspectionID,
-                    //    InspectionStep = "Insp-Others"
-                    //}, "Insp-Moisture", this.UserID);
-
-                    //return RedirectToAction("Others", new { FinalInspectionID = moistureResult.FinalInspectionID });
                 }
                 else
                 {
