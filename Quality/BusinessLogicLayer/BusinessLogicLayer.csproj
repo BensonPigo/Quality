@@ -203,6 +203,7 @@
     <Compile Include="Service\BulkFGT\PerspirationFastnessService.cs" />
     <Compile Include="Service\BulkFGT\TPeelStrengthTestService.cs" />
     <Compile Include="Service\BulkFGT\WaterFastnessService.cs" />
+    <Compile Include="Service\BulkFGT\WickingHeightTestService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionOthersService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionMeasurementService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionMoistureService.cs" />
