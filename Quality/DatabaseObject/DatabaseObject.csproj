@@ -191,6 +191,7 @@
     <Compile Include="ResultModel\WaterFastness_Result.cs" />
     <Compile Include="ViewModel\BACriteria_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\Accessory_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\HydrostaticPressureWaterproofTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\PhenolicYellowTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\AgingHydrolysisTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\FabricColorFastness_ViewModel.cs" />
