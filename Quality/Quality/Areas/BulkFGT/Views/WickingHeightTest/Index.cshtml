@@ -285,11 +285,11 @@
 <div class="main-content">
     <header class="page-header">
         <h3>
-            <i class=""></i><span>Saliva Fastness Test</span>
+            <i class=""></i><span>Wicking Height Test</span>
         </h3>
         <div class="breadcrumb">
             <div>Home</div>
-            <div class="current">Saliva Fastness Test</div>
+            <div class="current">Wicking Height Test</div>
         </div>
     </header>
 
@@ -577,15 +577,17 @@
                                                     </td>
                                                 }
                                                 <td>
-                                                    @Html.HiddenFor(o => Model.DetaiItemlList[j].WickingHeightTestDetailUkey)
-                                                    @Html.HiddenFor(o => Model.DetaiItemlList[j].EvaluationType)
-                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[j].EvaluationItem, new { @class = "" })
+                                                    @Html.HiddenFor(o => Model.DetaiItemlList[i * 3 + j].ReportNo)
+                                                    @Html.HiddenFor(o => Model.DetaiItemlList[i * 3 + j].WickingHeightTestDetailUkey)
+                                                    @Html.HiddenFor(o => Model.DetaiItemlList[i * 3 + j].Ukey)
+                                                    @Html.HiddenFor(o => Model.DetaiItemlList[i * 3 + j].EvaluationType)
+                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[i * 3 + j].EvaluationItem, new { @class = "" })
                                                 </td>
                                                 <td>
-                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[j].WarpValues, new { @idx = i, @class = "CanEdit", @type = "number", @step = "0.01", @min = "0", @onchange = "ValuesCheck(this)" })
+                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[i * 3 + j].WarpValues, new { @idx = i, @class = "CanEdit", @type = "number", @step = "0.01", @min = "0", @onchange = "ValuesCheck(this)" })
                                                 </td>
                                                 <td>
-                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[j].WarpTime, new { @idx = i, @class = "CanEdit", @type = "number", @step = "1", @min = "0", @onchange = "ValuesCheck(this)" })
+                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[i * 3 + j].WarpTime, new { @idx = i, @class = "CanEdit", @type = "number", @step = "1", @min = "0", @onchange = "ValuesCheck(this)" })
                                                 </td>
                                                 @if (j == 0)
                                                 {
@@ -596,10 +598,10 @@
                                                     </td>
                                                 }
                                                 <td>
-                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[j].WeftValues, new { @idx = i, @class = "CanEdit", @type = "number", @step = "0.01", @min = "0", @onchange = "ValuesCheck(this)" })
+                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[i * 3 + j].WeftValues, new { @idx = i, @class = "CanEdit", @type = "number", @step = "0.01", @min = "0", @onchange = "ValuesCheck(this)" })
                                                 </td>
                                                 <td>
-                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[j].WeftTime, new { @idx = i, @class = "CanEdit", @type = "number", @step = "1", @min = "0", @onchange = "ValuesCheck(this)" })
+                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[i * 3 + j].WeftTime, new { @idx = i, @class = "CanEdit", @type = "number", @step = "1", @min = "0", @onchange = "ValuesCheck(this)" })
                                                 </td>
 
                                                 @if (j == 0)
@@ -614,7 +616,7 @@
                                                     </td>
                                                 }
                                                 <td>
-                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[j].LastUpadate, new { @class = "" })
+                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[i * 3 + j].LastUpadate, new { @class = "" })
                                                 </td>
                                             </tr>
                                         }
@@ -867,11 +869,6 @@
         $('#Main_TestWeftPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
     }
 
-    function GetPicture(data) {
-        $('#Main_TestBeforePicture').val(data.BeforePicture.replace("data:image/png;base64,", ""));
-        $('#Main_TestAfterPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
-    }
-
     function ClickEventBind() {
 
         $('.toolBarItem ,detailDelete').unbind('click');
@@ -931,6 +928,8 @@
             para += "&" + "TargetAfterColumn=Main_TestWeftPicture";
             para += "&" + "BeforeColumn=TestWarpPicture";
             para += "&" + "AfterColumn=TestWeftPicture";
+            para += "&" + "TargetBeforeHeader=WARP";
+            para += "&" + "TargetAfterHeader=WEFT";
             para += "&" + "PKey_1=ReportNo";
             para += "&" + "PKey_1_Val=" + $('#Main_ReportNo').val();
             window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
@@ -1148,9 +1147,53 @@
     }
 
     function ValuesCheck(sel) {
-        const elem = document.getElementById(sel.ID);
+        if ($('#Main_OrderID').val() == '') {
+            msg.WithError('Please input SP# first.');
+            sel.value = null;
+            return;
+        }
 
-        console.log(sel.ID);
-        console.log(elem.attr('idx'));
+        const type = $('#Main_FabricType').val();        
+        const elem = document.getElementById(sel.id);
+        const row = elem.getAttribute('idx');
+        let testType;
+
+        let values0, values1, values2;
+        if (sel.id.match("Warp")) {
+            testType = "Warp";           
+        }
+        else if (sel.id.match("Weft")) {
+            testType = "Weft";    
+        }
+
+        if (row == 0) {
+            values0 = $('#DetaiItemlList_0__' + testType + 'Values').val();
+            values1 = $('#DetaiItemlList_1__' + testType + 'Values').val();
+            values2 = $('#DetaiItemlList_2__' + testType + 'Values').val();
+        }
+        else if (row == 1) {
+            values0 = $('#DetaiItemlList_3__' + testType + 'Values').val();
+            values1 = $('#DetaiItemlList_4__' + testType + 'Values').val();
+            values2 = $('#DetaiItemlList_5__' + testType + 'Values').val();
+        }
+
+        let avgVal = 0;
+        let resultVal = "Fail";
+        let color = "red";
+        if (values0 != undefined && values1 != undefined && values2 != undefined &&
+            parseInt(values0) > 0 && parseInt(values1) > 0 && parseInt(values2) > 0) {
+            avgVal = (parseInt(values0) + parseInt(values1) + parseInt(values2)) * 1.0 / 3;
+            if (type == "WOVEN" && avgVal >= 90) {
+                resultVal = "Pass";
+                color = "blue";
+            }
+            else if (type == "KNIT" && avgVal >= 100) {                
+                resultVal = "Pass";
+                color = "blue";
+            }
+
+            $('#DetailList_' + row + '__' + testType + 'Average').val(avgVal);
+            $('#DetailList_' + row + '__' + testType + 'Result').val(resultVal).css({ color: color });
+        }
     }
 </script>

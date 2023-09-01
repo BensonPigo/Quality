@@ -1,5 +1,6 @@
 ﻿using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
+using DatabaseObject.ProductionDB;
 using DatabaseObject.Public;
 using DatabaseObject.ViewModel.BulkFGT;
 using System;
@@ -31,7 +32,6 @@ from Orders o
 inner join Order_Article oa on oa.id = o.ID
 inner join Style s on o.StyleUkey = s.Ukey
 where o.Category ='B'  --只抓大貨單
-"";
 ";
 
             if (!string.IsNullOrEmpty(Req.OrderID))
@@ -119,17 +119,18 @@ where 1=1
             SQLParameterCollection objParameter = new SQLParameterCollection();
 
             string sqlcmd = $@"
-select   a.*
-from WickingHeightTest_Detail_Item a WITH(NOLOCK)
+select wdi.* , wd.EvaluationType
+from WickingHeightTest_Detail_Item wdi WITH(NOLOCK)
+inner join WickingHeightTest_Detail wd WITH(NOLOCK) on wdi.WickingHeightTestDetailUkey = wd.Ukey
 where 1=1
 ";
             if (!string.IsNullOrEmpty(Req.ReportNo))
             {
-                sqlcmd += " and a.ReportNo = @ReportNo" + Environment.NewLine;
+                sqlcmd += " and wdi.ReportNo = @ReportNo" + Environment.NewLine;
                 objParameter.Add("@ReportNo", Req.ReportNo);
             }
 
-            sqlcmd += "Order by WickingHeightTestDetailUkey, Ukey, EvaluationItem";
+            sqlcmd += "Order by wdi.WickingHeightTestDetailUkey, wdi.Ukey, wd.EvaluationType, wdi.EvaluationItem";
 
             var tmp = ExecuteList<WickingHeightTest_Detail_Item>(CommandType.Text, sqlcmd, objParameter);
             return tmp.Any() ? tmp.ToList() : new List<WickingHeightTest_Detail_Item>();
@@ -324,6 +325,7 @@ delete from SciPMSFile_WickingHeightTest WHERE ReportNo = @ReportNo
                     "ReportNo,Ukey",
                     "WickingHeightTestDetailUkey,EvaluationItem,WarpValues,WarpTime,WeftValues,WeftTime");
 
+            int i;
             string insertDetail = $@" ----寫入 WickingHeightTest_Detail
 
 DECLARE @InsertOutput TABLE (ReportNo varchar(14), Ukey bigint, EvaluationType varchar(20))
@@ -344,16 +346,15 @@ SET EditDate = GETDATE() , EditName = @UserID
     ,WeftResult = @WeftResult
     ,Remark = @Remark
 WHERE ReportNo = @ReportNo
-AND Ukey = @Ukey
-;
+AND Ukey = @Ukey;
 ";
-           
+
             string deleteDetail = $@" ----刪除 WickingHeightTest_Detail
 DELETE FROM WickingHeightTest_Detail where ReportNo = @ReportNo AND Ukey = @Ukey
 DELETE FROM WickingHeightTest_Detail_Item where ReportNo = @ReportNo and WickingHeightTestDetailUkey = @Ukey
 ";
 
-            int i;
+            
             foreach (var detailItem in needUpdateDetailList)
             {
                 SQLParameterCollection listDetailPar = new SQLParameterCollection();
@@ -364,45 +365,46 @@ DELETE FROM WickingHeightTest_Detail_Item where ReportNo = @ReportNo and Wicking
                 {
                     case CompareStateType.Add:
                         listDetailPar.Add(new SqlParameter($"@EvaluationType", detailItem.EvaluationType));
-                        listDetailPar.Add(new SqlParameter($"@WarpAverage", detailItem.WarpAverage ?? 0));
+                        listDetailPar.Add(new SqlParameter($"@WarpAverage", detailItem.WarpAverage ?? 0) { Scale = 2 });
                         listDetailPar.Add(new SqlParameter($"@WarpResult", detailItem.WarpResult ?? string.Empty));
-                        listDetailPar.Add(new SqlParameter($"@WeftAverage", detailItem.WeftAverage ?? 0));
+                        listDetailPar.Add(new SqlParameter($"@WeftAverage", detailItem.WeftAverage ?? 0) { Scale = 2 });
                         listDetailPar.Add(new SqlParameter($"@WeftResult", detailItem.WeftResult ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? string.Empty));
 
                         i = 1;
+                        string insertDetailItem = string.Empty;
                         foreach (var item in nowDetailItemData.Where(x => x.EvaluationType == detailItem.EvaluationType))
                         {
-                            insertDetail += $@"
+                            insertDetailItem += $@"
 INSERT INTO　WickingHeightTest_Detail_Item (ReportNo, WickingHeightTestDetailUkey, EvaluationItem, WarpValues, WarpTime, WeftValues, WeftTime, EditName, EditDate)
 select t.ReportNo, [WickingHeightTestDetailUkey] = t.Ukey, @EvaluationItem{i}, @WarpValues{i}, @WarpTime{i}, @WeftValues{i}, @WeftTime{i}, @UserID, GETDATE()
 from @InsertOutput t
 ";
                             listDetailPar.Add(new SqlParameter($"@EvaluationItem{i}", item.EvaluationItem));
-                            listDetailPar.Add(new SqlParameter($"@WarpValues{i}", item.WarpValues ?? 0));
+                            listDetailPar.Add(new SqlParameter($"@WarpValues{i}", item.WarpValues ?? 0) { Scale = 2 });
                             listDetailPar.Add(new SqlParameter($"@WarpTime{i}", item.WarpTime ?? 0));
-                            listDetailPar.Add(new SqlParameter($"@WeftValues{i}", item.WeftValues ?? 0));
+                            listDetailPar.Add(new SqlParameter($"@WeftValues{i}", item.WeftValues ?? 0) { Scale = 2 });
                             listDetailPar.Add(new SqlParameter($"@WeftTime{i}", item.WeftTime ?? 0));
                             i++;
-                        }
+                        }                       
 
-                        ExecuteNonQuery(CommandType.Text, insertDetail, listDetailPar);
+                        ExecuteNonQuery(CommandType.Text, insertDetail + insertDetailItem, listDetailPar);
 
                         break;
                     case CompareStateType.Edit:
                         listDetailPar.Add(new SqlParameter($"@Ukey", detailItem.Ukey));
                         listDetailPar.Add(new SqlParameter($"@EvaluationType", detailItem.EvaluationType));
-                        listDetailPar.Add(new SqlParameter($"@WarpAverage", detailItem.WarpAverage ?? 0));
+                        listDetailPar.Add(new SqlParameter($"@WarpAverage", detailItem.WarpAverage ?? 0) { Scale = 2 });
                         listDetailPar.Add(new SqlParameter($"@WarpResult", detailItem.WarpResult ?? string.Empty));
-                        listDetailPar.Add(new SqlParameter($"@WeftAverage", detailItem.WeftAverage ?? 0));
+                        listDetailPar.Add(new SqlParameter($"@WeftAverage", detailItem.WeftAverage ?? 0) { Scale = 2 });
                         listDetailPar.Add(new SqlParameter($"@WeftResult", detailItem.WeftResult ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? string.Empty));
 
                         i = 1;
+                        string updateDetaillItem = string.Empty;
                         foreach (var item in nowDetailItemData.Where(x => x.EvaluationType == detailItem.EvaluationType))
                         {
-                            updateDetail += $@"
-
+                            updateDetaillItem += $@"
 UPDATE WickingHeightTest_Detail_Item
 SET EditDate = GETDATE() , EditName = @UserID
     ,EvaluationItem = @EvaluationItem{i}
@@ -413,19 +415,19 @@ SET EditDate = GETDATE() , EditName = @UserID
 WHERE ReportNo = @ReportNo
 AND Ukey = @Ukey{i}
 AND WickingHeightTestDetailUkey = @WickingHeightTestDetailUkey{i}
-
 ";
+
                             listDetailPar.Add(new SqlParameter($"@WickingHeightTestDetailUkey{i}", detailItem.Ukey));
                             listDetailPar.Add(new SqlParameter($"@Ukey{i}", item.Ukey));
                             listDetailPar.Add(new SqlParameter($"@EvaluationItem{i}", item.EvaluationItem));
-                            listDetailPar.Add(new SqlParameter($"@WarpValues{i}", item.WarpValues ?? 0));
+                            listDetailPar.Add(new SqlParameter($"@WarpValues{i}", item.WarpValues ?? 0) { Scale = 2 });
                             listDetailPar.Add(new SqlParameter($"@WarpTime{i}", item.WarpTime ?? 0));
-                            listDetailPar.Add(new SqlParameter($"@WeftValues{i}", item.WeftValues ?? 0));
+                            listDetailPar.Add(new SqlParameter($"@WeftValues{i}", item.WeftValues ?? 0) { Scale = 2 });
                             listDetailPar.Add(new SqlParameter($"@WeftTime{i}", item.WeftTime ?? 0));
                             i++;
                         }
-
-                        ExecuteNonQuery(CommandType.Text, updateDetail, listDetailPar);
+                        
+                        ExecuteNonQuery(CommandType.Text, updateDetail += updateDetaillItem, listDetailPar);
                         break;
                     case CompareStateType.Delete:
                         listDetailPar.Add(new SqlParameter($"@ReportNo", detailItem.ReportNo));
@@ -457,17 +459,16 @@ AND Ukey = @Ukey
             // 只有第三層 update
             foreach (var item in needUpdateDetailItemList.Where(x => x.StateType == CompareStateType.Edit))
             {
-                SQLParameterCollection listDetailPar = new SQLParameterCollection
-                {
-                    new SqlParameter($"@ReportNo", sources.Main.ReportNo),                    
-                    new SqlParameter($"@Ukey", item.Ukey),
-                    new SqlParameter($"@EvaluationItem", item.EvaluationItem),
-                    new SqlParameter($"@WarpValues", item.WarpValues ?? 0),
-                    new SqlParameter($"@WarpTime", item.WarpTime ?? 0),
-                    new SqlParameter($"@WeftValues", item.WeftValues ?? 0),
-                    new SqlParameter($"@WeftTime", item.WeftTime ?? 0),
-                    new SqlParameter($"@UserID", UserID)
-                };
+                SQLParameterCollection listDetailPar = new SQLParameterCollection();
+                listDetailPar.Add(new SqlParameter($"@ReportNo", sources.Main.ReportNo));
+                listDetailPar.Add(new SqlParameter($"@Ukey", item.Ukey));
+                listDetailPar.Add(new SqlParameter($"@EvaluationItem", item.EvaluationItem));
+                listDetailPar.Add(new SqlParameter($"@WarpValues", item.WarpValues ?? 0) { Scale = 2 });
+                listDetailPar.Add(new SqlParameter($"@WarpTime", item.WarpTime ?? 0));
+                listDetailPar.Add(new SqlParameter($"@WeftValues", item.WeftValues ?? 0) { Scale = 2 });
+                listDetailPar.Add(new SqlParameter($"@WeftTime", item.WeftTime ?? 0));
+                listDetailPar.Add(new SqlParameter($"@UserID", UserID));      
+
                 ExecuteNonQuery(CommandType.Text, updateDetail, listDetailPar);
             }
 

@@ -404,7 +404,134 @@ namespace BusinessLogicLayer.Service.BulkFGT
             string basefileName = "WickingHeightTest";
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
 
-            // Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
+            Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
+            try
+            {
+                _Provider = new WickingHeightTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                // 取得報表資料
+
+                WickingHeightTest_ViewModel model = this.GetData(new WickingHeightTest_Request() { ReportNo = ReportNo });
+
+                DataTable ReportTechnician = _Provider.GetReportTechnician(new WickingHeightTest_Request() { ReportNo = ReportNo });
+
+                excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
+                Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
+
+                // 取得工作表上所有圖形物件
+                Microsoft.Office.Interop.Excel.Shapes shapes = worksheet.Shapes;
+
+                string reportNo = model.Main.ReportNo;
+                worksheet.Cells[2, 3] = model.Main.ReportNo;
+                worksheet.Cells[2, 6] = model.Main.ReportDate;
+
+                worksheet.Cells[3, 3] = model.Main.SubmitDate;
+                worksheet.Cells[3, 6] = model.Main.BrandID;
+
+                worksheet.Cells[4, 3] = model.Main.SeasonID;
+                worksheet.Cells[4, 6] = model.Main.OrderID;
+
+                worksheet.Cells[5, 3] = model.Main.StyleID;
+                worksheet.Cells[5, 6] = "Bulk";
+
+                worksheet.Cells[6, 3] = model.Main.Article;
+                worksheet.Cells[6, 6] = model.Main.FabricType;
+
+                worksheet.Cells[7, 2] = model.Main.Result;
+                worksheet.Cells[7, 5] = model.Main.FabricDescription;
+
+                // Technician 欄位
+                if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
+                {
+                    string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
+
+                    // 姓名
+                    worksheet.Cells[21, 3] = TechnicianName;
+
+                    // Signture 圖片
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[22, 3];
+                    if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                    {
+
+                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
+
+                        MemoryStream ms = new MemoryStream(TestBeforePicture);
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                        string imageName = $"{Guid.NewGuid()}.jpg";
+                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                        img.Save(imgPath);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, cell.Width, cell.Height);
+
+                    }
+                }
+
+                // 表身處理
+                if (model.DetailList.Any() && model.DetailList.Count > 1)
+                {
+                    long detailUkey = model.DetailList.Where(x => x.EvaluationType == "Before Wash").Select(x => x.Ukey).FirstOrDefault();
+                    int i = 0;
+                    foreach(var item in model.DetaiItemlList.Where(x => x.WickingHeightTestDetailUkey == detailUkey).OrderBy(x => x.Ukey))
+                    {
+                        worksheet.Cells[14, 2 + i] = string.Format("{0}cm/{1}min", item.WarpValues.ToString(), item.WarpTime.ToString());
+                        worksheet.Cells[14, 5 + i] = string.Format("{0}cm/{1}min", item.WeftValues.ToString(), item.WeftTime.ToString());
+                        i++;
+                    }
+
+                    detailUkey = model.DetailList.Where(x => x.EvaluationType == "After Wash").Select(x => x.Ukey).FirstOrDefault();
+                    i = 0;
+                    foreach (var item in model.DetaiItemlList.Where(x => x.WickingHeightTestDetailUkey == detailUkey).OrderBy(x => x.Ukey))
+                    {
+                        worksheet.Cells[18, 2 + i] = string.Format("{0}cm/{1}min", item.WarpValues.ToString(), item.WarpTime.ToString());
+                        worksheet.Cells[18, 5 + i] = string.Format("{0}cm/{1}min", item.WeftValues.ToString(), item.WeftTime.ToString());
+                        i++;
+                    }
+                }
+
+                string fileName = $"WickingHeightTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
+
+                string filePdfName = $"WickingHeightTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
+
+
+                Microsoft.Office.Interop.Excel.Workbook workbook = excel.ActiveWorkbook;
+                workbook.SaveAs(fullExcelFileName);
+
+                workbook.Close();
+                excel.Quit();
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(workbook);
+
+                // 轉PDF再繼續進行以下
+                if (isPDF)
+                {
+                    if (ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
+                    {
+                        result.TempFileName = filePdfName;
+                        result.Result = true;
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Convert To PDF Fail";
+                        result.Result = false;
+                    }
+                }
+                else
+                {
+                    result.TempFileName = fileName;
+                    result.Result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.Message;
+                result.Result = false;
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(excel);
+            }
 
             return result;
         }
