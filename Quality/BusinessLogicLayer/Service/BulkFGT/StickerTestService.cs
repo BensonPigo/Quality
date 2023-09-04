@@ -1,0 +1,607 @@
+﻿using ADOHelper.Utility;
+using DatabaseObject.ViewModel.BulkFGT;
+using iTextSharp.text.pdf;
+using iTextSharp.text;
+using Library;
+using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
+using Sci;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data;
+
+namespace BusinessLogicLayer.Service.BulkFGT
+{
+    public class StickerTestService
+    {
+        private StickerTestProvider _Provider;
+        public StickerTest_ViewModel GetDefaultModel(bool IsNew = false)
+        {
+            StickerTest_ViewModel model = new StickerTest_ViewModel()
+            {
+                Request = new StickerTest_Request(),
+                Main = new StickerTest_Main()
+                {
+                    // ISP20230288 寫死4
+                    //MachineReport = "",
+                },
+
+                ReportNo_Source = new List<System.Web.Mvc.SelectListItem>(),
+                Article_Source = new List<System.Web.Mvc.SelectListItem>(),
+                DetailList = new List<StickerTest_Detail>(),
+                DetailItemList = new List<StickerTest_Detail_Item>(),
+
+            };
+
+            try
+            {
+                _Provider = new StickerTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                model.Item_Source = _Provider.GetTestItems();
+
+                if (IsNew)
+                {
+                    // 取得預設表身選項
+                    var TestItems = _Provider.GetTestItems().Where(o => o.Result == "Pass").OrderBy(o => o.EvaluationItemSeq).ThenBy(o => o.EvaluationItemDescSeq);
+
+                    // 產生StickerTest_Detail，預設填入值為Pass
+                    foreach (var data in TestItems)
+                    {
+                        // 塞第二層 StickerTest_Detail
+                        if (!model.DetailList.Any(o => o.EvaluationItem == data.EvaluationItem))
+                        {
+
+                            StickerTest_Detail detail = new StickerTest_Detail()
+                            {
+                                EvaluationItem = data.EvaluationItem,
+                                Scale = "5",
+                                Result = "Pass",
+                            };
+                            model.DetailList.Add(detail);
+                        }
+
+                        // 塞第三層 StickerTest_Detail_Item
+                        StickerTest_Detail_Item detailItem = new StickerTest_Detail_Item()
+                        {
+                            EvaluationItem = data.EvaluationItem,
+                            EvaluationItemDesc = data.EvaluationItemDesc,
+                            Value = data.Value,
+                            Result = data.Result,
+                        };
+
+                        model.DetailItemList.Add(detailItem);
+                    }
+
+
+                }
+                model.Result = true;
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.Message;
+            }
+            return model;
+        }
+
+        /// <summary>
+        /// 取得查詢結果
+        /// </summary>
+        /// <param name="Req"></param>
+        /// <returns></returns>
+        public StickerTest_ViewModel GetData(StickerTest_Request Req)
+        {
+            StickerTest_ViewModel model = this.GetDefaultModel();
+
+            try
+            {
+                _Provider = new StickerTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                List<StickerTest_Main> tmpList = new List<StickerTest_Main>();
+
+                if (string.IsNullOrEmpty(Req.BrandID) && string.IsNullOrEmpty(Req.SeasonID) && string.IsNullOrEmpty(Req.StyleID) && string.IsNullOrEmpty(Req.Article) && !string.IsNullOrEmpty(Req.ReportNo))
+                {
+                    // 根據四大天王，取得符合條件的主表
+                    tmpList = _Provider.GetMainList(new StickerTest_Request()
+                    {
+                        ReportNo = Req.ReportNo,
+                    });
+                }
+                else
+                {
+                    // 根據四大天王，取得符合條件的主表
+                    tmpList = _Provider.GetMainList(new StickerTest_Request()
+                    {
+                        BrandID = Req.BrandID,
+                        SeasonID = Req.SeasonID,
+                        StyleID = Req.StyleID,
+                        Article = Req.Article,
+                    });
+                }
+
+
+                if (tmpList.Any())
+                {
+                    // 取得 ReportNo下拉選單
+                    foreach (var item in tmpList)
+                    {
+                        model.ReportNo_Source.Add(new System.Web.Mvc.SelectListItem()
+                        {
+                            Text = item.ReportNo,
+                            Value = item.ReportNo,
+                        });
+                    }
+
+                    // 取得表身
+                    // 若"有"傳入ReportNo，則可以直接找出表頭表身明細
+                    if (!string.IsNullOrEmpty(Req.ReportNo))
+                    {
+                        // 取得表頭資料
+                        model.Main = tmpList.Where(o => o.ReportNo == Req.ReportNo).FirstOrDefault();
+                    }
+                    // 若"沒"傳入ReportNo，抓下拉選單第一筆顯示
+                    else
+                    {
+                        // 根據下拉選單第一筆，取得表頭資料
+                        model.Main = tmpList.Where(o => o.ReportNo == model.ReportNo_Source.FirstOrDefault().Value).FirstOrDefault();
+
+                    }
+
+
+                    model.Request = Req;
+                    model.Request.ReportNo = model.Main.ReportNo;
+
+                    // 取得表身資料
+                    model.DetailList = _Provider.GetDetailList(new StickerTest_Request()
+                    {
+                        ReportNo = model.Main.ReportNo
+                    });
+
+                    // 取得表身資料
+                    model.DetailItemList = _Provider.GetDetailItemList(new StickerTest_Request()
+                    {
+                        ReportNo = model.Main.ReportNo
+                    });
+
+                    model.Result = true;
+                }
+                else
+                {
+                    model.Result = false;
+                    model.ErrorMessage = "Data not found.";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.Message;
+            }
+
+            return model;
+        }
+
+        public StickerTest_ViewModel GetOrderInfo(string OrderID)
+        {
+            StickerTest_ViewModel model = this.GetDefaultModel();
+            List<DatabaseObject.ProductionDB.Orders> tmpOrders = new List<DatabaseObject.ProductionDB.Orders>();
+            try
+            {
+                _Provider = new StickerTestProvider(Common.ProductionDataAccessLayer);
+
+                tmpOrders = _Provider.GetOrderInfo(new StickerTest_Request() { OrderID = OrderID });
+
+
+                // 確認SP#是否存在
+                if (tmpOrders.Any())
+                {
+                    // 取得表頭SP#相關欄位
+                    model.Main.OrderID = tmpOrders.FirstOrDefault().ID;
+                    model.Main.FactoryID = tmpOrders.FirstOrDefault().FactoryID;
+                    model.Main.BrandID = tmpOrders.FirstOrDefault().BrandID;
+                    model.Main.SeasonID = tmpOrders.FirstOrDefault().SeasonID;
+                    model.Main.StyleID = tmpOrders.FirstOrDefault().StyleID;
+
+                    // 取得Article 下拉選單
+                    foreach (var oriData in tmpOrders)
+                    {
+                        System.Web.Mvc.SelectListItem Article = new System.Web.Mvc.SelectListItem()
+                        {
+                            Text = oriData.Article,
+                            Value = oriData.Article,
+                        };
+                        model.Article_Source.Add(Article);
+                    }
+
+                    model.Result = true;
+                }
+                else
+                {
+                    model.Result = false;
+                    model.ErrorMessage = "SP# not found.";
+                }
+
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.Message;
+            }
+
+            return model;
+        }
+        public StickerTest_ViewModel NewSave(StickerTest_ViewModel Req, string MDivision, string UserID)
+        {
+            StickerTest_ViewModel model = this.GetDefaultModel();
+            string newReportNo = string.Empty;
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
+
+            try
+            {
+                _Provider = new StickerTestProvider(_ISQLDataTransaction);
+
+                // 以EvaluationItem分組，相同EvaluationItem底下有任一Fail，則該群組 = Fail
+                foreach (var item in Req.DetailList)
+                {
+                    string evaluationItem = item.EvaluationItem;
+
+                    if (Req.DetailItemList.Where(o => o.EvaluationItem == evaluationItem && o.Result == "Fail").Any())
+                    {
+                        item.Result = "Fail";
+                    }
+                }
+
+                // 判斷表頭Result，表身有任一Detail = Fail，即視作Fail，否則Pass
+                if (Req.DetailList != null && Req.DetailList.Any())
+                {
+                    bool HasFail = Req.DetailList.Where(o => o.Result == "Fail").Any();
+                    Req.Main.Result = HasFail ? "Fail" : "Pass";
+                }
+                else
+                {
+                    Req.Main.Result = "Pass";
+                    Req.DetailList = new List<StickerTest_Detail>();
+                }
+
+                // 新增，並取得ReportNo
+                _Provider.Insert_StickerTest(Req, MDivision, UserID, out newReportNo);
+                Req.Main.ReportNo = newReportNo;
+
+                // StickerTest_Detail 新增 or 修改
+                if (Req.DetailList == null)
+                {
+                    Req.DetailList = new List<StickerTest_Detail>();
+                }
+
+                _Provider.Processe_StickerTest_Detail(Req, UserID);
+                _Provider.Processe_StickerTest_Detail_Item(Req, UserID);
+
+                _ISQLDataTransaction.Commit();
+
+                // 重新查詢資料
+                model = this.GetData(new StickerTest_Request()
+                {
+                    BrandID = Req.Main.BrandID,
+                    SeasonID = Req.Main.SeasonID,
+                    StyleID = Req.Main.StyleID,
+                    Article = Req.Main.Article,
+                    ReportNo = Req.Main.ReportNo,
+                });
+
+                model.Result = true;
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.Message.ToString();
+                _ISQLDataTransaction.RollBack();
+            }
+            finally
+            {
+                _ISQLDataTransaction.CloseConnection();
+            }
+
+            return model;
+        }
+        public StickerTest_ViewModel EditSave(StickerTest_ViewModel Req, string UserID)
+        {
+            StickerTest_ViewModel model = this.GetDefaultModel();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
+
+            try
+            {
+                _Provider = new StickerTestProvider(_ISQLDataTransaction);
+
+                // 以EvaluationItem分組，相同EvaluationItem底下有任一Fail，則該群組 = Fail
+                foreach (var item in Req.DetailList)
+                {
+                    string evaluationItem = item.EvaluationItem;
+
+                    if (Req.DetailItemList.Where(o => o.EvaluationItem == evaluationItem && o.Result == "Fail").Any())
+                    {
+                        item.Result = "Fail";
+                    }
+                }
+
+                // 判斷表頭Result，表身有任一Detail = Fail，即視作Fail，否則Pass
+                if (Req.DetailList != null && Req.DetailList.Any())
+                {
+                    bool HasFail = Req.DetailList.Where(o => o.Result == "Fail").Any();
+                    Req.Main.Result = HasFail ? "Fail" : "Pass";
+                }
+                else
+                {
+                    Req.Main.Result = "Pass";
+                    Req.DetailList = new List<StickerTest_Detail>();
+                }
+
+                // 更新表頭，並取得ReportNo
+                _Provider.Update_StickerTest(Req, UserID);
+
+                // 更新表身
+                _Provider.Processe_StickerTest_Detail(Req, UserID);
+                _Provider.Processe_StickerTest_Detail_Item(Req, UserID);
+
+                _ISQLDataTransaction.Commit();
+
+                // 重新查詢資料
+                model = this.GetData(new StickerTest_Request()
+                {
+                    BrandID = Req.Main.BrandID,
+                    SeasonID = Req.Main.SeasonID,
+                    StyleID = Req.Main.StyleID,
+                    Article = Req.Main.Article,
+                    ReportNo = Req.Main.ReportNo,
+                });
+
+                model.Result = true;
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.Message.ToString();
+                _ISQLDataTransaction.RollBack();
+            }
+            finally
+            {
+                _ISQLDataTransaction.CloseConnection();
+            }
+
+            return model;
+        }
+        public StickerTest_ViewModel Delete(StickerTest_ViewModel Req)
+        {
+            StickerTest_ViewModel model = this.GetDefaultModel();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
+
+
+            try
+            {
+                _Provider = new StickerTestProvider(_ISQLDataTransaction);
+
+
+                // 更新表頭，並取得ReportNo
+                _Provider.Delete_StickerTest(Req);
+
+                _ISQLDataTransaction.Commit();
+
+                // 重新查詢資料
+                model = this.GetData(new StickerTest_Request()
+                {
+                    BrandID = Req.Main.BrandID,
+                    SeasonID = Req.Main.SeasonID,
+                    StyleID = Req.Main.StyleID,
+                    Article = Req.Main.Article,
+                });
+
+                model.Request = new StickerTest_Request()
+                {
+                    ReportNo = model.Main.ReportNo,
+                    BrandID = model.Main.BrandID,
+                    SeasonID = model.Main.SeasonID,
+                    StyleID = model.Main.StyleID,
+                    Article = model.Main.Article,
+                };
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.Message.ToString();
+                _ISQLDataTransaction.RollBack();
+            }
+            finally
+            {
+                _ISQLDataTransaction.CloseConnection();
+            }
+
+            return model;
+        }
+        public StickerTest_ViewModel EncodeAmend(StickerTest_ViewModel Req, string UserID)
+        {
+            StickerTest_ViewModel model = this.GetDefaultModel();
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
+
+            try
+            {
+                _Provider = new StickerTestProvider(_ISQLDataTransaction);
+
+                // 更新表頭，並取得ReportNo
+                _Provider.EncodeAmend_StickerTest(Req.Main, UserID);
+
+                _ISQLDataTransaction.Commit();
+
+                model.Result = true;
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.Message.ToString();
+                _ISQLDataTransaction.RollBack();
+            }
+            finally
+            {
+                _ISQLDataTransaction.CloseConnection();
+            }
+
+            return model;
+        }
+        public StickerTest_ViewModel GetReport(string ReportNo, bool isPDF)
+        {
+            StickerTest_ViewModel result = new StickerTest_ViewModel();
+
+            string basefileName = "StickerTest";
+            string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+
+            Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
+
+            try
+            {
+                _Provider = new StickerTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                // 取得報表資料
+
+                StickerTest_ViewModel model = this.GetData(new StickerTest_Request() { ReportNo = ReportNo });
+
+                DataTable ReportTechnician = _Provider.GetReportTechnician(new StickerTest_Request() { ReportNo = ReportNo });
+
+                excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
+                Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
+
+
+                string reportNo = model.Main.ReportNo;
+                //string machineReport = string.IsNullOrEmpty(model.Main.MachineReport) ? string.Empty : model.Main.MachineReport;
+
+                worksheet.Cells[3, 2] = model.Main.ReportNo;
+
+                worksheet.Cells[4, 2] = model.Main.SubmitDateText;
+                worksheet.Cells[4, 5] = model.Main.ReportDateText;
+
+                worksheet.Cells[5, 2] = model.Main.OrderID;
+                worksheet.Cells[5, 5] = model.Main.BrandID;
+
+                worksheet.Cells[6, 2] = model.Main.StyleID;
+                worksheet.Cells[6, 5] = model.Main.SeasonID;
+
+                worksheet.Cells[7, 2] = model.Main.Article;
+                worksheet.Cells[7, 5] = model.Main.FabricColor;
+
+                worksheet.Cells[9, 2] = model.Main.Temperature;
+                //worksheet.Cells[9, 4] = model.Main.DryingCondition;
+                //worksheet.Cells[9, 6] = model.Main.WashCycles;
+
+                worksheet.Cells[65, 2] = model.Main.Remark;
+
+                // Technician 欄位
+                if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
+                {
+                    string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
+
+                    // 姓名
+                    worksheet.Cells[80, 6] = TechnicianName;
+
+                    // Signture 圖片
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[79, 6];
+                    if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                    {
+
+                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
+
+                        MemoryStream ms = new MemoryStream(TestBeforePicture);
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                        string imageName = $"{Guid.NewGuid()}.jpg";
+                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                        img.Save(imgPath);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
+                    }
+                }
+
+                // TestBeforePicture 圖片
+                if (model.Main.TestBeforePicture != null && model.Main.TestBeforePicture.Length > 1)
+                {
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[67, 1];
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestBeforePicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
+                }
+
+                // TestAfterPicture 圖片
+                if (model.Main.TestAfterPicture != null && model.Main.TestAfterPicture.Length > 1)
+                {
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[67, 4];
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestAfterPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
+                }
+
+                // 表身處理
+                if (model.DetailList.Any() && model.DetailList.Count > 1)
+                {
+
+
+                }
+
+                string fileName = $"StickerTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
+
+                string filePdfName = $"StickerTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
+
+
+                Microsoft.Office.Interop.Excel.Workbook workbook = excel.ActiveWorkbook;
+                workbook.SaveAs(fullExcelFileName);
+
+                workbook.Close();
+                excel.Quit();
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(workbook);
+
+                // 轉PDF再繼續進行以下
+                if (isPDF)
+                {
+                    if (ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
+                    {
+                        result.TempFileName = filePdfName;
+                        result.Result = true;
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Convert To PDF Fail";
+                        result.Result = false;
+                    }
+                }
+                else
+                {
+                    result.TempFileName = fileName;
+                    result.Result = true;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.Message;
+                result.Result = false;
+            }
+            finally
+            {
+                Marshal.ReleaseComObject(excel);
+            }
+            return result;
+        }
+        // 定義一個方法來將頁面從一個 PDF 複製到另一個 PDF
+        public void CopyPages(PdfReader sourcePdf, Document destinationPdf, PdfWriter writer)
+        {
+            PdfContentByte contentByte = writer.DirectContent;
+            for (int pageIndex = 1; pageIndex <= sourcePdf.NumberOfPages; pageIndex++)
+            {
+                PdfImportedPage importedPage = writer.GetImportedPage(sourcePdf, pageIndex);
+                destinationPdf.NewPage();
+                contentByte.AddTemplate(importedPage, 0, 0);
+            }
+        }
+    }
+}

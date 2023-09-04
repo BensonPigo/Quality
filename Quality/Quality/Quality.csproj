@@ -202,6 +202,7 @@
     <Compile Include="Areas\BulkFGT\Controllers\SalivaFastnessTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\PerspirationFastnessController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\StickerTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\TPeelStrengthTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\WaterFastnessController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
@@ -459,6 +460,7 @@
     <Content Include="Areas\SampleRFT\Views\InspBySPQuery\SendMailer.cshtml" />
     <Content Include="Areas\BulkFGT\Views\MartindalePillingTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\RandomTumblePillingTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\StickerTest\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
