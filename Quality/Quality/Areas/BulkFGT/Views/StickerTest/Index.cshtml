@@ -1,6 +1,6 @@
 ﻿@using DatabaseObject.ViewModel.BulkFGT
 
-@model HydrostaticPressureWaterproofTest_ViewModel
+@model StickerTest_ViewModel
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -267,7 +267,7 @@
     }
 
     .tab-innerItem1 {
-        width: 13%;
+        width: 10%;
         padding: 2px;
         height: 3rem;
         border: 1px solid;
@@ -277,7 +277,7 @@
     }
 
     .tab-innerItem2 {
-        width: 22%;
+        width: 20%;
         padding: 2px;
         height: 3rem;
         border: 1px solid;
@@ -293,16 +293,19 @@
         flex-direction: row;
         flex-wrap: wrap;
     }
+    .span {
+        height: 4em;
+    }
 </style>
 
 <div class="main-content">
     <header class="page-header">
         <h3>
-            <i class=""></i><span>Hydrostatic Pressure Waterproof Test</span>
+            <i class=""></i><span>Sticker Test</span>
         </h3>
         <div class="breadcrumb">
             <div>Home</div>
-            <div class="current">Hydrostatic Pressure Waterproof Test</div>
+            <div class="current">Sticker Test</div>
         </div>
     </header>
 
@@ -442,183 +445,210 @@
                     </div>
 
                     @*表頭*@
-                    <div class="MainArea">
-                        <!-- #region Row 1-->
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Report No</h4>
-
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.ReportNo, new { @class = "" })
-
-                            @Html.HiddenFor(o => o.Main.Status)
-                            @Html.HiddenFor(o => o.Main.TestBeforePicture)
-                            @Html.HiddenFor(o => o.Main.TestAfterPicture)
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Report Date</h4>
-
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.ReportDateText, new { @class = "" })
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Status</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.Status, new { @class = "" })
-                        </div>
-                        <!-- #endregion -->
-                        <!-- #region Row 2-->
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Subimt Date</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.HiddenFor(o => o.Main.SubmitDate)
-                            @Html.TextBoxFor(o => o.Main.SubmitDateText, new { @class = "CanEdit even" })
-
-                        </div>
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">SP#</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.OrderID, new { @class = "even CanEdit" })
-
-                        </div>
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Brand</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.BrandID, new { @class = "even" })
-
-                        </div>
-
-
-                        <!-- #endregion -->
-                        <!-- #region Row 3-->
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Season</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.SeasonID, new { @class = "odd" })
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Style</h4>
-
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.StyleID, new { @class = "" })
-
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Article</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            <select id="Main_Article" name="Main.Article" class="CanEdit">
-                                @foreach (var item in Model.Article_Source)
-                                {
-                                    string selected = item.Value.Equals(Model.Main.Article) ? "selected" : "";
-                                    <option value="@item.Value" @selected>@item.Text</option>
-                                }
-                            </select>
-
-                        </div>
-
-                        <!-- #endregion -->
-                        <!-- #region Row 4-->
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Seq</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.Seq, new { @class = "even CanEdit" })
-                            @Html.HiddenFor(o => o.Main.Seq1, new { @class = "" })
-                            @Html.HiddenFor(o => o.Main.Seq2, new { @class = "" })
-                        </div>
-
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Fabric Ref#</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.FabricRefNo, new { @class = "even", @onclick = "OpenWindow('FabricRefNo')", @placeholder = "Click" })
-
-                        </div>
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Fabric Color</h4>
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.FabricColor, new { @class = "even" })
-                        </div>
-                        <!-- #endregion -->
-                        <!-- #region Row 5-->
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Fabric Description</h4>
-
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.FabricDescription, new { @class = "odd CanEdit" })
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Result</h4>
-
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @{ string mainResultColor = Model.Main.Result == "Pass" ? "blue" : "red";}
-                            @Html.TextBoxFor(o => o.Main.Result, new { @class = "odd", @style = $@"color:{mainResultColor}" })
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Remark</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.Remark, new { @class = "CanEdit", @style = "width:100%" })
-
-                        </div>
-
-                        <!-- #endregion -->
-                        <!-- #region Row 6-->
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Last Upadate</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "even", @style = "width:100%" })
-                        </div>
-
-                        <div class="MainAreaItem even">
-
-                        </div>
-                        <div class="MainAreaItem even">
-
-                        </div>
-
-                        <div class="MainAreaItem even">
-
-                        </div>
-                        <div class="MainAreaItem even">
-
-                        </div>
-                        <!-- #endregion -->
-
+                <div class="MainArea">
+                    <!-- #region Row 1-->
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Report No</h4>
 
                     </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.ReportNo, new { @class = "" })
+
+                        @Html.HiddenFor(o => o.Main.Status)
+                        @Html.HiddenFor(o => o.Main.TestBeforePicture)
+                        @Html.HiddenFor(o => o.Main.TestAfterPicture)
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Report Date</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.ReportDateText, new { @class = "" })
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Status</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.Status, new { @class = "" })
+                    </div>
+                    <!-- #endregion -->
+                    <!-- #region Row 2-->
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Subimt Date</h4>
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.HiddenFor(o => o.Main.SubmitDate)
+                        @Html.TextBoxFor(o => o.Main.SubmitDateText, new { @class = "CanEdit even" })
+
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">SP#</h4>
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.OrderID, new { @class = "even CanEdit" })
+
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Brand</h4>
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.BrandID, new { @class = "even" })
+
+                    </div>
+
+
+                    <!-- #endregion -->
+                    <!-- #region Row 3-->
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Season</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.SeasonID, new { @class = "odd" })
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Style</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.StyleID, new { @class = "" })
+
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Article</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        <select id="Main_Article" name="Main.Article" class="CanEdit">
+                            @foreach (var item in Model.Article_Source)
+                            {
+                                string selected = item.Value.Equals(Model.Main.Article) ? "selected" : "";
+                                <option value="@item.Value" @selected>@item.Text</option>
+                            }
+                        </select>
+
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 4-->
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Seq</h4>
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.Seq, new { @class = "even CanEdit" })
+                        @Html.HiddenFor(o => o.Main.Seq1, new { @class = "" })
+                        @Html.HiddenFor(o => o.Main.Seq2, new { @class = "" })
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Fabric Ref#</h4>
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.FabricRefNo, new { @class = "even", @onclick = "OpenWindow('FabricRefNo')", @placeholder = "Click" })
+
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Fabric Color</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.FabricColor, new { @class = "even" })
+                    </div>
+                    <!-- #endregion -->
+                    <!-- #region Row 5-->
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Fabric Description</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.FabricDescription, new { @class = "odd CanEdit" })
+                    </div>
+
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Acc Ref#</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.AccRefNo, new { @class = "odd CanEdit" })
+                    </div>
+
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Acc Color</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.AccColor, new { @class = "odd CanEdit" })
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 6-->
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Test Standard</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        <select id="Main_TestStandard" name="Main.TestStandard" class="CanEdit even" onchange="TestStandardChange(this)">
+                            @foreach (var item in Model.TestStandard_Source)
+                            {
+                                string selected = item.Value.Equals(Model.Main.TestStandard) ? "selected" : "";
+                                <option value="@item.Value" @selected>@item.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Remark</h4>
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.Remark, new { @class = "CanEdit even", @style = "width:100%" })
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Result</h4>
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        @{ string mainResultColor = Model.Main.Result == "Pass" ? "blue" : "red";}
+                        @Html.TextBoxFor(o => o.Main.Result, new { @class = "even", @style = $@"color:{mainResultColor}" })
+                    </div>
+                    <!-- #endregion -->
+                    <!-- #region Row 7-->
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Last Upadate</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "even", @style = "width:100%" })
+                    </div>
+
+                    <div class="MainAreaItem even">
+
+                    </div>
+                    <div class="MainAreaItem even">
+                    </div>
+
+                    <div class="MainAreaItem even">
+
+                    </div>
+                    <div class="MainAreaItem even">
+                    </div>
+                    <!-- #endregion -->
+                </div>
 
                     @*表身*@
                     <div class="bodyDiv">
@@ -632,24 +662,25 @@
 
                                 @if (Model.DetailList != null && Model.DetailList.Count > 0)
                                 {
-                                    int IdxEvaluationType = 1;
+                                    int IdxEvaluationItem = 1;
                                     <div id="tab-Change">
                                         <ul class="tab-title">
-                                            @foreach (var EvaluationType in Model.EvaluationTypeList)
+                                            @foreach (var evaluationItem in Model.DetailList.Select(o=>o.EvaluationItem))
                                             {
-                                                string linkText = $"#tab0{IdxEvaluationType}";
-                                                string active = IdxEvaluationType == 1 ? "active" : string.Empty;
-                                                <li link="@linkText" class="@active">@EvaluationType</li>
-                                                IdxEvaluationType++;
+                                                string linkText = $"#tab0{IdxEvaluationItem}";
+                                                string active = IdxEvaluationItem == 1 ? "active" : string.Empty;
+                                                <li link="@linkText" class="@active">@evaluationItem</li>
+                                                IdxEvaluationItem++;
                                             }
                                         </ul>
                                     </div>
 
                                     int IdxDivID = 1;
                                     int DetailListIdx = 0;
-                                    foreach (var evaluationType in Model.EvaluationTypeList)
+                                    int DetailItemListIdx = 0;
+                                    foreach (var detail in Model.DetailList)
                                     {
-                                        List<string> EvaluationItemList = Model.EvaluationItemList(evaluationType);
+                                        string evaluationItem = detail.EvaluationItem;
                                         string divID = $"tab0{IdxDivID}";
 
                                         <div id="@divID" class="tab-inner">
@@ -658,18 +689,21 @@
                                                 Evaluation Item
                                             </div>
                                             <div class="tab-innerItem1 colHead">
-                                                As Received Values
+                                                Result
                                             </div>
                                             <div class="tab-innerItem1 colHead">
-                                                As Received Result
-                                            </div>
-                                            <div class="tab-innerItem1 colHead">
-                                                After wash
-                                            </div>
-                                            <div class="tab-innerItem1 colHead">
-                                                After Wash Result
+                                                Scale
                                             </div>
                                             <div class="tab-innerItem2 colHead">
+                                                Evaluation Description
+                                            </div>
+                                            <div class="tab-innerItem1 colHead">
+                                                Result
+                                            </div>
+                                            <div class="tab-innerItem1 colHead">
+                                                Value
+                                            </div>
+                                            <div class="tab-innerItem1 colHead">
                                                 Remark
                                             </div>
                                             <div class="tab-innerItem1 colHead">
@@ -677,54 +711,46 @@
                                             </div>
 
                                             <div class="tab-innerDetail">
+                                                @*EvaluationItem*@
+                                                <div class="tab-innerItem1">
+                                                    @Html.TextBox($"DetailList[{DetailListIdx}].EvaluationItem", evaluationItem, new { @style = "width:100%" })
+                                                    @Html.Hidden($"DetailList[{DetailListIdx}].Ukey", detail.ReportNo, new { @class = "" })
+                                                </div>
+                                                @*Result*@
+                                                <div class="tab-innerItem1">
+                                                    @{string resultColor = detail.Result == "Pass" ? "blue" : "red";}
 
-                                                @foreach (var evaluationItem in EvaluationItemList)
+                                                    @Html.TextBox($"DetailList[{DetailListIdx}].Result", detail.Result, new { @class = "", @style = $@"width:100%;text-align:center;color:{resultColor}" })
+                                                </div>
+                                                @*Scale*@
+                                                <div class="tab-innerItem1">
+                                                    <select id="DetailList_@Html.Raw(DetailListIdx)__Scale" name="DetailList[@DetailListIdx].Scale" class="CanEdit">
+                                                        @foreach (var item in Model.Scale_Source)
+                                                        {
+                                                            string selected = item.Value.Equals(detail.Scale) ? "selected" : "";
+                                                            <option value="@item.Value" @selected>@item.Text</option>
+                                                        }
+                                                    </select>
+                                                </div>
+
+                                                @foreach (var detailItem in Model.DetailItemList.Where(o => o.EvaluationItem == detail.EvaluationItem))
                                                 {
-                                                    string resultColor = String.Empty;
-                                                    HydrostaticPressureWaterproofTest_Detail sameData = Model.DetailList.Where(o => o.EvaluationType == evaluationType && o.EvaluationItem == evaluationItem).FirstOrDefault();
-                                                    var AsReceivedValue_Source = Model.StandardList(evaluationType, evaluationItem, "As received");
-                                                    var AsReceivedStd = Model.GetStandard(evaluationType, evaluationItem, "As received");
-                                                    AsReceivedValue_Source.Where(o => o.Value == sameData.AsReceivedValue).FirstOrDefault().Selected = true;
 
-                                                    var AfterWashValue_Source = Model.StandardList(evaluationType, evaluationItem, "After wash");
-                                                    var AfterWashStd = Model.GetStandard(evaluationType, evaluationItem, "After wash");
-                                                    AfterWashValue_Source.Where(o => o.Value == sameData.AfterWashValue).FirstOrDefault().Selected = true;
-
-                                                    <div class="tab-innerItem1">
-                                                        @Html.Hidden($"DetailList[{DetailListIdx}].EvaluationType", evaluationType, new { @style = "width:100%" })
-                                                        @Html.TextBox($"DetailList[{DetailListIdx}].EvaluationItem", evaluationItem, new { @style = "width:100%" })
-                                                        @Html.Hidden($"DetailList[{DetailListIdx}].Ukey", sameData.Ukey, new { @class = "" })
-                                                    </div>
-                                                    <div class="tab-innerItem1">
-                                                        @Html.DropDownList($"DetailList[{DetailListIdx}].AsReceivedValue"
-                                                           , AsReceivedValue_Source
-                                                           , new { @class = "CanEdit", @style = "", onchange = $"DropDownListChange(this.value,'AsReceived','{AsReceivedStd.Standard}',{DetailListIdx})" })
-                                                    </div>
-                                                    <div class="tab-innerItem1">
-                                                        @{resultColor = sameData.AsReceivedResult == "Pass" ? "blue" : "red";}
-
-                                                        @Html.TextBox($"DetailList[{DetailListIdx}].AsReceivedResult", sameData.AsReceivedResult, new { @class = "", @style = $@"width:100%;text-align:center;color:{resultColor}" })
-                                                    </div>
-                                                    <div class="tab-innerItem1">
-
-                                                        @Html.DropDownList($"DetailList[{DetailListIdx}].AfterWashValue"
-                                                           , AfterWashValue_Source
-                                                           , new { @class = "CanEdit", @style = "", onchange = $"DropDownListChange(this.value,'AfterWash','{AfterWashStd.Standard}',{DetailListIdx})" })
-                                                    </div>
-                                                    <div class="tab-innerItem1">
-                                                        @{resultColor = sameData.AfterWashResult == "Pass" ? "blue" : "red";}
-
-                                                        @Html.TextBox($"DetailList[{DetailListIdx}].AfterWashResult", sameData.AfterWashResult, new { @class = "", @style = $@"width:100%;text-align:center;color:{resultColor}" })
-                                                    </div>
                                                     <div class="tab-innerItem2">
 
-                                                        @Html.TextBox($"DetailList[{DetailListIdx}].Remark", sameData.Remark, new { @class = "CanEdit", @style = "width:100%" })
                                                     </div>
-                                                    <div class="tab-innerItem1">
-                                                        @sameData.LastUpadate
-                                                    </div>
-                                                    DetailListIdx++;
+                                                    DetailItemListIdx++;
                                                 }
+                                                @*Remark*@
+                                                <div class="tab-innerItem1">
+                                                    @Html.TextBox($"DetailList[{DetailListIdx}].Remark", detail.Remark, new { @class = "CanEdit", @style = "width:100%" })
+                                                </div>
+                                                @*Remark*@
+                                                <div class="tab-innerItem1">
+                                                    @detail.LastUpadate
+                                                </div>
+
+                                                @{DetailListIdx++;}
                                             </div>
 
                                         </div>
@@ -1089,7 +1115,7 @@
         });
         $('#Picture').on('click', function () {
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
-            para += "&" + "Table=HydrostaticPressureWaterproofTest";
+            para += "&" + "Table=StickerTest";
             para += "&" + "TargetBeforeColumn=Main_TestBeforePicture";
             para += "&" + "TargetAfterColumn=Main_TestAfterPicture";
             para += "&" + "BeforeColumn=TestBeforePicture";
@@ -1446,6 +1472,34 @@
         $li.click(function () {
             $($(this).attr('link')).show().siblings('.tab-inner').hide();
             $(this).addClass('active').siblings('.active').removeClass('active');
+        });
+    }
+
+    function TestStandardChange(obj) {
+        var firstScales = $(".FisrtScale");
+        var secondScales = $(".SecondScale");
+        var evenlys = $(".Evenly");
+
+        // 只有Test Standard 為Fleece/Polar Fleece才可以用 Evenly
+        if ($(obj).val() != 'Fleece/Polar Fleece') {
+
+            evenlys.each(function () {
+                $(this).prop('checked', false);
+                $(this).attr('disabled', 'disabled');
+            });
+        }
+        else {
+            evenlys.each(function () {
+                $(this).removeAttr('disabled');
+            });
+        }
+
+        firstScales.each(function () {
+            $(this).change();
+        });
+
+        secondScales.each(function () {
+            $(this).change();
         });
     }
 </script>

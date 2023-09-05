@@ -15,6 +15,32 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public List<StickerTest_Detail> DetailList { get; set; }
         public List<StickerTest_Detail_Item> DetailItemList { get; set; }
         public List<SelectListItem> ReportNo_Source { get; set; }
+        public List<SelectListItem> Scale_Source { get; set; }
+
+        public List<SelectListItem> TestStandard_Source
+        {
+            get
+            {
+                List<SelectListItem> result = new List<SelectListItem>();
+                result.Add(new SelectListItem()
+                {
+                    Text = "Residue",
+                    Value = "Residue"
+                });
+                result.Add(new SelectListItem()
+                {
+                    Text = "Aging",
+                    Value = "Aging"
+                });
+
+                return result;
+            }
+            set
+            {
+
+            }
+        }
+
         public List<StickerTestItem> Item_Source { get; set; }
 
         /// <summary>
@@ -33,14 +59,14 @@ namespace DatabaseObject.ViewModel.BulkFGT
             return result;
         }
 
-        public List<SelectListItem> ItemList(string evaluationItem, string evaluationDesc)
+        public List<SelectListItem> ItemList(string evaluationItem, string evaluationItemDesc)
         {
             List<SelectListItem> result = new List<SelectListItem>();
 
             if (this.Item_Source != null)
             {
                 var StandardStr = this.Item_Source
-                    .Where(o => o.EvaluationItem == evaluationItem && o.EvaluationDesc == evaluationDesc)
+                    .Where(o => o.EvaluationItem == evaluationItem && o.EvaluationItemDesc == evaluationItemDesc)
                     .Select(o => o.Value).Distinct().ToList();
                 foreach (var standard in StandardStr)
                 {
@@ -55,14 +81,14 @@ namespace DatabaseObject.ViewModel.BulkFGT
         }
 
 
-        public StickerTestItem GetStandard(string evaluationItem, string evaluationDesc)
+        public StickerTestItem GetStandard(string evaluationItem, string evaluationItemDesc)
         {
             StickerTestItem result = new StickerTestItem();
 
             if (this.Item_Source != null)
             {
                 result = this.Item_Source
-                    .Where(o => o.EvaluationItem == evaluationItem && o.EvaluationDesc == evaluationDesc && o.Result == "Pass")
+                    .Where(o => o.EvaluationItem == evaluationItem && o.EvaluationItemDesc == evaluationItemDesc && o.Result == "Pass")
                     .FirstOrDefault();
             }
             return result;

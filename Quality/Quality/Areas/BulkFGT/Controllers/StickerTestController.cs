@@ -12,30 +12,30 @@ using static Quality.Helper.Attribute;
 
 namespace Quality.Areas.BulkFGT.Controllers
 {
-    public class HydrostaticPressureWaterproofTestController : BaseController
+    public class StickerTestController : BaseController
     {
-        private HydrostaticPressureWaterproofTestService _Service;
-        public HydrostaticPressureWaterproofTestController()
+        private StickerTestService _Service;
+        public StickerTestController()
         {
-            _Service = new HydrostaticPressureWaterproofTestService();
-            ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.HydrostaticPressureWaterproofTest,,";
+            _Service = new StickerTestService();
+            ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.StickerTest,,";
         }
-        // GET: BulkFGT/HydrostaticPressureWaterproofTest
+        // GET: BulkFGT/StickerTest
         public ActionResult Index()
         {
-            HydrostaticPressureWaterproofTest_ViewModel model = _Service.GetDefaultModel();
+            StickerTest_ViewModel model = _Service.GetDefaultModel();
 
-            if (TempData["NewSaveHydrostaticPressureWaterproofTestModel"] != null)
+            if (TempData["NewSaveStickerTestModel"] != null)
             {
-                model = (HydrostaticPressureWaterproofTest_ViewModel)TempData["NewSaveHydrostaticPressureWaterproofTestModel"];
+                model = (StickerTest_ViewModel)TempData["NewSaveStickerTestModel"];
             }
-            else if (TempData["EditSaveHydrostaticPressureWaterproofTestModel"] != null)
+            else if (TempData["EditSaveStickerTestModel"] != null)
             {
-                model = (HydrostaticPressureWaterproofTest_ViewModel)TempData["EditSaveHydrostaticPressureWaterproofTestModel"];
+                model = (StickerTest_ViewModel)TempData["EditSaveStickerTestModel"];
             }
-            else if (TempData["DeleteHydrostaticPressureWaterproofTestModel"] != null)
+            else if (TempData["DeleteStickerTestModel"] != null)
             {
-                model = (HydrostaticPressureWaterproofTest_ViewModel)TempData["DeleteHydrostaticPressureWaterproofTestModel"];
+                model = (StickerTest_ViewModel)TempData["DeleteStickerTestModel"];
             }
 
             return View(model);
@@ -46,7 +46,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         /// </summary>
         public ActionResult IndexGet(string ReportNo, string BrandID, string SeasonID, string StyleID, string Article)
         {
-            HydrostaticPressureWaterproofTest_Request request = new HydrostaticPressureWaterproofTest_Request()
+            StickerTest_Request request = new StickerTest_Request()
             {
                 ReportNo = ReportNo,
                 BrandID = BrandID,
@@ -55,7 +55,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 Article = Article,
             };
 
-            HydrostaticPressureWaterproofTest_ViewModel model = _Service.GetData(request);
+            StickerTest_ViewModel model = _Service.GetData(request);
 
             if (!model.Result)
             {
@@ -67,9 +67,9 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         [SessionAuthorizeAttribute]
         [MultipleButton(Name = "action", Argument = "Query")]
-        public ActionResult Query(HydrostaticPressureWaterproofTest_Request request)
+        public ActionResult Query(StickerTest_Request request)
         {
-            HydrostaticPressureWaterproofTest_ViewModel model = _Service.GetData(request);
+            StickerTest_ViewModel model = _Service.GetData(request);
 
             if (!model.Result)
             {
@@ -81,7 +81,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         public ActionResult New()
         {
-            HydrostaticPressureWaterproofTest_ViewModel model = _Service.GetDefaultModel(true);
+            StickerTest_ViewModel model = _Service.GetDefaultModel(true);
 
             model.Main.EditType = "New";
 
@@ -90,15 +90,15 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         [SessionAuthorizeAttribute]
         [MultipleButton(Name = "action", Argument = "NewSave")]
-        public ActionResult NewSave(HydrostaticPressureWaterproofTest_ViewModel requestModel)
+        public ActionResult NewSave(StickerTest_ViewModel requestModel)
         {
-            HydrostaticPressureWaterproofTest_ViewModel model = _Service.NewSave(requestModel, this.MDivisionID, this.UserID);
+            StickerTest_ViewModel model = _Service.NewSave(requestModel, this.MDivisionID, this.UserID);
 
             if (!model.Result)
             {
                 model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("'", string.Empty)}"");";
             }
-            TempData["NewSaveHydrostaticPressureWaterproofTestModel"] = model;
+            TempData["NewSaveStickerTestModel"] = model;
 
             return RedirectToAction("Index");
         }
@@ -106,16 +106,16 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         [SessionAuthorizeAttribute]
         [MultipleButton(Name = "action", Argument = "EditSave")]
-        public ActionResult EditSave(HydrostaticPressureWaterproofTest_ViewModel requestModel)
+        public ActionResult EditSave(StickerTest_ViewModel requestModel)
         {
-            HydrostaticPressureWaterproofTest_ViewModel model = _Service.EditSave(requestModel, this.UserID);
+            StickerTest_ViewModel model = _Service.EditSave(requestModel, this.UserID);
 
             if (!model.Result)
             {
                 model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("'", string.Empty)}"");";
             }
 
-            TempData["EditSaveHydrostaticPressureWaterproofTestModel"] = model;
+            TempData["EditSaveStickerTestModel"] = model;
 
             return RedirectToAction("Index");
         }
@@ -123,23 +123,23 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         [SessionAuthorizeAttribute]
         [MultipleButton(Name = "action", Argument = "Delete")]
-        public ActionResult Delete(HydrostaticPressureWaterproofTest_ViewModel requestModel)
+        public ActionResult Delete(StickerTest_ViewModel requestModel)
         {
-            HydrostaticPressureWaterproofTest_ViewModel model = _Service.Delete(requestModel);
+            StickerTest_ViewModel model = _Service.Delete(requestModel);
 
             if (!model.Result)
             {
                 model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("'", string.Empty)}"");";
                 return View("Index", model);
             }
-            TempData["DeleteHydrostaticPressureWaterproofTestModel"] = model;
+            TempData["DeleteStickerTestModel"] = model;
             return RedirectToAction("Index");
         }
 
 
         public ActionResult OrderIDCheck(string orderID)
         {
-            HydrostaticPressureWaterproofTest_ViewModel model = _Service.GetOrderInfo(orderID);
+            StickerTest_ViewModel model = _Service.GetOrderInfo(orderID);
 
             if (!model.Result)
             {
@@ -167,9 +167,9 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Encode(string ReportNo, string Result)
         {
             CheckSession();
-            HydrostaticPressureWaterproofTest_ViewModel result = _Service.EncodeAmend(new HydrostaticPressureWaterproofTest_ViewModel()
+            StickerTest_ViewModel result = _Service.EncodeAmend(new StickerTest_ViewModel()
             {
-                Main = new HydrostaticPressureWaterproofTest_Main()
+                Main = new StickerTest_Main()
                 {
                     ReportNo = ReportNo,
                     Status = "Confirmed",
@@ -186,9 +186,9 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Amend(string ReportNo, string Result)
         {
             CheckSession();
-            HydrostaticPressureWaterproofTest_ViewModel result = _Service.EncodeAmend(new HydrostaticPressureWaterproofTest_ViewModel()
+            StickerTest_ViewModel result = _Service.EncodeAmend(new StickerTest_ViewModel()
             {
-                Main = new HydrostaticPressureWaterproofTest_Main()
+                Main = new StickerTest_Main()
                 {
                     ReportNo = ReportNo,
                     Status = "New",
@@ -206,7 +206,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult ToExcel(string ReportNo)
         {
 
-            HydrostaticPressureWaterproofTest_ViewModel result = _Service.GetReport(ReportNo, false);
+            StickerTest_ViewModel result = _Service.GetReport(ReportNo, false);
 
             if (!result.Result)
             {
@@ -222,7 +222,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         [SessionAuthorizeAttribute]
         public ActionResult ToPDF(string ReportNo)
         {
-            HydrostaticPressureWaterproofTest_ViewModel result = _Service.GetReport(ReportNo, true);
+            StickerTest_ViewModel result = _Service.GetReport(ReportNo, true);
 
             if (!result.Result)
             {
@@ -237,7 +237,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult SendMailToMR(string ReportNo)
         {
             this.CheckSession();
-            HydrostaticPressureWaterproofTest_ViewModel result = _Service.GetReport(ReportNo, false);
+            StickerTest_ViewModel result = _Service.GetReport(ReportNo, false);
 
             if (!result.Result)
             {

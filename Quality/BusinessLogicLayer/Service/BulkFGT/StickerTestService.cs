@@ -15,6 +15,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using Microsoft.Office.Interop.Excel;
+using DataTable = System.Data.DataTable;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -34,6 +36,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 ReportNo_Source = new List<System.Web.Mvc.SelectListItem>(),
                 Article_Source = new List<System.Web.Mvc.SelectListItem>(),
+                Scale_Source = new List<System.Web.Mvc.SelectListItem>(),
                 DetailList = new List<StickerTest_Detail>(),
                 DetailItemList = new List<StickerTest_Detail_Item>(),
 
@@ -467,34 +470,62 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 StickerTest_ViewModel model = this.GetData(new StickerTest_Request() { ReportNo = ReportNo });
 
+                model.Item_Source = _Provider.GetTestItems();
+
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new StickerTest_Request() { ReportNo = ReportNo });
 
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
+                // 取得工作表上所有圖形物件
+                Microsoft.Office.Interop.Excel.Shapes shapes = worksheet.Shapes;
+
+                // 根據名稱，搜尋文字方塊物件
+                Microsoft.Office.Interop.Excel.Shape ADIDAS_TextBox = shapes.Item("ADIDAS_TextBox");
+                Microsoft.Office.Interop.Excel.Shape REEBOK_TextBox = shapes.Item("REEBOK_TextBox");
+                Microsoft.Office.Interop.Excel.Shape PASS_TextBox = shapes.Item("PASS_TextBox");
+                Microsoft.Office.Interop.Excel.Shape FAIL_TextBox = shapes.Item("FAIL_TextBox");
+
+                // BrandID
+                if (model.Main.BrandID.ToUpper() == "ADIDAS")
+                {
+                    ADIDAS_TextBox.TextFrame.Characters().Text = "V";
+                }
+                if (model.Main.BrandID.ToUpper() == "REEBOK")
+                {
+                    REEBOK_TextBox.TextFrame.Characters().Text = "V";
+                }
+
+                // Result
+                if (model.Main.Result.ToUpper() == "PASS")
+                {
+                    PASS_TextBox.TextFrame.Characters().Text = "V";
+                }
+                else
+                {
+                    FAIL_TextBox.TextFrame.Characters().Text = "V";
+                }
 
                 string reportNo = model.Main.ReportNo;
-                //string machineReport = string.IsNullOrEmpty(model.Main.MachineReport) ? string.Empty : model.Main.MachineReport;
+
+                worksheet.Cells[1, 1] = $" PHX-AP0434 {model.Main.TestStandard} Test for Sticker";
 
                 worksheet.Cells[3, 2] = model.Main.ReportNo;
+                worksheet.Cells[3, 7] = model.Main.OrderID;
 
-                worksheet.Cells[4, 2] = model.Main.SubmitDateText;
-                worksheet.Cells[4, 5] = model.Main.ReportDateText;
+                worksheet.Cells[4, 2] = model.Main.FactoryID;
+                worksheet.Cells[4, 7] = model.Main.SubmitDateText;
 
-                worksheet.Cells[5, 2] = model.Main.OrderID;
-                worksheet.Cells[5, 5] = model.Main.BrandID;
+                worksheet.Cells[5, 2] = model.Main.StyleID;
+                worksheet.Cells[5, 7] = model.Main.ReportDateText;
 
-                worksheet.Cells[6, 2] = model.Main.StyleID;
-                worksheet.Cells[6, 5] = model.Main.SeasonID;
+                worksheet.Cells[6, 2] = model.Main.Article;
+                worksheet.Cells[6, 7] = model.Main.FabricRefNo;
 
-                worksheet.Cells[7, 2] = model.Main.Article;
-                worksheet.Cells[7, 5] = model.Main.FabricColor;
+                worksheet.Cells[7, 2] = model.Main.SeasonID;
+                worksheet.Cells[7, 7] = model.Main.FabricColor;
 
-                worksheet.Cells[9, 2] = model.Main.Temperature;
-                //worksheet.Cells[9, 4] = model.Main.DryingCondition;
-                //worksheet.Cells[9, 6] = model.Main.WashCycles;
-
-                worksheet.Cells[65, 2] = model.Main.Remark;
+                worksheet.Cells[8, 2] = model.Main.FabricDescription;
 
                 // Technician 欄位
                 if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
@@ -502,10 +533,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
 
                     // 姓名
-                    worksheet.Cells[80, 6] = TechnicianName;
+                    worksheet.Cells[49, 3] = TechnicianName;
 
                     // Signture 圖片
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[79, 6];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[48, 3];
                     if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
                     {
 
@@ -525,7 +556,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // TestBeforePicture 圖片
                 if (model.Main.TestBeforePicture != null && model.Main.TestBeforePicture.Length > 1)
                 {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[67, 1];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[39, 1];
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestBeforePicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
@@ -533,16 +564,46 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // TestAfterPicture 圖片
                 if (model.Main.TestAfterPicture != null && model.Main.TestAfterPicture.Length > 1)
                 {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[67, 4];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[39, 5];
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestAfterPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
 
+                int detailIdx = 0;
+                int detailItemIdx = 0;
+
                 // 表身處理
                 if (model.DetailList.Any() && model.DetailList.Count > 1)
                 {
+                    foreach (var detail in model.DetailList)
+                    {
+                        worksheet.Cells[11 + detailIdx, 1] = detail.EvaluationItem;
+                        worksheet.Cells[11 + detailIdx, 2] = detail.Scale;
 
+                        var DetailItemList = model.DetailItemList.Where(o => o.EvaluationItem == detail.EvaluationItem).ToList();
 
+                        foreach (var detail_Item in DetailItemList)
+                        {                            
+                            worksheet.Cells[11 + detailIdx + detailItemIdx, 4] = detail_Item.EvaluationItemDesc;
+
+                            var ItemList = model.Item_Source.Where(o=> o.EvaluationItem == detail.EvaluationItem && o.EvaluationItemDesc == detail_Item.EvaluationItemDesc);
+
+                            worksheet.Cells[11 + detailIdx + detailItemIdx, 6] = ItemList.Where(o => o.Result == "Pass").FirstOrDefault().Value;
+                            worksheet.Cells[11 + detailIdx + detailItemIdx, 8] = ItemList.Where(o => o.Result == "Fail").FirstOrDefault().Value;
+
+                            if (detail_Item.Result == "Pass")
+                            {
+                                worksheet.Cells[11 + detailIdx + detailItemIdx, 7] = "V";
+                            }
+                            else
+                            {
+                                worksheet.Cells[11 + detailIdx + detailItemIdx, 9] = "V";
+                            }
+                            detailItemIdx++;
+                        }
+
+                        detailIdx += 5;
+                    }
                 }
 
                 string fileName = $"StickerTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
@@ -550,7 +611,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 string filePdfName = $"StickerTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
-
 
                 Microsoft.Office.Interop.Excel.Workbook workbook = excel.ActiveWorkbook;
                 workbook.SaveAs(fullExcelFileName);
@@ -579,7 +639,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     result.TempFileName = fileName;
                     result.Result = true;
                 }
-
             }
             catch (Exception ex)
             {
