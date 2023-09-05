@@ -1,0 +1,485 @@
+﻿@using DatabaseObject.Public
+
+@{
+    Layout = null;
+    string title = ViewData["Title"] == null ? "Picture" : ViewData["Title"].ToString();
+    string EditMode = ViewData["EditMode"] == null ? "EditMode" : ViewData["EditMode"].ToString();
+
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
+
+    string FaceSideBeforePicture = "Main_" + (ViewData["TestFaceSideBeforePicture"] == null ? string.Empty : ViewData["TestFaceSideBeforePicture"].ToString());
+    string FaceSideAfterPicture = "Main_" + (ViewData["TestFaceSideAfterPicture"] == null ? string.Empty : ViewData["TestFaceSideAfterPicture"].ToString());
+    string BackSideBeforePicture = "Main_" + (ViewData["TestBackSideBeforePicture"] == null ? string.Empty : ViewData["TestBackSideBeforePicture"].ToString());
+    string BackSideAfterPicture = "Main_" + (ViewData["TestBackSideAfterPicture"] == null ? string.Empty : ViewData["TestBackSideAfterPicture"].ToString());
+}
+
+@model Window_RandomTumblePillingTest
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+<link href="~/ThirdParty/SciCustom/css/style.css" rel="stylesheet" />
+<style>
+
+    ul {
+        padding: 0;
+    }
+
+    li {
+        list-style-type: none;
+        border: 1px solid black;
+        padding: 2px;
+    }
+
+    td {
+        border-style: ridge;
+    }
+
+    .leftDiv {
+        width: 45%;
+        height: 90%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    #cont {
+        width: 100%;
+        height: 60vw;
+        display: flex;
+        flex-direction: row;
+    }
+
+    .outerDiv {
+        width: 32%;
+        height: 100%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    .grayDiv {
+        width: 100%;
+        height: 4vh;
+        background-color: lightgray;
+        text-align: center;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+
+
+    #loading {
+        position: fixed;
+        top: 50%;
+        left: 40%;
+        transform: translate(-50%, -50%);
+        border: 20px solid #f3f3f3;
+        border-top: 20px solid #ff8000;
+        border-radius: 50%;
+        width: 200px;
+        height: 200px;
+        animation: spin 2s linear infinite;
+    }
+</style>
+<br />
+<header>
+    <h3 style="width:85%;float:left;margin:0">@title</h3>
+    <input id="btnKeep" type="button" value="Keep" />
+    <input id="btnExit" type="button" value="Exit" />
+</header>
+<br />
+
+<div id="cont">
+    <div class="outerDiv" style="margin-right:2%;">
+        <div class="grayDiv">
+            <h2 style="width:80%;float:left;padding-top:5px">Face Side Before</h2>
+            <input type="file" id="FaceSideBeforeUpload" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+            <img id="FaceSideBeforeUploadIcon" class="pointer uploadIcon" style="height: 90%; vertical-align: top;margin-right:5px;" src="~/Image/Icon/Upload.png" />
+            <img Type="FaceSideBeforeUpload" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+            <img id="FaceSideBeforeDel" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+
+        </div>
+        @{
+            var FaceSideBeforeImage = Model.TestFaceSideBeforePicture is null ? new byte[1] : Model.TestFaceSideBeforePicture;
+            var base64_FaceSideBefore = Convert.ToBase64String(FaceSideBeforeImage);
+            var imgSrc_FaceSideBefore = String.Format("data:image/png;base64,{0}", base64_FaceSideBefore);
+
+            var FaceSideAfterImage = Model.TestFaceSideAfterPicture is null ? new byte[1] : Model.TestFaceSideAfterPicture;
+            var base64_FaceSideAfter = Convert.ToBase64String(FaceSideAfterImage);
+            var imgSrc_FaceSideAfter = String.Format("data:image/png;base64,{0}", base64_FaceSideAfter);
+
+            var BackSideBeforeImage = Model.TestBackSideBeforePicture is null ? new byte[1] : Model.TestBackSideBeforePicture;
+            var base64_BackSideBefore = Convert.ToBase64String(BackSideBeforeImage);
+            var imgSrc_BackSideBefore = String.Format("data:image/png;base64,{0}", base64_BackSideBefore);
+
+            var BackSideAfterImage = Model.TestBackSideAfterPicture is null ? new byte[1] : Model.TestBackSideAfterPicture;
+            var base64_BackSideAfter = Convert.ToBase64String(BackSideAfterImage);
+            var imgSrc_BackSideAfter = String.Format("data:image/png;base64,{0}", base64_BackSideAfter);
+        }
+        @if (FaceSideBeforeImage[0] != 0)
+        {
+            <img id="FaceSideBeforePic" Type="FaceSideBefore" style="width:100%;" src="@imgSrc_FaceSideBefore" />
+            <img id="OriFaceSideBeforePic" style="width:100%;display:none;" src="@imgSrc_FaceSideBefore" />
+        }
+        else
+        {
+            <img id="FaceSideBeforePic" Type="FaceSideBefore" style="width:100%;" />
+            <img id="OriFaceSideBeforePic" style="width:100%;display:none;" />
+        }
+    </div>
+
+    <div class="outerDiv">
+        <div class="grayDiv">
+            <h2 style="width:80%;float:left;padding-top:5px">Face Side After</h2>
+            <input type="file" id="FaceSideAfterUpload" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+            <img id="FaceSideAfterUploadIcon" class="pointer uploadIcon" style="height: 90%; vertical-align: top;margin-right:5px;" src="~/Image/Icon/Upload.png" />
+            <img Type="FaceSideAfter" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+            <img id="FaceSideAfterDel" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+        </div>
+        @if (FaceSideAfterImage[0] != 0)
+        {
+            <img id="FaceSideAfterPic" style="width:100%;" src="@imgSrc_FaceSideAfter" />
+            <img id="OriFaceSideAfterPic" style="width:100%;display:none;" src="@imgSrc_FaceSideAfter" />
+        }
+        else
+        {
+            <img id="FaceSideAfterPic" style="width:100%;" />
+            <img id="OriFaceSideAfterPic" style="width:100%;display:none;" />
+        }
+
+    </div>
+
+    <div class="outerDiv">
+        <div class="grayDiv">
+            <h2 style="width:80%;float:left;padding-top:5px">Back Side Before</h2>
+            <input type="file" id="BackSideBeforeUpload" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+            <img id="BackSideBeforeUploadIcon" class="pointer uploadIcon" style="height: 90%; vertical-align: top;margin-right:5px;" src="~/Image/Icon/Upload.png" />
+            <img Type="BackSideBefore" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+            <img id="BackSideBeforeDel" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+        </div>
+        @if (BackSideBeforeImage[0] != 0)
+        {
+            <img id="BackSideBeforePic" style="width:100%;" src="@imgSrc_BackSideBefore" />
+            <img id="OriBackSideBeforePic" style="width:100%;display:none;" src="@imgSrc_BackSideBefore" />
+        }
+        else
+        {
+            <img id="BackSideBeforePic" style="width:100%;" />
+            <img id="OriBackSideBeforePic" style="width:100%;display:none;" />
+        }
+
+    </div>
+
+    <div class="outerDiv">
+        <div class="grayDiv">
+            <h2 style="width:80%;float:left;padding-top:5px">Back Side After</h2>
+            <input type="file" id="BackSideAfterUpload" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+            <img id="BackSideAfterUploadIcon" class="pointer uploadIcon" style="height: 90%; vertical-align: top;margin-right:5px;" src="~/Image/Icon/Upload.png" />
+            <img Type="BackSideAfter" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+            <img id="BackSideAfterDel" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+        </div>
+        @if (BackSideAfterImage[0] != 0)
+        {
+            <img id="BackSideAfterPic" style="width:100%;" src="@imgSrc_BackSideAfter" />
+            <img id="OriBackSideAfterPic" style="width:100%;display:none;" src="@imgSrc_BackSideAfter" />
+        }
+        else
+        {
+            <img id="BackSideAfterPic" style="width:100%;" />
+            <img id="OriBackSideAfterPic" style="width:100%;display:none;" />
+        }
+
+    </div>
+</div>
+
+<div id="loading" style="display:none;"></div>
+
+@{
+    Html.RenderPartial("ScreenShot");
+}
+
+<script>
+
+    var ID_List = [];
+    var Name_List = [];
+    $(function () {
+
+        // 找出父頁面的照片
+        const CurrentFaceSideBefore = window.opener.document.querySelector("#@FaceSideBeforePicture");
+        const CurrentFaceSideAfter = window.opener.document.querySelector("#@FaceSideAfterPicture");
+        const CurrentBackSideBefore= window.opener.document.querySelector("#@BackSideBeforePicture");
+        const CurrentBackSideAfter= window.opener.document.querySelector("#@BackSideAfterPicture");
+
+        //如果父頁面有照片，則顯示父頁面照片，如果沒有則顯示DB的照片
+
+        // FaceSideBefore
+        if (CurrentFaceSideBefore != null && CurrentFaceSideBefore.value != '' && CurrentFaceSideBefore.value != 'System.Byte[]') {
+            var before = document.querySelector("#FaceSideBeforePic");
+            before.src = 'data:image/png;base64,' + CurrentFaceSideBefore.value;
+        }
+
+        //FaceSideAfter
+        if (CurrentFaceSideAfter != null && CurrentFaceSideAfter.value != '' && CurrentFaceSideAfter.value != 'System.Byte[]') {
+            var after = document.querySelector("#FaceSideAfterPic");
+            after.src = 'data:image/png;base64,' + CurrentFaceSideAfter.value;
+        }
+
+        // BackSideBefore
+        if (CurrentBackSideBefore != null && CurrentBackSideBefore.value != '' && CurrentBackSideBefore.value != 'System.Byte[]') {
+            var after = document.querySelector("#BackSideBeforePic");
+            after.src = 'data:image/png;base64,' + CurrentBackSideBefore.value;
+        }
+
+        // BackSideAfter
+        if (CurrentBackSideAfter != null && CurrentBackSideAfter.value != '' && CurrentBackSideAfter.value != 'System.Byte[]') {
+            var after = document.querySelector("#BackSideAfterPic");
+            after.src = 'data:image/png;base64,' + CurrentBackSideAfter.value;
+        }
+
+        // Screenshot Exit
+        $('#btnScreenshotExit').on('click', function () {
+            StopScreen();
+            $('#Screenshot').addClass("display-None");
+        });
+
+
+        $("#btnKeep").click(async function () {
+            var FaceSideBeforePic = document.querySelector("#FaceSideBeforePic").src.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+            var FaceSideAfterPic = document.querySelector("#FaceSideAfterPic").src.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+            var BackSideBeforePic = document.querySelector("#BackSideBeforePic").src.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+            var BackSideAfterPic = document.querySelector("#BackSideAfterPic").src.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+
+            var Picture = {
+                FaceSideBeforePic: FaceSideBeforePic,
+                FaceSideAfterPic: FaceSideAfterPic,
+                BackSideBeforePic: BackSideBeforePic,
+                BackSideAfterPic: BackSideAfterPic,
+            }
+
+            window.opener.GetRandomTumblePillingTestPicture(Picture);
+            window.close();
+        });
+
+
+        $("#btnExit").click(function () {
+            window.close();
+        });
+
+
+        $("#FaceSideBeforeUploadIcon").click(function () {
+
+            $("#FaceSideBeforeUpload").click();
+        });
+
+        $("#FaceSideAfterUploadIcon").click(function () {
+
+            $("#FaceSideAfterUpload").click();
+        });
+
+        $("#BackSideBeforeUploadIcon").click(function () {
+
+            $("#BackSideBeforeUpload").click();
+        });
+
+        $("#BackSideAfterUploadIcon").click(function () {
+
+            $("#BackSideAfterUpload").click();
+        });
+
+        FaceSideBeforeUpload.onchange = async evt => {
+            $('#loading').show();
+            const file = evt.target.files[0];
+            if (file) {
+                const compressedBase64 = await compressImage(file);
+                $('#FaceSideBeforePic').attr('src', compressedBase64);
+                $('#loading').hide();
+            }
+        }
+
+        FaceSideAfterUpload.onchange = async evt => {
+            $('#loading').show();
+            const file = evt.target.files[0];
+            if (file) {
+                const compressedBase64 = await compressImage(file);
+                $('#FaceSideAfterPic').attr('src', compressedBase64);
+                $('#loading').hide();
+            }
+        }
+
+        BackSideBeforeUpload.onchange = async evt => {
+            $('#loading').show();
+            const file = evt.target.files[0];
+            if (file) {
+                const compressedBase64 = await compressImage(file);
+                $('#BackSideBeforePic').attr('src', compressedBase64);
+                $('#loading').hide();
+            }
+        }
+
+        BackSideAfterUpload.onchange = async evt => {
+            $('#loading').show();
+            const file = evt.target.files[0];
+            if (file) {
+                const compressedBase64 = await compressImage(file);
+                $('#BackSideAfterPic').attr('src', compressedBase64);
+                $('#loading').hide();
+            }
+        }
+
+        $("#FaceSideBeforeDel").click(function () {
+
+            // DB的圖檔
+            const Ori = document.querySelector("#OriFaceSideBeforePic");
+
+            // User拍下的圖片
+            const Setting = document.querySelector("#FaceSideBeforePic");
+
+
+            document.querySelector("#FaceSideBeforePic").removeAttribute('src');
+        });
+
+        $("#FaceSideAfterDel").click(function () {
+
+            // DB的圖檔
+            const Ori = document.querySelector("#OriFaceSideAfterPic");
+
+            // User拍下的圖片
+            const Setting = document.querySelector("#FaceSideAfterPic");
+
+            document.querySelector("#FaceSideAfterPic").removeAttribute('src');
+            // 如果User沒拍，則刪除原本的
+        });
+
+        $("#BackSideBeforeDel").click(function () {
+
+            // DB的圖檔
+            const Ori = document.querySelector("#OriBackSideBeforePic");
+
+            // User拍下的圖片
+            const Setting = document.querySelector("#BackSideBeforePic");
+
+            document.querySelector("#BackSideBeforePic").removeAttribute('src');
+            // 如果User沒拍，則刪除原本的
+        });
+
+        $("#BackSideAfterDel").click(function () {
+
+            // DB的圖檔
+            const Ori = document.querySelector("#OriBackSideAfterPic");
+
+            // User拍下的圖片
+            const Setting = document.querySelector("#BackSideAfterPic");
+
+            document.querySelector("#BackSideAfterPic").removeAttribute('src');
+            // 如果User沒拍，則刪除原本的
+        });
+
+        CamInit();
+
+
+        if ('@EditMode' == 'False') {
+            $("#FaceSideBeforeDel, #FaceSideAfterDel, #BackSideBeforeDel ,#BackSideAfterDel , .OpenCamera ,.uploadIcon").hide();
+        }
+    });
+
+    function CamInit() {
+        $('.OpenCamera').on('click', function () {
+
+            if ('@EditMode' == 'True') {
+                var Type = $(this).attr('Type');
+                var sentID = "FaceSideBeforePic";
+                switch (Type) {
+                    case "FaceSideBeforePic":
+                        sentID = "FaceSideBeforePic";
+                        break;
+                    case "FaceSideAfterePic":
+                        sentID = "FaceSideAfterPic";
+                        break;
+                    case "BackSideBeforePic":
+                        sentID = "BackSideBeforePic";
+                    case "BackSideAfterPic":
+                        sentID = "BackSideAfterPic";
+                        break;
+                }
+
+                $('#Screenshot').removeClass("display-None");
+                Screenshot(sentID);
+            }
+        });
+    }
+
+    function convertFile(file) {
+        return new Promise((resolve, reject) => {
+            // 建立FileReader物件
+            let reader = new FileReader()
+            // 註冊onload事件，取得result則resolve (會是一個Base64字串)
+            reader.onload = () => { resolve(reader.result) }
+            // 註冊onerror事件，若發生error則reject
+            reader.onerror = () => { reject(reader.error) }
+            // 讀取檔案
+            reader.readAsDataURL(file)
+        })
+    }
+
+    async function compressImage(imageFile) {
+        const MAX_FILE_SIZE = 500 * 1024; // 最大檔案大小為 500KB
+        const MAX_COMPRESSION_TRIES = 20; // 最大壓縮次數
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        let resizedFile = imageFile;
+        let compressionTries = 0;
+
+        while (resizedFile.size > MAX_FILE_SIZE && compressionTries < MAX_COMPRESSION_TRIES) {
+            compressionTries++;
+            const reader = new FileReader();
+            const img = new Image();
+            reader.readAsDataURL(resizedFile);
+            resizedFile = await new Promise((resolve) => {
+                reader.onload = function (event) {
+                    img.src = event.target.result;
+                    img.onload = function () {
+                        const originalWidth = img.width;
+                        const originalHeight = img.height;
+                        const resizingFactor = 0.8;
+                        const canvasWidth = originalWidth * resizingFactor;
+                        const canvasHeight = originalHeight * resizingFactor;
+                        canvas.width = canvasWidth;
+                        canvas.height = canvasHeight;
+
+                        context.clearRect(0, 0, canvasWidth, canvasHeight);
+                        context.drawImage(
+                            img,
+                            0,
+                            0,
+                            originalWidth * resizingFactor,
+                            originalHeight * resizingFactor
+                        );
+
+                        canvas.toBlob(
+                            (blob) => {
+                                if (blob) {
+                                    resolve(blob);
+                                } else {
+                                    resolve(imageFile);
+                                }
+                            },
+                            "image/png",
+                            0.8
+                        );
+                    };
+                };
+            });
+        }
+
+        const base64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(resizedFile);
+            reader.onload = function () {
+                resolve(reader.result);
+            };
+        });
+
+        return base64;
+    }
+
+</script>
