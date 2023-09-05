@@ -204,6 +204,7 @@
     <Compile Include="Areas\BulkFGT\Controllers\PerspirationFastnessController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\StickerTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\TPeelStrengthTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\WaterAbsorbencyController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\WaterFastnessController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
@@ -461,6 +462,7 @@
     <Content Include="Areas\BulkFGT\Views\MartindalePillingTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\RandomTumblePillingTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\StickerTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\WaterAbsorbency\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -1019,6 +1021,10 @@
     <Content Include="XLT\StickerTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="XLT\WaterAbsorbencyTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PublicWondow\ThreePictureList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

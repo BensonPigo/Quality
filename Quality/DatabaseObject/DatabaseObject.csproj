@@ -210,6 +210,7 @@
     <Compile Include="ViewModel\BulkFGT\SearchList_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\StickerTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\TPeelStrengthTest_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\WaterAbsorbency_ViewModel.cs" />
     <Compile Include="ViewModel\FinalInspection\AddDefect.cs" />
     <Compile Include="ViewModel\FinalInspection\Moisture.cs" />
     <Compile Include="ViewModel\FinalInspection\Measurement.cs" />

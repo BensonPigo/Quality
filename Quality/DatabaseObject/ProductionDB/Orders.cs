@@ -638,6 +638,6 @@ namespace DatabaseObject.ProductionDB
         public string BottomSewingLineID { get; set; }
         public string InnerSewingLineID { get; set; }
         public string OuterSewingLineID { get; set; }
-        public string FabricType { get; set; }        
+        public string FabricType { get; set; }
     }
 }
