@@ -236,6 +236,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
     {
         public string ReportNo { get; set; }
         public string EvaluationItem { get; set; }
+        public string ItemID { get; set; }
         public string EvaluationItemDesc { get; set; }
         public string Value { get; set; }
         public string Result { get; set; }

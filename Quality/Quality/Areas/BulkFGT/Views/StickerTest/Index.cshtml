@@ -122,12 +122,9 @@
         color: darkslategray;
         font-size: 1rem;
         font-weight: bold;
-        font-size: 1rem;
+        text-align: center;
     }
-    /*   .colHead label{
-        font-weight:bold;
-        font-size:1rem;
-    }*/
+
     .MainAreaItemSpan3 {
         width: 37.5%;
         padding: 2px;
@@ -267,24 +264,29 @@
     }
 
     .tab-innerItem1 {
-        width: 10%;
+        width: 8%;
         padding: 2px;
-        height: 3rem;
         border: 1px solid;
-        display: flex;
-        align-items: center;
-        justify-content: center;
     }
 
     .tab-innerItem2 {
-        width: 20%;
+        width: 43%;
         padding: 2px;
-        height: 3rem;
         border: 1px solid;
-        display: flex;
-        align-items: center;
-        justify-content: center;
     }
+
+    .tab-innerItem3 {
+        width: 16%;
+        padding: 2px;
+        border: 1px solid;
+    }
+
+    .tab-innerItem4 {
+        width: 5%;
+        padding: 2px;
+        border: 1px solid;
+    }
+
 
     .tab-innerDetail {
         background-color: rgb(255, 255, 255);
@@ -293,8 +295,25 @@
         flex-direction: row;
         flex-wrap: wrap;
     }
-    .span {
-        height: 4em;
+
+    .tab-innerDetailRow {
+        height: 25vh;
+    }
+
+    .tableDiv {
+        background-color: rgb(255, 255, 255);
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tableDiv-innerItem1 {
+        width: 100%;
+        padding: 2px;
+        /*height: 100%;*/
+        border: 1px solid;
     }
 </style>
 
@@ -437,11 +456,11 @@
                             </h4>
                         </div>
                         @*<div class="buttonAreaItem">
-                            <h4 id="NewItem" class="toolBarItem">
-                                <img src="~/Image/Icon/New.png" width="30" />
-                                New Item
-                            </h4>
-                        </div>*@
+                                <h4 id="NewItem" class="toolBarItem">
+                                    <img src="~/Image/Icon/New.png" width="30" />
+                                    New Item
+                                </h4>
+                            </div>*@
                     </div>
 
                     @*表頭*@
@@ -602,7 +621,7 @@
                         <h4 class="colTitle">Test Standard</h4>
                     </div>
                     <div class="MainAreaItem even">
-                        <select id="Main_TestStandard" name="Main.TestStandard" class="CanEdit even" onchange="TestStandardChange(this)">
+                        <select id="Main_TestStandard" name="Main.TestStandard" class="CanEdit even" onchange="TestStandardChange(this.value)">
                             @foreach (var item in Model.TestStandard_Source)
                             {
                                 string selected = item.Value.Equals(Model.Main.TestStandard) ? "selected" : "";
@@ -610,6 +629,46 @@
                             }
                         </select>
                     </div>
+
+                    <div class="MainAreaItem even">
+
+                    </div>
+                    <div class="MainAreaItem even">
+                    </div>
+
+                    <div class="MainAreaItem even">
+
+                    </div>
+                    <div class="MainAreaItem even">
+                    </div>
+                    <!-- #endregion -->
+                    <!-- #region Row 7-->
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Temperature</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.Temperature, new { @class = "CanEdit odd", @Type = "Number"})
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Time</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.Time, new { @class = "CanEdit odd", @Type = "Number"})
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Humidity</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.Humidity, new { @class = "CanEdit odd", @Type = "Number", @onchange = "value=HumidityCheck(value)" })
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 8-->
 
                     <div class="MainAreaItem even">
                         <h4 class="colTitle">Remark</h4>
@@ -627,8 +686,7 @@
                         @{ string mainResultColor = Model.Main.Result == "Pass" ? "blue" : "red";}
                         @Html.TextBoxFor(o => o.Main.Result, new { @class = "even", @style = $@"color:{mainResultColor}" })
                     </div>
-                    <!-- #endregion -->
-                    <!-- #region Row 7-->
+
                     <div class="MainAreaItem even">
                         <h4 class="colTitle">Last Upadate</h4>
                     </div>
@@ -636,17 +694,6 @@
                         @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "even", @style = "width:100%" })
                     </div>
 
-                    <div class="MainAreaItem even">
-
-                    </div>
-                    <div class="MainAreaItem even">
-                    </div>
-
-                    <div class="MainAreaItem even">
-
-                    </div>
-                    <div class="MainAreaItem even">
-                    </div>
                     <!-- #endregion -->
                 </div>
 
@@ -665,7 +712,7 @@
                                     int IdxEvaluationItem = 1;
                                     <div id="tab-Change">
                                         <ul class="tab-title">
-                                            @foreach (var evaluationItem in Model.DetailList.Select(o=>o.EvaluationItem))
+                                            @foreach (var evaluationItem in Model.DetailList.Select(o => o.EvaluationItem))
                                             {
                                                 string linkText = $"#tab0{IdxEvaluationItem}";
                                                 string active = IdxEvaluationItem == 1 ? "active" : string.Empty;
@@ -677,7 +724,7 @@
 
                                     int IdxDivID = 1;
                                     int DetailListIdx = 0;
-                                    int DetailItemListIdx = 0;
+                                    int OriDetailItemListIdx = 0;
                                     foreach (var detail in Model.DetailList)
                                     {
                                         string evaluationItem = detail.EvaluationItem;
@@ -686,44 +733,44 @@
                                         <div id="@divID" class="tab-inner">
 
                                             <div class="tab-innerItem1 colHead">
-                                                Evaluation Item
+                                                <p>Evaluation Item</p>
                                             </div>
-                                            <div class="tab-innerItem1 colHead">
-                                                Result
+                                            <div class="tab-innerItem4 colHead">
+                                                <p>Result</p>
                                             </div>
-                                            <div class="tab-innerItem1 colHead">
-                                                Scale
+                                            <div class="tab-innerItem4 colHead">
+                                                <p>Scale</p>
                                             </div>
                                             <div class="tab-innerItem2 colHead">
-                                                Evaluation Description
+                                                <p>Evaluation Description</p>
+                                            </div>
+                                            <div class="tab-innerItem3 colHead">
+                                                <p>Value</p>
+                                            </div>
+                                            <div class="tab-innerItem4 colHead">
+                                                <p>Result</p>
                                             </div>
                                             <div class="tab-innerItem1 colHead">
-                                                Result
+                                                <p> Remark</p>
                                             </div>
                                             <div class="tab-innerItem1 colHead">
-                                                Value
-                                            </div>
-                                            <div class="tab-innerItem1 colHead">
-                                                Remark
-                                            </div>
-                                            <div class="tab-innerItem1 colHead">
-                                                Last Update
+                                                <p> Last Update</p>
                                             </div>
 
                                             <div class="tab-innerDetail">
                                                 @*EvaluationItem*@
-                                                <div class="tab-innerItem1">
+                                                <div class="tab-innerItem1 tab-innerDetailRow">
                                                     @Html.TextBox($"DetailList[{DetailListIdx}].EvaluationItem", evaluationItem, new { @style = "width:100%" })
                                                     @Html.Hidden($"DetailList[{DetailListIdx}].Ukey", detail.ReportNo, new { @class = "" })
                                                 </div>
                                                 @*Result*@
-                                                <div class="tab-innerItem1">
+                                                <div class="tab-innerItem4 tab-innerDetailRow">
                                                     @{string resultColor = detail.Result == "Pass" ? "blue" : "red";}
 
-                                                    @Html.TextBox($"DetailList[{DetailListIdx}].Result", detail.Result, new { @class = "", @style = $@"width:100%;text-align:center;color:{resultColor}" })
+                                                    @Html.TextBox($"DetailList[{DetailListIdx}].Result", detail.Result, new { @class = "", @tag = evaluationItem+"Tag", @style = $@"width:100%;text-align:center;color:{resultColor}" })
                                                 </div>
                                                 @*Scale*@
-                                                <div class="tab-innerItem1">
+                                                <div class="tab-innerItem4 tab-innerDetailRow">
                                                     <select id="DetailList_@Html.Raw(DetailListIdx)__Scale" name="DetailList[@DetailListIdx].Scale" class="CanEdit">
                                                         @foreach (var item in Model.Scale_Source)
                                                         {
@@ -733,24 +780,73 @@
                                                     </select>
                                                 </div>
 
-                                                @foreach (var detailItem in Model.DetailItemList.Where(o => o.EvaluationItem == detail.EvaluationItem))
-                                                {
+                                                @*DetailItemList - EvaluationItemDesc*@
+                                                <div class="tab-innerItem2 tab-innerDetailRow">
+                                                    <div class="tableDiv">
+                                                        @{int DetailItemListIdx = OriDetailItemListIdx;}
 
-                                                    <div class="tab-innerItem2">
+                                                        @foreach (var detailItem in Model.DetailItemList.Where(o => o.EvaluationItem == detail.EvaluationItem ))
+                                                        {
 
+                                                            <div class="tableDiv-innerItem1">
+                                                                @Html.Hidden($"DetailItemList[{DetailItemListIdx}].ItemID", detailItem.ItemID, new { @class = "" })
+                                                                @Html.Hidden($"DetailItemList[{DetailItemListIdx}].EvaluationItem", detailItem.EvaluationItem, new { @class = "" })
+                                                                @Html.TextBox($"DetailItemList[{DetailItemListIdx}].EvaluationItemDesc", detailItem.EvaluationItemDesc, new { @class = "", @style = $@"width:100%;height:4.2vh;" })
+                                                            </div>
+                                                            DetailItemListIdx++;
+                                                        }
                                                     </div>
-                                                    DetailItemListIdx++;
-                                                }
+                                                </div>
+
+                                                @**DetailItemList - Value*@
+                                                <div class="tab-innerItem3 tab-innerDetailRow">
+                                                    <div class="tableDiv">
+                                                        @{DetailItemListIdx = OriDetailItemListIdx;}
+                                                        @foreach (var detailItem in Model.DetailItemList.Where(o => o.EvaluationItem == detail.EvaluationItem))
+                                                        {
+                                                            string standard = Model.GetStandard(detail.EvaluationItem, detailItem.EvaluationItemDesc).Value;
+                                                            <div class="tableDiv-innerItem1">
+                                                                <select id="DetailItemList_@Html.Raw(DetailItemListIdx)__Value" name="DetailItemList[@DetailItemListIdx].Value" class="CanEdit" style="height: 4.2vh;" onchange="DetailItemValueCgange(this,'@standard','@DetailItemListIdx','@evaluationItem')">
+                                                                    @foreach (var item in Model.ItemList(detail.EvaluationItem, detailItem.EvaluationItemDesc))
+                                                                    {
+                                                                        string selected = item.Value.Equals(detailItem.Value) ? "selected" : "";
+                                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                                    }
+                                                                </select>
+                                                            </div>
+                                                            DetailItemListIdx++;
+                                                        }
+                                                    </div>
+                                                </div>
+
+                                                @**DetailItemList - Result*@
+                                                <div class="tab-innerItem4 tab-innerDetailRow">
+                                                    <div class="tableDiv">
+                                                        @{DetailItemListIdx = OriDetailItemListIdx;}
+                                                        @foreach (var detailItem in Model.DetailItemList.Where(o => o.EvaluationItem == detail.EvaluationItem))
+                                                        {
+                                                            resultColor = detailItem.Result == "Pass" ? "blue" : "red";
+                                                            <div class="tableDiv-innerItem1">
+
+                                                                @Html.TextBox($"DetailItemList[{DetailItemListIdx}].Result", detailItem.Result, new { @class = "", @style = $@"width:100%;height:4.2vh;color:{resultColor}" })
+                                                            </div>
+                                                            DetailItemListIdx++;
+                                                        }
+                                                    </div>
+                                                </div>
+
                                                 @*Remark*@
-                                                <div class="tab-innerItem1">
+                                                <div class="tab-innerItem1 tab-innerDetailRow">
                                                     @Html.TextBox($"DetailList[{DetailListIdx}].Remark", detail.Remark, new { @class = "CanEdit", @style = "width:100%" })
                                                 </div>
                                                 @*Remark*@
-                                                <div class="tab-innerItem1">
+                                                <div class="tab-innerItem1 tab-innerDetailRow">
                                                     @detail.LastUpadate
                                                 </div>
-
-                                                @{DetailListIdx++;}
+                                                @{
+                                                    DetailListIdx++;
+                                                    OriDetailItemListIdx = DetailItemListIdx;
+                                                }
                                             </div>
 
                                         </div>
@@ -1401,67 +1497,38 @@
         $('#btnQuery').unbind('click').click();
     }
 
-    function DropDownListChange(value, ListType, Standard, Idx) {
-        if (ListType == 'AsReceived') {
-            var isPass = false;
-            if (value == Standard) {
-                isPass = true;
-            }
-            if (isPass) {
-                $(`#DetailList_${Idx}__AsReceivedResult`).val('Pass');
-                $(`#DetailList_${Idx}__AsReceivedResult`).css('color', 'blue');
-            }
-            else {
-                $(`#DetailList_${Idx}__AsReceivedResult`).val('Fail');
-                $(`#DetailList_${Idx}__AsReceivedResult`).css('color', 'red');
-            }
-        }
-        if (ListType == 'AfterWash') {
-            var isPass = false;
-            if (value == Standard) {
-                isPass = true;
-            }
-            if (isPass) {
-                $(`#DetailList_${Idx}__AfterWashResult`).val('Pass');
-                $(`#DetailList_${Idx}__AfterWashResult`).css('color', 'blue');
-            }
-            else {
-                $(`#DetailList_${Idx}__AfterWashResult`).val('Fail');
-                $(`#DetailList_${Idx}__AfterWashResult`).css('color', 'red');
-            }
-        }
-    }
+    function TestStandardChange(value) {
 
-    function AllResultUpdate(rowIdx) {
-        let isAnyFail = false;
-        if ($(`#DetailList_${rowIdx}__AcetateResult`).val() == "Fail") {
-            isAnyFail = true;
-        }
-        if ($(`#DetailList_${rowIdx}__CottonResult`).val() == "Fail") {
-            isAnyFail = true;
-        }
-        if ($(`#DetailList_${rowIdx}__NylonResult`).val() == "Fail") {
-            isAnyFail = true;
-        }
-        if ($(`#DetailList_${rowIdx}__PolyesterResult`).val() == "Fail") {
-            isAnyFail = true;
-        }
-        if ($(`#DetailList_${rowIdx}__AcrylicResult`).val() == "Fail") {
-            isAnyFail = true;
-        }
-        if ($(`#DetailList_${rowIdx}__WoolResult`).val() == "Fail") {
-            isAnyFail = true;
-        }
+        if (value == 'Residue') {
+            $("#Main_Temperature").val(0);
+            $("#Main_Time").val(0);
+            $("#Main_Humidity").val(0);
 
-        if (isAnyFail) {
-            $(`#DetailList_${rowIdx}__AllResult`).val('Fail');
-            $(`#DetailList_${rowIdx}__AllResult`).css('color', 'Red');
+            $("#Main_Temperature").attr("readonly", "readonly");
+            $("#Main_Time").attr("readonly", "readonly");
+            $("#Main_Humidity").attr("readonly", "readonly");
         }
         else {
-            $(`#DetailList_${rowIdx}__AllResult`).val('Pass');
-            $(`#DetailList_${rowIdx}__AllResult`).css('color', 'blue');
+            $("#Main_Temperature").val(70);
+            $("#Main_Time").val(168);
+            $("#Main_Humidity").val(95);
+
+            $("#Main_Temperature").removeAttr("readonly");
+            $("#Main_Time").removeAttr("readonly");
+            $("#Main_Humidity").removeAttr("readonly");
         }
-        $(`#DetailList_${rowIdx}__AllResult`).change();
+
+    }
+
+    function HumidityCheck(value) {
+        if (parseFloat(value) >= 99) {
+            return 99;
+        }
+        else if (parseFloat(value) < 0) {
+            return 0;
+        }
+
+        return Number.parseInt(value);
     }
 
     function tabChange() {
@@ -1475,31 +1542,22 @@
         });
     }
 
-    function TestStandardChange(obj) {
-        var firstScales = $(".FisrtScale");
-        var secondScales = $(".SecondScale");
-        var evenlys = $(".Evenly");
+    function DetailItemValueCgange(obj, standard, detailItemListIdx, evaluationItem) {
 
-        // 只有Test Standard 為Fleece/Polar Fleece才可以用 Evenly
-        if ($(obj).val() != 'Fleece/Polar Fleece') {
+        if ($(obj).val() == standard) {
+            $(`#DetailItemList_${detailItemListIdx}__Result`).val('Pass');
+            $(`#DetailItemList_${detailItemListIdx}__Result`).css('color', 'blue');
 
-            evenlys.each(function () {
-                $(this).prop('checked', false);
-                $(this).attr('disabled', 'disabled');
-            });
+            $(`input[tag='${evaluationItem}Tag']`).val('Pass');
+            $(`input[tag='${evaluationItem}Tag']`).css('color', 'blue');
         }
         else {
-            evenlys.each(function () {
-                $(this).removeAttr('disabled');
-            });
+            $(`#DetailItemList_${detailItemListIdx}__Result`).val('Fail');
+            $(`#DetailItemList_${detailItemListIdx}__Result`).css('color', 'red');
+
+            $(`input[tag='${evaluationItem}Tag']`).val('Fail');
+            $(`input[tag='${evaluationItem}Tag']`).css('color', 'red');
         }
 
-        firstScales.each(function () {
-            $(this).change();
-        });
-
-        secondScales.each(function () {
-            $(this).change();
-        });
     }
 </script>

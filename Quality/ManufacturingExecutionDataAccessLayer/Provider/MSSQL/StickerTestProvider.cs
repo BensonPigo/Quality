@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ToolKit;
 using System.Configuration;
+using System.Web.Mvc;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -30,6 +31,18 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             return tmp.Any() ? tmp.ToList() : new List<StickerTestItem>();
         }
 
+        public List<SelectListItem> GetScales()
+        {
+            string sqlcmd = @"
+select Text=ID , Value=ID
+from Scale WITH(NOLOCK)  
+WHERE Junk=0 
+order by Value
+";
+            var tmp = ExecuteList<SelectListItem>(CommandType.Text, sqlcmd, new SQLParameterCollection());
+
+            return tmp.Any() ? tmp.ToList() : new List<SelectListItem>();
+        }
         public List<DatabaseObject.ProductionDB.Orders> GetOrderInfo(StickerTest_Request Req)
         {
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -264,6 +277,8 @@ VALUES
                 { "@FabricRefNo", DbType.String, Req.Main.FabricRefNo ?? "" } ,
                 { "@FabricColor", DbType.String, Req.Main.FabricColor ?? "" } ,
                 { "@FabricDescription", DbType.String, Req.Main.FabricDescription ?? "" } ,
+                { "@AccRefNo", DbType.String, Req.Main.AccRefNo ?? "" } ,
+                { "@AccColor", DbType.String, Req.Main.AccColor ?? "" } ,
                 { "@Temperature", DbType.Int32, Req.Main.Temperature } ,
                 { "@Time", DbType.Int32, Req.Main.Time } ,
                 { "@Humidity", DbType.Decimal, Req.Main.Humidity } ,
@@ -343,8 +358,8 @@ delete from PMSFile.dbo.StickerTest WHERE ReportNo = @ReportNo
                 PublicClass.CompareListValue<StickerTest_Detail>(
                     sources.DetailList,
                     oldDetailData,
-                    "Ukey",
-                    "EvaluationItem,Scale,Result,Remark");
+                    "ReportNo,EvaluationItem",
+                    "Scale,Result,Remark");
 
             string insertDetail = $@" ----寫入 StickerTest_Detail
 INSERT INTO StickerTest_Detail
@@ -414,14 +429,14 @@ DELETE FROM StickerTest_Detail where ReportNo = @ReportNo AND EvaluationItem = @
                 PublicClass.CompareListValue<StickerTest_Detail_Item>(
                     sources.DetailItemList,
                     oldDetailItemData,
-                    "Ukey",
-                    "ReportNo,EvaluationItem,EvaluationItemDesc,Value,Result");
+                    "ReportNo,EvaluationItem,ItemID",
+                    "EvaluationItemDesc,Value,Result");
 
             string insertDetail = $@" ----寫入 StickerTest_Detail_Item
 INSERT INTO StickerTest_Detail_Item
-           (ReportNo,EvaluationItem,EvaluationItemDesc,Value,Result,EditName,EditDate)
+           (ReportNo,EvaluationItem,ItemID,EvaluationItemDesc,Value,Result,EditName,EditDate)
 VALUES 
-           (@ReportNo,@EvaluationItem,@EvaluationItem,@EvaluationItemDesc,@Value,@Result,@UserID,GETDATE())
+           (@ReportNo,@EvaluationItem,@ItemID,@EvaluationItemDesc,@Value,@Result,@UserID,GETDATE())
 ";
             string updateDetail = $@" ----更新 StickerTest_Detail_Item，只有Value、Result是允許User 變更的
 UPDATE StickerTest_Detail_Item
@@ -430,11 +445,13 @@ SET EditDate = GETDATE() , EditName = @UserID
     ,Result = @Result
 WHERE ReportNo = @ReportNo
 AND EvaluationItem = @EvaluationItem
+AND ItemID = @ItemID
 ;
 ";
             string deleteDetail = $@" ----刪除 StickerTest_Detail_Item
-DELETE FROM StickerTest_Detail_Item WHERE ReportNo = @ReportNo AND EvaluationItem = @EvaluationItem
+DELETE FROM StickerTest_Detail_Item WHERE ReportNo = @ReportNo AND EvaluationItem = @EvaluationItem AND ItemID = @ItemID
 ";
+            int idx = 0;
             foreach (var detailItem in needUpdateDetailItemList)
             {
                 SQLParameterCollection listDetailPar = new SQLParameterCollection();
@@ -444,15 +461,17 @@ DELETE FROM StickerTest_Detail_Item WHERE ReportNo = @ReportNo AND EvaluationIte
                 switch (detailItem.StateType)
                 {
                     case CompareStateType.Add:
+                        listDetailPar.Add(new SqlParameter($"@ItemID", $"{sources.Main.ReportNo}_{idx}"));
                         listDetailPar.Add(new SqlParameter($"@EvaluationItemDesc", detailItem.EvaluationItemDesc));
                         listDetailPar.Add(new SqlParameter($"@Value", detailItem.Value));
                         listDetailPar.Add(new SqlParameter($"@Result", detailItem.Result));
                         listDetailPar.Add(new SqlParameter($"@UserID", UserID));
 
                         ExecuteNonQuery(CommandType.Text, insertDetail, listDetailPar);
-
+                        idx++;
                         break;
                     case CompareStateType.Edit:
+                        listDetailPar.Add(new SqlParameter($"@ItemID", detailItem.ItemID));
                         listDetailPar.Add(new SqlParameter($"@Value", detailItem.Value));
                         listDetailPar.Add(new SqlParameter($"@Result", detailItem.Result));
                         listDetailPar.Add(new SqlParameter($"@UserID", UserID));
@@ -460,7 +479,7 @@ DELETE FROM StickerTest_Detail_Item WHERE ReportNo = @ReportNo AND EvaluationIte
                         ExecuteNonQuery(CommandType.Text, updateDetail, listDetailPar);
                         break;
                     case CompareStateType.Delete:
-
+                        listDetailPar.Add(new SqlParameter($"@ItemID", detailItem.ItemID));
                         ExecuteNonQuery(CommandType.Text, deleteDetail, listDetailPar);
                         break;
                     case CompareStateType.None:
@@ -500,7 +519,6 @@ DELETE FROM StickerTest_Detail_Item WHERE ReportNo = @ReportNo AND EvaluationIte
 UPDATE StickerTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = @Status
-    , Result = @Result
     , ReportDate = GETDATE()
 WHERE ReportNo = @ReportNo
 ;
@@ -512,7 +530,6 @@ WHERE ReportNo = @ReportNo
 UPDATE StickerTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New'
-    , Result = ''
     , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ;

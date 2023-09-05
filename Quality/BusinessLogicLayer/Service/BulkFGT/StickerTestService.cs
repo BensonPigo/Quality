@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Data;
 using Microsoft.Office.Interop.Excel;
 using DataTable = System.Data.DataTable;
+using System.Web.Mvc;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -44,8 +45,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             try
             {
-                _Provider = new StickerTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _Provider = new StickerTestProvider(Common.ProductionDataAccessLayer);
+                model.Scale_Source = _Provider.GetScales();
 
+                _Provider = new StickerTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 model.Item_Source = _Provider.GetTestItems();
 
                 if (IsNew)
@@ -155,7 +158,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     }
 
-
                     model.Request = Req;
                     model.Request.ReportNo = model.Main.ReportNo;
 
@@ -170,6 +172,21 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     {
                         ReportNo = model.Main.ReportNo
                     });
+
+
+                    // 取得Article 下拉選單
+                    _Provider = new StickerTestProvider(Common.ProductionDataAccessLayer);
+                    List<DatabaseObject.ProductionDB.Orders> tmpOrders = _Provider.GetOrderInfo(new StickerTest_Request() { OrderID = model.Main.OrderID });
+
+                    foreach (var oriData in tmpOrders)
+                    {
+                        SelectListItem Article = new SelectListItem()
+                        {
+                            Text = oriData.Article,
+                            Value = oriData.Article,
+                        };
+                        model.Article_Source.Add(Article);
+                    }
 
                     model.Result = true;
                 }
@@ -464,12 +481,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             try
             {
-                _Provider = new StickerTestProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 // 取得報表資料
 
                 StickerTest_ViewModel model = this.GetData(new StickerTest_Request() { ReportNo = ReportNo });
 
+                _Provider = new StickerTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 model.Item_Source = _Provider.GetTestItems();
 
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new StickerTest_Request() { ReportNo = ReportNo });
@@ -570,7 +587,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 int detailIdx = 0;
-                int detailItemIdx = 0;
 
                 // 表身處理
                 if (model.DetailList.Any() && model.DetailList.Count > 1)
@@ -582,6 +598,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                         var DetailItemList = model.DetailItemList.Where(o => o.EvaluationItem == detail.EvaluationItem).ToList();
 
+                        int detailItemIdx = 0;
                         foreach (var detail_Item in DetailItemList)
                         {                            
                             worksheet.Cells[11 + detailIdx + detailItemIdx, 4] = detail_Item.EvaluationItemDesc;

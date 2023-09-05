@@ -1501,6 +1501,64 @@ WHERE a.Result <> ''
 
             #endregion
 
+            #region Sticker Test (434)
+
+            string type22 = $@"
+select Type= 'Sticker Test (604)'
+	, a.ReportNo
+	, a.OrderID
+	, a.StyleID
+	, a.BrandID
+	, a.SeasonID
+	, a.Article
+	, Line = ''
+	, Artwork = ''
+	, a.Result	
+	, TestDate = Cast( NULL as date)
+	, ReceivedDate = a.SubmitDate
+	, ReportDate = a.ReportDate
+    , AddName = ISNULL(mp.Name, pp.Name)
+from [ExtendServer].ManufacturingExecution.dbo.StickerTest a
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
+left join Pass1 pp on a.EditName = pp.ID
+WHERE a.Result <> ''
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type22 += "AND a.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type22 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type22 += "AND a.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type22 += "AND a.Article = @Article ";
+            }
+
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type22 += " AND @ReceivedDate_s <= a.SubmitDate ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type22 += " AND a.SubmitDate <= @ReceivedDate_e ";
+            }
+
+            if (Req.ReportDate_s.HasValue)
+            {
+                type22 += " AND @ReportDate_s <= a.ReportDate ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type22 += " AND a.ReportDate <= @ReportDate_e ";
+            }
+
+            #endregion
             switch (Req.Type)
             {
                 case string a when a.Contains("Fabric Crocking & Shrinkage Test"):
@@ -1563,6 +1621,9 @@ WHERE a.Result <> ''
                 case string a when a.Contains("Water Absorbency Test"):
                     SbSql.Append(type21);
                     break;
+                case string a when a.Contains("Sticker Test"):
+                    SbSql.Append(type22);
+                    break;
                 default:
                     SbSql.Append(
                         type1 + " union all " + 
@@ -1584,7 +1645,8 @@ WHERE a.Result <> ''
                         type18 + " union all " +
                         type19 + " union all " +
                         type20 + " union all " +
-                        type21);
+                        type21 + " union all " +
+                        type22);
                     break;
             }
 

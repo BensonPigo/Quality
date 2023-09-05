@@ -385,6 +385,16 @@
                                                 Article = item.Article,
                                             });
                                             break;
+                                        case string a when a.Contains("Sticker Test"):
+                                            link = Url.Action("IndexGet", "StickerTest", new
+                                            {
+                                                ReportNo = item.ReportNo,
+                                                BrandID = item.BrandID,
+                                                SeasonID = item.SeasonID,
+                                                StyleID = item.StyleID,
+                                                Article = item.Article,
+                                            });
+                                            break;
                                         default:
                                             link = "#";
                                             break;
@@ -635,9 +645,10 @@
             let includes_Martindale = currentType.toUpperCase().includes("MARTINDALE");
             let includes_RandomTumble = currentType.toUpperCase().includes("RandomTumble");
             let includes_Absorbency = currentType.toUpperCase().includes("ABSORBENCY");
+            let includes_StickerTest = currentType.toUpperCase().includes("SICKERTEST");
 
             if (!includes_MOCKUP && !includes_HTWash && !includes_Moistureh && !includes_Aging && !includes_SALIVA
-                && !includes_Yellowing && !includes_Martindale && !includes_RandomTumble && !includes_Absorbency) {
+                && !includes_Yellowing && !includes_Martindale && !includes_RandomTumble && !includes_Absorbency && !includes_StickerTest) {
                 $(".mockupOnly").val('');
                 $(".mockupOnly").attr("disabled", "disabled");
             }
