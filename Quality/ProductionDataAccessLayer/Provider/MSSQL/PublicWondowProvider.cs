@@ -588,6 +588,35 @@ Where o.ID = @OrderID
             }
             return ExecuteList<Window_Po_Supp_Detail>(CommandType.Text, SbSql.ToString(), paras);
         }
+        public IList<Window_Po_Supp_Detail> Get_HeatTransferWash_Refno(string OrderID, string Artwork, string Refno)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+            SbSql.Append($@"
+
+DECLARE @POID as VARCHAR(13)
+
+select @POID=POID
+from Orders
+where id = '{OrderID}'
+
+select DISTINCT psd.Refno
+from PO_Supp_Detail psd WITH(NOLOCK)
+inner join Fabric f WITH(NOLOCK) on psd.SCIRefno = f.SCIRefno
+Where 1 = 1
+And psd.ID = @POID
+Order by Refno
+
+");
+
+            if (!string.IsNullOrEmpty(Refno))
+            {
+                SbSql.Append($@" AND bof.Refno = @Refno ");
+                paras.Add("@Refno", DbType.String, Refno);
+            }
+
+            return ExecuteList<Window_Po_Supp_Detail>(CommandType.Text, SbSql.ToString(), paras);
+        }
 
         public IList<Window_FtyInventory> Get_FtyInventory(string POID, string Seq1, string Seq2, string Roll, bool IsExact)
         {
@@ -838,6 +867,20 @@ Where ReportNo = @ReportNo
             paras.Add("@ReportNo ", DbType.String, ReportNo);
 
             return ExecuteList<Window_MartindalePillingTest>(CommandType.Text, SbSql.ToString(), paras);
+        }
+        public IList<Window_RandomTumblePillingTest> Get_RandomTumblePillingTestPicture(string ReportNo)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            SbSql.Append($@"
+select *
+From PMSFile.dbo.MartindalePillingTest  WITH(NOLOCK)
+Where ReportNo = @ReportNo
+");
+            paras.Add("@ReportNo ", DbType.String, ReportNo);
+
+            return ExecuteList<Window_RandomTumblePillingTest>(CommandType.Text, SbSql.ToString(), paras);
         }
 
         public IList<Window_SinglePicture> Get_SinglePicture(string Table, string ColumnName, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val)
