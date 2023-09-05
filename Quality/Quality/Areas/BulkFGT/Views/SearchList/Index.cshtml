@@ -374,6 +374,17 @@
                                                 Article = item.Article,
                                             });
                                             break;
+
+                                        case string a when a.Contains("Water Absorbency Test"):
+                                            link = Url.Action("IndexGet", "WaterAbsorbency", new
+                                            {
+                                                ReportNo = item.ReportNo,
+                                                BrandID = item.BrandID,
+                                                SeasonID = item.SeasonID,
+                                                StyleID = item.StyleID,
+                                                Article = item.Article,
+                                            });
+                                            break;
                                         default:
                                             link = "#";
                                             break;
@@ -623,9 +634,10 @@
             let includes_Yellowing = currentType.toUpperCase().includes("YELLOWING");
             let includes_Martindale = currentType.toUpperCase().includes("MARTINDALE");
             let includes_RandomTumble = currentType.toUpperCase().includes("RandomTumble");
+            let includes_Absorbency = currentType.toUpperCase().includes("ABSORBENCY");
 
             if (!includes_MOCKUP && !includes_HTWash && !includes_Moistureh && !includes_Aging && !includes_SALIVA
-                && !includes_Yellowing && !includes_Martindale && !includes_RandomTumble) {
+                && !includes_Yellowing && !includes_Martindale && !includes_RandomTumble && !includes_Absorbency) {
                 $(".mockupOnly").val('');
                 $(".mockupOnly").attr("disabled", "disabled");
             }
