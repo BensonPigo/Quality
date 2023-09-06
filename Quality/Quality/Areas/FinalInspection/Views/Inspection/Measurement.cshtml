@@ -431,7 +431,7 @@
             ListMeasurementItem: bodyList
         };
 
-        $.ajax({
+        @*$.ajax({ // ISP20230647 拔掉按下Next Back的存檔
             url: '@Url.Action("MeasurementSingleSave", "Inspection")',
             type: 'POST',
             data: jQuery.param({ model: head }),
@@ -461,7 +461,7 @@
                     return false;
                 });
             }
-        });
+        });*@
 
         ShowLoading();
 
@@ -633,7 +633,7 @@
                     tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='text' KeyIdx='" + KeyIdx + "' idx='ResultSizeSpec' value='" + value.SizeSpec +"' placeholder= '__ __/__' style ='width:64%; height:3.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
                 }
                 else {
-                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='number' KeyIdx='" + KeyIdx + "' step='any' idx='ResultSizeSpec' style ='width:64%; height:2.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
+                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='number' KeyIdx='" + KeyIdx + "' step='any' idx='ResultSizeSpec' value='" + value.SizeSpec +"' style ='width:64%; height:2.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
                 }
 
                 tbody += "<td style ='vertical-align: middle;'><p style ='padding: 0.5vh' class='Diff'></p></td>";
