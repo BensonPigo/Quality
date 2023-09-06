@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using System.Web.Mvc;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -132,7 +133,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     // 取得表身
                     // 若"有"傳入ReportNo，則可以直接找出表頭表身明細
-                    if (!string.IsNullOrEmpty(Req.ReportNo))
+                    if (!string.IsNullOrEmpty(Req.ReportNo) && tmpList.Where(o => o.ReportNo == Req.ReportNo).Any())
                     {
                         // 取得表頭資料
                         model.Main = tmpList.Where(o => o.ReportNo == Req.ReportNo).FirstOrDefault();
@@ -145,7 +146,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     }
 
-
                     model.Request = Req;
                     model.Request.ReportNo = model.Main.ReportNo;
 
@@ -154,6 +154,21 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     {
                         ReportNo = model.Main.ReportNo
                     });
+
+                    // 取得Article 下拉選單
+                    _Provider = new HydrostaticPressureWaterproofTestProvider(Common.ProductionDataAccessLayer);
+                    List<DatabaseObject.ProductionDB.Orders> tmpOrders = _Provider.GetOrderInfo(new HydrostaticPressureWaterproofTest_Request() { OrderID = model.Main.OrderID });
+
+                    foreach (var oriData in tmpOrders)
+                    {
+                        SelectListItem Article = new SelectListItem()
+                        {
+                            Text = oriData.Article,
+                            Value = oriData.Article,
+                        };
+                        model.Article_Source.Add(Article);
+                    }
+
 
                     model.Result = true;
                 }
@@ -235,8 +250,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // 判斷表頭Result，表身有任一Fail則Fail，否則Pass
                 if (Req.DetailList != null && Req.DetailList.Any())
                 {
-                    //bool HasFail = Req.DetailList.Where(o => o.AllResult == "Fail").Any();
-                    //Req.Main.Result = HasFail ? "Fail" : "Pass";
+                    bool HasAsReceivedFail = Req.DetailList.Where(o => o.AsReceivedResult == "Fail").Any();
+                    bool HasAfterWashFail = Req.DetailList.Where(o => o.AfterWashResult == "Fail").Any();
+                    Req.Main.Result = HasAsReceivedFail || HasAfterWashFail ? "Fail" : "Pass";
                 }
                 else
                 {
@@ -295,8 +311,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // 判斷表頭Result，表身有任一Fail則Fail，否則Pass
                 if (Req.DetailList != null && Req.DetailList.Any())
                 {
-                    //bool HasFail = Req.DetailList.Where(o => o.AllResult == "Fail").Any();
-                    //Req.Main.Result = HasFail ? "Fail" : "Pass";
+                    bool HasAsReceivedFail = Req.DetailList.Where(o => o.AsReceivedResult == "Fail").Any();
+                    bool HasAfterWashFail = Req.DetailList.Where(o => o.AfterWashResult == "Fail").Any();
+                    Req.Main.Result = HasAsReceivedFail  || HasAfterWashFail ? "Fail" : "Pass";
                 }
                 else
                 {
@@ -429,12 +446,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             try
             {
-                _Provider = new HydrostaticPressureWaterproofTestProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 // 取得報表資料
 
                 HydrostaticPressureWaterproofTest_ViewModel model = this.GetData(new HydrostaticPressureWaterproofTest_Request() { ReportNo = ReportNo });
 
+                _Provider = new HydrostaticPressureWaterproofTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new HydrostaticPressureWaterproofTest_Request() { ReportNo = ReportNo });
 
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
@@ -470,10 +487,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
 
                     // 姓名
-                    worksheet.Cells[80, 6] = TechnicianName;
+                    worksheet.Cells[80, 5] = TechnicianName;
 
                     // Signture 圖片
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[79, 6];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[79, 5];
                     if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
                     {
 

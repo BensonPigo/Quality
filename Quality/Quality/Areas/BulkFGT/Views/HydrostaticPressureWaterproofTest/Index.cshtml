@@ -442,183 +442,188 @@
                     </div>
 
                     @*表頭*@
-                    <div class="MainArea">
-                        <!-- #region Row 1-->
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Report No</h4>
-
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.ReportNo, new { @class = "" })
-
-                            @Html.HiddenFor(o => o.Main.Status)
-                            @Html.HiddenFor(o => o.Main.TestBeforePicture)
-                            @Html.HiddenFor(o => o.Main.TestAfterPicture)
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Report Date</h4>
-
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.ReportDateText, new { @class = "" })
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Status</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.Status, new { @class = "" })
-                        </div>
-                        <!-- #endregion -->
-                        <!-- #region Row 2-->
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Subimt Date</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.HiddenFor(o => o.Main.SubmitDate)
-                            @Html.TextBoxFor(o => o.Main.SubmitDateText, new { @class = "CanEdit even" })
-
-                        </div>
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">SP#</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.OrderID, new { @class = "even CanEdit" })
-
-                        </div>
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Brand</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.BrandID, new { @class = "even" })
-
-                        </div>
-
-
-                        <!-- #endregion -->
-                        <!-- #region Row 3-->
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Season</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.SeasonID, new { @class = "odd" })
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Style</h4>
-
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.StyleID, new { @class = "" })
-
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Article</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            <select id="Main_Article" name="Main.Article" class="CanEdit">
-                                @foreach (var item in Model.Article_Source)
-                                {
-                                    string selected = item.Value.Equals(Model.Main.Article) ? "selected" : "";
-                                    <option value="@item.Value" @selected>@item.Text</option>
-                                }
-                            </select>
-
-                        </div>
-
-                        <!-- #endregion -->
-                        <!-- #region Row 4-->
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Seq</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.Seq, new { @class = "even CanEdit" })
-                            @Html.HiddenFor(o => o.Main.Seq1, new { @class = "" })
-                            @Html.HiddenFor(o => o.Main.Seq2, new { @class = "" })
-                        </div>
-
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Fabric Ref#</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.FabricRefNo, new { @class = "even", @onclick = "OpenWindow('FabricRefNo')", @placeholder = "Click" })
-
-                        </div>
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Fabric Color</h4>
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.FabricColor, new { @class = "even" })
-                        </div>
-                        <!-- #endregion -->
-                        <!-- #region Row 5-->
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Fabric Description</h4>
-
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.FabricDescription, new { @class = "odd CanEdit" })
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Result</h4>
-
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @{ string mainResultColor = Model.Main.Result == "Pass" ? "blue" : "red";}
-                            @Html.TextBoxFor(o => o.Main.Result, new { @class = "odd", @style = $@"color:{mainResultColor}" })
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Remark</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.Remark, new { @class = "CanEdit", @style = "width:100%" })
-
-                        </div>
-
-                        <!-- #endregion -->
-                        <!-- #region Row 6-->
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Last Upadate</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "even", @style = "width:100%" })
-                        </div>
-
-                        <div class="MainAreaItem even">
-
-                        </div>
-                        <div class="MainAreaItem even">
-
-                        </div>
-
-                        <div class="MainAreaItem even">
-
-                        </div>
-                        <div class="MainAreaItem even">
-
-                        </div>
-                        <!-- #endregion -->
-
+                <div class="MainArea">
+                    <!-- #region Row 1-->
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Report No</h4>
 
                     </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.ReportNo, new { @class = "" })
+
+                        @Html.HiddenFor(o => o.Main.Status)
+                        @Html.HiddenFor(o => o.Main.TestBeforePicture)
+                        @Html.HiddenFor(o => o.Main.TestAfterPicture)
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Report Date</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.ReportDateText, new { @class = "" })
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Result</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @{ string mainResultColor = Model.Main.Result == "Pass" ? "blue" : "red";}
+                        @Html.TextBoxFor(o => o.Main.Result, new { @class = "odd", @style = $@"color:{mainResultColor}" })
+                    </div>
+                    <!-- #endregion -->
+                    <!-- #region Row 2-->
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Submit Date</h4>
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.HiddenFor(o => o.Main.SubmitDate)
+                        @Html.TextBoxFor(o => o.Main.SubmitDateText, new { @class = "CanEdit even" })
+
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">SP#</h4>
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.OrderID, new { @class = "even CanEdit" })
+
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Brand</h4>
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.BrandID, new { @class = "even" })
+
+                    </div>
+
+
+                    <!-- #endregion -->
+                    <!-- #region Row 3-->
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Season</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.SeasonID, new { @class = "odd" })
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Style</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.StyleID, new { @class = "" })
+
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Article</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        <select id="Main_Article" name="Main.Article" class="CanEdit">
+                            @foreach (var item in Model.Article_Source)
+                            {
+                                string selected = item.Value.Equals(Model.Main.Article) ? "selected" : "";
+                                <option value="@item.Value" @selected>@item.Text</option>
+                            }
+                        </select>
+
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 4-->
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Seq</h4>
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.Seq, new { @class = "even CanEdit" })
+                        @Html.HiddenFor(o => o.Main.Seq1, new { @class = "" })
+                        @Html.HiddenFor(o => o.Main.Seq2, new { @class = "" })
+                    </div>
+
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Fabric Ref#</h4>
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.FabricRefNo, new { @class = "even", @onclick = "OpenWindow('FabricRefNo')", @placeholder = "Click" })
+
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Fabric Color</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.FabricColor, new { @class = "even" })
+                    </div>
+                    <!-- #endregion -->
+                    <!-- #region Row 5-->
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Fabric Description</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.FabricDescription, new { @class = "odd CanEdit" })
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Remark</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.Remark, new { @class = "CanEdit", @style = "width:100%" })
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Last Upadate</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "odd", @style = "width:100%" })
+
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 6-->
+                    <div class="MainAreaItem100 even">
+                        <h4 class="colTitle">Wash Condition</h4>
+
+                    </div>
+                    <!-- #endregion -->
+                    <!-- #region Row 7-->
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Temperature (°C)</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.Temperature, new { @class = "" })
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Drying Condition</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.DryingCondition, new { @class = "" })
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Wash Cycles</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.WashCycles, new { @class = "" })
+                    </div>
+                    <!-- #endregion -->
+
+                </div>
 
                     @*表身*@
                     <div class="bodyDiv">
@@ -1066,7 +1071,7 @@
             }
             if ($("#Main_ReportNo").val() != '') {
                 // 重新Query 一次Detail
-                window.location.reload();
+                $("#btnQuery").click();
             }
             else {
                 EditMode = false;

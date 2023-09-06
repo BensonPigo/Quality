@@ -140,7 +140,6 @@ where 1=1
                 { "@StyleID", DbType.String, Req.Main.StyleID ?? ""} ,
                 { "@Article", DbType.String, Req.Main.Article ?? ""} ,
                 { "@OrderID", DbType.String, Req.Main.OrderID ?? ""} ,
-                { "@FactoryID", DbType.String, Req.Main.FactoryID ?? ""} ,
                 { "@SubmitDate", Req.Main.SubmitDate} ,
                 { "@Seq1", DbType.String, Req.Main.Seq1 ?? "" } ,
                 { "@Seq2", DbType.String, Req.Main.Seq2 ?? "" } ,
