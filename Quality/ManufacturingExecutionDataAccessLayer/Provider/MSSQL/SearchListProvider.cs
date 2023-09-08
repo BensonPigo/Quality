@@ -1323,28 +1323,29 @@ WHERE a.Result <> ''
 
             #endregion
 
-            #region Martindale Pilling Test (452)
+            #region Hydrostatic Pressure Waterproof Test (602)
 
             string type19 = $@"
-select Type= 'Martindale Pilling Test (452)'
-	, a.ReportNo
-	, a.OrderID
-	, a.StyleID
-	, a.BrandID
-	, a.SeasonID
-	, a.Article
-	, Line = ''
-	, Artwork = ''
-	, a.Result	
-	, TestDate = Cast( NULL as date)
-	, ReceivedDate = a.SubmitDate
-	, ReportDate = a.ReportDate
+select Type= 'Hydrostatic Pressure Waterproof Test (602)'
+    , a.ReportNo
+    , a.OrderID
+    , a.StyleID
+    , a.BrandID
+    , a.SeasonID
+    , a.Article
+    , Line = ''
+    , Artwork = ''
+    , a.Result  
+    , TestDate = Cast( NULL as date)
+    , ReceivedDate = a.SubmitDate
+    , ReportDate = a.ReportDate
     , AddName = ISNULL(mp.Name, pp.Name)
-from [ExtendServer].ManufacturingExecution.dbo.MartindalePillingTest a
+from [ExtendServer].ManufacturingExecution.dbo.HydrostaticPressureWaterproofTest a
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
-WHERE a.Result <> ''
+WHERE a.ReportDate IS NOT NULL
 ";
+
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
                 type19 += "AND a.BrandID = @BrandID ";
@@ -1379,31 +1380,29 @@ WHERE a.Result <> ''
             {
                 type19 += " AND a.ReportDate <= @ReportDate_e ";
             }
-
             #endregion
 
-            #region Random Tumble Pilling Test (407)
+            #region Martindale Pilling Test (452)
 
             string type20 = $@"
-select Type= 'Random Tumble Pilling Test (407)'
-	, a.ReportNo
-	, a.OrderID
-	, a.StyleID
-	, a.BrandID
-	, a.SeasonID
-	, a.Article
-	, Line = ''
-	, Artwork = ''
-	, a.Result	
-	, TestDate = Cast( NULL as date)
-	, ReceivedDate = a.SubmitDate
-	, ReportDate = a.ReportDate
+select Type= 'Martindale Pilling Test (452)'
+    , a.ReportNo
+    , a.OrderID
+    , a.StyleID
+    , a.BrandID
+    , a.SeasonID
+    , a.Article
+    , Line = ''
+    , Artwork = ''
+    , a.Result  
+    , TestDate = Cast( NULL as date)
+    , ReceivedDate = a.SubmitDate
+    , ReportDate = a.ReportDate
     , AddName = ISNULL(mp.Name, pp.Name)
-
-from [ExtendServer].ManufacturingExecution.dbo.RandomTumblePillingTest a
+from [ExtendServer].ManufacturingExecution.dbo.MartindalePillingTest a
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
-WHERE a.Result <> ''
+WHERE a.ReportDate IS NOT NULL
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
@@ -1439,30 +1438,30 @@ WHERE a.Result <> ''
             {
                 type20 += " AND a.ReportDate <= @ReportDate_e ";
             }
-
             #endregion
 
-            #region Water Absorbency Test (604)
+            #region Random Tumble Pilling Test (407)
 
             string type21 = $@"
-select Type= 'Water Absorbency Test (604)'
-	, a.ReportNo
-	, a.OrderID
-	, a.StyleID
-	, a.BrandID
-	, a.SeasonID
-	, a.Article
-	, Line = ''
-	, Artwork = ''
-	, a.Result	
-	, TestDate = Cast( NULL as date)
-	, ReceivedDate = a.SubmitDate
-	, ReportDate = a.ReportDate
+select Type= 'Random Tumble Pilling Test (407)'
+    , a.ReportNo
+    , a.OrderID
+    , a.StyleID
+    , a.BrandID
+    , a.SeasonID
+    , a.Article
+    , Line = ''
+    , Artwork = ''
+    , a.Result  
+    , TestDate = Cast( NULL as date)
+    , ReceivedDate = a.SubmitDate
+    , ReportDate = a.ReportDate
     , AddName = ISNULL(mp.Name, pp.Name)
-from [ExtendServer].ManufacturingExecution.dbo.WaterAbsorbencyTest a
+
+from [ExtendServer].ManufacturingExecution.dbo.RandomTumblePillingTest a
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
-WHERE a.Result <> ''
+WHERE a.ReportDate IS NOT NULL
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
@@ -1497,6 +1496,65 @@ WHERE a.Result <> ''
             if (Req.ReportDate_e.HasValue)
             {
                 type21 += " AND a.ReportDate <= @ReportDate_e ";
+            }
+
+            #endregion
+
+            #region Water Absorbency Test (604)
+
+            string type22 = $@"
+select Type= 'Water Absorbency Test (604)'
+    , a.ReportNo
+    , a.OrderID
+    , a.StyleID
+    , a.BrandID
+    , a.SeasonID
+    , a.Article
+    , Line = ''
+    , Artwork = ''
+    , a.Result  
+    , TestDate = Cast( NULL as date)
+    , ReceivedDate = a.SubmitDate
+    , ReportDate = a.ReportDate
+    , AddName = ISNULL(mp.Name, pp.Name)
+from [ExtendServer].ManufacturingExecution.dbo.WaterAbsorbencyTest a
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
+left join Pass1 pp on a.EditName = pp.ID
+WHERE a.ReportDate IS NOT NULL
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type22 += "AND a.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type22 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type22 += "AND a.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type22 += "AND a.Article = @Article ";
+            }
+
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type22 += " AND @ReceivedDate_s <= a.SubmitDate ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type22 += " AND a.SubmitDate <= @ReceivedDate_e ";
+            }
+
+            if (Req.ReportDate_s.HasValue)
+            {
+                type22 += " AND @ReportDate_s <= a.ReportDate ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type22 += " AND a.ReportDate <= @ReportDate_e ";
             }
 
             #endregion
@@ -1554,14 +1612,17 @@ WHERE a.Result <> ''
                 case string a when a.Contains("T-Peel Strength Test"):
                     SbSql.Append(type18);
                     break;
-                case string a when a.Contains("Martindale Pilling Test"):
+                case string a when a.Contains("Hydrostatic Pressure Waterproof Test"):
                     SbSql.Append(type19);
                     break;
-                case string a when a.Contains("Random Tumble Pilling Test"):
+                case string a when a.Contains("Martindale Pilling Test"):
                     SbSql.Append(type20);
                     break;
-                case string a when a.Contains("Water Absorbency Test"):
+                case string a when a.Contains("Random Tumble Pilling Test"):
                     SbSql.Append(type21);
+                    break;
+                case string a when a.Contains("Water Absorbency Test"):
+                    SbSql.Append(type22);
                     break;
                 default:
                     SbSql.Append(
@@ -1584,7 +1645,8 @@ WHERE a.Result <> ''
                         type18 + " union all " +
                         type19 + " union all " +
                         type20 + " union all " +
-                        type21);
+                        type21 + " union all " +
+                        type22);
                     break;
             }
 
