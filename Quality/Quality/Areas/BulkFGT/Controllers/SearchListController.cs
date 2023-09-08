@@ -63,7 +63,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             else if (!string.IsNullOrEmpty(Req.Type) && !Req.Type.ToUpper().Contains("MOCKUP") && !Req.Type.ToUpper().Contains("HT WASH") && !Req.Type.ToUpper().Contains("SALIVA") 
                 && !Req.Type.ToUpper().Contains("MOISTURE")
                 && !Req.Type.ToUpper().Contains("AGING")
-                && !Req.Type.ToUpper().Contains("YELLOWING"))
+                && !Req.Type.ToUpper().Contains("YELLOWING")
+                && !Req.Type.ToUpper().Contains("ABSORBENCY"))
 
             {
                 Req.ReceivedDate_sText = string.Empty;
