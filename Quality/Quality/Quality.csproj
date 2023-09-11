@@ -192,15 +192,18 @@
     <Compile Include="Areas\BulkFGT\Controllers\FabricOvenTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\GarmentTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\HeatTransferWashController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\RandomTumblePillingTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\MockupCrockingController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\MockupOvenTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\MockupWashController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\PhenolicYellowTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\PullingTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\MartindalePillingTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SalivaFastnessTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\PerspirationFastnessController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\TPeelStrengthTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\WaterAbsorbencyController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\WaterFastnessController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
@@ -455,6 +458,9 @@
     <Content Include="Areas\BulkFGT\Views\PhenolicYellowTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\TPeelStrengthTest\Index.cshtml" />
     <Content Include="Areas\SampleRFT\Views\InspBySPQuery\SendMailer.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\MartindalePillingTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\RandomTumblePillingTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\WaterAbsorbency\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -1001,7 +1007,20 @@
     <Content Include="XLT\TPeelStrengthTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="XLT\MartindalePillingTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PublicWondow\MartindalePillingTestPictureList.cshtml" />
+    <Content Include="Views\Shared\ScreenShot_MartindalePillingTest.cshtml" />
+    <Content Include="Views\PublicWondow\RandomTumblePillingTestPictureList.cshtml" />
+    <Content Include="XLT\RandomTumblePillingTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Views\PublicWondow\HeatTransferWash_RefnoList.cshtml" />
+    <Content Include="XLT\WaterAbsorbencyTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PublicWondow\ThreePictureList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

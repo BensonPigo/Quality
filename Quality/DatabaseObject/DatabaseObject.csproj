@@ -191,6 +191,7 @@
     <Compile Include="ResultModel\WaterFastness_Result.cs" />
     <Compile Include="ViewModel\BACriteria_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\Accessory_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\RandomTumblePillingTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\PhenolicYellowTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\AgingHydrolysisTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\FabricColorFastness_ViewModel.cs" />
@@ -204,9 +205,11 @@
     <Compile Include="ViewModel\BulkFGT\MockupOven_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\MockupWash_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\PullingTest_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\MartindalePillingTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\SalivaFastnessTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\SearchList_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\TPeelStrengthTest_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\WaterAbsorbency_ViewModel.cs" />
     <Compile Include="ViewModel\FinalInspection\AddDefect.cs" />
     <Compile Include="ViewModel\FinalInspection\Moisture.cs" />
     <Compile Include="ViewModel\FinalInspection\Measurement.cs" />

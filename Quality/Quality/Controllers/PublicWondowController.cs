@@ -480,6 +480,22 @@ namespace Quality.Controllers
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
+
+        public ActionResult ThreePictureList(string Title, bool EditMode, string TargetOneColumn, string TargetTwoColumn, string TargetThreeColumn, string TargetID, string Table, string OneColumn, string TwoColumn, string ThreeColumn, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val, string OneColumnHeader, string TwoColumnHeader, string ThreeColumnHeader)
+        {
+            var model = _PublicWindowService.Get_Picture(Table, OneColumn, TwoColumn, ThreeColumn, PKey_1, PKey_2, PKey_3, PKey_4, PKey_1_Val, PKey_2_Val, PKey_3_Val, PKey_4_Val);
+            ViewData["Title"] = Title;
+            ViewData["EditMode"] = EditMode;
+            ViewData["OneColumn"] = string.IsNullOrEmpty(TargetOneColumn) ? OneColumn : TargetOneColumn;
+            ViewData["TwoColumn"] = string.IsNullOrEmpty(TargetTwoColumn) ? TwoColumn : TargetTwoColumn;
+            ViewData["ThreeColumn"] = string.IsNullOrEmpty(TargetThreeColumn) ? ThreeColumn : TargetThreeColumn;
+            ViewData["OneColumnHeader"] = OneColumnHeader;
+            ViewData["TwoColumnHeader"] = TwoColumnHeader;
+            ViewData["ThreeColumnHeader"] = ThreeColumnHeader;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+
         public ActionResult InspMeasurement_PictureList(string Title, bool EditMode, string TargetColumnName, string TargetID, string Table, string ColumnName, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val, bool ShowDelete = true)
         {
             var model = _PublicWindowService.Get_SinglePicture(Table, ColumnName, PKey_1, PKey_2, PKey_3, PKey_4, PKey_1_Val, PKey_2_Val, PKey_3_Val, PKey_4_Val);
@@ -490,7 +506,29 @@ namespace Quality.Controllers
             ViewData["ShowDelete"] = ShowDelete;
             return View(model);
         }
-
+        public ActionResult MartindalePillingTestPictureList(string Title, bool EditMode, string TargetID, string ReportNo)
+        {
+            var model = _PublicWindowService.Get_MartindalePillingTestPicture(ReportNo);
+            ViewData["Title"] = Title;
+            ViewData["EditMode"] = EditMode;
+            ViewData["TestBeforePicture"] = "TestBeforePicture";
+            ViewData["Test500AfterPicture"] = "Test500AfterPicture";
+            ViewData["Test2000AfterPicture"] = "Test2000AfterPicture";
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+        public ActionResult RandomTumblePillingTestPictureList(string Title, bool EditMode, string TargetID, string ReportNo)
+        {
+            var model = _PublicWindowService.Get_RandomTumblePillingTestPicture(ReportNo);
+            ViewData["Title"] = Title;
+            ViewData["EditMode"] = EditMode;
+            ViewData["TestFaceSideBeforePicture"] = "TestFaceSideBeforePicture";
+            ViewData["TestFaceSideAfterPicture"] = "TestFaceSideAfterPicture";
+            ViewData["TestBackSideBeforePicture"] = "TestBackSideBeforePicture";
+            ViewData["TestBackSideAfterPicture"] = "TestBackSideAfterPicture";
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
         public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string TargetID, bool ExitReload = true)
         {
             var model = _PublicWindowService.Get_TestFailMail(FactoryID, Type, string.Empty);
