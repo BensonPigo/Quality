@@ -1,8 +1,11 @@
 ﻿@using DatabaseObject.ViewModel.BulkFGT
+
+@model WickingHeightTest_ViewModel
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@model WaterAbsorbency_ViewModel
+
 <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
 <link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
 
@@ -79,17 +82,19 @@
         align-items: center;
     }
 
-    .MainAreaItem33 {
-        width: 33.2%;
+    .DetailDataAreaItem1Rowspan {
+        height: 9rem;
+        width: 10%;
         padding: 2px;
-        height: 3rem;
         border: 1px solid;
         display: flex;
         align-items: center;
+        justify-content: center;
+        background-color: white;
     }
 
     .DetailDataAreaItem1 {
-        width: 14%;
+        width: 10%;
         padding: 2px;
         height: 3rem;
         border: 1px solid;
@@ -99,9 +104,31 @@
         background-color: white;
     }
 
-    .DetailDataAreaItem2 {
+    .DetailDataAreaItem2Rowspan {
+        width: 20%;
+        padding: 2px;
+        height: 9rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+    }
+
+    .DetailDataAreaItem3Rowspan {
         width: 30%;
         padding: 2px;
+        height: 9rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+    }
+
+    .DetailDataAreaItem33 {
+        width: 33%;
+        padding: 2px;
         height: 3rem;
         border: 1px solid;
         display: flex;
@@ -110,7 +137,18 @@
         background-color: white;
     }
 
-    .DetailDataAreaItem1 input, .DetailDataAreaItem1 select {
+    .DetailDataAreaItem5 {
+        width: 50%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+    }
+
+    .DetailDataAreaItem1 input, .DetailDataAreaItem1 select, .DetailDataAreaItem1Rowspan input, .DetailDataAreaItem1Rowspan select {
         width: 100%;
     }
 
@@ -217,16 +255,41 @@
     input, select, a, div {
         font-size: 1rem;
     }
+
+    .myTable thead tr th {
+        height: 3rem;
+        background-color: wheat;
+        color: darkslategray;
+        font-weight: bold;
+        font-size: 1rem;
+        padding: 2px;
+        border: 2px solid;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .myTable tbody tr td {
+        height: 3rem;
+        padding: 2px;
+        border: 2px solid;
+        background-color: white;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .myTable .rowspan {
+        height: 9rem;
+    }
 </style>
 
 <div class="main-content">
     <header class="page-header">
         <h3>
-            <i class=""></i><span>Water Absorbency Test</span>
+            <i class=""></i><span>Wicking Height Test</span>
         </h3>
         <div class="breadcrumb">
             <div>Home</div>
-            <div class="current">Water Absorbency Test</div>
+            <div class="current">Wicking Height Test</div>
         </div>
     </header>
 
@@ -235,8 +298,6 @@
     @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { }))
     {
         <div class="main-area">
-
-
             <div class="SearchDiv">
                 <!-- #region Row 1-->
                 <div class="colDiv">
@@ -282,13 +343,10 @@
                     @Html.DropDownListFor(o => o.Request.ReportNo, Model.ReportNo_Source, new { @style = "width:100%", onchange = "ReportNoChange(this.value)" })
                 </div>
                 <!-- #endregion -->
-
             </div>
 
             <div class="content-scroll">
-
                 <div class="inner-scroll" style="float:left">
-
                     <div class="buttonArea">
                         <div class="buttonAreaItem">
 
@@ -357,8 +415,7 @@
                                 Send to MR
                             </h4>
                         </div>
-                        <div class="buttonAreaItem">
-                        </div>
+                        <div class="buttonAreaItem"></div>
                     </div>
 
                     @*表頭*@
@@ -373,30 +430,21 @@
                             @Html.TextBoxFor(o => o.Main.ReportNo, new { @class = "" })
 
                             @Html.HiddenFor(o => o.Main.Status)
-                            @Html.HiddenFor(o => o.Main.TestBeforePicture)
-                            @Html.HiddenFor(o => o.Main.TestBeforeWashPicture)
-                            @Html.HiddenFor(o => o.Main.TestAfterPicture)
+                            @Html.HiddenFor(o => o.Main.TestWarpPicture)
+                            @Html.HiddenFor(o => o.Main.TestWeftPicture)
                         </div>
-
                         <div class="MainAreaItem odd">
                             <h4 class="colTitle">Subimt Date</h4>
-
                         </div>
-
                         <div class="MainAreaItem odd">
                             @Html.HiddenFor(o => o.Main.SubmitDate)
                             @Html.TextBoxFor(o => o.Main.SubmitDateText, new { @class = "CanEdit" })
-
                         </div>
-
                         <div class="MainAreaItem odd">
                             <h4 class="colTitle">Report Date</h4>
-
                         </div>
-
                         <div class="MainAreaItem odd">
                             @Html.TextBoxFor(o => o.Main.ReportDateText, new { @class = "" })
-
                         </div>
 
                         <!-- #endregion -->
@@ -404,33 +452,22 @@
 
                         <div class="MainAreaItem even">
                             <h4 class="colTitle">SP#</h4>
-
                         </div>
-
                         <div class="MainAreaItem even">
                             @Html.TextBoxFor(o => o.Main.OrderID, new { @class = "CanEdit even" })
-
                         </div>
-
                         <div class="MainAreaItem even">
                             <h4 class="colTitle">Brand</h4>
-
                         </div>
-
                         <div class="MainAreaItem even">
                             @Html.TextBoxFor(o => o.Main.BrandID, new { @class = "even" })
                         </div>
-
                         <div class="MainAreaItem even">
                             <h4 class="colTitle">Season</h4>
-
                         </div>
-
                         <div class="MainAreaItem even">
                             @Html.TextBoxFor(o => o.Main.SeasonID, new { @class = "even" })
-
                         </div>
-
                         <!-- #endregion -->
                         <!-- #region Row 3-->
 
@@ -439,17 +476,14 @@
                         </div>
                         <div class="MainAreaItem odd">
                             @Html.TextBoxFor(o => o.Main.StyleID, new { @class = "" })
-
                         </div>
 
                         <div class="MainAreaItem odd">
                             <h4 class="colTitle">Article</h4>
-
                         </div>
                         <div class="MainAreaItem odd">
                             @Html.TextBoxFor(o => o.Main.Article, new { @class = "" })
                         </div>
-
                         <div class="MainAreaItem odd">
                             <h4 class="colTitle">Fabric Type</h4>
                         </div>
@@ -459,110 +493,138 @@
 
                         <!-- #endregion -->
                         <!-- #region Row 4-->
-
+                        <div class="MainAreaItem even">
+                            <h4 class="colTitle">SEQ</h4>
+                        </div>
+                        <div class="MainAreaItem even">
+                            @Html.TextBoxFor(o => o.Main.Seq, new { @class = "even" })
+                            @Html.HiddenFor(o => o.Main.Seq1, new { @class = "" })
+                            @Html.HiddenFor(o => o.Main.Seq2, new { @class = "" })
+                        </div>
                         <div class="MainAreaItem even">
                             <h4 class="colTitle">Fabric Ref#</h4>
                         </div>
                         <div class="MainAreaItem even">
-                            @Html.HiddenFor(o => o.Main.Seq1, new { @class = "" })
-                            @Html.HiddenFor(o => o.Main.Seq2, new { @class = "" })
                             @Html.TextBoxFor(o => o.Main.FabricRefNo, new { @class = "even", @onclick = "OpenWindow('FabricRefNo')", @placeholder = "Click" })
-
                         </div>
                         <div class="MainAreaItem even">
                             <h4 class="colTitle">Fabric Color</h4>
-
                         </div>
                         <div class="MainAreaItem even">
                             @Html.TextBoxFor(o => o.Main.FabricColor, new { @class = "even" })
-                        </div>
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Fabric Description</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.FabricDescription, new { @class = "even CanEdit" })
                         </div>
 
                         <!-- #endregion -->
                         <!-- #region Row 5-->
                         <div class="MainAreaItem odd">
+                            <h4 class="colTitle">Fabric Description</h4>
+                        </div>
+                        <div class="MainAreaItem odd">
+                            @Html.TextBoxFor(o => o.Main.FabricDescription, new { @class = "odd CanEdit" })
+                        </div>
+                        <div class="MainAreaItem odd">
                             <h4 class="colTitle">Result</h4>
                         </div>
-                        <div class="MainAreaItem33 odd">
+                        <div class="MainAreaItem odd">
                             @{ string mainResultColor = Model.Main.Result == "Pass" ? "blue" : "red";}
-                            @Html.TextBoxFor(o => o.Main.Result, new { @class = "even", @style = $@"width:100%;color:{mainResultColor}" })
+                            @Html.TextBoxFor(o => o.Main.Result, new { @class = "odd", @style = $@"color:{mainResultColor}" })
                         </div>
                         <div class="MainAreaItem odd">
                             <h4 class="colTitle">Last Upadate</h4>
                         </div>
-                        <div class="MainAreaItem33 odd">
-                            @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "even", @style = "width:100%" })
+                        <div class="MainAreaItem odd">
+                            @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "odd", @style = "width:100%" })
                         </div>
                         <!-- #endregion -->
                     </div>
 
-                    @*表身*@
+                    <br />
                     <div class="bodyDiv">
-
-                        <div class="detailDataDiv">
-                            <br />
-                            <div class="DetailDataArea">
-                                <!--#region Head-->
-                                <div class="DetailDataAreaItem1 colHead">
-                                    Evaluation Item
-                                </div>
-                                <div class="DetailDataAreaItem1 colHead">
-                                    No. of Drops in 1ml
-                                </div>
-                                <div class="DetailDataAreaItem1 colHead">
-                                    Values(Sec)
-                                </div>
-                                <div class="DetailDataAreaItem1 colHead">
-                                    Result
-                                </div>
-                                <div class="DetailDataAreaItem2 colHead">
-                                    Remark
-                                </div>
-                                <div class="DetailDataAreaItem1 colHead">
-                                    Las Update
-                                </div>
-                                <!--#endregion-->
-
-                                @if (Model.DetailList != null)
-                                {
-                                    for (int i = 0; i < Model.DetailList.Count; i++)
+                        @if (Model.DetailList != null)
+                        {
+                            <table class="myTable">
+                                <thead>
+                                    <tr>
+                                        <th>Evaluation Type</th>
+                                        <th>Evaluation Item</th>
+                                        <th>Warp</th>
+                                        <th>Warp Time(Min)</th>
+                                        <th>Warp Result</th>
+                                        <th>Weft</th>
+                                        <th>Weft Time(Min)</th>
+                                        <th>Weft Result</th>
+                                        <th>Remark</th>
+                                        <th>Last Update</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.DetailList.Count; i++)
                                     {
                                         string rowName = $@"Row{i}";
                                         string resultColor = "blue";
-                                        <div class="DetailDataAreaItem1 colBody @rowName">
-                                            <input type="hidden" class="detailRowIdx" name="name" value="@i" />
-                                            @*@Html.TextBoxFor(o => Model.DetailList[i].ReportNo, new { @class = "" })*@
-                                            @Html.HiddenFor(o => Model.DetailList[i].ReportNo, new { @class = "" })
-                                            @Html.HiddenFor(o => Model.DetailList[i].Ukey, new { @class = "" })
-                                            @Html.TextBoxFor(o => Model.DetailList[i].EvaluationItem, new { @class = "" })
-                                        </div>
-                                        <div class="DetailDataAreaItem1 colBody @rowName">
-                                            @Html.TextBoxFor(o => Model.DetailList[i].NoOfDrops, new { @class = "CanEdit", @onchange = "CheckLen(this)" })
-                                        </div>
-                                        <div class="DetailDataAreaItem1 colBody @rowName">
-                                            @Html.TextBoxFor(o => Model.DetailList[i].Values, new { @idx = i, @class = "CanEdit", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "QtyCheck(this)" })
-                                        </div>
-                                        <div class="DetailDataAreaItem1 colBody @rowName">
-                                            @{ resultColor = Model.DetailList[i].Result == "Fail" ? "red" : "blue";}
-                                            @Html.TextBoxFor(o => Model.DetailList[i].Result, new { @class = "", @style = $@"color:{resultColor}" })
-                                        </div>
-                                        <div class="DetailDataAreaItem2 colBody @rowName">
-                                            @Html.TextBoxFor(o => Model.DetailList[i].Remark, new { @class = "CanEdit" })
-                                        </div>
-                                        <div class="DetailDataAreaItem1 colBody @rowName">
-                                            @Model.DetailList[i].LastUpadate
-                                        </div>
-                                    }
-                                }
+                                        int rowspan = Model.DetaiItemlList.Where(x => x.EvaluationType == Model.DetailList[i].EvaluationType).Count();
 
-                            </div>
-                        </div>
+                                        for (int j = 0; j < Model.DetaiItemlList.Where(x => x.EvaluationType == Model.DetailList[i].EvaluationType).Count(); j++)
+                                        {
+                                            <tr>
+                                                @if (j == 0)
+                                                {
+                                                    <td class="rowspan" rowspan="@rowspan">
+                                                        <input type="hidden" class="detailRowIdx" name="name" value="@i" />
+                                                        @Html.HiddenFor(o => Model.DetailList[i].ReportNo, new { @class = "" })
+                                                        @Html.HiddenFor(o => Model.DetailList[i].Ukey, new { @class = "" })
+                                                        @Html.TextBoxFor(o => Model.DetailList[i].EvaluationType, new { @class = "" })
+                                                    </td>
+                                                }
+                                                <td>
+                                                    @Html.HiddenFor(o => Model.DetaiItemlList[i * 3 + j].ReportNo)
+                                                    @Html.HiddenFor(o => Model.DetaiItemlList[i * 3 + j].WickingHeightTestDetailUkey)
+                                                    @Html.HiddenFor(o => Model.DetaiItemlList[i * 3 + j].Ukey)
+                                                    @Html.HiddenFor(o => Model.DetaiItemlList[i * 3 + j].EvaluationType)
+                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[i * 3 + j].EvaluationItem, new { @class = "" })
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[i * 3 + j].WarpValues, new { @idx = i, @class = "CanEdit", @type = "number", @step = "0.01", @min = "0", @onchange = "ValuesCheck(this)" })
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[i * 3 + j].WarpTime, new { @idx = i, @class = "CanEdit", @type = "number", @step = "1", @min = "0", @onchange = "ValuesCheck(this)" })
+                                                </td>
+                                                @if (j == 0)
+                                                {
+                                                    <td class="rowspan" rowspan="@rowspan">
+                                                        @{ resultColor = Model.DetailList[i].WarpResult == "Fail" ? "red" : "blue";}
+                                                        @Html.HiddenFor(o => Model.DetailList[i].WarpAverage)
+                                                        @Html.TextBoxFor(o => Model.DetailList[i].WarpResult, new { @class = "", @style = $@"color:{resultColor}" })
+                                                    </td>
+                                                }
+                                                <td>
+                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[i * 3 + j].WeftValues, new { @idx = i, @class = "CanEdit", @type = "number", @step = "0.01", @min = "0", @onchange = "ValuesCheck(this)" })
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[i * 3 + j].WeftTime, new { @idx = i, @class = "CanEdit", @type = "number", @step = "1", @min = "0", @onchange = "ValuesCheck(this)" })
+                                                </td>
+
+                                                @if (j == 0)
+                                                {
+                                                    <td class="rowspan" rowspan="@rowspan">
+                                                        @{ resultColor = Model.DetailList[i].WeftResult == "Fail" ? "red" : "blue";}
+                                                        @Html.HiddenFor(o => Model.DetailList[i].WeftAverage)
+                                                        @Html.TextBoxFor(o => Model.DetailList[i].WeftResult, new { @class = "", @style = $@"color:{resultColor}" })
+                                                    </td>
+                                                    <td class="rowspan" rowspan="@rowspan">
+                                                        @Html.TextBoxFor(o => Model.DetailList[i].Remark, new { @class = "CanEdit" })
+                                                    </td>
+                                                }
+                                                <td>
+                                                    @Html.TextBoxFor(o => Model.DetaiItemlList[i * 3 + j].LastUpadate, new { @class = "" })
+                                                </td>
+                                            </tr>
+                                        }
+
+                                    }
+                                </tbody>
+                            </table>
+                        }
                     </div>
                 </div>
             </div>
@@ -602,8 +664,8 @@
         if ($('#Main_ReportNo').val() == '' && EditType != 'New') {
 
             // 可編輯欄位關閉
-            $('.MainArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select').attr("disabled", true);
-            $('.MainArea input ,.MainArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
+            $('.MainArea select ,.myTable select').attr("disabled", true);
+            $('.MainArea input ,.MainArea textarea ,.myTable input').attr("readonly", "readonly");
         }
         else {
             //根據模式區分
@@ -621,8 +683,8 @@
             }
             else {
                 // 可編輯欄位關閉
-                $('.MainArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select').attr("disabled", true);
-                $('.MainArea input ,.MainArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
+                $('.MainArea select ,.myTable select').attr("disabled", true);
+                $('.MainArea input ,.MainArea textarea ,.myTable input').attr("readonly", "readonly");
                 $(".detailDelete").hide();
 
 
@@ -782,38 +844,33 @@
         $("#Request_BrandID").val(BrandID);
         // 在這邊取得開窗選擇的Brand，進行後續動作
     }
-
     function GetSeasonList(SeasonID) {
         $("#Request_SeasonID").val(SeasonID);
         // 在這邊取得開窗選擇的Brand，進行後續動作
     }
-
     function GetStyleList(StyleID) {
         $("#Request_StyleID").val(StyleID);
         // 在這邊取得開窗選擇的Brand，進行後續動作
     }
-
     function GetArticleList(Article) {
         $("#Request_Article").val(Article);
         // 在這邊取得開窗選擇的Brand，進行後續動作
     }
-
     function GetFabricRefNoList(FabricRefNoData) {
         $("#Main_Seq").val(FabricRefNoData.Seq);
         $("#Main_Seq1").val(FabricRefNoData.Seq1);
         $("#Main_Seq2").val(FabricRefNoData.Seq2);
         $("#Main_FabricRefNo").val(FabricRefNoData.Refno);
         $("#Main_FabricColor").val(FabricRefNoData.Color);
-        // 在這邊取得開窗選擇的FabricRefNoData，進行後續動作
     }
 
     function GetPicture(data) {
-        $('#Main_TestBeforePicture').val(data.OnePicture.replace("data:image/png;base64,", ""));
-        $('#Main_TestBeforeWashPicture').val(data.TwoPicture.replace("data:image/png;base64,", ""));
-        $('#Main_TestAfterPicture').val(data.ThreePicture.replace("data:image/png;base64,", ""));
+        $('#Main_TestWarpPicture').val(data.BeforePicture.replace("data:image/png;base64,", ""));
+        $('#Main_TestWeftPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
     }
 
     function ClickEventBind() {
+
         $('.toolBarItem ,detailDelete').unbind('click');
 
         $('#btnNew').on('click', function () {
@@ -833,32 +890,6 @@
                 msg.WithError("SP#, Brand, Season ,Style and Article cannot be empty");
                 return false;
             }
-
-            $('.detailRowIdx').each(function (index, data) {
-                var idx = $(this).val();
-                if (idx != index) {
-
-                    let className = `Row${idx}`;
-
-                    //$.each($(this).find("input[id^='Details']"), function () {
-                    //    var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
-                    //    var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
-                    //    $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
-                    //    $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
-                    //});
-
-                    $.each($(`.Row${idx} .DetailInput`), function () {
-                        let colName = $(this).attr("Name").split('.')[1];
-                        let newName = `DetailList[${index}].${colName}`;
-                        let newID = `DetailList_${index}__${colName}`;
-                        $(this).removeClass(`Row${idx}`);
-                        $(this).addClass(`Row${index}`);
-                        $(this).attr("ID", newID);
-                        $(this).attr("Name", newName);
-                    });
-                }
-            });
-
 
             $("#SaveSubmit").click();
 
@@ -892,18 +923,16 @@
         });
         $('#Picture').on('click', function () {
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
-            para += "&" + "Table=WaterAbsorbencyTest";
-            para += "&" + "TargetOneColumn=Main_TestBeforePicture";
-            para += "&" + "TargetTwoColumn=Main_TestBeforeWashPicture";
-            para += "&" + "TargetThreeColumn=Main_TestAfterPicture";
-            para += "&" + "OneColumn=TestBeforePicture";
-            para += "&" + "TwoColumn=TestBeforeWashPicture";
-            para += "&" + "ThreeColumn=TestAfterPicture";
-            para += "&" + "TwoColumnHeader=Before Wash";
-            para += "&" + "ThreeColumnHeader=After 5 Cycle Wash";
+            para += "&" + "Table=WickingHeightTest";
+            para += "&" + "TargetBeforeColumn=Main_TestWarpPicture";
+            para += "&" + "TargetAfterColumn=Main_TestWeftPicture";
+            para += "&" + "BeforeColumn=TestWarpPicture";
+            para += "&" + "AfterColumn=TestWeftPicture";
+            para += "&" + "TargetBeforeHeader=WARP";
+            para += "&" + "TargetAfterHeader=WEFT";
             para += "&" + "PKey_1=ReportNo";
             para += "&" + "PKey_1_Val=" + $('#Main_ReportNo').val();
-            window.open('@Url.Action("ThreePictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1275,height=750');
+            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
         });
 
         $('#SendtoMR').on('click', function () {
@@ -924,8 +953,8 @@
                     if (data.Result) {
                         var para = "?To=";
                         para += "&CC=";
-                        para += "&Subject=" + "Bulk Water Absorbency Test – ReportNo:" + $("#Main_ReportNo").val();
-                        para += `&Body=Attachment Is Bulk Water Absorbency Test - ReportNo:${$("#Main_ReportNo").val() } detail data`;
+                        para += "&Subject=" + "Bulk Wicking Height Test – ReportNo:" + $("#Main_ReportNo").val();
+                        para += `&Body=Attachment Is Bulk Wicking Height Test - ReportNo:${$("#Main_ReportNo").val() } detail data`;
                         para += "&file=" + data.FileName;
                         window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
                     }
@@ -1052,10 +1081,6 @@
                     msg.WithSuccess("Delete Success");
                 }, null);
         });
-
-        $('#NewItem').on('click', function () {
-            AddDetailRow();
-        });
     }
 
     function BlurEventBind() {
@@ -1066,8 +1091,6 @@
             if (EditMode == false) {
                 return;
             }
-            // 重設Article下拉選單
-            $("#Main_Article").empty();
 
             if ($(this).val() == '') {
                 $("#Main_OrderID").val('');
@@ -1075,12 +1098,11 @@
                 $("#Main_SeasonID").val('');
                 $("#Main_StyleID").val('');
                 $("#Main_Article").val('');
+                $("#Main_FabricType").val('');
                 return;
             }
 
             let orderID = $(this).val();
-
-
             $.ajax({
                 url: "@Url.Action("OrderIDCheck")",
                 type: 'POST',
@@ -1096,9 +1118,11 @@
                         $("#Main_StyleID").val('');
                         $("#Main_Article").val('');
                         $("#Main_FabricType").val('');
+
                         msg.WithError(data.ErrMsg);
                     }
                     else {
+                        // 塞入Article下拉選單
                         $("#Main_BrandID").val(data.Main.BrandID);
                         $("#Main_SeasonID").val(data.Main.SeasonID);
                         $("#Main_StyleID").val(data.Main.StyleID);
@@ -1113,73 +1137,63 @@
 
         });
 
-        $("#Main_ItemTested").on("change", function () {
-            if (EditMode == false) {
-                return;
-            }
-            let itemTested = $(this).val();
-
-            if (itemTested != 'Printing') {
-                $("#Main_TypeOfPrint").val('');
-            }
-        });
-
         $("#Main_SubmitDateText").on("change", function () {
             $("#Main_SubmitDate").val($("#Main_SubmitDateText").val());
         });
-    }
-
-    function QtyCheck(sel) {
-        if ($('#Main_OrderID').val() == '') {
-            msg.WithError('Please input SP# first.');
-            sel.value = null;
-            return;
-        }
-
-        const type = $('#Main_FabricType').val();
-        const values = document.getElementById(sel.id);
-        const result = $('#DetailList_' + values.getAttribute('idx') + '__Result');
-
-        var rtnval = values.value;
-        if (parseFloat(rtnval) >= 9.99) {
-            rtnval = 9.99;
-        }
-        else if (parseFloat(rtnval) < 0) {
-            rtnval = 0;
-        }
-        values.value = Number.parseFloat(rtnval).toFixed(2); 
-        if (type == "WOVEN") {
-            if (rtnval >= 5) {
-                result.val('Fail').css({ color: "red"});
-            }
-            else {
-                result.val('Pass').css({ color: "blue" });
-            }            
-        }
-        else if (type == "KNIT") {
-            if (rtnval >= 3) {
-                result.val('Fail').css({ color: "red" });
-            }
-            else {
-                result.val('Pass').css({ color: "blue" });
-            }
-        }
-        else {
-            values.value = 0;
-            result.val('');
-        }
-    }
-
-    function CheckLen(sel) {
-        if (sel.value.length > 5) {            
-            sel.value = sel.value.substring(0, 5);
-        }
-
-        return sel.value;
     }
 
     function ReportNoChange(value) {
         $('#btnQuery').unbind('click').click();
     }
 
+    function ValuesCheck(sel) {
+        if ($('#Main_OrderID').val() == '') {
+            msg.WithError('Please input SP# first.');
+            sel.value = null;
+            return;
+        }
+
+        const type = $('#Main_FabricType').val();        
+        const elem = document.getElementById(sel.id);
+        const row = elem.getAttribute('idx');
+        let testType;
+
+        let values0, values1, values2;
+        if (sel.id.match("Warp")) {
+            testType = "Warp";           
+        }
+        else if (sel.id.match("Weft")) {
+            testType = "Weft";    
+        }
+
+        if (row == 0) {
+            values0 = $('#DetaiItemlList_0__' + testType + 'Values').val();
+            values1 = $('#DetaiItemlList_1__' + testType + 'Values').val();
+            values2 = $('#DetaiItemlList_2__' + testType + 'Values').val();
+        }
+        else if (row == 1) {
+            values0 = $('#DetaiItemlList_3__' + testType + 'Values').val();
+            values1 = $('#DetaiItemlList_4__' + testType + 'Values').val();
+            values2 = $('#DetaiItemlList_5__' + testType + 'Values').val();
+        }
+
+        let avgVal = 0;
+        let resultVal = "Fail";
+        let color = "red";
+        if (values0 != undefined && values1 != undefined && values2 != undefined &&
+            parseInt(values0) > 0 && parseInt(values1) > 0 && parseInt(values2) > 0) {
+            avgVal = (parseInt(values0) + parseInt(values1) + parseInt(values2)) * 1.0 / 3;
+            if (type == "WOVEN" && avgVal >= 90) {
+                resultVal = "Pass";
+                color = "blue";
+            }
+            else if (type == "KNIT" && avgVal >= 100) {                
+                resultVal = "Pass";
+                color = "blue";
+            }
+
+            $('#DetailList_' + row + '__' + testType + 'Average').val(avgVal);
+            $('#DetailList_' + row + '__' + testType + 'Result').val(resultVal).css({ color: color });
+        }
+    }
 </script>
