@@ -206,6 +206,7 @@
     <Compile Include="Areas\BulkFGT\Controllers\TPeelStrengthTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\WaterAbsorbencyController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\WaterFastnessController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\WickingHeightTestController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\InspectionController.cs" />
     <Compile Include="Areas\FinalInspection\Controllers\QueryController.cs" />
     <Compile Include="Areas\FinalInspection\FinalInspectionAreaRegistration.cs" />
@@ -463,6 +464,7 @@
     <Content Include="Areas\BulkFGT\Views\MartindalePillingTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\RandomTumblePillingTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\WaterAbsorbency\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\WickingHeightTest\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -1025,6 +1027,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\PublicWondow\ThreePictureList.cshtml" />
+    <Content Include="XLT\WickingHeightTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

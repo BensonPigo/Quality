@@ -137,6 +137,7 @@
     <Compile Include="Provider\MSSQL\SearchListProvider.cs" />
     <Compile Include="Provider\MSSQL\TPeelStrengthTestProvider.cs" />
     <Compile Include="Provider\MSSQL\WaterAbsorbencyProvider.cs" />
+    <Compile Include="Provider\MSSQL\WickingHeightTestProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ADOHelper\ADOHelper.csproj">
