@@ -419,14 +419,21 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Article = Req.Main.Article,
                 });
 
-                model.Request = new StickerTest_Request()
+                if (!string.IsNullOrEmpty(model.Main.ReportNo))
                 {
-                    ReportNo = model.Main.ReportNo,
-                    BrandID = model.Main.BrandID,
-                    SeasonID = model.Main.SeasonID,
-                    StyleID = model.Main.StyleID,
-                    Article = model.Main.Article,
-                };
+                    model.Request = new StickerTest_Request()
+                    {
+                        ReportNo = model.Main.ReportNo,
+                        BrandID = model.Main.BrandID,
+                        SeasonID = model.Main.SeasonID,
+                        StyleID = model.Main.StyleID,
+                        Article = model.Main.Article,
+                    };
+                }
+                else
+                {
+                    model.Result = true;
+                }
             }
             catch (Exception ex)
             {

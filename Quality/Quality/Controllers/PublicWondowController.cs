@@ -587,6 +587,25 @@ namespace Quality.Controllers
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
+
+        public ActionResult AccRefNoList(string Title, string OrderID, string TargetID)
+        {
+            var model = _PublicWindowService.Get_AccRefNo(OrderID, string.Empty);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult AccRefNoList(string Title, string OrderID, string Refno, string TargetID)
+        {
+            var model = _PublicWindowService.Get_AccRefNo(OrderID, Refno);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
         public ActionResult InkTypeList(string Title, string BrandID, string SeasonID, string StyleID, string TargetID)
         {
             var model = _PublicWindowService.Get_InkType(BrandID, SeasonID, StyleID);

@@ -337,10 +337,11 @@ WHERE ReportNo = @ReportNo
             SQLParameterCollection objParameter = new SQLParameterCollection()
             {
                 { "@ReportNo", DbType.String, Req.Main.ReportNo } ,
-                { "@EditName", DbType.String, Req.Main.EditName } ,
             };
 
             string mainSqlCmd = $@"
+SET XACT_ABORT ON
+
 delete from StickerTest WHERE ReportNo = @ReportNo
 delete from StickerTest_Detail WHERE ReportNo = @ReportNo
 delete from StickerTest_Detail_Item WHERE ReportNo = @ReportNo
@@ -348,7 +349,7 @@ delete from PMSFile.dbo.StickerTest WHERE ReportNo = @ReportNo
 
 ";
 
-            return ExecuteScalar(CommandType.Text, mainSqlCmd.ToString(), objParameter).ToString();
+            return ExecuteNonQuery(CommandType.Text, mainSqlCmd.ToString(), objParameter).ToString();
         }
         public bool Processe_StickerTest_Detail(StickerTest_ViewModel sources, string UserID)
         {

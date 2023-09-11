@@ -1025,6 +1025,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\PublicWondow\ThreePictureList.cshtml" />
+    <Content Include="Views\PublicWondow\AccRefNoList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

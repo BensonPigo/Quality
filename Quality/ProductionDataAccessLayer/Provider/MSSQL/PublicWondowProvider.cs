@@ -1143,6 +1143,46 @@ Order by psd.Refno
 
             return ExecuteList<Window_FabricRefNo>(CommandType.Text, SbSql.ToString(), paras);
         }
+        public IList<Window_FabricRefNo> Get_AccRefNo(string OrderID, string Refno)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            paras.Add("@OrderID ", DbType.String, OrderID);
+
+            string where = string.Empty;
+            if (!string.IsNullOrEmpty(Refno))
+            {
+                paras.Add("@Refno ", DbType.String, Refno);
+                where = "and psd.Refno = @Refno";
+            }
+
+            //台北
+            SbSql.Append($@"
+select DISTINCT 
+     psd.Seq1
+	,psd.Seq2
+	,Seq = psd.Seq1 +'-'+psd.Seq2
+	,psd.Refno
+	,psd.SCIRefno
+	,Color = psds.SpecValue
+	,ps.SuppID
+from PO_Supp_Detail psd WITH(NOLOCK)
+inner join PO_Supp ps on ps.id = psd.ID and ps.SEQ1 = psd.SEQ1
+inner join Fabric f WITH(NOLOCK) on psd.SCIRefno = f.SCIRefno
+inner join Orders o on o.POID = psd.id
+inner join PO_Supp_Detail_Spec psds on psd.ID = psds.id and psd.SEQ1 = psds.Seq1 and psd.SEQ2 = psds.Seq2 and SpecColumnID ='Color'
+Where 1 = 1
+And f.Type = 'A'
+And o.ID = @OrderID
+{where}
+
+Order by psd.Refno
+
+");
+
+            return ExecuteList<Window_FabricRefNo>(CommandType.Text, SbSql.ToString(), paras);
+        }
 
         public IList<Window_InkType> Get_InkType(string BrandID, string SeasonID, string StyleID)
         {

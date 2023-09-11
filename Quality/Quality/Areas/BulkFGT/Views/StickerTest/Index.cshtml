@@ -320,11 +320,11 @@
 <div class="main-content">
     <header class="page-header">
         <h3>
-            <i class=""></i><span>Sticker Test</span>
+            <i class=""></i><span>Residue/Ageing Test for Sticker</span>
         </h3>
         <div class="breadcrumb">
             <div>Home</div>
-            <div class="current">Sticker Test</div>
+            <div class="current">Residue/Ageing Test for Sticker</div>
         </div>
     </header>
 
@@ -487,40 +487,34 @@
                     </div>
 
                     <div class="MainAreaItem odd">
-                        <h4 class="colTitle">Status</h4>
+                        <h4 class="colTitle">Submit Date</h4>
                     </div>
                     <div class="MainAreaItem odd">
-                        @Html.TextBoxFor(o => o.Main.Status, new { @class = "" })
+                        @Html.HiddenFor(o => o.Main.SubmitDate)
+                        @Html.TextBoxFor(o => o.Main.SubmitDateText, new { @class = "CanEdit" })
                     </div>
                     <!-- #endregion -->
                     <!-- #region Row 2-->
 
                     <div class="MainAreaItem even">
-                        <h4 class="colTitle">Subimt Date</h4>
-
-                    </div>
-                    <div class="MainAreaItem even">
-                        @Html.HiddenFor(o => o.Main.SubmitDate)
-                        @Html.TextBoxFor(o => o.Main.SubmitDateText, new { @class = "CanEdit even" })
-
-                    </div>
-
-                    <div class="MainAreaItem even">
                         <h4 class="colTitle">SP#</h4>
-
                     </div>
                     <div class="MainAreaItem even">
                         @Html.TextBoxFor(o => o.Main.OrderID, new { @class = "even CanEdit" })
-
                     </div>
 
                     <div class="MainAreaItem even">
                         <h4 class="colTitle">Brand</h4>
-
                     </div>
                     <div class="MainAreaItem even">
                         @Html.TextBoxFor(o => o.Main.BrandID, new { @class = "even" })
+                    </div>
 
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Season</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.SeasonID, new { @class = "even" })
                     </div>
 
 
@@ -528,23 +522,15 @@
                     <!-- #region Row 3-->
 
                     <div class="MainAreaItem odd">
-                        <h4 class="colTitle">Season</h4>
-                    </div>
-                    <div class="MainAreaItem odd">
-                        @Html.TextBoxFor(o => o.Main.SeasonID, new { @class = "odd" })
-                    </div>
-
-                    <div class="MainAreaItem odd">
                         <h4 class="colTitle">Style</h4>
-
                     </div>
                     <div class="MainAreaItem odd">
                         @Html.TextBoxFor(o => o.Main.StyleID, new { @class = "" })
-
                     </div>
 
                     <div class="MainAreaItem odd">
                         <h4 class="colTitle">Article</h4>
+
                     </div>
                     <div class="MainAreaItem odd">
                         <select id="Main_Article" name="Main.Article" class="CanEdit">
@@ -554,6 +540,15 @@
                                 <option value="@item.Value" @selected>@item.Text</option>
                             }
                         </select>
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Seq</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.Seq, new { @class = "odd CanEdit" })
+                        @Html.HiddenFor(o => o.Main.Seq1, new { @class = "" })
+                        @Html.HiddenFor(o => o.Main.Seq2, new { @class = "" })
 
                     </div>
 
@@ -561,48 +556,37 @@
                     <!-- #region Row 4-->
 
                     <div class="MainAreaItem even">
-                        <h4 class="colTitle">Seq</h4>
-
-                    </div>
-                    <div class="MainAreaItem even">
-                        @Html.TextBoxFor(o => o.Main.Seq, new { @class = "even CanEdit" })
-                        @Html.HiddenFor(o => o.Main.Seq1, new { @class = "" })
-                        @Html.HiddenFor(o => o.Main.Seq2, new { @class = "" })
-                    </div>
-
-                    <div class="MainAreaItem even">
                         <h4 class="colTitle">Fabric Ref#</h4>
 
                     </div>
                     <div class="MainAreaItem even">
                         @Html.TextBoxFor(o => o.Main.FabricRefNo, new { @class = "even", @onclick = "OpenWindow('FabricRefNo')", @placeholder = "Click" })
-
                     </div>
 
                     <div class="MainAreaItem even">
                         <h4 class="colTitle">Fabric Color</h4>
+
                     </div>
                     <div class="MainAreaItem even">
                         @Html.TextBoxFor(o => o.Main.FabricColor, new { @class = "even" })
+
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Fabric Description</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.FabricDescription, new { @class = "even CanEdit" })
                     </div>
                     <!-- #endregion -->
                     <!-- #region Row 5-->
-
-                    <div class="MainAreaItem odd">
-                        <h4 class="colTitle">Fabric Description</h4>
-
-                    </div>
-                    <div class="MainAreaItem odd">
-                        @Html.TextBoxFor(o => o.Main.FabricDescription, new { @class = "odd CanEdit" })
-                    </div>
-
 
                     <div class="MainAreaItem odd">
                         <h4 class="colTitle">Acc Ref#</h4>
 
                     </div>
                     <div class="MainAreaItem odd">
-                        @Html.TextBoxFor(o => o.Main.AccRefNo, new { @class = "odd CanEdit" })
+                        @Html.TextBoxFor(o => o.Main.AccRefNo, new { @class = "odd CanEdit", @onclick = "OpenWindow('AccRefNo')", @placeholder = "Click" })
                     </div>
 
 
@@ -614,14 +598,13 @@
                         @Html.TextBoxFor(o => o.Main.AccColor, new { @class = "odd CanEdit" })
                     </div>
 
-                    <!-- #endregion -->
-                    <!-- #region Row 6-->
 
-                    <div class="MainAreaItem even">
+                    <div class="MainAreaItem odd">
                         <h4 class="colTitle">Test Standard</h4>
+
                     </div>
-                    <div class="MainAreaItem even">
-                        <select id="Main_TestStandard" name="Main.TestStandard" class="CanEdit even" onchange="TestStandardChange(this.value)">
+                    <div class="MainAreaItem odd">
+                        <select id="Main_TestStandard" name="Main.TestStandard" class="CanEdit odd" onchange="TestStandardChange(this.value)">
                             @foreach (var item in Model.TestStandard_Source)
                             {
                                 string selected = item.Value.Equals(Model.Main.TestStandard) ? "selected" : "";
@@ -630,68 +613,58 @@
                         </select>
                     </div>
 
+                    <!-- #endregion -->
+
+                    <!-- #region Row 6-->
+
                     <div class="MainAreaItem even">
+                        <h4 class="colTitle">Temperature</h4>
 
                     </div>
                     <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.Temperature, new { @class = "CanEdit even", @Type = "Number"})
                     </div>
 
                     <div class="MainAreaItem even">
+                        <h4 class="colTitle">Time</h4>
 
                     </div>
                     <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.Time, new { @class = "CanEdit even", @Type = "Number"})
                     </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Humidity</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.Humidity, new { @class = "CanEdit even", @Type = "Number", @onchange = "value=HumidityCheck(value)" })
+                    </div>
+
                     <!-- #endregion -->
                     <!-- #region Row 7-->
 
                     <div class="MainAreaItem odd">
-                        <h4 class="colTitle">Temperature</h4>
-
-                    </div>
-                    <div class="MainAreaItem odd">
-                        @Html.TextBoxFor(o => o.Main.Temperature, new { @class = "CanEdit odd", @Type = "Number"})
-                    </div>
-
-                    <div class="MainAreaItem odd">
-                        <h4 class="colTitle">Time</h4>
-
-                    </div>
-                    <div class="MainAreaItem odd">
-                        @Html.TextBoxFor(o => o.Main.Time, new { @class = "CanEdit odd", @Type = "Number"})
-                    </div>
-
-                    <div class="MainAreaItem odd">
-                        <h4 class="colTitle">Humidity</h4>
-                    </div>
-                    <div class="MainAreaItem odd">
-                        @Html.TextBoxFor(o => o.Main.Humidity, new { @class = "CanEdit odd", @Type = "Number", @onchange = "value=HumidityCheck(value)" })
-                    </div>
-
-                    <!-- #endregion -->
-                    <!-- #region Row 8-->
-
-                    <div class="MainAreaItem even">
                         <h4 class="colTitle">Remark</h4>
 
                     </div>
-                    <div class="MainAreaItem even">
-                        @Html.TextBoxFor(o => o.Main.Remark, new { @class = "CanEdit even", @style = "width:100%" })
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.Remark, new { @class = "CanEdit ", @style = "width:100%" })
                     </div>
 
-                    <div class="MainAreaItem even">
+                    <div class="MainAreaItem odd">
                         <h4 class="colTitle">Result</h4>
 
                     </div>
-                    <div class="MainAreaItem even">
+                    <div class="MainAreaItem odd">
                         @{ string mainResultColor = Model.Main.Result == "Pass" ? "blue" : "red";}
-                        @Html.TextBoxFor(o => o.Main.Result, new { @class = "even", @style = $@"color:{mainResultColor}" })
+                        @Html.TextBoxFor(o => o.Main.Result, new { @class = "", @style = $@"color:{mainResultColor}" })
                     </div>
 
-                    <div class="MainAreaItem even">
+                    <div class="MainAreaItem odd">
                         <h4 class="colTitle">Last Upadate</h4>
                     </div>
-                    <div class="MainAreaItem even">
-                        @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "even", @style = "width:100%" })
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "", @style = "width:100%" })
                     </div>
 
                     <!-- #endregion -->
@@ -911,6 +884,7 @@
                 if ($("#Main_Status").val() != '') {
                     $('#Main_OrderID').attr("readonly", "readonly");
                 }
+                TestStandardChange($("#Main_TestStandard").val());
 
                 // 編輯模式可用功能開啟
                 $('#Save, #Undo ,#Picture ,#NewItem').addClass("canUse");
@@ -921,15 +895,14 @@
             }
             else {
                 // 可編輯欄位關閉
-                $('.MainArea select ,.tab-innerItem1 select ,.tab-innerItem2 select').attr("disabled", true);
+                $('.MainArea select ,.tab-innerItem1 select ,.tab-innerItem2 select ,.tableDiv-innerItem1 select').attr("disabled", true);
                 $('.MainArea input ,.MainArea textarea ,.tab-innerItem1 input ,.tab-innerItem2 input').attr("readonly", "readonly");
                 $(".detailDelete").hide();
-
 
                 // 未Confirmed可用功能開啟
                 if ($("#Main_Status").val() == 'New') {
                     $('#Encode').addClass("canUse");
-                    $('#Edit , #Junk ,#Excel ,#PDF ,#SendtoMR ,#Picture ,#Exit').addClass("canUse");
+                    $('#Edit , #Delete ,#Excel ,#PDF ,#SendtoMR ,#Picture ,#Exit').addClass("canUse");
                 }
                 else {
                     // Confirmed後的可用功能開啟
@@ -1076,6 +1049,15 @@
             var para = "?TargetID=Main_FabricRefNo&OrderID=" + $('#Main_OrderID').val();
             window.open('@Url.Action("FabricRefNoList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
         }
+        if (WindowType == "AccRefNo" && EditMode) {
+
+            if ($('#Main_OrderID').val() == '') {
+                msg.WithError('Please input SP# first.');
+                return;
+            }
+            var para = "?TargetID=Main_AccRefNo&OrderID=" + $('#Main_OrderID').val();
+            window.open('@Url.Action("AccRefNoList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
+        }
         if (WindowType == "InkType" && EditMode) {
 
             if ($('#Main_ItemTested').val() != 'Printing') {
@@ -1119,6 +1101,19 @@
         // Roll Dyelot可能改變，因此清空表身
         // $(".colBody").remove();
     }
+
+    function GetAccRefNoList(AccRefNoData) {
+        //$("#Main_Seq").val(FabricRefNoData.Seq);
+        //$("#Main_Seq1").val(FabricRefNoData.Seq1);
+        //$("#Main_Seq2").val(FabricRefNoData.Seq2);
+        $("#Main_AccRefNo").val(AccRefNoData.Refno);
+        $("#Main_AccColor").val(AccRefNoData.Color);
+        // 在這邊取得開窗選擇的FabricRefNoData，進行後續動作
+
+        // Roll Dyelot可能改變，因此清空表身
+        // $(".colBody").remove();
+    }
+
     function GetInkTypeList(InkTypeData) {
         $("#Main_TypeOfPrint").val(InkTypeData.InkType);
         // 在這邊取得開窗選擇的FabricRefNoData，進行後續動作
@@ -1239,8 +1234,8 @@
                     if (data.Result) {
                         var para = "?To=";
                         para += "&CC=";
-                        para += "&Subject=" + "Bulk Hydrostatic Pressure Waterproof Test – ReportNo:" + $("#Main_ReportNo").val();
-                        para += `&Body=Attachment Is Bulk Hydrostatic Pressure Waterproof Test - ReportNo:${$("#Main_ReportNo").val() } detail data`;
+                        para += "&Subject=" + "Bulk Residue/Ageing Test for Sticker – ReportNo:" + $("#Main_ReportNo").val();
+                        para += `&Body=Attachment Is Bulk Residue/Ageing Test for Sticker - ReportNo:${$("#Main_ReportNo").val() } detail data`;
                         para += "&file=" + data.FileName;
                         window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
                     }
@@ -1504,18 +1499,18 @@
             $("#Main_Time").val(0);
             $("#Main_Humidity").val(0);
 
-            $("#Main_Temperature").attr("readonly", "readonly");
-            $("#Main_Time").attr("readonly", "readonly");
-            $("#Main_Humidity").attr("readonly", "readonly");
+            $("#Main_Temperature").removeAttr("readonly");
+            $("#Main_Time").removeAttr("readonly");
+            $("#Main_Humidity").removeAttr("readonly");
         }
         else {
             $("#Main_Temperature").val(70);
             $("#Main_Time").val(168);
             $("#Main_Humidity").val(95);
 
-            $("#Main_Temperature").removeAttr("readonly");
-            $("#Main_Time").removeAttr("readonly");
-            $("#Main_Humidity").removeAttr("readonly");
+            $("#Main_Temperature").attr("readonly", "readonly");
+            $("#Main_Time").attr("readonly", "readonly");
+            $("#Main_Humidity").attr("readonly", "readonly");
         }
 
     }
