@@ -2664,10 +2664,25 @@ where fb.Junk = 0 and a.ID = @FinalInspectionID
             if (!string.IsNullOrEmpty(BrandID))
             {
                 cmd = $@"
-select DISTINCT b.*
-from FinalInspectionBasicBrand_General a
-inner join  FinalInspectionBasicGeneral b on a.BasicGeneralUkey = b.Ukey
-where a.BrandID = @BrandID
+if exists(
+    select * from FinalInspectionBasicBrand_General where BrandID =@BrandID
+)
+begin
+    select DISTINCT b.*
+    from FinalInspectionBasicBrand_General a
+    inner join  FinalInspectionBasicGeneral b on a.BasicGeneralUkey = b.Ukey
+    where a.BrandID = @BrandID
+end
+else
+begin
+    select distinct fb.*
+    from FinalInspection a
+    inner join FinalInspection_Order fo on a.ID = fo.ID
+    inner join Production..Orders b on b.ID = fo.OrderID
+    inner join FinalInspectionBasicBrand_General fbg on fbg.BrandID = 'DEFAULT'
+    inner join  FinalInspectionBasicGeneral fb on fbg.BasicGeneralUkey = fb.Ukey
+    where fb.Junk = 0 and a.ID = @FinalInspectionID
+end 
 ";
             }
 
@@ -2695,10 +2710,26 @@ where fb.Junk = 0 and a.ID = @FinalInspectionID
             if (!string.IsNullOrEmpty(BrandID))
             {
                 cmd = $@"
-select DISTINCT b.*
-from FinalInspectionBasicBrand_CheckList a
-inner join  FinalInspectionBasicCheckList b on a.BasicCheckListUkey = b.Ukey
-where a.BrandID = @BrandID
+if exists(
+    select * from FinalInspectionBasicBrand_CheckList where BrandID =@BrandID
+)
+begin
+    select DISTINCT b.*
+    from FinalInspectionBasicBrand_CheckList a
+    inner join  FinalInspectionBasicCheckList b on a.BasicCheckListUkey = b.Ukey
+    where a.BrandID = @BrandID
+
+end
+else
+begin
+    select distinct fb.*
+    from FinalInspection a
+    inner join FinalInspection_Order fo on a.ID = fo.ID
+    inner join Production..Orders b on b.ID = fo.OrderID
+    inner join FinalInspectionBasicBrand_CheckList fbg on fbg.BrandID = 'DEFAULT'
+    inner join  FinalInspectionBasicCheckList fb on fbg.BasicCheckListUkey = fb.Ukey
+    where fb.Junk = 0 and a.ID = @FinalInspectionID
+end
 ";
             }
 
