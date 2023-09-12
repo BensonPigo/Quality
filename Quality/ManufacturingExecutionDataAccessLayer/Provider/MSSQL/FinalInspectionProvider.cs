@@ -81,7 +81,7 @@ select  ID                             ,
         CheckFGPT                      ,
         [FGWT] = iif(a.InspectionStage = 'Final', ISNULL(g.WashResult, 'Lacking Test') , ''),
         [FGPT] = iif(a.InspectionStage = 'Final', fgpt.Result, ''),
-        [ISFD] = cast(I.ISFD as bit)
+        [ISFD] = cast(I.ISFD as bit) 
 from FinalInspection a with (nolock)
 outer apply (
     SELECT val = Stuff((select distinct concat( ',',CustPONo) 
@@ -531,7 +531,11 @@ insert into FinalInspection(id                            ,
                             Shift                         ,
                             Team                          ,
                             AddName                       ,
-                            AddDate)
+                            AddDate                       ,
+                            MeasurementAQLUkey,
+                            MeasurementSampleSize,
+                            MeasurementAcceptQty
+                        )
                 values(@FinalInspectionID                            ,
                        @CustPONO                          ,
                        @InspectionStage               ,
@@ -549,7 +553,25 @@ insert into FinalInspection(id                            ,
                        @Shift                         ,
                        @Team                          ,
                        @UserID                       ,
-                       GetDate()
+                       GetDate()                     ,
+                    ISNULL( (----用現用的AQL範圍，去找Measurement專用的AQL，所以要限定Category=Measurement
+                        select TOP 1 b.Ukey
+                        from Production.dbo.AcceptableQualityLevels a
+                        LEFT join Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                        where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                    ),0) ,
+                    ISNULL( (
+                        select TOP 1 b.SampleSize
+                        from Production.dbo.AcceptableQualityLevels a
+                        LEFT join Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                        where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                    ),0) ,
+                    ISNULL( (
+                        select TOP 1 b.AcceptedQty
+                        from Production.dbo.AcceptableQualityLevels a
+                        LEFT join Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                        where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                    ),0) 
                 )
 ;
 INSERT INTO FinalInspectionGeneral
@@ -579,7 +601,27 @@ set     InspectionStage = @InspectionStage                         ,
         Shift = @Shift          ,
         Team = @Team,
         EditName = @UserID                  ,
-        EditDate= getdate()
+        EditDate= getdate(),
+
+        MeasurementAQLUkey = ISNULL( (----用現用的AQL範圍，去找Measurement專用的AQL，所以要限定Category=Measurement
+                                select TOP 1 b.Ukey
+                                from Production.dbo.AcceptableQualityLevels a
+                                LEFT join Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                                where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                            ) ,0)             ,
+        MeasurementSampleSize = ISNULL( (
+                                select TOP 1 b.SampleSize
+                                from Production.dbo.AcceptableQualityLevels a
+                                LEFT join Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                                where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                            ) ,0)             ,
+        MeasurementAcceptQty = ISNULL( (
+                                select TOP 1 b.AcceptedQty
+                                from Production.dbo.AcceptableQualityLevels a
+                                LEFT join Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                                where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                            ) ,0)
+
 where   ID = @FinalInspectionID
 
 delete  FinalInspection_Order where ID = @FinalInspectionID

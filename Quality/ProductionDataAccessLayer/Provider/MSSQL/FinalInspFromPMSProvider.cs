@@ -252,41 +252,41 @@ select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,Ac
 INTO #AllData
 from AcceptableQualityLevels WITH(NOLOCK)
 where  Junk = 0 and  AQLType in (1,1.5,2.5) and InspectionLevels IN ('1','2') and AcceptedQty is not null 
-AND BrandID=''
+AND BrandID='' AND Category = ''
 UNION
 
 select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
 from AcceptableQualityLevels
 where  Junk = 0 and  AQLType in (1.5,2.5,4.0) and InspectionLevels IN ('1') and AcceptedQty is not null 
-AND BrandID='U.ARMOUR'
+AND BrandID='U.ARMOUR' AND Category = ''
 
 UNION
 
 select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
 from AcceptableQualityLevels
 where  Junk = 0 and  AQLType in (1.0,1.5,2.5) and InspectionLevels IN ('1')  and AcceptedQty is not null 
-AND BrandID='NIKE'
+AND BrandID='NIKE' AND Category = ''
 
 UNION
 
 select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
 from AcceptableQualityLevels
 where  Junk = 0 and  AQLType in (1.5) and InspectionLevels IN ('1')  and AcceptedQty is not null 
-AND BrandID='LLL'
+AND BrandID='LLL' AND Category = ''
 
 UNION
 
 select	BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
 from AcceptableQualityLevels
 where  Junk = 0 and  AQLType in (2.5) and InspectionLevels IN ('2')  and AcceptedQty is not null 
-AND BrandID='N.FACE'
+AND BrandID='N.FACE' AND Category = ''
 
 UNION
 
 select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
 from AcceptableQualityLevels
 where  Junk = 0 and  AQLType in (2.5) and InspectionLevels IN ('2')  and AcceptedQty is not null 
-AND BrandID='GYMSHARK'
+AND BrandID='GYMSHARK' AND Category = ''
 
 UNION
 
@@ -294,7 +294,7 @@ select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,Ac
 from AcceptableQualityLevels
 where Junk = 0 and AQLType in (1) and InspectionLevels IN ('S-4') 
 and AcceptedQty is not null 
-AND BrandID='REI'
+AND BrandID='REI' AND Category = ''
 UNION 
 select BrandID='AllBrand',AQLType=100,InspectionLevels='100% Inspection'
 ,LotSize_Start=0,LotSize_End=0,SampleSize=0,AcceptedQty=0,Ukey=0
@@ -309,6 +309,72 @@ drop table #AllData
             return ExecuteList<AcceptableQualityLevels>(CommandType.Text, sqlGetData, listPar);
         }
 
+        public IList<AcceptableQualityLevels> GetAcceptableQualityLevelsForMeasurement()
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            string sqlGetData = $@"
+
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+INTO #AllData
+from AcceptableQualityLevels WITH(NOLOCK)
+where  Junk = 0 and  AQLType in (1,1.5,2.5) and InspectionLevels IN ('1','2') and AcceptedQty is not null 
+AND BrandID='' AND Category = 'Measurement'
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (1.5,2.5,4.0) and InspectionLevels IN ('1') and AcceptedQty is not null 
+AND BrandID='U.ARMOUR' AND Category = 'Measurement'
+
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (1.0,1.5,2.5) and InspectionLevels IN ('1')  and AcceptedQty is not null 
+AND BrandID='NIKE' AND Category = 'Measurement'
+
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (1.5) and InspectionLevels IN ('1')  and AcceptedQty is not null 
+AND BrandID='LLL' AND Category = 'Measurement'
+
+UNION
+
+select	BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (2.5) and InspectionLevels IN ('2')  and AcceptedQty is not null 
+AND BrandID='N.FACE' AND Category = 'Measurement'
+
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (2.5) and InspectionLevels IN ('2')  and AcceptedQty is not null 
+AND BrandID='GYMSHARK' AND Category = 'Measurement'
+
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where Junk = 0 and AQLType in (1) and InspectionLevels IN ('S-4') 
+and AcceptedQty is not null 
+AND BrandID='REI' AND Category = 'Measurement'
+UNION 
+select BrandID='AllBrand',AQLType=100,InspectionLevels='100% Inspection'
+,LotSize_Start=0,LotSize_End=0,SampleSize=0,AcceptedQty=0,Ukey=0
+
+order by BrandID,AQLType , InspectionLevels
+
+select *
+from #AllData
+
+drop table #AllData
+";
+            return ExecuteList<AcceptableQualityLevels>(CommandType.Text, sqlGetData, listPar);
+        }
         public IList<FinalInspectionDefectItem> GetFinalInspectionDefectItems(string finalInspectionID)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
@@ -495,7 +561,7 @@ where OrderId in (select OrderID from #FinalInspection_Order)
 
             string sqlGetMoistureArticleList = @"
 DECLARE @SampleSize as int =(
-	select SampleSize
+	select IIF(MeasurementSampleSize = 0, SampleSize ,MeasurementSampleSize)
 	from    FinalInspection WITH(NOLOCK)
 	where   ID = @finalInspectionID
 )

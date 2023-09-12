@@ -750,7 +750,7 @@
                 var aql = $(this).val()
                 var TotalAvailableQty = $("#totalAvailableQty").text();
 
-                if (TotalAvailableQty == 0) {
+                if (TotalAvailableQty == 0 && $("#FinalInspectionID".val() != '')) {
                     msg.WithError("Total Available Qty cann't be 0.");
                     $(this).val('');
                     return;

@@ -206,7 +206,19 @@ namespace BusinessLogicLayer.Service
                     int totalAvailableQty = setting.SelectedPO.Sum(s => s.AvailableQty);
 
                     var tmpAcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand" || o.BrandID == brandID);
-                    setting.AcceptableQualityLevels = tmpAcceptableQualityLevels.ToList();
+                    //setting.AcceptableQualityLevels = tmpAcceptableQualityLevels.ToList();
+
+                    // 判斷該品牌有沒有特別設定，有的話就用特別設定；沒有的話用預設
+                    if (tmpAcceptableQualityLevels.Where(o => o.BrandID != string.Empty && o.BrandID != "AllBrand").Any())
+                    {
+                        // 有的話就用特別設定
+                        setting.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => o.BrandID == brandID || o.BrandID == "AllBrand").OrderBy(o => o.AQLType).ToList();
+                    }
+                    else
+                    {
+                        // 沒有的話用預設
+                        setting.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand").OrderBy(o => o.AQLType).ToList();
+                    }
 
                     var AQLResult = setting.AcceptableQualityLevels.AsEnumerable();
                     int? maxStart = 0;
