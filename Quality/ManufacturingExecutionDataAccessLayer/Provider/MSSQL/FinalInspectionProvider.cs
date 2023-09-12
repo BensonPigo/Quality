@@ -30,6 +30,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             string sqlGetData = @"
 select  ID                             ,
+        BrandID = (select top 1 BrandID from SciProduction_Orders o with (nolock) where o.CustPONO = a.CustPONO)                       ,
         [CustPONO] = o.val             ,
         InspectionStage                ,
         InspectionTimes                ,
@@ -80,7 +81,7 @@ select  ID                             ,
         CheckFGPT                      ,
         [FGWT] = iif(a.InspectionStage = 'Final', ISNULL(g.WashResult, 'Lacking Test') , ''),
         [FGPT] = iif(a.InspectionStage = 'Final', fgpt.Result, ''),
-        [ISFD] = cast(I.ISFD as bit)
+        [ISFD] = cast(I.ISFD as bit) 
 from FinalInspection a with (nolock)
 outer apply (
     SELECT val = Stuff((select distinct concat( ',',CustPONo) 
@@ -178,6 +179,17 @@ inner join Production..Orders b on b.ID = fo.OrderID
 inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
 inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
 where a.ID = @FinalInspectionID
+UNION----無客製，則抓預設關卡
+select DISTINCT FinalInspectionID = a.ID,b.BrandID,c.Seq,d.StepName,c.StepUkey
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+where a.ID = @FinalInspectionID
+AND NOT EXISTS(
+	select 1 from  FinalInspectionBasicBrand_Step where BrandID = b.BrandID
+)
 ";
             }
             else
@@ -188,6 +200,15 @@ from Production..Orders b
 inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
 inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
 where b.CustPONO = @CustPONO
+UNION----無客製，則抓預設關卡
+select DISTINCT FinalInspectionID = '',b.BrandID,c.Seq,d.StepName,c.StepUkey
+from Production..Orders b 
+inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+where b.CustPONO = @CustPONO
+AND NOT EXISTS(
+	select 1 from  FinalInspectionBasicBrand_Step where BrandID = b.BrandID
+)
 
                 ";
             }
@@ -218,7 +239,7 @@ from FinalInspection a
 inner join FinalInspection_Order fo on a.ID = fo.ID
 inner join Production..Orders b on b.ID = fo.OrderID
 where a.ID = @FinalInspectionID
-UNION
+UNION  ----品牌客製關卡
 select b.BrandID,c.Seq,d.StepName,c.StepUkey
 from FinalInspection a
 inner join FinalInspection_Order fo on a.ID = fo.ID
@@ -226,7 +247,17 @@ inner join Production..Orders b on b.ID = fo.OrderID
 inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
 inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
 where a.ID = @FinalInspectionID and a.SubmitDate is null
-
+UNION  ----無客製，則抓預設關卡
+select b.BrandID,c.Seq,d.StepName,c.StepUkey
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+where a.ID = @FinalInspectionID and a.SubmitDate is null
+AND NOT EXISTS(
+	select 1 from  FinalInspectionBasicBrand_Step where BrandID = b.BrandID
+)
 
 ----找出現在關卡
 select b.BrandID,Seq=0,StepName='Insp-Setting',StepUkey =0
@@ -250,7 +281,24 @@ outer apply(
 where a.id = @FinalInspectionID and a.SubmitDate is null
 and currentStep.StepName IN (select REPLACE(q.StepName,' ','') from FinalInspectionBasicStep q with(NOLOCK) )
 and currentStep.StepName=REPLACE(d.StepName,' ','') 
-
+UNION  ----無客製，則抓預設關卡
+select b.BrandID,c.Seq,d.StepName,c.StepUkey 
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+outer apply(
+	select DISTINCT StepName = Data 
+	from SplitString(a.InspectionStep,'-') s
+	
+)currentStep
+where a.id = @FinalInspectionID and a.SubmitDate is null
+and currentStep.StepName IN (select REPLACE(q.StepName,' ','') from FinalInspectionBasicStep q with(NOLOCK) )
+and currentStep.StepName=REPLACE(d.StepName,' ','') 
+AND NOT EXISTS(
+	select 1 from  FinalInspectionBasicBrand_Step where BrandID = b.BrandID
+)
 
 
 select TOP 1 a.BrandID ,a.Seq ,StepName = REPLACE(a.StepName,' ',''),a.StepUkey
@@ -316,7 +364,7 @@ from FinalInspection a
 inner join FinalInspection_Order fo on a.ID = fo.ID
 inner join Production..Orders b on b.ID = fo.OrderID
 where a.ID = @FinalInspectionID
-UNION
+UNION  ----品牌客製關卡
 select b.BrandID,c.Seq,d.StepName,c.StepUkey
 from FinalInspection a
 inner join FinalInspection_Order fo on a.ID = fo.ID
@@ -324,6 +372,17 @@ inner join Production..Orders b on b.ID = fo.OrderID
 inner join FinalInspectionBasicBrand_Step c on c.BrandID=b.BrandID
 inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
 where a.ID = @FinalInspectionID and a.SubmitDate is null
+UNION----無客製，則抓預設關卡
+select b.BrandID,c.Seq,d.StepName,c.StepUkey
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+where a.ID = @FinalInspectionID and a.SubmitDate is null
+AND NOT EXISTS(
+	select 1 from  FinalInspectionBasicBrand_Step where BrandID = b.BrandID
+)
 
 
 ----找出現在關卡
@@ -348,6 +407,24 @@ outer apply(
 where a.id = @FinalInspectionID and a.SubmitDate is null
 and currentStep.StepName IN (select REPLACE(q.StepName,' ','') from FinalInspectionBasicStep q with(NOLOCK) )
 and currentStep.StepName=REPLACE(d.StepName,' ','') 
+UNION  ----無客製，則抓預設關卡
+select b.BrandID,c.Seq,d.StepName,c.StepUkey 
+from FinalInspection a
+inner join FinalInspection_Order fo on a.ID = fo.ID
+inner join Production..Orders b on b.ID = fo.OrderID
+inner join FinalInspectionBasicBrand_Step c on c.BrandID='DEFAULT'
+inner join FinalInspectionBasicStep d on d.Ukey = c.StepUkey
+outer apply(
+	select DISTINCT StepName = Data 
+	from SplitString(a.InspectionStep,'-') s
+	
+)currentStep
+where a.id = @FinalInspectionID and a.SubmitDate is null
+and currentStep.StepName IN (select REPLACE(q.StepName,' ','') from FinalInspectionBasicStep q with(NOLOCK) )
+and currentStep.StepName=REPLACE(d.StepName,' ','') 
+AND NOT EXISTS(
+	select 1 from  FinalInspectionBasicBrand_Step where BrandID = b.BrandID
+)
 
 select TOP 1 @TargetStep = 'Insp-' +  REPLACE((REPLACE(a.StepName,' ','')),'Insp-','')
 from #AllStep a
@@ -454,7 +531,11 @@ insert into FinalInspection(id                            ,
                             Shift                         ,
                             Team                          ,
                             AddName                       ,
-                            AddDate)
+                            AddDate                       ,
+                            MeasurementAQLUkey,
+                            MeasurementSampleSize,
+                            MeasurementAcceptQty
+                        )
                 values(@FinalInspectionID                            ,
                        @CustPONO                          ,
                        @InspectionStage               ,
@@ -472,7 +553,25 @@ insert into FinalInspection(id                            ,
                        @Shift                         ,
                        @Team                          ,
                        @UserID                       ,
-                       GetDate()
+                       GetDate()                     ,
+                    ISNULL( (----用現用的AQL範圍，去找Measurement專用的AQL，所以要限定Category=Measurement
+                        select TOP 1 b.Ukey
+                        from MainServer.Production.dbo.AcceptableQualityLevels a
+                        LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                        where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                    ),0) ,
+                    ISNULL( (
+                        select TOP 1 b.SampleSize
+                        from MainServer.Production.dbo.AcceptableQualityLevels a
+                        LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                        where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                    ),0) ,
+                    ISNULL( (
+                        select TOP 1 b.AcceptedQty
+                        from MainServer.Production.dbo.AcceptableQualityLevels a
+                        LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                        where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                    ),0) 
                 )
 ;
 INSERT INTO FinalInspectionGeneral
@@ -502,7 +601,27 @@ set     InspectionStage = @InspectionStage                         ,
         Shift = @Shift          ,
         Team = @Team,
         EditName = @UserID                  ,
-        EditDate= getdate()
+        EditDate= getdate(),
+
+        MeasurementAQLUkey = ISNULL( (----用現用的AQL範圍，去找Measurement專用的AQL，所以要限定Category=Measurement
+                                select TOP 1 b.Ukey
+                                from MainServer.Production.dbo.AcceptableQualityLevels a
+                                LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                                where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                            ) ,0)             ,
+        MeasurementSampleSize = ISNULL( (
+                                select TOP 1 b.SampleSize
+                                from MainServer.Production.dbo.AcceptableQualityLevels a
+                                LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                                where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                            ) ,0)             ,
+        MeasurementAcceptQty = ISNULL( (
+                                select TOP 1 b.AcceptedQty
+                                from MainServer.Production.dbo.AcceptableQualityLevels a
+                                LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                                where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                            ) ,0)
+
 where   ID = @FinalInspectionID
 
 delete  FinalInspection_Order where ID = @FinalInspectionID
@@ -908,6 +1027,7 @@ where   ID = @FinalInspectionID
                             { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
                             { "@GarmentDefectTypeID", DbType.String, defectItem.DefectType },
                             { "@GarmentDefectCodeID", DbType.String, defectItem.DefectCode },
+                            { "@AreaCode", DbType.String, defectItem.AreaCode ?? string.Empty},
                             { "@Ukey", DbType.Int64, defectItem.Ukey },
                             { "@Qty", DbType.Int32, defectItem.Qty }
                         };
@@ -920,9 +1040,9 @@ where   ID = @FinalInspectionID
                         sqlUpdateFinalInspectionDetail = @"
     DECLARE @FinalInspection_DetailKey table (Ukey bigint)
 
-    insert into FinalInspection_Detail(ID, GarmentDefectTypeID, GarmentDefectCodeID, Qty)
+    insert into FinalInspection_Detail(ID, GarmentDefectTypeID, GarmentDefectCodeID ,AreaCode, Qty)
                 OUTPUT INSERTED.Ukey into @FinalInspection_DetailKey
-                values(@FinalInspectionID, @GarmentDefectTypeID, @GarmentDefectCodeID, @Qty)
+                values(@FinalInspectionID, @GarmentDefectTypeID, @GarmentDefectCodeID ,@AreaCode, @Qty)
 
     select  Ukey from @FinalInspection_DetailKey
 ";
@@ -1555,6 +1675,10 @@ INNER JOIN #Style_Size ss WITH(NOLOCK) ON m.StyleUkey = ss.StyleUkey
 left join #tmp_Inspection_Measurement im WITH(NOLOCK) on im.MeasurementUkey = m.Ukey 
 LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b WITH(NOLOCK) ON  m.MeasurementTranslateUkey = b.UKey
 where  m.SizeCode = @size and m.junk = 0
+AND (m.SizeSpec NOT LIKE '%!%' AND m.SizeSpec NOT LIKE '%@%' AND m.SizeSpec NOT LIKE '%#%' 
+AND m.SizeSpec NOT LIKE '%$%'  AND m.SizeSpec NOT LIKE '%^%'  AND m.SizeSpec NOT LIKE '%&%' 
+AND m.SizeSpec NOT LIKE '%*%' AND m.SizeSpec NOT LIKE '%=%' AND m.SizeSpec NOT LIKE '%-%' 
+AND m.SizeSpec NOT LIKE '%(%' AND m.SizeSpec NOT LIKE '%)%')
 group by m.Ukey,iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN),m.Tol1,m.Tol2,m.Code,m.SizeCode,m.SizeSpec,im.SizeSpec,im.AddDate
 
 drop table #tmp_Inspection_Measurement
@@ -2533,17 +2657,32 @@ select distinct fb.*
 from FinalInspection a
 inner join FinalInspection_Order fo on a.ID = fo.ID
 inner join Production..Orders b on b.ID = fo.OrderID
-inner join FinalInspectionBasicBrand_General fbg on fbg.BrandID = b.BrandID
+inner join FinalInspectionBasicBrand_General fbg on fbg.BrandID = 'DEFAULT'
 inner join  FinalInspectionBasicGeneral fb on fbg.BasicGeneralUkey = fb.Ukey
 where fb.Junk = 0 and a.ID = @FinalInspectionID
 ";
             if (!string.IsNullOrEmpty(BrandID))
             {
                 cmd = $@"
-select DISTINCT b.*
-from FinalInspectionBasicBrand_General a
-inner join  FinalInspectionBasicGeneral b on a.BasicGeneralUkey = b.Ukey
-where a.BrandID = @BrandID
+if exists(
+    select * from FinalInspectionBasicBrand_General where BrandID =@BrandID
+)
+begin
+    select DISTINCT b.*
+    from FinalInspectionBasicBrand_General a
+    inner join  FinalInspectionBasicGeneral b on a.BasicGeneralUkey = b.Ukey
+    where a.BrandID = @BrandID
+end
+else
+begin
+    select distinct fb.*
+    from FinalInspection a
+    inner join FinalInspection_Order fo on a.ID = fo.ID
+    inner join Production..Orders b on b.ID = fo.OrderID
+    inner join FinalInspectionBasicBrand_General fbg on fbg.BrandID = 'DEFAULT'
+    inner join  FinalInspectionBasicGeneral fb on fbg.BasicGeneralUkey = fb.Ukey
+    where fb.Junk = 0 and a.ID = @FinalInspectionID
+end 
 ";
             }
 
@@ -2564,17 +2703,33 @@ select distinct fb.*
 from FinalInspection a
 inner join FinalInspection_Order fo on a.ID = fo.ID
 inner join Production..Orders b on b.ID = fo.OrderID
-inner join FinalInspectionBasicBrand_CheckList fbg on fbg.BrandID = b.BrandID
+inner join FinalInspectionBasicBrand_CheckList fbg on fbg.BrandID = 'DEFAULT'
 inner join  FinalInspectionBasicCheckList fb on fbg.BasicCheckListUkey = fb.Ukey
 where fb.Junk = 0 and a.ID = @FinalInspectionID
 ";
             if (!string.IsNullOrEmpty(BrandID))
             {
                 cmd = $@"
-select DISTINCT b.*
-from FinalInspectionBasicBrand_CheckList a
-inner join  FinalInspectionBasicCheckList b on a.BasicCheckListUkey = b.Ukey
-where a.BrandID = @BrandID
+if exists(
+    select * from FinalInspectionBasicBrand_CheckList where BrandID =@BrandID
+)
+begin
+    select DISTINCT b.*
+    from FinalInspectionBasicBrand_CheckList a
+    inner join  FinalInspectionBasicCheckList b on a.BasicCheckListUkey = b.Ukey
+    where a.BrandID = @BrandID
+
+end
+else
+begin
+    select distinct fb.*
+    from FinalInspection a
+    inner join FinalInspection_Order fo on a.ID = fo.ID
+    inner join Production..Orders b on b.ID = fo.OrderID
+    inner join FinalInspectionBasicBrand_CheckList fbg on fbg.BrandID = 'DEFAULT'
+    inner join  FinalInspectionBasicCheckList fb on fbg.BasicCheckListUkey = fb.Ukey
+    where fb.Junk = 0 and a.ID = @FinalInspectionID
+end
 ";
             }
 

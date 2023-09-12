@@ -97,8 +97,8 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             FinalInspectionService fService = new FinalInspectionService();
             QueryReport model = Service.GetFinalInspectionReport(FinalInspectionID);
-            model.FinalInspection.GeneralList = fService.GetGeneralByBrand(FinalInspectionID, string.Empty);
-            model.FinalInspection.CheckListList = fService.GetCheckListByBrand(FinalInspectionID, string.Empty);
+            model.FinalInspection.GeneralList = fService.GetGeneralByBrand(FinalInspectionID, model.BrandID);
+            model.FinalInspection.CheckListList = fService.GetCheckListByBrand(FinalInspectionID, model.BrandID);
 
             TempData["FinalInspectionQueryModel"] = model;
             return View(model);
@@ -320,8 +320,8 @@ namespace Quality.Areas.FinalInspection.Controllers
                 for (int i = 0; i < copyCount; i++)
                 {
                     int row = i + 19;
-                    worksheet.Cells[row, 1] = model.ListDefectItem[i].DefectType;
-                    worksheet.Cells[row, 3] = model.ListDefectItem[i].DefectCode;
+                    worksheet.Cells[row, 1] = model.ListDefectItem[i].DefectTypeDesc;
+                    worksheet.Cells[row, 3] = model.ListDefectItem[i].DefectCodeDesc;
                     worksheet.Cells[row, 9] = model.ListDefectItem[i].Qty;
                 }
             }

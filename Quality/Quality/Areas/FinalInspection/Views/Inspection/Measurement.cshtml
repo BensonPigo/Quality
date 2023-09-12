@@ -89,6 +89,14 @@
 
             </tbody>
         </table>
+        <div style="border:0px;padding:2vh;">
+            @if (Model.BrandID == "LLL" && Model.InspectionStage == "Final")
+            {
+                <span style="font-size: 2vh; font-weight: 900; color: #999999 ">At least</span>
+                <span id="txtMeasurementRemainingAmount" style="font-size: 2vh; font-weight: 900; color: red ">@Model.MeasurementRemainingAmount</span>
+                <span style="font-size: 2vh; font-weight: 900; color: #999999 "> more pieces of clothing need to be inspected.</span>
+            }
+        </div>
     </div>
     <div class="DownRightWhiteBackgrond">
         <div style="border:0px;padding:2vh;">
@@ -290,6 +298,8 @@
     }
 
     $(document).ready(function () {
+        @Html.Raw(Model.ErrorMessage)
+
         $("#ViewListArticle").on("change", function () {
             reloadViewitem();
 
@@ -356,6 +366,9 @@
 
                 if (response.Result != undefined) {
                     if (response.Result) {
+
+                        let MeasurementRemainingAmount = response.MeasurementRemainingAmount;
+                        $("#txtMeasurementRemainingAmount").text(MeasurementRemainingAmount)
                         msg.WithSuccesCheck("Success!", function () {
                             return true;
                         });
@@ -418,7 +431,7 @@
             ListMeasurementItem: bodyList
         };
 
-        $.ajax({
+        @*$.ajax({ // ISP20230647 拔掉按下Next Back的存檔
             url: '@Url.Action("MeasurementSingleSave", "Inspection")',
             type: 'POST',
             data: jQuery.param({ model: head }),
@@ -448,7 +461,7 @@
                     return false;
                 });
             }
-        });
+        });*@
 
         ShowLoading();
 
@@ -546,6 +559,146 @@
         });
 
         ReloadData();
+    });
+
+
+
+    function ReloadData() {
+
+        var dropArticle = document.getElementById("dropArticle");
+        var dropSize = document.getElementById("dropSize");
+        var dropProductType = document.getElementById("dropProductType");
+
+        if (dropArticle.value == "" || dropSize.value == "" || dropProductType.value == "") {
+            return;
+        }
+
+        var thead = "";
+        var SizeUnit = document.getElementById("SizeUnit").value;
+        var tbody = "";
+
+
+        if (thead == "") {
+            thead += `<tr>";
+            <th style="width:34vw"><p>Description</p></th>
+            <th style="width:8vw"><p>Tol(+)</p></th>
+            <th style="width:8vw"><p>Tol(-)</p></th>
+            <th style="width:10vw"><p idx='SizeCode'>${dropSize.value}</p></th>
+            <th style="width:30vw"><input type="button" class="site-btn btn-blue" onclick="ReloadData();" value="Clear" style="width: 80%;border-style:none;"></th>
+            <th style="width:10vw"><p>Diff</p></th>
+            </tr>`;
+        }
+
+
+        var items = @Html.Raw(Json.Encode(Model.ListMeasurementItem));
+        var KeyIdx = 0;
+        var relsizeUnit = SizeUnit;
+        $.each(items, function (index, value) {
+            const rules = /^.*[A-Za-z]+.*$/;
+            var bol = rules.test(value.SizeSpec);
+            if (bol) {
+                return;
+            }
+
+            if (value.SizeSpec.indexOf('/') > -1) {
+                relsizeUnit = "INCH";
+                return false;
+            }
+            else if (value.SizeSpec.indexOf('.') > -1) {
+                relsizeUnit = "CM";
+                return false;
+            }
+        });
+
+        $.each(items, function (index, value) {
+            if (value.Size == dropSize.value) {
+
+                var readonly = "";
+                var bgColor = "white";
+                if (!value.CanEdit) {
+                    bgColor = "bg-lightgray";
+                    readonly = "readonly";
+                }
+
+                tbody +=  `<tr >
+                <td class='bg-lightblue' style ="vertical-align: middle;"><p style ='padding: 0.5vh'>${value.Description}</p></td>
+                <td class='bg-lightblue' style ="vertical-align: middle;"><p style ='padding: 0.5vh' idx='Tol+'>${value.Tol2}</p></td>
+                <td class='bg-lightblue' style ="vertical-align: middle;"><p style ='padding: 0.5vh' idx='Tol-'>${value.Tol1}</p></td>
+                <td class='bg-lightgray' style ="vertical-align: middle;"><p style ='padding: 0.5vh' idx='standard'>${value.SizeSpec}</p></td>
+                <td class='bg-lightgray' style ="display:none"><p style ='padding: 0.5vh' idx='Code'>${value.Code}</p></td>
+                <td class='bg-lightgray' style ="display:none"><p style ='padding: 0.5vh' idx='MeasurementUkey'>${value.MeasurementUkey}</p></td>
+`;
+
+                if (relsizeUnit == "INCH") {
+                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='text' KeyIdx='" + KeyIdx + "' idx='ResultSizeSpec' value='" + value.SizeSpec +"' placeholder= '__ __/__' style ='width:64%; height:3.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
+                }
+                else {
+                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='number' KeyIdx='" + KeyIdx + "' step='any' idx='ResultSizeSpec' value='" + value.SizeSpec +"' style ='width:64%; height:2.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
+                }
+
+                tbody += "<td style ='vertical-align: middle;'><p style ='padding: 0.5vh' class='Diff'></p></td>";
+                tbody += "</tr>";
+
+                KeyIdx = KeyIdx + 1;
+            }
+        });
+
+        $('.MeasurementTable>thead').html(thead);
+        $('.MeasurementTable>tbody').html(tbody);
+
+        $(".MeasurementTable>tbody>tr>td>input[idx='ResultSizeSpec']").on('change', function () {
+            var unit = document.getElementById("SizeUnit").value;
+            const rules = /^(((([0-9]{1,3}[ ])|(^))\d{1,2}[/]\d{1,2})|([0-9]{1,3}))$/;
+            var bol = rules.test($(this).val());
+            var val = $(this).val();
+            var standard = $(this).parent().parent().children().find("p[idx='standard']").html();
+            var tolh = $(this).parent().parent().children().find("p[idx='Tol+']").html();
+            var toll = $(this).parent().parent().children().find("p[idx='Tol-']").html();
+
+            if (val == "" || val <= 0) {
+                $(this).val("");
+                $(this).parent().parent().children().find("p[class='Diff']").html('');
+                $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
+                return;
+            }
+
+            // 計算Diff
+            if (standard.indexOf('/') > -1) {
+                if (standard.toString().indexOf('.') > -1) {
+                    return;
+                }
+
+                var finval = FractionDiff(val.toString(), standard.toString());
+                $(this).parent().parent().children().find("p[class='Diff']").html(finval);
+
+                var sTolh = FractionAdd(standard.toString(), tolh.toString());
+                var sToll = FractionDiff(standard.toString(), toll.toString());
+
+                var diffTolh = String(FractionDiff(sTolh.toString(), val.toString()));
+                var diffToll = String(FractionDiff(val.toString(), sToll.toString()));
+                if (diffTolh.indexOf('-') > -1 || diffToll.indexOf('-') > -1) {
+                    $(this).parent().parent().children().find("p[class='Diff']").parent().addClass("bg-lightred");
+                }
+                else {
+                    $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
+                }
+            }
+            else {
+                var finval = accSubtr(val, standard);
+                $(this).parent().parent().children().find("p[class='Diff']").html(finval);
+
+                val = parseFloat(val);
+                var sTolh = parseFloat(accAdd(standard, tolh));
+                var sToll = parseFloat(accSubtr(standard, toll));
+                if (sTolh >= val && val >= sToll) {
+                    $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
+                }
+                else {
+                    $(this).parent().parent().children().find("p[class='Diff']").parent().addClass("bg-lightred");
+                }
+            }
+        });
+
 
         $(".iconPlus").click(function () {
             var Keyidx = $(this).attr("KeyIdx");
@@ -647,146 +800,6 @@
 
             }
         });
-    });
-
-
-
-    function ReloadData() {
-
-        var dropArticle = document.getElementById("dropArticle");
-        var dropSize = document.getElementById("dropSize");
-        var dropProductType = document.getElementById("dropProductType");
-
-        if (dropArticle.value == "" || dropSize.value == "" || dropProductType.value == "") {
-            return;
-        }
-
-        var thead = "";
-        var SizeUnit = document.getElementById("SizeUnit").value;
-        var tbody = "";
-
-
-        if (thead == "") {
-            thead += `<tr>";
-            <th style="width:34vw"><p>Description</p></th>
-            <th style="width:8vw"><p>Tol(+)</p></th>
-            <th style="width:8vw"><p>Tol(-)</p></th>
-            <th style="width:10vw"><p idx='SizeCode'>${dropSize.value}</p></th>
-            <th style="width:30vw"><input type="button" class="site-btn btn-blue" onclick="ReloadData();" value="Clear" style="width: 80%;border-style:none;"></th>
-            <th style="width:10vw"><p>Diff</p></th>
-            </tr>`;
-        }
-
-
-        var items = @Html.Raw(Json.Encode(Model.ListMeasurementItem));
-        var KeyIdx = 0;
-        var relsizeUnit = SizeUnit;
-        $.each(items, function (index, value) {
-            const rules = /^.*[A-Za-z]+.*$/;
-            var bol = rules.test(value.SizeSpec);
-            if (bol) {
-                return;
-            }
-
-            if (value.SizeSpec.indexOf('/') > -1) {
-                relsizeUnit = "INCH";
-                return false;
-            }
-            else if (value.SizeSpec.indexOf('.') > -1) {
-                relsizeUnit = "CM";
-                return false;
-            }
-        });
-
-        $.each(items, function (index, value) {
-            if (value.Size == dropSize.value) {
-
-                var readonly = "";
-                var bgColor = "white";
-                if (!value.CanEdit) {
-                    bgColor = "bg-lightgray";
-                    readonly = "readonly";
-                }
-
-                tbody +=  `<tr >
-                <td class='bg-lightblue' style ="vertical-align: middle;"><p style ='padding: 0.5vh'>${value.Description}</p></td>
-                <td class='bg-lightblue' style ="vertical-align: middle;"><p style ='padding: 0.5vh' idx='Tol+'>${value.Tol2}</p></td>
-                <td class='bg-lightblue' style ="vertical-align: middle;"><p style ='padding: 0.5vh' idx='Tol-'>${value.Tol1}</p></td>
-                <td class='bg-lightgray' style ="vertical-align: middle;"><p style ='padding: 0.5vh' idx='standard'>${value.SizeSpec}</p></td>
-                <td class='bg-lightgray' style ="display:none"><p style ='padding: 0.5vh' idx='Code'>${value.Code}</p></td>
-                <td class='bg-lightgray' style ="display:none"><p style ='padding: 0.5vh' idx='MeasurementUkey'>${value.MeasurementUkey}</p></td>
-`;
-
-                if (relsizeUnit == "INCH") {
-                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='text' KeyIdx='" + KeyIdx + "' idx='ResultSizeSpec' value='" + value.SizeSpec +"' placeholder= '__ __/__' style ='width:64%; height:3.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
-                }
-                else {
-                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='number' KeyIdx='" + KeyIdx + "' step='any' idx='ResultSizeSpec' style ='width:64%; height:2.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
-                }
-
-                tbody += "<td style ='vertical-align: middle;'><p style ='padding: 0.5vh' class='Diff'></p></td>";
-                tbody += "</tr>";
-
-                KeyIdx = KeyIdx + 1;
-            }
-        });
-
-        $('.MeasurementTable>thead').html(thead);
-        $('.MeasurementTable>tbody').html(tbody);
-
-        $(".MeasurementTable>tbody>tr>td>input[idx='ResultSizeSpec']").on('change', function () {
-            var unit = document.getElementById("SizeUnit").value;
-            const rules = /^(((([0-9]{1,3}[ ])|(^))\d{1,2}[/]\d{1,2})|([0-9]{1,3}))$/;
-            var bol = rules.test($(this).val());
-            var val = $(this).val();
-            var standard = $(this).parent().parent().children().find("p[idx='standard']").html();
-            var tolh = $(this).parent().parent().children().find("p[idx='Tol+']").html();
-            var toll = $(this).parent().parent().children().find("p[idx='Tol-']").html();
-
-            if (val == "" || val <= 0) {
-                $(this).val("");
-                $(this).parent().parent().children().find("p[class='Diff']").html('');
-                $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
-                return;
-            }
-
-            // 計算Diff
-            if (standard.indexOf('/') > -1) {
-                if (standard.toString().indexOf('.') > -1) {
-                    return;
-                }
-
-                var finval = FractionDiff(val.toString(), standard.toString());
-                $(this).parent().parent().children().find("p[class='Diff']").html(finval);
-
-                var sTolh = FractionAdd(standard.toString(), tolh.toString());
-                var sToll = FractionDiff(standard.toString(), toll.toString());
-
-                var diffTolh = String(FractionDiff(sTolh.toString(), val.toString()));
-                var diffToll = String(FractionDiff(val.toString(), sToll.toString()));
-                if (diffTolh.indexOf('-') > -1 || diffToll.indexOf('-') > -1) {
-                    $(this).parent().parent().children().find("p[class='Diff']").parent().addClass("bg-lightred");
-                }
-                else {
-                    $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
-                }
-            }
-            else {
-                var finval = accSubtr(val, standard);
-                $(this).parent().parent().children().find("p[class='Diff']").html(finval);
-
-                val = parseFloat(val);
-                var sTolh = parseFloat(accAdd(standard, tolh));
-                var sToll = parseFloat(accSubtr(standard, toll));
-                if (sTolh >= val && val >= sToll) {
-                    $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
-                }
-                else {
-                    $(this).parent().parent().children().find("p[class='Diff']").parent().addClass("bg-lightred");
-                }
-            }
-        });
-
     }
 
     // 傳入，OpenView 回傳的 Ajax 物件集合

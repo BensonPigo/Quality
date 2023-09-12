@@ -227,7 +227,10 @@ namespace DatabaseObject.ManufacturingExecutionDB
         public string FGPT { get; set; }
 
         public bool ISFD { get; set; }
-         
+
+        public long MeasurementAQLUkey { get; set; }
+        public int MeasurementSampleSize { get; set; }
+        public int MeasurementAcceptQty { get; set; }
         public Dictionary<string, bool> GeneralDic
         {
             get 
