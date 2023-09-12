@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.Mvc;
 using BusinessLogicLayer.Interface;
 using DatabaseObject;
+using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ViewModel.FinalInspection;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -40,7 +41,8 @@ namespace BusinessLogicLayer.Service
                 }
 
                 measurement.FinalInspectionID = finalInspectionID;
-
+                measurement.BrandID = finalInspection.BrandID;
+                measurement.InspectionStage = finalInspection.InspectionStage;
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
                 measurement.ListArticle = _FinalInspFromPMSProvider.GetArticleList(finalInspectionID)
                             .Select(s => new SelectListItem() { 
@@ -54,6 +56,8 @@ namespace BusinessLogicLayer.Service
                                 Text = s,
                                 Value = s,
                             }).ToList();
+
+                measurement.MeasurementRemainingAmount = _FinalInspFromPMSProvider.GetMeasurementRemainingAmount(finalInspectionID);
 
                 _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
                 measurement.SizeUnit = _StyleProvider.GetSizeUnitByCustPONO(finalInspection.CustPONO, OrderID);
@@ -72,7 +76,6 @@ namespace BusinessLogicLayer.Service
                             MeasurementUkey = s.Ukey
                         }
                     ).ToList();
-
             }
             catch (Exception ex)
             {
@@ -82,7 +85,19 @@ namespace BusinessLogicLayer.Service
 
             return measurement;
         }
-
+        public int GetMeasurementRemainingAmount(string finalInspectionID)
+        {
+            try
+            {
+                _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
+                int MeasurementRemainingAmount = _FinalInspFromPMSProvider.GetMeasurementRemainingAmount(finalInspectionID);
+                return MeasurementRemainingAmount;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public List<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID)
         {
             try

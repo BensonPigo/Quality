@@ -721,6 +721,11 @@ INNER JOIN #Style_Size ss WITH(NOLOCK) ON m.StyleUkey = ss.StyleUkey
 left join #tmp_Inspection_Measurement im WITH(NOLOCK) on im.MeasurementUkey = m.Ukey 
 LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b WITH(NOLOCK) ON  m.MeasurementTranslateUkey = b.UKey
 where  m.SizeCode = @size and m.junk = 0
+AND (m.SizeSpec NOT LIKE '%!%' AND m.SizeSpec NOT LIKE '%@%' AND m.SizeSpec NOT LIKE '%#%' 
+AND m.SizeSpec NOT LIKE '%$%'  AND m.SizeSpec NOT LIKE '%^%'  AND m.SizeSpec NOT LIKE '%&%' 
+AND m.SizeSpec NOT LIKE '%*%' AND m.SizeSpec NOT LIKE '%=%' AND m.SizeSpec NOT LIKE '%-%' 
+AND m.SizeSpec NOT LIKE '%(%' AND m.SizeSpec NOT LIKE '%)%')
+
 group by m.Ukey,iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN),m.Tol1,m.Tol2,m.Code,m.SizeCode,m.SizeSpec,im.SizeSpec,im.AddDate
 
 drop table #tmp_Inspection_Measurement

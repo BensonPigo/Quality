@@ -376,6 +376,10 @@ inner join (select distinct StyleUkey, SizeCode from #tmp_Inspection_Measurement
 left join #tmp_Inspection_Measurement im on im.MeasurementUkey = m.Ukey 
 LEFT JOIN [ManufacturingExecution].[dbo].[MeasurementTranslate] b ON  m.MeasurementTranslateUkey = b.UKey
 where m.junk = 0
+AND (m.SizeSpec NOT LIKE '%!%' AND m.SizeSpec NOT LIKE '%@%' AND m.SizeSpec NOT LIKE '%#%' 
+AND m.SizeSpec NOT LIKE '%$%'  AND m.SizeSpec NOT LIKE '%^%'  AND m.SizeSpec NOT LIKE '%&%' 
+AND m.SizeSpec NOT LIKE '%*%' AND m.SizeSpec NOT LIKE '%=%' AND m.SizeSpec NOT LIKE '%-%' 
+AND m.SizeSpec NOT LIKE '%(%' AND m.SizeSpec NOT LIKE '%)%')
 group by m.Ukey,iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN),m.Tol1,m.Tol2,m.Code,m.SizeCode,m.SizeSpec,im.SizeSpec,im.AddDate
 
 drop table #tmp_Inspection_Measurement
@@ -482,6 +486,11 @@ SELECT  a.StyleUkey
 FROM [ManufacturingExecution].[dbo].[Measurement] a with(nolock)
 where a.junk=0 
 and a.StyleUkey = @StyleUkey 
+AND (a.SizeSpec NOT LIKE '%!%' AND a.SizeSpec NOT LIKE '%@%' AND a.SizeSpec NOT LIKE '%#%' 
+AND a.SizeSpec NOT LIKE '%$%'  AND a.SizeSpec NOT LIKE '%^%'  AND a.SizeSpec NOT LIKE '%&%' 
+AND a.SizeSpec NOT LIKE '%*%' AND a.SizeSpec NOT LIKE '%=%' AND a.SizeSpec NOT LIKE '%-%' 
+AND a.SizeSpec NOT LIKE '%(%' AND a.SizeSpec NOT LIKE '%)%')
+
 order by a.Code
 
 ";

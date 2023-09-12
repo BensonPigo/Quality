@@ -14,6 +14,8 @@ namespace DatabaseObject.ProductionDB
     /// </history>
     public class AcceptableQualityLevels
     {
+        public string BrandID { get; set; }
+        public string Category { get; set; }
         /// <summary>InspectionLevels</summary>
         [Required]
         [StringLength(2)]

@@ -9,6 +9,7 @@ namespace ProductionDataAccessLayer.Interface
     public interface IFinalInspFromPMSProvider
     {
         IList<AcceptableQualityLevels> GetAcceptableQualityLevelsForSetting();
+        IList<AcceptableQualityLevels> GetAcceptableQualityLevelsForMeasurement();
         IList<SelectedPO> GetSelectedPOForInspection(List<string> listOrderID);
         IList<SelectedPO> GetSelectedPOForInspection(string finalInspectionID);
         IList<SelectCarton> GetSelectedCartonForSetting(List<string> listOrderID);
@@ -25,7 +26,7 @@ namespace ProductionDataAccessLayer.Interface
 
         IList<SelectListItem> GetActionSelectListItem();
         IList<DatabaseObject.ProductionDB.System> GetSystem();
-
+        int GetMeasurementRemainingAmount(string finalInspectionID);
         void UpdateOrderQtyShip(string finalInspectionID);
     }
 }

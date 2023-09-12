@@ -52,6 +52,11 @@ outer apply(
 )o2
 outer apply(select SizeUnit = iif(len(o1.SizeUnit) > 0,o1.SizeUnit , o2.SizeUnit)) SizeUnit
 where fm.ID = @ID
+AND (m.SizeSpec NOT LIKE '%!%' AND m.SizeSpec NOT LIKE '%@%' AND m.SizeSpec NOT LIKE '%#%' 
+AND m.SizeSpec NOT LIKE '%$%'  AND m.SizeSpec NOT LIKE '%^%'  AND m.SizeSpec NOT LIKE '%&%' 
+AND m.SizeSpec NOT LIKE '%*%' AND m.SizeSpec NOT LIKE '%=%' AND m.SizeSpec NOT LIKE '%-%' 
+AND m.SizeSpec NOT LIKE '%(%' AND m.SizeSpec NOT LIKE '%)%')
+
 order by Time,fm.[Article],fm.[SizeCode],fm.Location
 ");
             return ExecuteList<QueryReport_Measurement>(CommandType.Text, SbSql.ToString(), objParameter);
