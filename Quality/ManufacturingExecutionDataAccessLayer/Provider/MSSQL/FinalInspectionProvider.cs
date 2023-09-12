@@ -556,20 +556,20 @@ insert into FinalInspection(id                            ,
                        GetDate()                     ,
                     ISNULL( (----用現用的AQL範圍，去找Measurement專用的AQL，所以要限定Category=Measurement
                         select TOP 1 b.Ukey
-                        from Production.dbo.AcceptableQualityLevels a
-                        LEFT join Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                        from MainServer.Production.dbo.AcceptableQualityLevels a
+                        LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
                         where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
                     ),0) ,
                     ISNULL( (
                         select TOP 1 b.SampleSize
-                        from Production.dbo.AcceptableQualityLevels a
-                        LEFT join Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                        from MainServer.Production.dbo.AcceptableQualityLevels a
+                        LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
                         where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
                     ),0) ,
                     ISNULL( (
                         select TOP 1 b.AcceptedQty
-                        from Production.dbo.AcceptableQualityLevels a
-                        LEFT join Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                        from MainServer.Production.dbo.AcceptableQualityLevels a
+                        LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
                         where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
                     ),0) 
                 )
@@ -605,20 +605,20 @@ set     InspectionStage = @InspectionStage                         ,
 
         MeasurementAQLUkey = ISNULL( (----用現用的AQL範圍，去找Measurement專用的AQL，所以要限定Category=Measurement
                                 select TOP 1 b.Ukey
-                                from Production.dbo.AcceptableQualityLevels a
-                                LEFT join Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                                from MainServer.Production.dbo.AcceptableQualityLevels a
+                                LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
                                 where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
                             ) ,0)             ,
         MeasurementSampleSize = ISNULL( (
                                 select TOP 1 b.SampleSize
-                                from Production.dbo.AcceptableQualityLevels a
-                                LEFT join Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                                from MainServer.Production.dbo.AcceptableQualityLevels a
+                                LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
                                 where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
                             ) ,0)             ,
         MeasurementAcceptQty = ISNULL( (
                                 select TOP 1 b.AcceptedQty
-                                from Production.dbo.AcceptableQualityLevels a
-                                LEFT join Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
+                                from MainServer.Production.dbo.AcceptableQualityLevels a
+                                LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
                                 where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
                             ) ,0)
 
