@@ -123,7 +123,7 @@ namespace BusinessLogicLayer.Service
         {
             try
             {
-                _OrdersProvider = new OrdersProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
 
                 IList<PoSelect_Result> result = _OrdersProvider.GetOrderForInspection_ByModel(request);
 

@@ -164,7 +164,7 @@ select  [Selected] = Cast(0 as bit),
     and CTNStartNo <> ''
     --and CTNQty = 1
  group by  OrderID,ID,CTNStartNo,OrderShipmodeSeq
- ORDER BY Cast( CTNStartNo as int)
+ ORDER BY CTNStartNo
 ";
             return ExecuteList<SelectCarton>(CommandType.Text, sqlGetData, listPar);
         }
