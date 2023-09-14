@@ -1501,10 +1501,10 @@ WHERE a.Result <> ''
 
             #endregion
 
-            #region Sticker Test (434)
+            #region Residue/Ageing Test for Sticker (434)
 
             string type22 = $@"
-select Type= 'Sticker Test (604)'
+select Type= 'Residue/Ageing Test for Sticker (434)'
 	, a.ReportNo
 	, a.OrderID
 	, a.StyleID
@@ -1621,7 +1621,7 @@ WHERE a.Result <> ''
                 case string a when a.Contains("Water Absorbency Test"):
                     SbSql.Append(type21);
                     break;
-                case string a when a.Contains("Sticker Test"):
+                case string a when a.Contains("Residue/Ageing Test for Sticker"):
                     SbSql.Append(type22);
                     break;
                 default:
