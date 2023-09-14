@@ -557,10 +557,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
 
                     // 姓名
-                    worksheet.Cells[49, 3] = TechnicianName;
+                    worksheet.Cells[49, 4] = TechnicianName;
 
                     // Signture 圖片
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[48, 3];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[48, 4];
                     if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
                     {
 
