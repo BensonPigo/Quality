@@ -113,7 +113,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     // 取得表身
                     // 若"有"傳入ReportNo，則可以直接找出表頭表身明細
-                    if (!string.IsNullOrEmpty(Req.ReportNo))
+                    if (!string.IsNullOrEmpty(Req.ReportNo) && tmpList.Where(o => o.ReportNo == Req.ReportNo).Any())
                     {
                         // 取得表頭資料
                         model.Main = tmpList.Where(o => o.ReportNo == Req.ReportNo).FirstOrDefault();

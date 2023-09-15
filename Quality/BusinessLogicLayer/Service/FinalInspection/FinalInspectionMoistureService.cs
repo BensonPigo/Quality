@@ -147,22 +147,23 @@ namespace BusinessLogicLayer.Service
 
                 bool isMoistureExists = _FinalInspectionProvider.CheckMoistureExists(moistureResult.FinalInspectionID, moistureResult.Article, moistureResult.FinalInspection_OrderCartonUkey);
 
-                if (!isMoistureExists &&
-                    !string.IsNullOrEmpty(moistureResult.Instrument) &&
-                    !string.IsNullOrEmpty(moistureResult.Fabrication))
-                {
-                    string newResult = string.Empty;
+                // ISP20230647 拔掉按下Next Back的存檔
+                //if (!isMoistureExists &&
+                //    !string.IsNullOrEmpty(moistureResult.Instrument) &&
+                //    !string.IsNullOrEmpty(moistureResult.Fabrication))
+                //{
+                //    string newResult = string.Empty;
 
-                    result = this.CheckResult(moistureResult, out newResult);
-                    if (!result)
-                    {
-                        return result;
-                    }
+                //    result = this.CheckResult(moistureResult, out newResult);
+                //    if (!result)
+                //    {
+                //        return result;
+                //    }
 
-                    moistureResult.Result = newResult;
+                //    moistureResult.Result = newResult;
 
-                    _FinalInspectionProvider.UpdateMoisture(moistureResult);
-                }
+                //    _FinalInspectionProvider.UpdateMoisture(moistureResult);
+                //}
 
                 if ((finalInspection.InspectionStage == "Stagger" || finalInspection.InspectionStage == "Final") && BrandIDs.Where(o => o.ToUpper() == "ADIDAS").Any())
                 {
@@ -175,6 +176,16 @@ namespace BusinessLogicLayer.Service
                     }
                 }
 
+                if (finalInspection.InspectionStage == "Final" && BrandIDs.Where(o => o.ToUpper() == "LLL").Any())
+                {
+                    isMoistureExists = _FinalInspectionProvider.CheckMoistureExists(moistureResult.FinalInspectionID, string.Empty, null);
+                    if (!isMoistureExists)
+                    {
+                        result.Result = false;
+                        result.ErrorMessage = "Must be inspected 3 garments..";
+                        return result;
+                    }
+                }
             }
             catch (Exception ex)
             {

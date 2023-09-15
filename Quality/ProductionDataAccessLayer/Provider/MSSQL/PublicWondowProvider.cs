@@ -1103,6 +1103,34 @@ drop table #base
 
             return ExecuteList<Window_Operation>(CommandType.Text, SbSql.ToString(), paras);
         }
+        public IList<Window_AreaCode> Get_AreaCode(string FinalInspectionID, string AreaCode)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            string where = string.IsNullOrEmpty(AreaCode) ? string.Empty : $@" AND AreaCode LIKE @AreaCode";
+
+            paras.Add("@FinalInspectionID ", DbType.String, FinalInspectionID);
+            paras.Add("@AreaCode", DbType.String, AreaCode + "%");
+
+            //台北
+            SbSql.Append($@"
+select distinct AreaCode 
+from Inspection i
+inner join Inspection_Detail id on id.ID = i.ID
+where OrderId IN (
+	select b.OrderID
+	from FinalInspection a
+	inner join FinalInspection_Order b on a.ID=b.ID
+	where a.ID = @FinalInspectionID
+)
+{where}
+order by AreaCode
+");
+
+            return ExecuteList<Window_AreaCode>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
         public IList<Window_FabricRefNo> Get_FabricRefNo(string OrderID, string Refno)
         {
             StringBuilder SbSql = new StringBuilder();

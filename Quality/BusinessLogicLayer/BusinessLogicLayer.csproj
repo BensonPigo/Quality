@@ -194,6 +194,7 @@
     <Compile Include="Service\BulkFGT\FabricCrkShrkTest_Service.cs" />
     <Compile Include="Service\BulkFGT\HeatTransferWashService.cs" />
     <Compile Include="Service\BulkFGT\StickerTestService.cs" />
+    <Compile Include="Service\BulkFGT\HydrostaticPressureWaterproofTestService.cs" />
     <Compile Include="Service\BulkFGT\RandomTumblePillingTestService.cs" />
     <Compile Include="Service\BulkFGT\MockupOvenService.cs" />
     <Compile Include="Service\BulkFGT\MockupWashService.cs" />
@@ -207,6 +208,7 @@
     <Compile Include="Service\BulkFGT\TPeelStrengthTestService.cs" />
     <Compile Include="Service\BulkFGT\WaterAbsorbencyService.cs" />
     <Compile Include="Service\BulkFGT\WaterFastnessService.cs" />
+    <Compile Include="Service\BulkFGT\WickingHeightTestService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionOthersService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionMeasurementService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionMoistureService.cs" />

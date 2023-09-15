@@ -548,6 +548,25 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+        public List<Window_AreaCode> Get_AreaCode(string FinalInspectionID, string AreaCode)
+        {
+            List<Window_AreaCode> result = new List<Window_AreaCode>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_AreaCode(FinalInspectionID, AreaCode).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
         public List<Window_FabricRefNo> Get_FabricRefNo(string OrderID, string Refno)
         {
             List<Window_FabricRefNo> result = new List<Window_FabricRefNo>();

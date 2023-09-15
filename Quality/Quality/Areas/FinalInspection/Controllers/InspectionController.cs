@@ -5,6 +5,7 @@ using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ResultModel.EtoEFlowChart;
 using DatabaseObject.ResultModel.FinalInspection;
 using DatabaseObject.ViewModel.FinalInspection;
@@ -17,6 +18,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 
 namespace Quality.Areas.FinalInspection.Controllers
 {
@@ -92,7 +94,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                     string CustPONO = selected[0].CustPONO;
                     string BrandID = selected[0].BrandID;
                     List<string> listOrderID = selected.Select(s => s.ID).ToList();
-                    setting = finalInspectionSettingService.GetSettingForInspection(CustPONO, listOrderID, this.FactoryID, this.UserID);
+                    setting = finalInspectionSettingService.GetSettingForInspection(CustPONO, listOrderID, this.FactoryID, this.UserID, BrandID);
                     setting.BrandID = BrandID;
                 }
             }
@@ -137,9 +139,9 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             // 預設值
             setting.Team = "A";
-            setting.AuditDate = DateTime.Now;
+            setting.AuditDate = DateTime.Now.AddDays(-1);
 
-            ViewBag.AQLPlanList = new List<SelectListItem>()
+            setting.AQLPlanList_NotFinal = new List<SelectListItem>()
             {
                 new SelectListItem(){Text="",Value=""},
                 new SelectListItem(){Text="1.0 Level I",Value="1.0 Level I"},
@@ -155,12 +157,12 @@ namespace Quality.Areas.FinalInspection.Controllers
             //    setting = finalInspectionSettingService.GetSettingForInspection(finalInspectionID);
             //}
 
-            TempData["Setting"] = setting;
+            TempData["FinalInspectionSetting"] = setting;
             return View(setting);
         }
 
         #endregion
-        
+
         #region 全功能共用
 
         /// <summary>
@@ -265,7 +267,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             // 預設值
             //setting.Team = "A";
 
-            ViewBag.AQLPlanList = new List<SelectListItem>()
+            setting.AQLPlanList_NotFinal = new List<SelectListItem>()
             {
                 new SelectListItem(){Text="",Value=""},
                 new SelectListItem(){Text="1.0 Level I",Value="1.0 Level I"},
@@ -275,13 +277,14 @@ namespace Quality.Areas.FinalInspection.Controllers
                 new SelectListItem(){Text="100% Inspection",Value="100% Inspection"},
             };
 
+
             //setting.SelectCarton = new List<DatabaseObject.ViewModel.FinalInspection.SelectCarton>();
             //for (int i = 1; i < 15; i++)
             //{
             //    setting = finalInspectionSettingService.GetSettingForInspection(finalInspectionID);
             //}
 
-            TempData["Setting"] = setting;
+            TempData["FinalInspectionSetting"] = setting;
             ViewData["TotalAvailableQty"] = setting.SelectedPO.Sum(o => o.AvailableQty);
             ViewData["RejectQty"] = setting.AcceptQty + 1;
 
@@ -293,11 +296,11 @@ namespace Quality.Areas.FinalInspection.Controllers
         public ActionResult AQL_AJAX(string AQLPlan, int TotalAvailableQty)
         {
             Setting setting = new Setting();
-            if (TempData["Setting"] != null)
+            if (TempData["FinalInspectionSetting"] != null)
             {
-                setting = (Setting)TempData["Setting"];
+                setting = (Setting)TempData["FinalInspectionSetting"];
             }
-            TempData["Setting"] = setting;
+            TempData["FinalInspectionSetting"] = setting;
             var SamplePlanQty = 0;
             var AcceptedQty = 0;
             var RejectQty = 0;
@@ -333,6 +336,19 @@ namespace Quality.Areas.FinalInspection.Controllers
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
+                case "1.0 Level S-4":
+                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "S-4").Max(o => o.LotSize_Start);
+                    if (TotalAvailableQty > maxStart)
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "S-4").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
+                    }
+                    else
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "S-4" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    }
+                    SamplePlanQty = tmp.SampleSize.Value == 0 ? TotalAvailableQty : tmp.SampleSize.Value;
+                    AcceptedQty = tmp.AcceptedQty.Value;
+                    break;
                 case "1.5 Level I":
                     maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
                     if (TotalAvailableQty > maxStart)
@@ -361,9 +377,38 @@ namespace Quality.Areas.FinalInspection.Controllers
                     SamplePlanQty = tmp.SampleSize.Value;
                     AcceptedQty = tmp.AcceptedQty.Value;
                     break;
+                case "2.5 Level II":
+                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
+                    if (TotalAvailableQty > maxStart)
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "2").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
+                    }
+                    else
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "2" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    }
+
+                    SamplePlanQty = tmp.SampleSize.Value;
+                    AcceptedQty = tmp.AcceptedQty.Value;
+                    break;
+                case "4.0 Level I":
+                    maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)4.0 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                    if (TotalAvailableQty > maxStart)
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)4.0 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start).FirstOrDefault();
+                    }
+                    else
+                    {
+                        tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)4.0 && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
+                    }
+
+                    SamplePlanQty = tmp.SampleSize.Value;
+                    AcceptedQty = tmp.AcceptedQty.Value;
+                    break;
                 default:
                     break;
             }
+
             RejectQty = AcceptedQty + 1;
 
             var jsonObject = new List<object>();
@@ -417,15 +462,15 @@ namespace Quality.Areas.FinalInspection.Controllers
             }
 
 
-            ViewBag.AQLPlanList = new List<SelectListItem>()
-                {
-                    new SelectListItem(){Text="",Value=""},
-                    new SelectListItem(){Text="1.0 Level I",Value="1.0 Level I"},
-                    new SelectListItem(){Text="1.0 Level II",Value="1.0 Level II"},
-                    new SelectListItem(){Text="1.5 Level I",Value="1.5 Level I"},
-                    new SelectListItem(){Text="2.5 Level I",Value="2.5 Level I"},
-                    new SelectListItem(){Text="100% Inspection",Value="100% Inspection"},
-                };
+            //ViewBag.AQLPlanList = new List<SelectListItem>()
+            //    {
+            //        new SelectListItem(){Text="",Value=""},
+            //        new SelectListItem(){Text="1.0 Level I",Value="1.0 Level I"},
+            //        new SelectListItem(){Text="1.0 Level II",Value="1.0 Level II"},
+            //        new SelectListItem(){Text="1.5 Level I",Value="1.5 Level I"},
+            //        new SelectListItem(){Text="2.5 Level I",Value="2.5 Level I"},
+            //        new SelectListItem(){Text="100% Inspection",Value="100% Inspection"},
+            //    };
 
 
             if (!setting.AcceptQty.HasValue)
@@ -446,7 +491,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             if (!result)
             {
                 FinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
-                setting = finalInspectionSettingService.GetSettingForInspection(setting.SelectedPO[0].CustPONO, setting.SelectedPO.Select(o => o.OrderID).ToList(), this.FactoryID, this.UserID);
+                setting = finalInspectionSettingService.GetSettingForInspection(setting.SelectedPO[0].CustPONO, setting.SelectedPO.Select(o => o.OrderID).ToList(), this.FactoryID, this.UserID, setting.BrandID);
 
                 if (setting.SelectedSewingTeam != null)
                 {
@@ -491,7 +536,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             FinalInspectionService service = new FinalInspectionService();
             DatabaseObject.ManufacturingExecutionDB.FinalInspection model = service.GetFinalInspection(FinalInspectionID);
-            model.GeneralList = service.GetGeneralByBrand(FinalInspectionID, string.Empty);
+            model.GeneralList = service.GetGeneralByBrand(FinalInspectionID, model.BrandID);
 
             ViewData["FinalInspectionAllStep"] = service.GetAllStep(FinalInspectionID, string.Empty);
 
@@ -547,7 +592,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             FinalInspectionService service = new FinalInspectionService();
 
             DatabaseObject.ManufacturingExecutionDB.FinalInspection model = service.GetFinalInspection(FinalInspectionID);
-            model.CheckListList = service.GetCheckListByBrand(FinalInspectionID, string.Empty);
+            model.CheckListList = service.GetCheckListByBrand(FinalInspectionID, model.BrandID);
             ViewData["FinalInspectionAllStep"] = service.GetAllStep(FinalInspectionID, string.Empty);
 
             return View(model);
@@ -600,6 +645,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             ViewData["FinalInspectionAllStep"] = fservice.GetAllStep(FinalInspectionID, string.Empty);
             TempData["AllSize"] = model.ListSize;
+            model.ErrorMessage = TempData["MeasurementMsg"] == null ? String.Empty : $@"msg.WithInfo('{TempData["MeasurementMsg"]}');";
 
             return View(model);
         }
@@ -621,22 +667,19 @@ namespace Quality.Areas.FinalInspection.Controllers
             FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
             BaseResult result = service.UpdateMeasurement(model, this.UserID);
 
+            int MeasurementRemainingAmount = 0;
             if (result)
             {
                 FinalInspectionService fservice = new FinalInspectionService();
-
-                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                //{
-                //    ID = model.FinalInspectionID,
-                //    InspectionStep = "Insp-AddDefect"
-                //}, "Insp-Measurement", this.UserID);
-
-                //fservice.UpdateStepByAction(model.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Next);
+                MeasurementRemainingAmount = service.GetMeasurementRemainingAmount(model.FinalInspectionID);
+            }
+            else
+            {
+                return Json(new { Result = result });
             }
 
-            return Json(result);
+            return Json(new { Result = result, MeasurementRemainingAmount = MeasurementRemainingAmount });
         }
-
         [HttpPost]
         [SessionAuthorizeAttribute]
         public ActionResult GetNewSizeByArticle(string Article)
@@ -688,6 +731,24 @@ namespace Quality.Areas.FinalInspection.Controllers
             }
             else if (goPage == "Next")
             {
+
+                DatabaseObject.ViewModel.FinalInspection.Setting setting = new DatabaseObject.ViewModel.FinalInspection.Setting();
+                FinalInspectionSettingService finalInspectionSettingService = new FinalInspectionSettingService();
+
+                setting = finalInspectionSettingService.GetSettingForInspection(model.FinalInspectionID);
+
+                if (setting.InspectionStage == "Final" && setting.BrandID == "LLL")
+                {
+                    FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
+                    int MeasurementRemainingAmount = service.GetMeasurementRemainingAmount(model.FinalInspectionID);
+                    if (MeasurementRemainingAmount > 0)
+                    {
+                        TempData["MeasurementMsg"] = $@"At least {MeasurementRemainingAmount} more pieces of clothing need to be inspected.";
+                        return RedirectToAction("Measurement",new { FinalInspectionID = model.FinalInspectionID });
+                    }
+                }
+
+
                 fservice.UpdateStepByAction(model.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Next);
                 return this.RedirectAction(model.FinalInspectionID);
 
@@ -1220,13 +1281,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 fservice.UpdateStepByAction(moistureResult.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Previous);
                 return this.RedirectAction(moistureResult.FinalInspectionID);
-                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                //{
-                //    ID = moistureResult.FinalInspectionID,
-                //    InspectionStep = "Insp-BeautifulProductAudit"
-                //}, "Insp-Moisture", this.UserID);
-
-                //return RedirectToAction("BeautifulProductAudit", new { FinalInspectionID = moistureResult.FinalInspectionID });
             }
             else if (goPage == "Next")
             {
@@ -1238,13 +1292,6 @@ namespace Quality.Areas.FinalInspection.Controllers
                 {
                     fservice.UpdateStepByAction(moistureResult.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Next);
                     return this.RedirectAction(moistureResult.FinalInspectionID);
-                    //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                    //{
-                    //    ID = moistureResult.FinalInspectionID,
-                    //    InspectionStep = "Insp-Others"
-                    //}, "Insp-Moisture", this.UserID);
-
-                    //return RedirectToAction("Others", new { FinalInspectionID = moistureResult.FinalInspectionID });
                 }
                 else
                 {

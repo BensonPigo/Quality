@@ -164,7 +164,7 @@ select  [Selected] = Cast(0 as bit),
     and CTNStartNo <> ''
     --and CTNQty = 1
  group by  OrderID,ID,CTNStartNo,OrderShipmodeSeq
- ORDER BY Cast( CTNStartNo as int)
+ ORDER BY CTNStartNo
 ";
             return ExecuteList<SelectCarton>(CommandType.Text, sqlGetData, listPar);
         }
@@ -246,21 +246,135 @@ where   oqs.ID in (select OrderID from #FinalInspection_Order)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
             string sqlGetData = $@"
-select	InspectionLevels ,
-		LotSize_Start	 ,
-		LotSize_End		 ,
-		SampleSize		 ,
-		Ukey			 ,
-		Junk			 ,
-		AQLType			 ,
-		AcceptedQty
+
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+INTO #AllData
 from AcceptableQualityLevels WITH(NOLOCK)
-where AQLType in (1,1.5,2.5) and InspectionLevels < 3 and AcceptedQty is not null 
-order by AQLType , InspectionLevels
+where  Junk = 0 and  AQLType in (1,1.5,2.5) and InspectionLevels IN ('1','2') and AcceptedQty is not null 
+AND BrandID='' AND Category = ''
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (1.5,2.5,4.0) and InspectionLevels IN ('1') and AcceptedQty is not null 
+AND BrandID='U.ARMOUR' AND Category = ''
+
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (1.0,1.5,2.5) and InspectionLevels IN ('1')  and AcceptedQty is not null 
+AND BrandID='NIKE' AND Category = ''
+
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (1.5) and InspectionLevels IN ('1')  and AcceptedQty is not null 
+AND BrandID='LLL' AND Category = ''
+
+UNION
+
+select	BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (2.5) and InspectionLevels IN ('2')  and AcceptedQty is not null 
+AND BrandID='N.FACE' AND Category = ''
+
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (2.5) and InspectionLevels IN ('2')  and AcceptedQty is not null 
+AND BrandID='GYMSHARK' AND Category = ''
+
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where Junk = 0 and AQLType in (1) and InspectionLevels IN ('S-4') 
+and AcceptedQty is not null 
+AND BrandID='REI' AND Category = ''
+UNION 
+select BrandID='AllBrand',AQLType=100,InspectionLevels='100% Inspection'
+,LotSize_Start=0,LotSize_End=0,SampleSize=0,AcceptedQty=0,Ukey=0
+
+order by BrandID,AQLType , InspectionLevels
+
+select *
+from #AllData
+
+drop table #AllData
 ";
             return ExecuteList<AcceptableQualityLevels>(CommandType.Text, sqlGetData, listPar);
         }
 
+        public IList<AcceptableQualityLevels> GetAcceptableQualityLevelsForMeasurement()
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            string sqlGetData = $@"
+
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+INTO #AllData
+from AcceptableQualityLevels WITH(NOLOCK)
+where  Junk = 0 and  AQLType in (1,1.5,2.5) and InspectionLevels IN ('1','2') and AcceptedQty is not null 
+AND BrandID='' AND Category = 'Measurement'
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (1.5,2.5,4.0) and InspectionLevels IN ('1') and AcceptedQty is not null 
+AND BrandID='U.ARMOUR' AND Category = 'Measurement'
+
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (1.0,1.5,2.5) and InspectionLevels IN ('1')  and AcceptedQty is not null 
+AND BrandID='NIKE' AND Category = 'Measurement'
+
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (1.5) and InspectionLevels IN ('1')  and AcceptedQty is not null 
+AND BrandID='LLL' AND Category = 'Measurement'
+
+UNION
+
+select	BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (2.5) and InspectionLevels IN ('2')  and AcceptedQty is not null 
+AND BrandID='N.FACE' AND Category = 'Measurement'
+
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (2.5) and InspectionLevels IN ('2')  and AcceptedQty is not null 
+AND BrandID='GYMSHARK' AND Category = 'Measurement'
+
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where Junk = 0 and AQLType in (1) and InspectionLevels IN ('S-4') 
+and AcceptedQty is not null 
+AND BrandID='REI' AND Category = 'Measurement'
+UNION 
+select BrandID='AllBrand',AQLType=100,InspectionLevels='100% Inspection'
+,LotSize_Start=0,LotSize_End=0,SampleSize=0,AcceptedQty=0,Ukey=0
+
+order by BrandID,AQLType , InspectionLevels
+
+select *
+from #AllData
+
+drop table #AllData
+";
+            return ExecuteList<AcceptableQualityLevels>(CommandType.Text, sqlGetData, listPar);
+        }
         public IList<FinalInspectionDefectItem> GetFinalInspectionDefectItems(string finalInspectionID)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
@@ -272,6 +386,7 @@ select  GarmentDefectTypeID,
         GarmentDefectCodeID,
         Qty,
         Ukey,
+        AreaCode,
 		Operation = Operation.Operation,
 		Operator = Operation.Operator,
 		OperatorText = Operation.OperatorText
@@ -309,6 +424,7 @@ select  [Ukey] = isnull(fd.Ukey, -1),
         Operation = ISNULL( fd.Operation ,''),
         Operator = ISNULL( fd.Operator ,''),
         OperatorText = ISNULL( fd.OperatorText ,''),
+        AreaCode = ISNULL( fd.AreaCode ,''),
 		[RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
 		,HasImage = Cast(
 			IIF(EXISTS(
@@ -435,6 +551,40 @@ where OrderId in (select OrderID from #FinalInspection_Order)
             else
             {
                 return dtResult.AsEnumerable().Select(s => s["Location"].ToString()).ToList();
+            }
+        }
+        public int GetMeasurementRemainingAmount(string finalInspectionID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            listPar.Add("@finalInspectionID", finalInspectionID);
+
+            string sqlGetMoistureArticleList = @"
+DECLARE @SampleSize as int =(
+	select IIF(MeasurementSampleSize = 0, SampleSize ,MeasurementSampleSize)
+	from    FinalInspection WITH(NOLOCK)
+	where   ID = @finalInspectionID
+)
+
+DECLARE @MeasurementCount as int=(
+	SELECT COUNT(1) FROM(
+		select DISTINCT Article,SizeCode,Location,AddDate
+		from    FinalInspection_Measurement WITH(NOLOCK)
+		where   ID = @finalInspectionID
+	) a
+)
+SELECT RemainingAmount = @SampleSize - @MeasurementCount
+";
+
+            DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetMoistureArticleList, listPar);
+
+            if (dtResult.Rows.Count == 0)
+            {
+                return 0;
+            }
+            else
+            {
+                return Convert.ToInt16(dtResult.Rows[0]["RemainingAmount"]) < 0 ? 0 : Convert.ToInt16(dtResult.Rows[0]["RemainingAmount"]);
             }
         }
 

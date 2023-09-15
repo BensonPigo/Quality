@@ -45,10 +45,41 @@ namespace BusinessLogicLayer.Service
                     {
                         return string.Empty;
                     }
+                    var aa = acceptableQualityLevels.Where(s => s.Ukey == ukey).FirstOrDefault();
 
-                    return acceptableQualityLevels.Where(s => s.Ukey == ukey)
-                        .Select(s => $"{s.AQLType.ToString("0.0")} Level {s.InspectionLevels.Replace("1", "I").Replace("2", "II")}")
-                        .First();
+
+                    string aqlType = aa.AQLType.ToString();
+                    string level = string.Empty;
+
+                    switch (aa.InspectionLevels)
+                    {
+                        case "1":
+                            level = "Level I";
+                            break;
+                        case "2":
+                            level = "Level II";
+                            break;
+                        case "3":
+                            level = "Level III";
+                            break;
+                        case "4":
+                            level = "Level IV";
+                            break;
+                        case "5":
+                            level = "Level V";
+                            break;
+                        case "S-4":
+                            level = "Level S-4";
+                            break;
+                        case "100% Inspection":
+                            aqlType = "100% Inspection";
+                            level = "";
+                            break;
+                        default:
+                            break;
+                    }
+
+                    return string.IsNullOrEmpty(level) ? $@"{aqlType}" : $@"{aqlType} {level}";
             }
         }
 
@@ -92,7 +123,7 @@ namespace BusinessLogicLayer.Service
         {
             try
             {
-                _OrdersProvider = new OrdersProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
 
                 IList<PoSelect_Result> result = _OrdersProvider.GetOrderForInspection_ByModel(request);
 
@@ -1164,23 +1195,23 @@ namespace BusinessLogicLayer.Service
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-            List<FinalInspection_Step>  allStep = _FinalInspectionProvider.GetAllStep(FinalInspectionID, CustPONO);
+            List<FinalInspection_Step> allStep = _FinalInspectionProvider.GetAllStep(FinalInspectionID, CustPONO);
 
             return allStep;
         }
-        public List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string CustPONO)
+        public List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-            List<FinalInspectionBasicGeneral> allStep = _FinalInspectionProvider.GetGeneralByBrand(FinalInspectionID, CustPONO);
+            List<FinalInspectionBasicGeneral> allStep = _FinalInspectionProvider.GetGeneralByBrand(FinalInspectionID, BrandID);
 
             return allStep;
         }
-        public List<FinalInspectionBasicCheckList> GetCheckListByBrand(string FinalInspectionID, string CustPONO)
+        public List<FinalInspectionBasicCheckList> GetCheckListByBrand(string FinalInspectionID, string BrandID)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-            List<FinalInspectionBasicCheckList> allStep = _FinalInspectionProvider.GetCheckListByBrand(FinalInspectionID, CustPONO);
+            List<FinalInspectionBasicCheckList> allStep = _FinalInspectionProvider.GetCheckListByBrand(FinalInspectionID, BrandID);
 
             return allStep;
         }

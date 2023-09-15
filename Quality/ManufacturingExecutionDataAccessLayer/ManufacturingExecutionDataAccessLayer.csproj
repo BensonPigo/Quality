@@ -97,6 +97,7 @@
     <Compile Include="Interface\IRFTPicDuringDummyFittingProvider.cs" />
     <Compile Include="Interface\ISearchListProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider\MSSQL\HydrostaticPressureWaterproofTestProvider.cs" />
     <Compile Include="Provider\MSSQL\RandomTumblePillingTestProvider.cs" />
     <Compile Include="Provider\MSSQL\PhenolicYellowTestProvider.cs" />
     <Compile Include="Provider\MSSQL\AgingHydrolysisTest_Provider.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Provider\MSSQL\StickerTestProvider.cs" />
     <Compile Include="Provider\MSSQL\TPeelStrengthTestProvider.cs" />
     <Compile Include="Provider\MSSQL\WaterAbsorbencyProvider.cs" />
+    <Compile Include="Provider\MSSQL\WickingHeightTestProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ADOHelper\ADOHelper.csproj">

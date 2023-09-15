@@ -177,12 +177,13 @@
                         <td>
                             @if (AQLPlanDisabled || Model.AQLPlan == null)
                             {
-                                @Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control", @disabled = "@disabled" })
+                                @Html.DropDownListFor(o => o.AQLPlan, Model.AQLPlanList, null, new { @class = "form-control", @disabled = "@disabled" })
                             }
                             else
                             {
-                                @Html.DropDownListFor(o => o.AQLPlan, (List<SelectListItem>)ViewBag.AQLPlanList, null, new { @class = "form-control" })
+                                @Html.DropDownListFor(o => o.AQLPlan, Model.AQLPlanList, null, new { @class = "form-control" })
                             }
+
                         </td>
                     </tr>
                     <tr>
@@ -749,7 +750,7 @@
                 var aql = $(this).val()
                 var TotalAvailableQty = $("#totalAvailableQty").text();
 
-                if (TotalAvailableQty == 0) {
+                if (TotalAvailableQty == 0 && $("#FinalInspectionID".val() != '')) {
                     msg.WithError("Total Available Qty cann't be 0.");
                     $(this).val('');
                     return;
@@ -800,6 +801,8 @@
                 }
                 $("#RejectQty").val(thisVal + 1);
             });
+
+            $("#AQLPlan").change();
         });
 
         // Selected PO異動Available Qty時。自動加總到下方的「Total Available Qty」、右方的「AQL Plan」
