@@ -209,6 +209,7 @@
     <Compile Include="ViewModel\BulkFGT\MartindalePillingTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\SalivaFastnessTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\SearchList_ViewModel.cs" />
+    <Compile Include="ViewModel\BulkFGT\StickerTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\TPeelStrengthTest_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\WaterAbsorbency_ViewModel.cs" />
     <Compile Include="ViewModel\BulkFGT\WickingHeightTest_ViewModel.cs" />

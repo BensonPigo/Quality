@@ -135,6 +135,7 @@
     <Compile Include="Provider\MSSQL\MartindalePillingTestProvider.cs" />
     <Compile Include="Provider\MSSQL\SalivaFastnessTestProvider.cs" />
     <Compile Include="Provider\MSSQL\SearchListProvider.cs" />
+    <Compile Include="Provider\MSSQL\StickerTestProvider.cs" />
     <Compile Include="Provider\MSSQL\TPeelStrengthTestProvider.cs" />
     <Compile Include="Provider\MSSQL\WaterAbsorbencyProvider.cs" />
     <Compile Include="Provider\MSSQL\WickingHeightTestProvider.cs" />
