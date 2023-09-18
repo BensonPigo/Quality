@@ -203,6 +203,7 @@
     <Compile Include="Areas\BulkFGT\Controllers\SalivaFastnessTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\PerspirationFastnessController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\StickerTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\TPeelStrengthTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\WaterAbsorbencyController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\WaterFastnessController.cs" />
@@ -463,6 +464,7 @@
     <Content Include="Areas\BulkFGT\Views\HydrostaticPressureWaterproofTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\MartindalePillingTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\RandomTumblePillingTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\StickerTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\WaterAbsorbency\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\WickingHeightTest\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
@@ -1021,6 +1023,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\PublicWondow\HeatTransferWash_RefnoList.cshtml" />
+    <Content Include="XLT\StickerTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="XLT\HydrostaticPressureWaterproofTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1028,6 +1033,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\PublicWondow\ThreePictureList.cshtml" />
+    <Content Include="Views\PublicWondow\AccRefNoList.cshtml" />
     <Content Include="XLT\WickingHeightTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

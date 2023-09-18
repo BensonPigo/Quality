@@ -193,6 +193,7 @@
     <Compile Include="Service\BulkFGT\FabricOvenTestService.cs" />
     <Compile Include="Service\BulkFGT\FabricCrkShrkTest_Service.cs" />
     <Compile Include="Service\BulkFGT\HeatTransferWashService.cs" />
+    <Compile Include="Service\BulkFGT\StickerTestService.cs" />
     <Compile Include="Service\BulkFGT\HydrostaticPressureWaterproofTestService.cs" />
     <Compile Include="Service\BulkFGT\RandomTumblePillingTestService.cs" />
     <Compile Include="Service\BulkFGT\MockupOvenService.cs" />

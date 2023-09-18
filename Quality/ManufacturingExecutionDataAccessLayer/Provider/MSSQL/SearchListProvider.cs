@@ -1500,28 +1500,28 @@ WHERE a.ReportDate IS NOT NULL
 
             #endregion
 
-            #region Water Absorbency Test (604)
-
+            #region Residue/Ageing Test for Sticker (434)
             string type22 = $@"
-select Type= 'Water Absorbency Test (604)'
-    , a.ReportNo
-    , a.OrderID
-    , a.StyleID
-    , a.BrandID
-    , a.SeasonID
-    , a.Article
-    , Line = ''
-    , Artwork = ''
-    , a.Result  
-    , TestDate = Cast( NULL as date)
-    , ReceivedDate = a.SubmitDate
-    , ReportDate = a.ReportDate
+select Type= 'Residue/Ageing Test for Sticker (434)'
+	, a.ReportNo
+	, a.OrderID
+	, a.StyleID
+	, a.BrandID
+	, a.SeasonID
+	, a.Article
+	, Line = ''
+	, Artwork = ''
+	, a.Result	
+	, TestDate = Cast( NULL as date)
+	, ReceivedDate = a.SubmitDate
+	, ReportDate = a.ReportDate
     , AddName = ISNULL(mp.Name, pp.Name)
-from [ExtendServer].ManufacturingExecution.dbo.WaterAbsorbencyTest a
+from [ExtendServer].ManufacturingExecution.dbo.StickerTest a
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
 WHERE a.ReportDate IS NOT NULL
 ";
+
             if (!string.IsNullOrEmpty(Req.BrandID))
             {
                 type22 += "AND a.BrandID = @BrandID ";
@@ -1555,6 +1555,64 @@ WHERE a.ReportDate IS NOT NULL
             if (Req.ReportDate_e.HasValue)
             {
                 type22 += " AND a.ReportDate <= @ReportDate_e ";
+            }
+
+            #endregion
+
+            #region Water Absorbency Test (604)
+            string type23 = $@"
+select Type= 'Water Absorbency Test (604)'
+    , a.ReportNo
+    , a.OrderID
+    , a.StyleID
+    , a.BrandID
+    , a.SeasonID
+    , a.Article
+    , Line = ''
+    , Artwork = ''
+    , a.Result  
+    , TestDate = Cast( NULL as date)
+    , ReceivedDate = a.SubmitDate
+    , ReportDate = a.ReportDate
+    , AddName = ISNULL(mp.Name, pp.Name)
+from [ExtendServer].ManufacturingExecution.dbo.WaterAbsorbencyTest a
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
+left join Pass1 pp on a.EditName = pp.ID
+WHERE a.ReportDate IS NOT NULL
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type23 += "AND a.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type23 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type23 += "AND a.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type23 += "AND a.Article = @Article ";
+            }
+
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type23 += " AND @ReceivedDate_s <= a.SubmitDate ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type23 += " AND a.SubmitDate <= @ReceivedDate_e ";
+            }
+
+            if (Req.ReportDate_s.HasValue)
+            {
+                type23 += " AND @ReportDate_s <= a.ReportDate ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type23 += " AND a.ReportDate <= @ReportDate_e ";
             }
 
             #endregion
@@ -1621,8 +1679,11 @@ WHERE a.ReportDate IS NOT NULL
                 case string a when a.Contains("Random Tumble Pilling Test"):
                     SbSql.Append(type21);
                     break;
-                case string a when a.Contains("Water Absorbency Test"):
+                case string a when a.Contains("Residue/Ageing Test for Sticker"):
                     SbSql.Append(type22);
+                    break;
+                case string a when a.Contains("Water Absorbency Test"):
+                    SbSql.Append(type23);
                     break;
                 default:
                     SbSql.Append(
@@ -1646,7 +1707,8 @@ WHERE a.ReportDate IS NOT NULL
                         type19 + " union all " +
                         type20 + " union all " +
                         type21 + " union all " +
-                        type22);
+                        type22 + " union all " +
+                        type23);
                     break;
             }
 
