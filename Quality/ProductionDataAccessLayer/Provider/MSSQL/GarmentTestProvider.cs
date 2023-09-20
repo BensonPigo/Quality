@@ -147,7 +147,7 @@ outer apply(
 	AND s.SeasonID < '22ZZ'
 	UNION 	
 	select Value = '710' 
-	from Style a
+	from Style a WITH(NOLOCK)
 	where a.ID = g.StyleID
 	and a.BrandID = g.BrandID
 	and a.SeasonID = g.SeasonID
