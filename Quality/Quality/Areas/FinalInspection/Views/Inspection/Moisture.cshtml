@@ -707,7 +707,7 @@
         }
 
         function setColor() {
-            var garmentStandard = $("#GarmentStandard").text();
+            var garmentStandard = $("#GarmentStandard").val();
             var needValidCarton = true;
             var garmentStandardValue = 0;
 
@@ -745,8 +745,7 @@
             if (garmentStandard == '') {
                 return;
             }
-            else {
-
+            else {                
                 garmentStandardValue = parseFloat(garmentStandard);
                 if (@ViewBag.ListCartonItem.Count == 0) {
                     if (garmentStandardValue >= parseFloat($("#GarmentTop").val()) &&
