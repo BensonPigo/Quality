@@ -1305,6 +1305,7 @@ select *
 into #EndlineMoisture
 from EndlineMoisture WITH(NOLOCK)
 where BrandID = @BrandID
+and Junk = 0
 
 select  fm.Ukey,
         fm.Article,
@@ -1324,7 +1325,7 @@ select  fm.Ukey,
 from    FinalInspection_Moisture fm with (nolock)
 left join   FinalInspection_OrderCarton fo with (nolock) on fo.Ukey = fm.FinalInspection_OrderCartonUkey
 left join   #EndlineMoisture em on em.Instrument = fm.Instrument and em.Fabrication = fm.Fabrication
-left join   EndlineMoisture emDefault with (nolock) on emDefault.Instrument = fm.Instrument and emDefault.Fabrication = fm.Fabrication and emDefault.BrandID=''
+left join   EndlineMoisture emDefault with (nolock) on emDefault.Instrument = fm.Instrument and emDefault.Fabrication = fm.Fabrication and emDefault.BrandID='' and emDefault.Junk = 0
 where fm.ID = @finalInspectionID
 
 drop table #EndlineMoisture
@@ -1351,9 +1352,9 @@ drop table #EndlineMoisture
                 sqlGetEndlineMoisture = $@"
 select distinct d.*
 from FinalInspection a WITH(NOLOCK)
-inner join FinalInspection_Order b WITH(NOLOCK) on a.ID=b.ID
+inner join FinalInspection_Order b WITH(NOLOCK) on a.ID=b.ID 
 inner join Production..Orders c WITH(NOLOCK) on c.ID=b.OrderID
-inner join EndlineMoisture d WITH(NOLOCK) on d.BrandID=c.BrandID
+inner join EndlineMoisture d WITH(NOLOCK) on d.BrandID=c.BrandID and d.Junk = 0
 where a.ID = @FinalInspectionID
 ";
             }
@@ -1363,6 +1364,7 @@ where a.ID = @FinalInspectionID
 select *
 from EndlineMoisture WITH(NOLOCK)
 where BrandID = @BrandID
+and Junk = 0
 ";
             }
 
@@ -1383,6 +1385,7 @@ where BrandID = @BrandID
 select  *
 from    EndlineMoisture with (nolock)
 where BrandID = ''
+and Junk = 0
 ";
             return ExecuteList<EndlineMoisture>(CommandType.Text, sqlGetEndlineMoisture, objParameter);
         }

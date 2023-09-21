@@ -44,6 +44,8 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string Result { get; set; }
         public string Remark { get; set; }
         public string AddName { get; set; }
+
+        public decimal? GarmentStandard { get; set; }
     }
 
     public class ViewMoistureResult

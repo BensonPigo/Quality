@@ -52,7 +52,7 @@ namespace BusinessLogicLayer.Service
                 var ListEndlineMoistureDefault = _FinalInspectionProvider.GetEndlineMoistureDefault().ToList();
 
                 moisture.ListEndlineMoisture = ListEndlineMoisture.Any() ? ListEndlineMoisture : ListEndlineMoistureDefault;
-
+                moisture.BrandID = moisture.ListEndlineMoisture.FirstOrDefault()?.BrandID;
                 moisture.ListCartonItem = _FinalInspectionProvider.GetMoistureListCartonItem(finalInspectionID).ToList();
             }
             catch (Exception ex)
