@@ -87,14 +87,35 @@
                 <button class="site-btn btn-blue" type="button" id="View" style="position:absolute;top:1em;right:8.6em">View</button>
                 <button class="site-btn btn-blue" type="button" id="Save" style="position:absolute;top:1em;right:0">Save</button>
                 <div>
-                    <table class="col-auto table_div" style="width:100%">
+                    @{ 
+                        bool isLLL = (string)ViewBag.BandID == "LLL" ? true : false;
+                        string w = "width:" + (isLLL ? "45%" : "100%");
+                        string wLable = "width:" + (isLLL ? "60%" : "30%");
+                        string display = isLLL ? string.Empty : "display:none";
+                        string f = isLLL ? "float:left" : string.Empty;
+                    }
+                    <table class="col-auto table_div" style="@w; @f;">
                         <tr>
-                            <td style="width:30%;text-align:right;"><label>Detection Instrument</label></td>
+                            <td style="@wLable; text-align: right;"><label>Detection Instrument</label></td>
                             <td>@Html.TextBoxFor(o => o.Instrument, new { @readonly = "readonly", @onclick = "open_EndlineMoistureDetail()" })</td>
                         </tr>
                         <tr>
                             <td style="text-align: right;"><label>Fabrication</label></td>
-                            <td>@Html.TextBoxFor(o => o.Fabrication, new { @readonly = "readonly",@Style= "background-color: lightgray;" })</td>
+                            <td>@Html.TextBoxFor(o => o.Fabrication, new { @readonly = "readonly", @Style = "background-color: lightgray;" })</td>
+                        </tr>
+                    </table>
+                    <table class="col-auto table_div" style="width:45%; @display; @f;">
+                        <tr>
+                            <td><label>Acceptance Tolerance: 0-4%</label></td>
+                        </tr>
+                        <tr>
+                            <td><label>Minor: 5-7%</label></td>
+                        </tr>
+                        <tr>
+                            <td><label>Major: 8-10%</label></td>
+                        </tr>
+                        <tr>
+                            <td><label>Ctritical: 11-100%</label></td>
                         </tr>
                     </table>
                 </div>
@@ -105,7 +126,8 @@
                     <tr>
                         <td colspan="6">
                             <label>Garment Moisture</label>
-                            <label style="font-weight: normal;">(Standard:<label id="GarmentStandard"></label>)</label>
+                            <label style="font-weight: normal;">(Standard:<label id="LB_GarmentStandard"></label>)</label>
+                            @Html.HiddenFor(o => o.GarmentStandard)
                         </td>
                         @*<td colspan="4"><label>(Standard:<label id="GarmentStandard"></label>)</label></td>*@
                     </tr>
@@ -289,6 +311,10 @@
                 });
             }
 
+            if ('@Model.GarmentStandard' != '') {
+                document.getElementById("LB_GarmentStandard").innerHTML = '@Model.GarmentStandard';
+            }
+
             $(".detail-dialog").dialog({
                 autoOpen: false,
                 modal: true,
@@ -410,7 +436,8 @@
                             if (dataRow != undefined) {
                                 document.getElementById("Instrument").value = dataRow[0];
                                 document.getElementById("Fabrication").value = dataRow[1];
-                                document.getElementById("GarmentStandard").innerHTML = dataRow[2];
+                                document.getElementById("LB_GarmentStandard").innerHTML = dataRow[2];
+                                document.getElementById("GarmentStandard").value = dataRow[2];
 
                                 Instrument = dataRow[0];
                                 if (Instrument == "Aqua Boy") {
@@ -430,7 +457,8 @@
                                 Instrument = '';
                                 document.getElementById("Instrument").value = '';
                                 document.getElementById("Fabrication").value = '';
-                                document.getElementById("GarmentStandard").innerHTML = '';
+                                document.getElementById("LB_GarmentStandard").innerHTML = '';
+                                document.getElementById("GarmentStandard").value = '';
                             }
                             setColor();
                             $(this).dialog("close");
@@ -679,7 +707,7 @@
         }
 
         function setColor() {
-            var garmentStandard = $("#GarmentStandard").text();
+            var garmentStandard = $("#GarmentStandard").val();
             var needValidCarton = true;
             var garmentStandardValue = 0;
 
@@ -717,8 +745,7 @@
             if (garmentStandard == '') {
                 return;
             }
-            else {
-
+            else {                
                 garmentStandardValue = parseFloat(garmentStandard);
                 if (@ViewBag.ListCartonItem.Count == 0) {
                     if (garmentStandardValue >= parseFloat($("#GarmentTop").val()) &&
