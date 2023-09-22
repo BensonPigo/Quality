@@ -28,18 +28,18 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             };
             string sqlcmd = @"
 select  
-ga.[ID]
-,[No]
-,[Type]
-,[Wash1]
-,[Wash2]
-,[Wash3]
-,[Comment]
-,[Seq]
-,[Wash4]
-,[Wash5] 
-,[WashName2] = IIF(WashName.Value is null,'3','10')
-,[WashName3] = IIF(WashName.Value is null,'','15')
+    ga.[ID]
+    ,[No]
+    ,[Type]
+    ,[Wash1]
+    ,[Wash2]
+    ,[Wash3]
+    ,[Comment]
+    ,[Seq]
+    ,[Wash4]
+    ,[Wash5] 
+    ,[WashName2] = IIF(WashName.Value is null,'3','10')
+    ,[WashName3] = IIF(WashName.Value is null,'','15')
 from GarmentTest_Detail_Apperance ga  WITH(NOLOCK)
 inner join GarmentTest g on ga.ID = g.ID
 outer apply(
@@ -77,6 +77,16 @@ outer apply(
                     ,'Training Teamwear+Critical P'                    
         )
     )
+    AND s.SeasonID < '22ZZ'
+	UNION 	
+	select Value = '710' 
+	from Style s WITH(NOLOCK)
+	where s.ID = g.StyleID
+	and s.BrandID = g.BrandID
+	and s.SeasonID = g.SeasonID
+	AND s.Teamwear = 1
+	AND s.SeasonID >= '23'
+	AND s.BrandID IN ('ADIDAS','REEBOK')
 )WashName
 where ga.ID = @ID
 and ga.No = @No
