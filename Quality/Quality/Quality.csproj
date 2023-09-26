@@ -203,6 +203,7 @@
     <Compile Include="Areas\BulkFGT\Controllers\SalivaFastnessTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\SearchListController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\PerspirationFastnessController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\EvaporationRateTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\StickerTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\TPeelStrengthTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\WaterAbsorbencyController.cs" />
@@ -467,6 +468,7 @@
     <Content Include="Areas\BulkFGT\Views\StickerTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\WaterAbsorbency\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\WickingHeightTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\EvaporationRateTest\Index.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -548,6 +550,8 @@
     <Content Include="ThirdParty\plugins\bootstrap\bootstrap.js" />
     <Content Include="ThirdParty\plugins\bootstrap\bootstrap.min.css" />
     <Content Include="ThirdParty\plugins\bootstrap\bootstrap.min.js" />
+    <Content Include="ThirdParty\plugins\Chart.js-2.8.0\Chart.js" />
+    <Content Include="ThirdParty\plugins\Chart.js-2.8.0\utils.js" />
     <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap.css" />
     <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap.min.css" />
     <Content Include="ThirdParty\plugins\DataTables\DataTables-1.10.25\css\dataTables.bootstrap4.css" />
@@ -1035,6 +1039,9 @@
     <Content Include="Views\PublicWondow\ThreePictureList.cshtml" />
     <Content Include="Views\PublicWondow\AccRefNoList.cshtml" />
     <Content Include="XLT\WickingHeightTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\EvaporationRateTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
