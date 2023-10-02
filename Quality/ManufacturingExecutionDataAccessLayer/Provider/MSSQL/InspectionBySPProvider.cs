@@ -266,7 +266,7 @@ select	InspectionLevels ,
 		AQLType			 ,
 		AcceptedQty
 from MainServer.Production.dbo.AcceptableQualityLevels WITH(NOLOCK)
-where AQLType in (1,1.5,2.5) and InspectionLevels = 1 and AcceptedQty is not null 
+where AQLType in (1,1.5,2.5) and InspectionLevels = '1' and AcceptedQty is not null 
 AND LotSize_Start <= @OrderQty AND @OrderQty <= LotSize_End
 order by AQLType , InspectionLevels
 ";

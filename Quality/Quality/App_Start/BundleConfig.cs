@@ -25,6 +25,11 @@ namespace Quality
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new ScriptBundle("~/Scripts/Plugins/ChartJS")
+                .Include("~/ThirdParty/plugins/Chart.js-2.8.0/Chart.js")
+                .Include("~/ThirdParty/plugins/Chart.js-2.8.0/utils.js")
+                );
         }
     }
 }
