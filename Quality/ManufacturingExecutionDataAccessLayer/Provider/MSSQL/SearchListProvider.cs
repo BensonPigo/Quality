@@ -986,7 +986,8 @@ select DISTINCT Type= 'Daily HT Wash Test'
 		, h.BrandID
 		, h.SeasonID
 		, h.Article 
-		, Artwork = ''
+		, h.Line 
+		, Artwork = h.ArtworkTypeID
 		, h.Result
 		, TestDate = h.ReportDate
 	    , ReceivedDate = h.ReceivedDate
@@ -1617,6 +1618,63 @@ WHERE a.ReportDate IS NOT NULL
 
             #endregion
 
+            #region Evaporation Rate Test(617)
+            string type24 = $@"
+select Type= 'Evaporation Rate Test (617)'
+    , a.ReportNo
+    , a.OrderID
+    , a.StyleID
+    , a.BrandID
+    , a.SeasonID
+    , a.Article
+    , Line = ''
+    , Artwork = ''
+    , a.Result  
+    , TestDate = Cast( NULL as date)
+    , ReceivedDate = a.SubmitDate
+    , ReportDate = a.ReportDate
+    , AddName = ISNULL(mp.Name, pp.Name)
+from [ExtendServer].ManufacturingExecution.dbo.EvaporationRateTest a
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
+left join Pass1 pp on a.EditName = pp.ID
+WHERE a.ReportDate IS NOT NULL
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type24 += "AND a.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type24 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type24 += "AND a.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type24 += "AND a.Article = @Article ";
+            }
+
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type24 += " AND @ReceivedDate_s <= a.SubmitDate ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type24 += " AND a.SubmitDate <= @ReceivedDate_e ";
+            }
+
+            if (Req.ReportDate_s.HasValue)
+            {
+                type24 += " AND @ReportDate_s <= a.ReportDate ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type24 += " AND a.ReportDate <= @ReportDate_e ";
+            }
+
+            #endregion
             switch (Req.Type)
             {
                 case string a when a.Contains("Fabric Crocking & Shrinkage Test"):
@@ -1685,6 +1743,9 @@ WHERE a.ReportDate IS NOT NULL
                 case string a when a.Contains("Water Absorbency Test"):
                     SbSql.Append(type23);
                     break;
+                case string a when a.Contains("Evaporation Rate Test"):
+                    SbSql.Append(type24);
+                    break;
                 default:
                     SbSql.Append(
                         type1 + " union all " + 
@@ -1708,7 +1769,8 @@ WHERE a.ReportDate IS NOT NULL
                         type20 + " union all " +
                         type21 + " union all " +
                         type22 + " union all " +
-                        type23);
+                        type23 + " union all " +
+                        type24);
                     break;
             }
 

@@ -17,6 +17,15 @@
     .dataTables_wrapper {
         position: static;
     }
+    /*調整DataTables，會因為Collapse Menu折疊，導致寬度不足問題*/
+    .dataTables_scrollHeadInner {
+        width: 100% !important;
+    }
+
+        .dataTables_scrollHeadInner > table {
+            width: 100% !important;
+        }
+    /*調整DataTables，會因為Collapse Menu折疊，導致寬度不足問題*/
 
     h3, label, #myTable_info {
         color: white
@@ -405,6 +414,16 @@
                                                 Article = item.Article,
                                             });
                                             break;
+                                        case string a when a.Contains("Evaporation Rate Test"):
+                                            link = Url.Action("IndexGet", "EvaporationRateTest", new
+                                            {
+                                                ReportNo = item.ReportNo,
+                                                BrandID = item.BrandID,
+                                                SeasonID = item.SeasonID,
+                                                StyleID = item.StyleID,
+                                                Article = item.Article,
+                                            });
+                                            break;
                                         default:
                                             link = "#";
                                             break;
@@ -657,10 +676,11 @@
             let includes_RandomTumble = currentType.toUpperCase().includes("RandomTumble");
             let includes_Absorbency = currentType.toUpperCase().includes("ABSORBENCY");
             let includes_StickerTest = currentType.toUpperCase().includes("SICKERTEST");
+            let includes_EvaporationRate = currentType.toUpperCase().includes("EVAPORATIONRATE");
 
 
             if (!includes_MOCKUP && !includes_HTWash && !includes_Moistureh && !includes_Aging && !includes_SALIVA && !includes_Hydrostatic
-                && !includes_Yellowing && !includes_Martindale && !includes_RandomTumble && !includes_Absorbency && !includes_StickerTest && includes_Absorbency) {
+                && !includes_Yellowing && !includes_Martindale && !includes_RandomTumble && !includes_Absorbency && !includes_StickerTest && includes_Absorbency && !includes_EvaporationRate) {
                 $(".mockupOnly").val('');
                 $(".mockupOnly").attr("disabled", "disabled");
             }
