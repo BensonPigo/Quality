@@ -793,7 +793,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             lastRateRowBySpecimen = 95 + bonusRow;
                             AverageRateRowBySpecimen = 99 + bonusRow;
 
-
                             if (rateList.Count() > 3)
                             {
                                 bonusRow += rateList.Count() - 3;
@@ -979,13 +978,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             lastRateRowBySpecimen = 95 + bonusRow;
                             AverageRateRowBySpecimen = 99 + bonusRow;
 
-                            // Specimen Average Rate 一個Specimen只會有一個，所以最後再做就好
-                            SpecimenAverageRateRowBySpecimen = 103 + bonusRow;
-
                             if (rateList.Count() > 3)
                             {
                                 bonusRow += rateList.Count() - 3;
                             }
+
+                            // Specimen Average Rate 一個Specimen只會有一個，所以最後再做就好
+                            SpecimenAverageRateRowBySpecimen = 103 + bonusRow;
                             break;
                         default:
                             break;

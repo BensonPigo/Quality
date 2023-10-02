@@ -155,7 +155,7 @@ namespace Quality.Areas.BulkFGT.Controllers
     <input class="""" id=""TimeList_{TimeListIdx}__InitialTime"" name=""TimeList[{TimeListIdx}].InitialTime"" style=""width:100%"" type=""hidden"" value=""0"">
     <input class="""" id=""TimeList_{TimeListIdx}__InitialTimeUkey"" name=""TimeList[{TimeListIdx}].InitialTimeUkey"" style=""width:100%"" type=""hidden"" value=""0"">
     <input class="""" id=""TimeList_{TimeListIdx}__IsInitialMass"" name=""TimeList[{TimeListIdx}].IsInitialMass"" style=""width:100%"" type=""hidden"" value=""False"">
-    <input class="""" id=""TimeList_{TimeListIdx}__Time"" name=""TimeList[{TimeListIdx}].Time"" style=""width:100%"" type=""text"" value=""{lastTime}"">
+    <input class="""" id=""TimeList_{TimeListIdx}__Time"" name=""TimeList[{TimeListIdx}].Time"" style=""width:100%"" type=""text"" value=""{lastTime}"" readonly>
 </div>
 <div class=""divTime10"">        
     <input detailtype=""{detailType}"" isinitialmass=""False"" specimenid=""{specimenID}"" time=""{lastTime}"" class=""CanEdit Mass"" id=""TimeList_{TimeListIdx}__Mass"" name=""TimeList[{TimeListIdx}].Mass"" onchange=""value=MassCheck(value);AutoUpdateTime(this)"" style=""width:100%"" type=""text"" value=""0"">
