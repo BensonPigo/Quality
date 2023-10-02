@@ -986,7 +986,8 @@ select DISTINCT Type= 'Daily HT Wash Test'
 		, h.BrandID
 		, h.SeasonID
 		, h.Article 
-		, Artwork = ''
+		, h.Line 
+		, Artwork = h.ArtworkTypeID
 		, h.Result
 		, TestDate = h.ReportDate
 	    , ReceivedDate = h.ReceivedDate

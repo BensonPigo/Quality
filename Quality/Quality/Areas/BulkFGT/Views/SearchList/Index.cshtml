@@ -17,6 +17,15 @@
     .dataTables_wrapper {
         position: static;
     }
+    /*調整DataTables，會因為Collapse Menu折疊，導致寬度不足問題*/
+    .dataTables_scrollHeadInner {
+        width: 100% !important;
+    }
+
+        .dataTables_scrollHeadInner > table {
+            width: 100% !important;
+        }
+    /*調整DataTables，會因為Collapse Menu折疊，導致寬度不足問題*/
 
     h3, label, #myTable_info {
         color: white
