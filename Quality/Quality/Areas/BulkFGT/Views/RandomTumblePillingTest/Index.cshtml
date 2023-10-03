@@ -567,31 +567,78 @@
                                     {
                                         string rowName = $@"Row{i}";
                                         string resultColor = "blue";
-                                        <div class="DetailDataAreaItem1 colBody @rowName">
+
+                                        string st = string.Empty;
+
+                                        switch (Model.DetailList[i].EvaluationItem)
+                                        {
+                                            case "Specimen 1":
+                                                st = "border-bottom-width: 0px;";
+                                                break;
+                                            case "Specimen 2":
+                                                st =  "border-bottom-width: 0px;border-top-width: 0px;";
+                                                break;
+                                            case "Specimen 3":
+                                                st = "border-top-width: 0px;";
+                                                break;
+                                            default:
+                                                break;
+                                        }
+
+                                        <div class="DetailDataAreaItem1 colBody @rowName" style="@st">
                                             <input type="hidden" class="detailRowIdx" name="name" value="@i" />
                                             @*@Html.TextBoxFor(o => Model.DetailList[i].ReportNo, new { @class = "" })*@
                                             @Html.HiddenFor(o => Model.DetailList[i].ReportNo, new { @class = "" })
                                             @Html.HiddenFor(o => Model.DetailList[i].Ukey, new { @class = "" })
-                                            @Html.TextBoxFor(o => Model.DetailList[i].Side, new { @class = "" })
+                                            @if (Model.DetailList[i].EvaluationItem == "Specimen 2")
+                                            {
+                                                @Html.TextBoxFor(o => Model.DetailList[i].Side, new { @class = "",@style= "text-align:center;" })
+                                            }
+                                            else
+                                            {
+                                                @Html.HiddenFor(o => Model.DetailList[i].Side, new { @class = "" })
+                                            }
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
                                             @Html.TextBoxFor(o => Model.DetailList[i].EvaluationItem, new { @class = "" })
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
                                             <select id="DetailList_@Html.Raw(i)__FirstScale" name="DetailList[@i].FirstScale" class="CanEdit FirstScale" onchange="ScaleChange('@i', 'Result', '@Model.DetailList[i].Side')">
-                                                @foreach (var item in Model.Scale_Source)
+                                                @if (Model.DetailList[i].Side == "Face Side")
                                                 {
-                                                    string selected = item.Value.Equals(Model.DetailList[i].FirstScale) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                    foreach (var item in Model.FaceSideScale_Source)
+                                                    {
+                                                        string selected = item.Value.Equals(Model.DetailList[i].FirstScale) ? "selected" : "";
+                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                    }
+                                                }
+                                                @if (Model.DetailList[i].Side == "Back Side")
+                                                {
+                                                    foreach (var item in Model.BackSideScale_Source)
+                                                    {
+                                                        string selected = item.Value.Equals(Model.DetailList[i].FirstScale) ? "selected" : "";
+                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                    }
                                                 }
                                             </select>
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
                                             <select id="DetailList_@Html.Raw(i)__SecondScale" name="DetailList[@i].SecondScale" class="CanEdit SecondScale" onchange="ScaleChange('@i', 'Result', '@Model.DetailList[i].Side')">
-                                                @foreach (var item in Model.Scale_Source)
+                                                @if (Model.DetailList[i].Side == "Face Side")
                                                 {
-                                                    string selected = item.Value.Equals(Model.DetailList[i].SecondScale) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                    foreach (var item in Model.FaceSideScale_Source)
+                                                    {
+                                                        string selected = item.Value.Equals(Model.DetailList[i].SecondScale) ? "selected" : "";
+                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                    }
+                                                }
+                                                @if (Model.DetailList[i].Side == "Back Side")
+                                                {
+                                                    foreach (var item in Model.BackSideScale_Source)
+                                                    {
+                                                        string selected = item.Value.Equals(Model.DetailList[i].SecondScale) ? "selected" : "";
+                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                    }
                                                 }
                                             </select>
                                         </div>
@@ -600,7 +647,7 @@
                                                 bool IsEvenlyVal = Model.DetailList[i].IsEvenly;
                                             }
                                             @*<input id="DetailList_@{@i}__IsEvenly" name="DetailList[@i].IsEvenly" type="checkbox" class="bigSize Evenly" checked="@IsEvenlyVal">*@
-                                            @Html.CheckBox($@"DetailList[{i}].IsEvenly", IsEvenlyVal, new { @class = "bigSize CanEdit Evenly" })
+                                            @Html.CheckBox($@"DetailList[{i}].IsEvenly", IsEvenlyVal, new { @class = "bigSize CanEdit Evenly" ,@side = Model.DetailList[i].Side })
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
                                             @{ resultColor = Model.DetailList[i].Result == "Fail" ? "red" : "blue";}
@@ -1327,9 +1374,6 @@
             if (testStander == 'French Terry') {
                 standard = '2-3';
             }
-            if (testStander == 'Normal Fabric') {
-                standard = '3';
-            }
         }
 
         // firstScale
@@ -1366,7 +1410,7 @@
         var secondScales = $(".SecondScale");
         var evenlys = $(".Evenly");
 
-        // 只有Test Standard 為Fleece/Polar Fleece才可以用 Evenly
+        // 只有Test Standard 為Fleece/Polar Fleece && ack Side才可以用 Evenly
         if ($(obj).val() != 'Fleece/Polar Fleece') {
 
             evenlys.each(function () {
@@ -1376,7 +1420,15 @@
         }
         else {
             evenlys.each(function () {
-                $(this).removeAttr('disabled');
+                var side = $(this).attr('side');
+
+                if (side == 'Back Side') {
+                    $(this).removeAttr('disabled');
+                }
+                else {
+                    $(this).prop('checked', false);
+                    $(this).attr('disabled', 'disabled');
+                }
             });
         }
 

@@ -744,7 +744,7 @@
                                                 </div>
                                                 @*Scale*@
                                                 <div class="tab-innerItem4 tab-innerDetailRow">
-                                                    <select id="DetailList_@Html.Raw(DetailListIdx)__Scale" name="DetailList[@DetailListIdx].Scale" class="CanEdit">
+                                                    <select id="DetailList_@Html.Raw(DetailListIdx)__Scale" name="DetailList[@DetailListIdx].Scale" class="CanEdit" onchange="DetailScaleCgange('@DetailListIdx')">
                                                         @foreach (var item in Model.Scale_Source)
                                                         {
                                                             string selected = item.Value.Equals(detail.Scale) ? "selected" : "";
@@ -779,7 +779,7 @@
                                                         {
                                                             string standard = Model.GetStandard(detail.EvaluationItem, detailItem.EvaluationItemDesc).Value;
                                                             <div class="tableDiv-innerItem1">
-                                                                <select id="DetailItemList_@Html.Raw(DetailItemListIdx)__Value" name="DetailItemList[@DetailItemListIdx].Value" class="CanEdit" style="height: 4.2vh;" onchange="DetailItemValueCgange(this,'@standard','@DetailItemListIdx','@evaluationItem')">
+                                                                <select id="DetailItemList_@Html.Raw(DetailItemListIdx)__Value" name="DetailItemList[@DetailItemListIdx].Value" class="CanEdit DetailItemListValue" style="height: 4.2vh;" DetailListIdx = "@DetailListIdx" onchange="DetailItemValueCgange(this,'@standard','@DetailItemListIdx','@evaluationItem','@DetailListIdx')">
                                                                     @foreach (var item in Model.ItemList(detail.EvaluationItem, detailItem.EvaluationItemDesc))
                                                                     {
                                                                         string selected = item.Value.Equals(detailItem.Value) ? "selected" : "";
@@ -1537,9 +1537,24 @@
         });
     }
 
-    function DetailItemValueCgange(obj, standard, detailItemListIdx, evaluationItem) {
+    function DetailScaleCgange(detailListIdx) {
 
-        if ($(obj).val() == standard) {
+        var valueObjList = $(`.DetailItemListValue[DetailListIdx=${detailListIdx}]`);
+
+        $.each(valueObjList, function () {
+            $(this).change();
+        }); 
+    }
+
+    function DetailItemValueCgange(obj, standard, detailItemListIdx, evaluationItem, detailListIdx) {
+
+        var scale = $(`#DetailList_${detailListIdx}__Scale`).val();
+        var scalePass = true;
+        if (scale < '4-5') {
+            scalePass = false;
+        }
+
+        if ($(obj).val() == standard && scalePass) {
             $(`#DetailItemList_${detailItemListIdx}__Result`).val('Pass');
             $(`#DetailItemList_${detailItemListIdx}__Result`).css('color', 'blue');
 

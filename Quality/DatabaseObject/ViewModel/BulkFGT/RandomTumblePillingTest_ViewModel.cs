@@ -30,11 +30,6 @@ namespace DatabaseObject.ViewModel.BulkFGT
                     Text = "French Terry",
                     Value = "French Terry"
                 });
-                result.Add(new SelectListItem()
-                {
-                    Text = "Normal Fabric",
-                    Value = "Normal Fabric"
-                });
 
                 return result;
             }
@@ -45,6 +40,87 @@ namespace DatabaseObject.ViewModel.BulkFGT
         }
         public List<SelectListItem> Article_Source { get; set; }
         public List<SelectListItem> Scale_Source { get; set; }
+        public List<SelectListItem> FaceSideScale_Source
+        {
+            get
+            {
+                List<SelectListItem> result = new List<SelectListItem>();
+                result.Add(new SelectListItem()
+                {
+                    Text = "1",
+                    Value = "1"
+                });
+                result.Add(new SelectListItem()
+                {
+                    Text = "2",
+                    Value = "2"
+                });
+                result.Add(new SelectListItem()
+                {
+                    Text = "3",
+                    Value = "3"
+                });
+                result.Add(new SelectListItem()
+                {
+                    Text = "4",
+                    Value = "4"
+                });
+                result.Add(new SelectListItem()
+                {
+                    Text = "5",
+                    Value = "5"
+                });
+
+                return result;
+            }
+            set
+            {
+
+            }
+        }
+        public List<SelectListItem> BackSideScale_Source
+        {
+            get
+            {
+                List<SelectListItem> result = new List<SelectListItem>();
+                result.Add(new SelectListItem()
+                {
+                    Text = "1",
+                    Value = "1"
+                });
+                result.Add(new SelectListItem()
+                {
+                    Text = "1-2",
+                    Value = "1-2"
+                });
+                result.Add(new SelectListItem()
+                {
+                    Text = "2",
+                    Value = "2"
+                });
+                result.Add(new SelectListItem()
+                {
+                    Text = "2-3",
+                    Value = "2-3"
+                });
+                result.Add(new SelectListItem()
+                {
+                    Text = "3",
+                    Value = "3"
+                });
+                result.Add(new SelectListItem()
+                {
+                    Text = "4",
+                    Value = "4"
+                });
+
+                return result;
+            }
+            set
+            {
+
+            }
+        }
 
         // 預設摩擦的項目
         public List<string> DefaultSide
