@@ -39,7 +39,6 @@ namespace DatabaseObject.ViewModel.BulkFGT
             }
         }
         public List<SelectListItem> Article_Source { get; set; }
-        public List<SelectListItem> Scale_Source { get; set; }
         public List<SelectListItem> FaceSideScale_Source
         {
             get
