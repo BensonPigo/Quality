@@ -69,6 +69,33 @@ namespace DatabaseObject.ViewModel.BulkFGT
             set { }
         }
 
+        public List<SelectListItem> PullForceUnit_Source
+        {
+            get
+            {
+                return new List<SelectListItem>()
+                {
+                    new SelectListItem(){ Text="Newton",Value="Newton"},
+                    new SelectListItem(){ Text="IB",Value="IB"},
+                };
+            }
+            set { }
+        }
+
+        public List<SelectListItem> StyleType_Source
+        {
+            get
+            {
+                return new List<SelectListItem>()
+                {
+                    new SelectListItem(){ Text="",Value=""},
+                    new SelectListItem(){ Text="Adults",Value="Adults"},
+                    new SelectListItem(){ Text="Youth",Value="Youth"},
+                };
+            }
+            set { }
+        }
+
         public PullingTest_Result Detail { get; set; }
     }
 
@@ -88,7 +115,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string TestDateText { get; set; }
 
         public decimal PullForce { get; set; }
-        public string PullForceUnit { get; set; }        
+        public string PullForceUnit { get; set; }     
+        public string StyleType { get; set; }
         public string Inspector { get; set; }
         public string InspectorName { get; set; }
         public int Time { get; set; }
