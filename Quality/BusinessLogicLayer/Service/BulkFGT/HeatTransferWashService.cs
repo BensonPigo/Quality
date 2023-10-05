@@ -264,6 +264,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 HeatTransferWash_Result head = _Provider.GetMainData(new HeatTransferWash_Request() { ReportNo = ReportNo });
                 List<HeatTransferWash_Detail_Result> body =_Provider.GetDetailData(ReportNo).ToList();
 
+                System.Data.DataTable ReportTechnician = _Provider.GetReportTechnician(new HeatTransferWash_Request() { ReportNo = ReportNo });
 
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
                 string strXltName = baseFilePath + "\\XLT\\HeatTransferWash.xltx";
@@ -352,6 +353,32 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     imgPath_Signture = ToolKit.PublicClass.AddImageSignWord(SignturePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     Excel.Range cell = worksheet.Cells[30, 7];
                     worksheet.Shapes.AddPicture(imgPath_Signture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 40, 20);
+                }
+
+                // Technician 欄位
+                if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
+                {
+                    string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
+
+                    // 姓名
+                    worksheet.Cells[20, 6] = TechnicianName;
+
+                    // Signture 圖片
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[30, 7];
+                    if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                    {
+
+                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
+
+                        MemoryStream ms = new MemoryStream(TestBeforePicture);
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                        string imageName = $"{Guid.NewGuid()}.jpg";
+                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                        img.Save(imgPath);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
+                    }
                 }
 
                 // ISP20230055 簽名、名字一起顯示
