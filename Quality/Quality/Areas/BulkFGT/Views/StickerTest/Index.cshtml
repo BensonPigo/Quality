@@ -709,7 +709,7 @@
                                                 <p>Evaluation Item</p>
                                             </div>
                                             <div class="tab-innerItem4 colHead">
-                                                <p>Result</p>
+                                                <p>Scale Result</p>
                                             </div>
                                             <div class="tab-innerItem4 colHead">
                                                 <p>Scale</p>
@@ -744,7 +744,7 @@
                                                 </div>
                                                 @*Scale*@
                                                 <div class="tab-innerItem4 tab-innerDetailRow">
-                                                    <select id="DetailList_@Html.Raw(DetailListIdx)__Scale" name="DetailList[@DetailListIdx].Scale" class="CanEdit" onchange="DetailScaleCgange('@DetailListIdx')">
+                                                    <select id="DetailList_@Html.Raw(DetailListIdx)__Scale" name="DetailList[@DetailListIdx].Scale" class="CanEdit" onchange="DetailScaleCgange('@DetailListIdx','@evaluationItem')">
                                                         @foreach (var item in Model.Scale_Source)
                                                         {
                                                             string selected = item.Value.Equals(detail.Scale) ? "selected" : "";
@@ -1537,13 +1537,34 @@
         });
     }
 
-    function DetailScaleCgange(detailListIdx) {
+    function DetailScaleCgange(detailListIdx, evaluationItem) {
 
         var valueObjList = $(`.DetailItemListValue[DetailListIdx=${detailListIdx}]`);
+        // 記祿底下Value是否全部Pass
+        let isAllPassValueResult = true;
 
         $.each(valueObjList, function () {
-            $(this).change();
+            let valueResult = $(this).change();
+            if (!valueResult) {
+                isAllPassValueResult = false;
+            }
         }); 
+
+        var scale = $(`#DetailList_${detailListIdx}__Scale`).val();
+        var scalePass = true;
+
+        // Scale Result = Pass的條件：底下Value 都是Pass且自己的Scale >= 4-5
+        if (isAllPassValueResult && scale < '4-5') {
+            scalePass = false;
+        }
+        if (scalePass) {
+            $(`input[tag='${evaluationItem}Tag']`).val('Pass');
+            $(`input[tag='${evaluationItem}Tag']`).css('color', 'blue');
+        }
+        else {
+            $(`input[tag='${evaluationItem}Tag']`).val('Fail');
+            $(`input[tag='${evaluationItem}Tag']`).css('color', 'red');
+        }
     }
 
     function DetailItemValueCgange(obj, standard, detailItemListIdx, evaluationItem, detailListIdx) {
@@ -1553,21 +1574,29 @@
         if (scale < '4-5') {
             scalePass = false;
         }
+        let valueResult = true;
 
-        if ($(obj).val() == standard && scalePass) {
+        if ($(obj).val() == standard) {
             $(`#DetailItemList_${detailItemListIdx}__Result`).val('Pass');
             $(`#DetailItemList_${detailItemListIdx}__Result`).css('color', 'blue');
-
-            $(`input[tag='${evaluationItem}Tag']`).val('Pass');
-            $(`input[tag='${evaluationItem}Tag']`).css('color', 'blue');
+            valueResult = true;
         }
         else {
             $(`#DetailItemList_${detailItemListIdx}__Result`).val('Fail');
             $(`#DetailItemList_${detailItemListIdx}__Result`).css('color', 'red');
+            valueResult = false;
+        }
 
+        // Scale Result = Pass的條件：底下Value 都是Pass且自己的Scale >= 4-5
+        if ($(obj).val() == standard && scalePass) {
+            $(`input[tag='${evaluationItem}Tag']`).val('Pass');
+            $(`input[tag='${evaluationItem}Tag']`).css('color', 'blue');
+        }
+        else {
             $(`input[tag='${evaluationItem}Tag']`).val('Fail');
             $(`input[tag='${evaluationItem}Tag']`).css('color', 'red');
         }
 
+        return valueResult;
     }
 </script>

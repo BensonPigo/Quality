@@ -647,7 +647,7 @@
                                                 bool IsEvenlyVal = Model.DetailList[i].IsEvenly;
                                             }
                                             @*<input id="DetailList_@{@i}__IsEvenly" name="DetailList[@i].IsEvenly" type="checkbox" class="bigSize Evenly" checked="@IsEvenlyVal">*@
-                                            @Html.CheckBox($@"DetailList[{i}].IsEvenly", IsEvenlyVal, new { @class = "bigSize CanEdit Evenly" ,@side = Model.DetailList[i].Side })
+                                            @Html.CheckBox($@"DetailList[{i}].IsEvenly", IsEvenlyVal, new { @class = "bigSize CanEdit Evenly" ,@side = Model.DetailList[i].Side, @onchange= $"ScaleChange('{i}','Result','{Model.DetailList[i].Side}')" })
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
                                             @{ resultColor = Model.DetailList[i].Result == "Fail" ? "red" : "blue";}
@@ -683,6 +683,7 @@
     $(function () {
         EditMode = false;
 
+        $("#Main_TestStandard").change();
         IsEditModeChange();
         if (EditType == 'New') {
             EditMode = true;
@@ -951,6 +952,7 @@
         $('#Edit').on('click', function () {
             EditMode = true;
             IsEditModeChange();
+            $("#Main_TestStandard").change();
         });
         $('#Save').on('click', function () {
             if (EditMode == false) {
@@ -1358,6 +1360,7 @@
 
         var firstScale = $(`#DetailList_${rowIdx}__FirstScale`);
         var secondScale = $(`#DetailList_${rowIdx}__SecondScale`);
+        var isEvenly = $(`#DetailList_${rowIdx}__IsEvenly`).prop('checked');
         var allResult = true;
         var standard = '3';
         var testStander = $("#Main_TestStandard").val();
@@ -1373,6 +1376,9 @@
             }
             if (testStander == 'French Terry') {
                 standard = '2-3';
+            }
+            if (isEvenly != true) {
+                allResult = false;
             }
         }
 
@@ -1403,7 +1409,9 @@
         $(resultColumn).change();
     }
 
-
+    function EvenlyChange(rowIdx, resultColumnName, side) {
+        ScaleChange(rowIdx, resultColumnName, side);
+    }
 
     function TestStandardChange(obj) {
         var firstScales = $(".FisrtScale");
