@@ -716,8 +716,8 @@
                 $('.CanEdit').removeAttr("disabled");
                 $('.CanEdit').removeAttr("readonly");
 
-                if ($("#Main_TestStandard").val() != 'Fleece/Polar Fleece') {
-                    $('.DetailDataAreaItem1 input[type="checkbox"]').attr("disabled", true);
+                if (EditType == 'New') {
+                    $("#Main_TestStandard").change();
                 }
 
                 // Report No不為空，表示不是新建單，部分欄位不可異動
