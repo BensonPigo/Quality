@@ -283,13 +283,15 @@
             });
         });
 
+        msg.WithInfoTimer("Report Generating...");
+
         $("#ToExcel").click(function () {
             $.ajax({
                 url: "@Url.Action("ToExcel", "Measurement", new { Area = "SampleRFT" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ OrderID: $('#OrderID').val() }),
-                async: false,
+                async: true,
                 success: function (data) {
                     if (data.Result) {
                         window.location.href = data.FileName;

@@ -1182,12 +1182,15 @@
                 StyleID: $('#Request_StyleID').val(),
                 Article: $('#Request_Article').val(),
             };
+
+            msg.WithInfoTimer("Report Generating...");
+
             $.ajax({
                 url: "@Url.Action("ToPDF", "MockupOvenTest", new { Area = "BulkFGT" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ mockupOven_Request }),
-                async: false,
+                async: true,
                 success: function (data) {
                     if (data.Result) {
                         window.location.href = data.reportPath;

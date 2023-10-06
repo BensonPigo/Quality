@@ -1213,12 +1213,15 @@
     }
 
     function ToReport(IsToPDF) {
+
+        msg.WithInfoTimer("Report Generating...");
+
         $.ajax({
             url: "@Url.Action("Report", "WaterFastness", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ ID: $('#Main_ID').val(), No: $('#Main_TestNo').val(), IsToPDF: IsToPDF }),
-            async: false,
+            async: true,
             success: function (data) {
                 if (data.Result) {
                     window.location.href = data.reportPath;

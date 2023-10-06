@@ -296,5 +296,12 @@ MessagerAlert.prototype =
         },
         WithErrorCheck: function (msg, agreeFunction) {
             $.Message.alertDialog(msg, "error", agreeFunction);
+        },
+        WithInfoTimer: function (msg, millisecond) {
+            var time = 2500;
+            if (millisecond != null && millisecond != undefined && !isNaN(millisecond)) {
+                time = millisecond;
+            }
+            $.Message.timerDialog(msg, "success", null, null, time, '15px');
         }
     }

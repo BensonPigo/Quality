@@ -456,6 +456,9 @@
         }
 
     function ToReport(IsToPDF) {
+
+        msg.WithInfoTimer("Report Generating...");
+
         $.ajax({
             url: "@Url.Action("WashReport", "AccessoryOvenWash", new { Area = "BulkFGT" })",
             type: 'POST',
@@ -467,7 +470,7 @@
                 Seq2: $("#Seq2").val(),
                 IsToPDF: IsToPDF
             }),
-            async: false,
+            async: true,
             success: function (data) {
                 if (data.Result) {
                     window.location.href = data.reportPath;
