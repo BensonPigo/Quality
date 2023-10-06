@@ -41,7 +41,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _Provider = new RandomTumblePillingTestProvider(Common.ProductionDataAccessLayer);
-                model.Scale_Source = _Provider.GetScales();
+                //model.Scale_Source = _Provider.GetScales();
 
                 if (isNew)
                 {

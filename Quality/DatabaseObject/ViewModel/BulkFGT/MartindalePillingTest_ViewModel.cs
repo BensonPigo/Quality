@@ -64,8 +64,40 @@ namespace DatabaseObject.ViewModel.BulkFGT
             }
         }
         public List<SelectListItem> Article_Source { get; set; }
-        public List<SelectListItem> Scale_Source { get; set; }
+        public List<SelectListItem> Scale_Source
+        {
+            get
+            {
+                List<SelectListItem> result = new List<SelectListItem>();
 
+                result.Add(new SelectListItem()
+                {
+                    Text = "1-2",
+                    Value = "1-2"
+                });
+                result.Add(new SelectListItem()
+                {
+                    Text = "2-3",
+                    Value = "2-3"
+                });
+                result.Add(new SelectListItem()
+                {
+                    Text = "3-4",
+                    Value = "3-4"
+                });
+                result.Add(new SelectListItem()
+                {
+                    Text = "4-5",
+                    Value = "4-5"
+                });
+
+                return result;
+            }
+            set
+            {
+
+            }
+        }
         // 預設摩擦的項目
         public List<string> DefaultRubTimes 
         {

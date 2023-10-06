@@ -473,8 +473,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     int i = 0;
                     foreach(var item in model.DetaiItemlList.Where(x => x.WickingHeightTestDetailUkey == detailUkey).OrderBy(x => x.Ukey))
                     {
-                        worksheet.Cells[14, 2 + i] = string.Format("{0}cm/{1}min", item.WarpValues.ToString(), item.WarpTime.ToString());
-                        worksheet.Cells[14, 5 + i] = string.Format("{0}cm/{1}min", item.WeftValues.ToString(), item.WeftTime.ToString());
+                        worksheet.Cells[14, 2 + i] = string.Format("{0}mm/{1}min", item.WarpValues.ToString(), item.WarpTime.ToString());
+                        worksheet.Cells[14, 5 + i] = string.Format("{0}mm/{1}min", item.WeftValues.ToString(), item.WeftTime.ToString());
                         i++;
                     }
 
@@ -482,8 +482,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     i = 0;
                     foreach (var item in model.DetaiItemlList.Where(x => x.WickingHeightTestDetailUkey == detailUkey).OrderBy(x => x.Ukey))
                     {
-                        worksheet.Cells[18, 2 + i] = string.Format("{0}cm/{1}min", item.WarpValues.ToString(), item.WarpTime.ToString());
-                        worksheet.Cells[18, 5 + i] = string.Format("{0}cm/{1}min", item.WeftValues.ToString(), item.WeftTime.ToString());
+                        worksheet.Cells[18, 2 + i] = string.Format("{0}mm/{1}min", item.WarpValues.ToString(), item.WarpTime.ToString());
+                        worksheet.Cells[18, 5 + i] = string.Format("{0}mm/{1}min", item.WeftValues.ToString(), item.WeftTime.ToString());
                         i++;
                     }
                 }
