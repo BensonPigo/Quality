@@ -405,8 +405,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
             worksheet.Cells[10, 4] = dataList[0].Machine;
             worksheet.Cells[10, 7] = dataList[0].Drying;
 
-            worksheet.Cells[19, 3] = dataList[0].Checkby;
-            Excel.Range cellSignature = worksheet.Cells[20, 4];
+            worksheet.Cells[13, 3] = dataList[0].Checkby;
+            Excel.Range cellSignature = worksheet.get_Range("D14:D15");
             if (dataList[0].Signature != null)
             {
                 string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].Signature, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
@@ -454,44 +454,44 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Cells[nowRow, 6] = item.Dyelot;
                     worksheet.Cells[nowRow, 8] = item.SCIRefno_Color;
 
-                    worksheet.Cells[nowRow + 2, 2] = item.ChangeScale;
-                    worksheet.Cells[nowRow + 2, 3] = item.AcetateScale;
-                    worksheet.Cells[nowRow + 2, 4] = item.CottonScale;
-                    worksheet.Cells[nowRow + 2, 5] = item.NylonScale;
-                    worksheet.Cells[nowRow + 2, 6] = item.PolyesterScale;
-                    worksheet.Cells[nowRow + 2, 7] = item.AcrylicScale;
-                    worksheet.Cells[nowRow + 2, 8] = item.WoolScale;
+                    worksheet.Cells[nowRow + 3, 2] = item.ChangeScale;
+                    worksheet.Cells[nowRow + 3, 3] = item.AcetateScale;
+                    worksheet.Cells[nowRow + 3, 4] = item.CottonScale;
+                    worksheet.Cells[nowRow + 3, 5] = item.NylonScale;
+                    worksheet.Cells[nowRow + 3, 6] = item.PolyesterScale;
+                    worksheet.Cells[nowRow + 3, 7] = item.AcrylicScale;
+                    worksheet.Cells[nowRow + 3, 8] = item.WoolScale;
 
-                    worksheet.Cells[nowRow + 3, 2] = item.ResultChange;
-                    worksheet.Cells[nowRow + 3, 3] = item.ResultAcetate;
-                    worksheet.Cells[nowRow + 3, 4] = item.ResultCotton;
-                    worksheet.Cells[nowRow + 3, 5] = item.ResultNylon;
-                    worksheet.Cells[nowRow + 3, 6] = item.ResultPolyester;
-                    worksheet.Cells[nowRow + 3, 7] = item.ResultAcrylic;
-                    worksheet.Cells[nowRow + 3, 8] = item.ResultWool;
+                    worksheet.Cells[nowRow + 4, 2] = item.ResultChange;
+                    worksheet.Cells[nowRow + 4, 3] = item.ResultAcetate;
+                    worksheet.Cells[nowRow + 4, 4] = item.ResultCotton;
+                    worksheet.Cells[nowRow + 4, 5] = item.ResultNylon;
+                    worksheet.Cells[nowRow + 4, 6] = item.ResultPolyester;
+                    worksheet.Cells[nowRow + 4, 7] = item.ResultAcrylic;
+                    worksheet.Cells[nowRow + 4, 8] = item.ResultWool;
 
-                    worksheet.Cells[nowRow + 4, 2] = item.Remark;
+                    worksheet.Cells[nowRow + 5, 2] = item.Remark;
                     nowRow = nowRow + 6;
                 }
             }
 
             // 圖片
             Excel.Worksheet worksheet4 = excel.ActiveWorkbook.Worksheets[4];
-            nowRow = 21 + dataList.Count; 
+            nowRow = 17 + (dataList.Count * (dataList[0].BrandID == "U.ARMOUR" ? 2 :6)); 
             foreach (ColorFastness_Excel item in dataList)
             {
-                Excel.Range rngToCopy = worksheet4.get_Range("A1:H42").EntireRow;
-                Excel.Range rngToInsert = worksheet.get_Range($"A{nowRow}", Type.Missing).EntireRow; // 選擇要被貼上的位置
-                rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
+                Excel.Range rngToCopy = worksheet4.get_Range("A1:H42");
+                Excel.Range rngToInsert = worksheet.get_Range($"A{nowRow}", Type.Missing); // 選擇要被貼上的位置
+                rngToInsert.Insert(rngToCopy.Copy(Type.Missing)); // 貼上
 
-                Excel.Range cellBefore = worksheet.Cells[nowRow + 22, 1];
+                Excel.Range cellBefore = worksheet.Cells[nowRow + 23, 1];
                 if (dataList[0].TestBeforePicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestBeforePicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 5, cellBefore.Width - 10, cellBefore.Height - 10);
                 }
 
-                Excel.Range cellAfter = worksheet.Cells[nowRow + 22, 5];
+                Excel.Range cellAfter = worksheet.Cells[nowRow + 23, 5];
                 if (dataList[0].TestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestAfterPicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
@@ -500,7 +500,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 nowRow = nowRow + 42;
             }
-            
+
             #region Save & Show Excel
 
             string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
