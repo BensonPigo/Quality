@@ -293,22 +293,27 @@
                                 <tr>
                                     <td><h5>Test Item</h5></td>
                                     <td>
-                                        @Html.DropDownListFor(o => o.Detail.TestItem, Model.TestItem_Source, null, new { @onchange = "TestItemChange(this)", @class = "OnlyEdit" })
+                                        @Html.DropDownListFor(o => o.Detail.TestItem, Model.TestItem_Source, null, new { @onchange = "TestItemChange(this)", @class = "OnlyEdit" })                                        
+                                    </td>
+                                    <td>
                                         @Html.DropDownListFor(o => o.Detail.PullForceUnit, Model.PullForceUnit_Source, null, new { @onchange = "PullForceUnitChange(this)", @disabled = "disabled", @readonly = "readonly" })
                                     </td>
                                     <td>
                                         @Html.TextBoxFor(o => o.Detail.PullForce, "", new { @onblur = "ResultCheck()", @class = "OnlyEdit", @readonly = "readonly", @type = "number", @step = "0.01" })
                                     </td>
                                     <td>
-                                        Sec
+                                        <h5>Sec</h5>
+                                    </td>
+                                    <td>                                        
                                         @Html.TextBoxFor(o => o.Detail.Time, "", new { @onblur = "ResultCheck()", @class = "OnlyEdit", @readonly = "readonly", @type = "number" })
                                     </td>
+                                </tr>
+                                <tr>
                                     <td>Style Type</td>
                                     <td>
                                         @Html.DropDownListFor(o => o.Detail.StyleType, Model.StyleType_Source, null, new { @onchange = "StyleTypeChange(this)", @disabled = "disabled", @readonly = "readonly" })
                                     </td>
-                                </tr>
-                                <tr>
+
                                     <td><h5>Fabric Ref#</h5></td>
                                     <td>
                                         @Html.TextBoxFor(o => o.Detail.FabricRefno, "", new { @class = "OnlyEdit", @readonly = "readonly" })
@@ -317,14 +322,14 @@
                                     <td>
                                         @Html.TextBoxFor(o => o.Detail.AccRefno, "", new { @class = "OnlyEdit", @readonly = "readonly" })
                                     </td>
+                                </tr>
+                                <tr>
                                     <td><h5>Snap Operator</h5></td>
                                     <td>
                                         @Html.TextBoxFor(o => o.Detail.SnapOperator, "", new { @class = "OnlyEdit", @readonly = "readonly" })
                                     </td>
-                                </tr>
-                                <tr>
                                     <td><h5>Last Edit Name</h5></td>
-                                    <td colspan="5">
+                                    <td colspan="3">
                                         @Html.TextBoxFor(o => o.Detail.LastEditName, "", new { @readonly = "readonly" })
                                     </td>
                                 </tr>
@@ -576,6 +581,11 @@
             $("#" + name + "BrandID").blur(function () {
                 AutoGetPullUnit(this);
 
+                if (name == "Detail_") {
+                    PullForceUnitChangeState($("#Detail_BrandID").val());
+                    StyleTypeChangeState($("#Detail_BrandID").val(), $("#Detail_PullForceUnit").val());
+                }
+                
                 @*if ($(this).val() == '') {
                     $("#Detail_Result").val('');
                     $("#ResultText").val('');
@@ -1209,6 +1219,8 @@
         if (EditMode) {
             $('#Detail_BrandID').val(data);
             AutoGetPullUnit($('#Detail_BrandID')[0]);
+            PullForceUnitChangeState($("#Detail_BrandID").val());
+            StyleTypeChangeState($("#Detail_BrandID").val(), $("#Detail_PullForceUnit").val());
         }
         else {
             $('#BrandID').val(data);
