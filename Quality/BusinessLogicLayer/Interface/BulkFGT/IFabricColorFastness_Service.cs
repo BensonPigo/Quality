@@ -33,9 +33,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         BaseResult SentMail(string POID, string ID, string TestNo, string ToAddress, string CCAddress);
 
-        Fabric_ColorFastness_Detail_ViewModel ToPDF(string ID, bool test);
-
-        Fabric_ColorFastness_Detail_ViewModel ToExcel(string ID, bool test);
+        Fabric_ColorFastness_Detail_ViewModel ToPDF(string ID, bool ToPDF, bool test);        
 
         BaseResult DeleteColorFastness(string ID);
     }
