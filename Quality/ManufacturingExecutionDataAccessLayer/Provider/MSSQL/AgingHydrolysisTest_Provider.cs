@@ -636,6 +636,24 @@ WHERE ReportNo = @ReportNo
             return true;
         }
 
+        public DataTable GetReportTechnician(AgingHydrolysisTest_Request Req)
+        {
+            SQLParameterCollection paras = new SQLParameterCollection();
+            paras.Add("@ReportNo", Req.ReportNo);
+
+            string sqlCmd = $@"
+select Technician = ISNULL(mp.Name,pp.Name)
+	   ,TechnicianSignture = t.Signature
+from AgingHydrolysisTest_Detail a
+left join Pass1 mp on mp.ID = a.EditName 
+left join MainServer.Production.dbo.Pass1 pp on pp.ID = a.EditName 
+left join MainServer.Production.dbo.Technician t on t.ID = a.EditName 
+where a.ReportNo = @ReportNo
+;
+
+";
+            return ExecuteDataTable(CommandType.Text, sqlCmd, paras);
+        }
         public DataSet GetReport(AgingHydrolysisTest_Request Req)
         {
             SQLParameterCollection paras = new SQLParameterCollection();
