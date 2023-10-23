@@ -687,6 +687,18 @@ insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo, Seq)
             return setting.FinalInspectionID;
         }
 
+
+        public int GetAvailableQty(string FinalInspectionID)
+        {
+            string sql = $@"
+select AvailableQty=SUM(AvailableQty)
+from FinalInspection_Order
+where   ID = '{FinalInspectionID}'
+";
+            int AvailableQty = (int)ExecuteDataTableByServiceConn(CommandType.Text, sql, new SQLParameterCollection()).Rows[0]["AvailableQty"];
+            return AvailableQty;
+        }
+
         /// <summary>
         /// 部分功能Back/Next按鈕按下時，要存檔的東西(Remark之類的)
         /// </summary>
@@ -1863,6 +1875,7 @@ select  [SP] = (SELECT Stuff((select concat( ',',OrderID)
                                 where fo.ID = @FinalInspectionID
                                 FOR XML PATH('')),1,1,'') ),
         [StyleID] = @StyleID,
+        [SeasonID] = @SeasonID,
         [BrandID] = @BrandID,
         [CFA] = ISNULL((select name from pass1 with (nolock) where ID = f.CFA),(select name from Production..pass1 with (nolock) where ID = f.CFA)),
         [TotalSPQty] = @spQty,

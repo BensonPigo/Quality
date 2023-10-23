@@ -10,6 +10,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public ManufacturingExecutionDB.FinalInspection FinalInspection { get; set; }
         public string SP { get; set; }
         public string StyleID { get; set; }
+        public string SeasonID { get; set; }
         public string BrandID { get; set; }
         public string Dest { get; set; }
         public int TotalSPQty { get; set; }
