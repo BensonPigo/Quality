@@ -155,5 +155,6 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         List<FinalInspectionBasicGeneral> GetAllGeneral();
         List<FinalInspectionBasicCheckList> GetAllCheckList();
+        int GetAvailableQty(string FinalInspectionID);
     }
 }

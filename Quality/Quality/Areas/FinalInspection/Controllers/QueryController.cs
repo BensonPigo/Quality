@@ -146,7 +146,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             worksheet.Cells[6, 3] = model.StyleID;
             worksheet.Cells[6, 7] = model.AvailableQty;
 
-            worksheet.Cells[7, 3] = orders.Select(s => s.SeasonID).FirstOrDefault();
+            worksheet.Cells[7, 3] = model.SeasonID;
             worksheet.Cells[7, 7] = model.AQLPlan;
 
             worksheet.Cells[8, 3] = model.BrandID;
