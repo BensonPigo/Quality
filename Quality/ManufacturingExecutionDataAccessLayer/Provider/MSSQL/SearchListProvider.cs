@@ -1675,6 +1675,65 @@ WHERE a.ReportDate IS NOT NULL
             }
 
             #endregion
+
+            #region Evaporation Rate Test(617)
+            string type25 = $@"
+select Type= 'Wicking Height Test (616)'
+    , a.ReportNo
+    , a.OrderID
+    , a.StyleID
+    , a.BrandID
+    , a.SeasonID
+    , a.Article
+    , Line = ''
+    , Artwork = ''
+    , a.Result  
+    , TestDate = Cast( NULL as date)
+    , ReceivedDate = a.SubmitDate
+    , ReportDate = a.ReportDate
+    , AddName = ISNULL(mp.Name, pp.Name)
+from [ExtendServer].ManufacturingExecution.dbo.WickingHeightTest a
+left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
+left join Pass1 pp on a.EditName = pp.ID
+WHERE a.ReportDate IS NOT NULL
+";
+            if (!string.IsNullOrEmpty(Req.BrandID))
+            {
+                type25 += "AND a.BrandID = @BrandID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SeasonID))
+            {
+                type25 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.StyleID))
+            {
+                type25 += "AND a.StyleID = @StyleID ";
+            }
+            if (!string.IsNullOrEmpty(Req.Article))
+            {
+                type25 += "AND a.Article = @Article ";
+            }
+
+            if (Req.ReceivedDate_s.HasValue)
+            {
+                type25 += " AND @ReceivedDate_s <= a.SubmitDate ";
+            }
+            if (Req.ReceivedDate_e.HasValue)
+            {
+                type25 += " AND a.SubmitDate <= @ReceivedDate_e ";
+            }
+
+            if (Req.ReportDate_s.HasValue)
+            {
+                type25 += " AND @ReportDate_s <= a.ReportDate ";
+            }
+            if (Req.ReportDate_e.HasValue)
+            {
+                type25 += " AND a.ReportDate <= @ReportDate_e ";
+            }
+
+            #endregion
+
             switch (Req.Type)
             {
                 case string a when a.Contains("Fabric Crocking & Shrinkage Test"):
@@ -1746,6 +1805,9 @@ WHERE a.ReportDate IS NOT NULL
                 case string a when a.Contains("Evaporation Rate Test"):
                     SbSql.Append(type24);
                     break;
+                case string a when a.Contains("Wicking Height Test"):
+                    SbSql.Append(type25);
+                    break;
                 default:
                     SbSql.Append(
                         type1 + " union all " + 
@@ -1770,7 +1832,8 @@ WHERE a.ReportDate IS NOT NULL
                         type21 + " union all " +
                         type22 + " union all " +
                         type23 + " union all " +
-                        type24);
+                        type24 + " union all " +
+                        type25);
                     break;
             }
 

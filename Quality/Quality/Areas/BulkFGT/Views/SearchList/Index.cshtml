@@ -424,6 +424,16 @@
                                                 Article = item.Article,
                                             });
                                             break;
+                                        case string a when a.Contains("Wicking Height Test"):
+                                            link = Url.Action("IndexGet", "WickingHeightTest", new
+                                            {
+                                                ReportNo = item.ReportNo,
+                                                BrandID = item.BrandID,
+                                                SeasonID = item.SeasonID,
+                                                StyleID = item.StyleID,
+                                                Article = item.Article,
+                                            });
+                                            break;
                                         default:
                                             link = "#";
                                             break;

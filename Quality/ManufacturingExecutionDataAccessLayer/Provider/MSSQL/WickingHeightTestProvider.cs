@@ -365,9 +365,9 @@ DELETE FROM WickingHeightTest_Detail_Item where ReportNo = @ReportNo and Wicking
                 {
                     case CompareStateType.Add:
                         listDetailPar.Add(new SqlParameter($"@EvaluationType", detailItem.EvaluationType));
-                        listDetailPar.Add(new SqlParameter($"@WarpAverage", detailItem.WarpAverage ?? 0) { Scale = 2 });
+                        listDetailPar.Add(new SqlParameter($"@WarpAverage", detailItem.WarpAverage) { Scale = 2 });
                         listDetailPar.Add(new SqlParameter($"@WarpResult", detailItem.WarpResult ?? string.Empty));
-                        listDetailPar.Add(new SqlParameter($"@WeftAverage", detailItem.WeftAverage ?? 0) { Scale = 2 });
+                        listDetailPar.Add(new SqlParameter($"@WeftAverage", detailItem.WeftAverage) { Scale = 2 });
                         listDetailPar.Add(new SqlParameter($"@WeftResult", detailItem.WeftResult ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? string.Empty));
 
@@ -394,9 +394,9 @@ from @InsertOutput t
                     case CompareStateType.Edit:
                         listDetailPar.Add(new SqlParameter($"@Ukey", detailItem.Ukey));
                         listDetailPar.Add(new SqlParameter($"@EvaluationType", detailItem.EvaluationType));
-                        listDetailPar.Add(new SqlParameter($"@WarpAverage", detailItem.WarpAverage ?? 0) { Scale = 2 });
+                        listDetailPar.Add(new SqlParameter($"@WarpAverage", detailItem.WarpAverage) { Scale = 2 });
                         listDetailPar.Add(new SqlParameter($"@WarpResult", detailItem.WarpResult ?? string.Empty));
-                        listDetailPar.Add(new SqlParameter($"@WeftAverage", detailItem.WeftAverage ?? 0) { Scale = 2 });
+                        listDetailPar.Add(new SqlParameter($"@WeftAverage", detailItem.WeftAverage) { Scale = 2 });
                         listDetailPar.Add(new SqlParameter($"@WeftResult", detailItem.WeftResult ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? string.Empty));
 
