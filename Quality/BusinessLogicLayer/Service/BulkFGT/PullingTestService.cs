@@ -294,6 +294,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 worksheet.Cells[9, 2] = model.FabricRefno;
                 worksheet.Cells[9, 4] = model.AccRefno;
                 worksheet.Cells[10, 2] = model.SnapOperator;
+                worksheet.Cells[10, 4] = model.Result;
                 worksheet.Cells[12, 1] = model.Remark;
                 worksheet.Cells[22, 4] = model.AddName;
 
@@ -317,18 +318,21 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, cell.Width - 10, cell.Height - 10);
                 }
 
-                cell = worksheet.Cells[15, 1];
-                if (model.TestBeforePicture != null)
+
+                // TestBeforePicture 圖片
+                if (model.TestBeforePicture != null && model.TestBeforePicture.Length > 1)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.TestBeforePicture, model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: this.IsTest);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, cell.Width - 10, cell.Height - 10);
+                    cell = worksheet.Cells[15, 1];
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.TestBeforePicture, model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
 
-                cell = worksheet.Cells[15, 3];
-                if (model.TestAfterPicture != null)
+                // TestAfterPicture 圖片
+                if (model.TestAfterPicture != null && model.TestAfterPicture.Length > 1)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.TestAfterPicture, model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: this.IsTest);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5 , cell.Top + 5, cell.Width - 10, cell.Height - 10);
+                    cell = worksheet.Cells[15, 3];
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.TestAfterPicture, model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
 
                 #region Save & Show Excel
