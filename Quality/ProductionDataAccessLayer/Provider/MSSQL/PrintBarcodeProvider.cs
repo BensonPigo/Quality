@@ -137,7 +137,7 @@ where   1 = 1 {sqlWhere}
 select DISTINCT Text=ID, Value = Cast( SerialKey as varchar(10) )
 from OrderType
 where junk =0 
-and Category IN( 'B' ,'S')
+and Category IN( 'S')
 and BrandID = @BrandID
 ";
 
