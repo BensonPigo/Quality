@@ -266,6 +266,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 PullingTest_Result model = _PullingTestProvider.GetData(ReportNo);
 
+                System.Data.DataTable ReportTechnician = _PullingTestProvider.GetReportTechnician(ReportNo);
+
                 string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx"; ;
                 if (this.IsTest)
                 {
@@ -318,6 +320,32 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, cell.Width - 10, cell.Height - 10);
                 }
 
+
+                // Technician 欄位
+                if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
+                {
+                    string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
+
+                    // 姓名
+                    worksheet.Cells[22, 4] = TechnicianName;
+
+                    // Signture 圖片
+                    cell = worksheet.Cells[23, 4];
+                    if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                    {
+
+                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
+
+                        MemoryStream ms = new MemoryStream(TestBeforePicture);
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                        string imageName = $"{Guid.NewGuid()}.jpg";
+                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                        img.Save(imgPath);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
+                    }
+                }
 
                 // TestBeforePicture 圖片
                 if (model.TestBeforePicture != null && model.TestBeforePicture.Length > 1)
