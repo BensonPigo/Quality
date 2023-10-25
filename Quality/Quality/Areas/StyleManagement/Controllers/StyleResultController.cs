@@ -111,9 +111,9 @@ namespace Quality.Areas.StyleManagement.Controllers
             model.BulkFGT = model.BulkFGT == null ? new List<StyleResult_BulkFGT>() : model.BulkFGT;
             model.PoList = model.PoList == null ? new List<StyleResult_PoList>() : model.PoList;
 
-            if (!string.IsNullOrEmpty(model.MsgScript))
+            if (!string.IsNullOrEmpty(Req.OrderTypeSerialKey) && !string.IsNullOrEmpty(model.SampleStage))
             {
-                model.MsgScript = $@"msg.WithInfo(""This is {model.MsgScript.Replace("\r\n", "<br />")}."");";
+                model.MsgScript = $@"msg.WithInfo(""The sample stage of brand is {model.SampleStage}."");";
             }
 
             return View("Index", model);
