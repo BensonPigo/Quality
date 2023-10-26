@@ -265,9 +265,19 @@ UPDATE TPeelStrengthTest
       ,MachineReport = @MachineReport
 WHERE ReportNo = @ReportNo
 ;
-UPDATE PMSFile.dbo.TPeelStrengthTest
-SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture
-WHERE ReportNo = @ReportNo
+if exists(select 1 from PMSFile.dbo.TPeelStrengthTest WHERE ReportNo = @ReportNo)
+begin
+    UPDATE PMSFile.dbo.TPeelStrengthTest
+    SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture
+    WHERE ReportNo = @ReportNo
+end
+else
+begin
+    INSERT INTO PMSFile.dbo.TPeelStrengthTest
+        ( ReportNo ,TestAfterPicture ,TestBeforePicture )
+    VALUES
+        ( @ReportNo ,@TestAfterPicture ,@TestBeforePicture )
+end
 ";
 
             return ExecuteNonQuery(CommandType.Text, mainSqlCmd.ToString(), objParameter);

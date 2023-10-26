@@ -279,9 +279,19 @@ UPDATE WickingHeightTest
       ,FabricDescription = @FabricDescription
 WHERE ReportNo = @ReportNo
 ;
-UPDATE SciPMSFile_WickingHeightTest
-SET TestWeftPicture = @TestWeftPicture , TestWarpPicture=@TestWarpPicture
-WHERE ReportNo = @ReportNo
+if exists(select 1 from WickingHeightTest WHERE ReportNo = @ReportNo)
+begin
+    UPDATE WickingHeightTest
+    SET TestWeftPicture = @TestWeftPicture , TestWarpPicture=@TestWarpPicture
+    WHERE ReportNo = @ReportNo
+end
+else
+begin
+    INSERT INTO WickingHeightTest
+        ( ReportNo ,TestWarpPicture ,TestWeftPicture)
+    VALUES
+        ( @ReportNo ,@TestWarpPicture ,@TestWeftPicture)
+end
 ";
 
             return ExecuteNonQuery(CommandType.Text, mainSqlCmd.ToString(), objParameter);

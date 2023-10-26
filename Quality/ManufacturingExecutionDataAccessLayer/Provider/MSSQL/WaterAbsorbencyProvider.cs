@@ -273,9 +273,19 @@ UPDATE WaterAbsorbencyTest
       ,FabricDescription = @FabricDescription
 WHERE ReportNo = @ReportNo
 ;
-UPDATE SciPMSFile_WaterAbsorbencyTest
-SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture, TestBeforeWashPicture=@TestBeforeWashPicture
-WHERE ReportNo = @ReportNo
+if exists(select 1 from PMSFile.dbo.WaterAbsorbencyTest WHERE ReportNo = @ReportNo)
+begin
+    UPDATE PMSFile.dbo.WaterAbsorbencyTest
+    SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture , TestBeforeWashPicture=@TestBeforeWashPicture
+    WHERE ReportNo = @ReportNo
+end
+else
+begin
+    INSERT INTO PMSFile.dbo.WaterAbsorbencyTest
+        ( ReportNo ,TestAfterPicture ,TestBeforePicture ,TestBeforeWashPicture)
+    VALUES
+        ( @ReportNo ,@TestAfterPicture ,@TestBeforePicture ,@TestBeforeWashPicture)
+end
 ";
 
             return ExecuteNonQuery(CommandType.Text, mainSqlCmd.ToString(), objParameter);

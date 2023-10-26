@@ -330,10 +330,19 @@ UPDATE EvaporationRateTest
       ,AfterAverageRate = @AfterAverageRate
 WHERE ReportNo = @ReportNo
 ;
-UPDATE PMSFile.dbo.EvaporationRateTest
-SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture
-WHERE ReportNo = @ReportNo
-
+if exists(select 1 from PMSFile.dbo.EvaporationRateTest WHERE ReportNo = @ReportNo)
+begin
+    UPDATE PMSFile.dbo.EvaporationRateTest
+    SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture
+    WHERE ReportNo = @ReportNo
+end
+else
+begin
+    INSERT INTO PMSFile.dbo.EvaporationRateTest
+        ( ReportNo ,TestAfterPicture ,TestBeforePicture)
+    VALUES
+        ( @ReportNo ,@TestAfterPicture ,@TestBeforePicture)
+end
 ";
 
             return ExecuteNonQuery(CommandType.Text, mainSqlCmd.ToString(), objParameter);

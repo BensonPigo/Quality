@@ -268,10 +268,19 @@ UPDATE HydrostaticPressureWaterproofTest
       ,FabricDescription = @FabricDescription
 WHERE ReportNo = @ReportNo
 ;
-UPDATE PMSFile.dbo.HydrostaticPressureWaterproofTest
-SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture
-WHERE ReportNo = @ReportNo
-
+if exists(select 1 from PMSFile.dbo.HydrostaticPressureWaterproofTest WHERE ReportNo = @ReportNo)
+begin
+    UPDATE PMSFile.dbo.HydrostaticPressureWaterproofTest
+    SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture
+    WHERE ReportNo = @ReportNo
+end
+else
+begin
+    INSERT INTO PMSFile.dbo.HydrostaticPressureWaterproofTest
+        ( ReportNo ,TestAfterPicture ,TestBeforePicture)
+    VALUES
+        ( @ReportNo ,@TestAfterPicture ,@TestBeforePicture)
+end
 ";
 
             return ExecuteNonQuery(CommandType.Text, mainSqlCmd.ToString(), objParameter);
