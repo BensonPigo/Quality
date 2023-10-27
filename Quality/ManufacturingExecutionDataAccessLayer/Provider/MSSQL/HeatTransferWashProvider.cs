@@ -590,9 +590,9 @@ AND pgl.Annotation <> ''
 select Technician = ISNULL(mp.Name,pp.Name)
 	   ,TechnicianSignture = t.Signature
 from HeatTransferWash a
-left join Pass1 mp on mp.ID = a.EditName 
-left join MainServer.Production.dbo.Pass1 pp on pp.ID = a.EditName 
-left join MainServer.Production.dbo.Technician t on t.ID = a.EditName 
+left join Pass1 mp on mp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Pass1 pp on pp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Technician t on t.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
 where a.ReportNo = @ReportNo
 ;
 

@@ -111,6 +111,24 @@ where p.ReportNo = @ReportNo
             return res.Any() ? res.FirstOrDefault() : new PullingTest_Result();
         }
 
+        public DataTable GetReportTechnician(string ReportNo)
+        {
+            SQLParameterCollection paras = new SQLParameterCollection();
+            paras.Add("@ReportNo", ReportNo);
+
+            string sqlCmd = $@"
+select Technician = ISNULL(mp.Name,pp.Name)
+	   ,TechnicianSignture = t.Signature
+from PullingTest a
+left join Pass1 mp on mp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Pass1 pp on pp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Technician t on t.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+where a.ReportNo = @ReportNo
+;
+
+";
+            return ExecuteDataTable(CommandType.Text, sqlCmd, paras);
+        }
         public PullingTest_Result CheckSP(string POID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
