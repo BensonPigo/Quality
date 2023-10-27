@@ -279,15 +279,15 @@ UPDATE WickingHeightTest
       ,FabricDescription = @FabricDescription
 WHERE ReportNo = @ReportNo
 ;
-if exists(select 1 from WickingHeightTest WHERE ReportNo = @ReportNo)
+if exists(select 1 from PMSFile.dbo.WickingHeightTest WHERE ReportNo = @ReportNo)
 begin
-    UPDATE WickingHeightTest
+    UPDATE PMSFile.dbo.WickingHeightTest
     SET TestWeftPicture = @TestWeftPicture , TestWarpPicture=@TestWarpPicture
     WHERE ReportNo = @ReportNo
 end
 else
 begin
-    INSERT INTO WickingHeightTest
+    INSERT INTO PMSFile.dbo.WickingHeightTest
         ( ReportNo ,TestWarpPicture ,TestWeftPicture)
     VALUES
         ( @ReportNo ,@TestWarpPicture ,@TestWeftPicture)
