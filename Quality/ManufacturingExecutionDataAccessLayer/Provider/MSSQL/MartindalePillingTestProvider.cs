@@ -304,9 +304,19 @@ UPDATE MartindalePillingTest
       ,TestStandard = @TestStandard
 WHERE ReportNo = @ReportNo
 ;
-UPDATE PMSFile.dbo.MartindalePillingTest
-SET TestBeforePicture=@TestBeforePicture ,Test500AfterPicture=@Test500AfterPicture ,Test2000AfterPicture=@Test2000AfterPicture
-WHERE ReportNo = @ReportNo
+if exists(select 1 from PMSFile.dbo.MartindalePillingTest WHERE ReportNo = @ReportNo)
+begin
+    UPDATE PMSFile.dbo.MartindalePillingTest
+    SET TestBeforePicture = @TestBeforePicture , Test500AfterPicture=@Test500AfterPicture , Test2000AfterPicture=@Test2000AfterPicture
+    WHERE ReportNo = @ReportNo
+end
+else
+begin
+    INSERT INTO PMSFile.dbo.MartindalePillingTest
+        ( ReportNo ,TestBeforePicture ,Test500AfterPicture ,Test2000AfterPicture)
+    VALUES
+        ( @ReportNo ,@TestAfterPicture ,@Test500AfterPicture ,@Test2000AfterPicture)
+end
 ";
 
             return ExecuteNonQuery(CommandType.Text, mainSqlCmd.ToString(), objParameter);

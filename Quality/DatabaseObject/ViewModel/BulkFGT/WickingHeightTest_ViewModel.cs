@@ -124,9 +124,9 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public long Ukey { get; set; }
         public string ReportNo { get; set; }
         public string EvaluationType { get; set; }
-        public decimal? WarpAverage { get; set; }
+        public decimal WarpAverage { get; set; }
         public string WarpResult { get; set; }
-        public decimal? WeftAverage { get; set; }
+        public decimal WeftAverage { get; set; }
         public string WeftResult { get; set; }
         public string Remark { get; set; }
         public string EditName { get; set; }

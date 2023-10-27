@@ -279,9 +279,19 @@ UPDATE PhenolicYellowTest
       ,Time = @Time
 WHERE ReportNo = @ReportNo
 ;
-UPDATE SciPMSFile_PhenolicYellowTest
-SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture
-WHERE ReportNo = @ReportNo
+if exists(select 1 from PMSFile.dbo.PhenolicYellowTest WHERE ReportNo = @ReportNo)
+begin
+    UPDATE PMSFile.dbo.PhenolicYellowTest
+    SET TestBeforePicture = @TestBeforePicture , TestAfterPicture=@TestAfterPicture
+    WHERE ReportNo = @ReportNo
+end
+else
+begin
+    INSERT INTO PMSFile.dbo.PhenolicYellowTest
+        ( ReportNo ,TestBeforePicture ,TestAfterPicture )
+    VALUES
+        ( @ReportNo ,@TestBeforePicture ,@TestAfterPicture )
+end
 ";
 
             return ExecuteNonQuery(CommandType.Text, mainSqlCmd.ToString(), objParameter);

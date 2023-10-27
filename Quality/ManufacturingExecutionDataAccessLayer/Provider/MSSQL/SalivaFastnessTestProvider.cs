@@ -302,9 +302,19 @@ UPDATE SalivaFastnessTest
       ,Time = @Time
 WHERE ReportNo = @ReportNo
 ;
-UPDATE SciPMSFile_SalivaFastnessTest
-SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture
-WHERE ReportNo = @ReportNo
+if exists(select 1 from PMSFile.dbo.SalivaFastnessTest WHERE ReportNo = @ReportNo)
+begin
+    UPDATE PMSFile.dbo.SalivaFastnessTest
+    SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture
+    WHERE ReportNo = @ReportNo
+end
+else
+begin
+    INSERT INTO PMSFile.dbo.SalivaFastnessTest
+        ( ReportNo ,TestAfterPicture ,TestBeforePicture )
+    VALUES
+        ( @ReportNo ,@TestAfterPicture ,@TestBeforePicture )
+end
 ";
 
             return ExecuteNonQuery(CommandType.Text, mainSqlCmd.ToString(), objParameter);
