@@ -324,10 +324,19 @@ UPDATE StickerTest
       ,Humidity = @Humidity
 WHERE ReportNo = @ReportNo
 ;
-UPDATE PMSFile.dbo.StickerTest
-SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture
-WHERE ReportNo = @ReportNo
-
+if exists(select 1 from PMSFile.dbo.StickerTest WHERE ReportNo = @ReportNo)
+begin
+    UPDATE PMSFile.dbo.StickerTest
+    SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture
+    WHERE ReportNo = @ReportNo
+end
+else
+begin
+    INSERT INTO PMSFile.dbo.StickerTest
+        ( ReportNo ,TestAfterPicture ,TestBeforePicture )
+    VALUES
+        ( @ReportNo ,@TestAfterPicture ,@TestBeforePicture )
+end
 ";
 
             return ExecuteNonQuery(CommandType.Text, mainSqlCmd.ToString(), objParameter);
