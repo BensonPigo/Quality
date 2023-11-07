@@ -373,47 +373,40 @@ VALUES(
             modifyCol += $@"        ,Time = @Time " + Environment.NewLine;
             objParameter.Add("@Time", DbType.Int32, Req.Time);
 
-            if (!string.IsNullOrEmpty(Req.FabricRefno))
-            {
-                modifyCol += $@"        ,FabricRefno = @FabricRefno " + Environment.NewLine;
-                objParameter.Add("@FabricRefno", DbType.String, Req.FabricRefno ?? "");
-            }
+            //FabricRefno
+            modifyCol += $@"        ,FabricRefno = @FabricRefno " + Environment.NewLine;
+            objParameter.Add("@FabricRefno", DbType.String, Req.FabricRefno ?? "");
 
-            if (!string.IsNullOrEmpty(Req.AccRefno))
-            {
-                modifyCol += $@"        ,AccRefno = @AccRefno " + Environment.NewLine;
-                objParameter.Add("@AccRefno", DbType.String, Req.AccRefno ?? "");
-            }
-            if (!string.IsNullOrEmpty(Req.SnapOperator))
-            {
-                modifyCol += $@"        ,SnapOperator = @SnapOperator " + Environment.NewLine;
-                objParameter.Add("@SnapOperator", DbType.String, Req.SnapOperator ?? "");
-            }
-            if (!string.IsNullOrEmpty(Req.Remark))
-            {
-                modifyCol += $@"        ,Remark = @Remark " + Environment.NewLine;
-                objParameter.Add("@Remark", DbType.String, Req.Remark ?? "");
-            }
+            //AccRefno
+            modifyCol += $@"        ,AccRefno = @AccRefno " + Environment.NewLine;
+            objParameter.Add("@AccRefno", DbType.String, Req.AccRefno ?? "");
+
+            //SnapOperator
+            modifyCol += $@"        ,SnapOperator = @SnapOperator " + Environment.NewLine;
+            objParameter.Add("@SnapOperator", DbType.String, Req.SnapOperator ?? "");
+
+            //Remark
+            modifyCol += $@"        ,Remark = @Remark " + Environment.NewLine;
+            objParameter.Add("@Remark", DbType.String, Req.Remark ?? "");
+
             if (!string.IsNullOrEmpty(Req.EditName))
             {
                 modifyCol += $@"        ,EditName = @EditName " + Environment.NewLine;
                 objParameter.Add("@EditName", DbType.String, Req.EditName ?? "");
             }
-            if (!string.IsNullOrEmpty(Req.Gender))
-            {
-                modifyCol += $@"        ,Gender = @Gender " + Environment.NewLine;
-                objParameter.Add("@Gender", DbType.String, Req.Gender ?? "");
-            }
-            if (!string.IsNullOrEmpty(Req.Inspector))
-            {
-                modifyCol += $@"        ,Inspector = @Inspector " + Environment.NewLine;
-                objParameter.Add("@Inspector", DbType.String, Req.Inspector ?? "");
-            }
-            if (!string.IsNullOrEmpty(Req.StyleType))
-            {
-                modifyCol += $@"        ,StyleType = @StyleType " + Environment.NewLine;
-                objParameter.Add("@StyleType", DbType.String, Req.StyleType ?? "");
-            }
+
+            //Gender
+            modifyCol += $@"        ,Gender = @Gender " + Environment.NewLine;
+            objParameter.Add("@Gender", DbType.String, Req.Gender ?? "");
+
+            //Inspector
+            modifyCol += $@"        ,Inspector = @Inspector " + Environment.NewLine;
+            objParameter.Add("@Inspector", DbType.String, Req.Inspector ?? "");
+
+            // StyleType
+            modifyCol += $@"        ,StyleType = @StyleType " + Environment.NewLine;
+            objParameter.Add("@StyleType", DbType.String, Req.StyleType ?? "");
+
             modifyPicCol += $@"        ,TestBeforePicture = @TestBeforePicture " + Environment.NewLine;
             modifyPicCol += $@"        ,TestAfterPicture = @TestAfterPicture " + Environment.NewLine;
             if (Req.TestBeforePicture != null)
