@@ -586,56 +586,6 @@
                     StyleTypeChangeState($("#Detail_BrandID").val(), $("#Detail_PullForceUnit").val());
                 }
                 
-                @*if ($(this).val() == '') {
-                    $("#Detail_Result").val('');
-                    $("#ResultText").val('');
-                    $("#Detail_TestItem").val('');
-                    $("#Detail_PullForceUnit").val('');
-                    $("#PullForceUnitText").val('');
-                    $(`#Detail_PullForce_Standard`).val('');
-                    $(`#Detail_Time_Standard`).val('');
-                    return;
-                }
-
-                $.ajax({
-                    url: "@Url.Action("BrandList","PublicWondow",new{Area=""})",
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
-                    async: true,
-                    success: function (data) {
-                        if (data.length == 0) {
-                            $("#" + name +"BrandID").val('');
-                            msg.WithError('Brand Not Found');
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
-                    }
-                });
-
-
-                $.ajax({
-                    url: "@Url.Action("GetPullUnit")",
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ BrandID: $(this).val() }),
-                    async: true,
-                    success: function (data) {
-                        if (data.length != 0) {
-
-                            $("#Detail_PullForceUnit").val(data.PullForceUnit);
-                            $("#PullForceUnitText").val(data.PullForceUnit);
-                        }
-                        else {
-                            $("#Detail_PullForceUnit").val('');
-                            $("#PullForceUnitText").val('');
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
-                    }
-                });*@
             });
 
             $("#" + name + "SeasonID").blur(function () {
@@ -874,8 +824,6 @@
                         $("#Detail_BrandID").val(res.BrandID);
                         $("#Detail_StyleID").val(res.StyleID);
                         $("#Detail_Article").val(res.Article);
-                        //$("#Detail_PullForceUnit").val(res.PullForceUnit);
-                        //$("#PullForceUnitText").val(res.PullForceUnit);
 
                     }
                     else if (res.POID == '' || res.POID == null) {
@@ -884,8 +832,6 @@
                         $("#Detail_BrandID").val('');
                         $("#Detail_StyleID").val('');
                         $("#Detail_Article").val('');
-                        //$("#Detail_PullForceUnit").val('');
-                        //$("#PullForceUnitText").val('');
 
                         msg.WithError('Cannot found SP# ' + poid + '.');
                     }
@@ -895,8 +841,6 @@
                         $("#Detail_BrandID").val('');
                         $("#Detail_StyleID").val('');
                         $("#Detail_Article").val('');
-                        //$("#Detail_PullForceUnit").val('');
-                        //$("#PullForceUnitText").val('');
 
                         msg.WithError(res.Message);
                     }
@@ -914,8 +858,6 @@
             $("#Detail_Result").val('');
             $("#ResultText").val('');
             $("#Detail_TestItem").val('');
-            //$("#Detail_PullForceUnit").val('');
-            //$("#PullForceUnitText").val('');
             $(`#Detail_PullForce_Standard`).val('');
             $(`#Detail_Time_Standard`).val('');
             return;
@@ -937,34 +879,6 @@
                 console.log(xhr.responseText);
             }
         });
-
-
-        @*$.ajax({
-            url: "@Url.Action("GetPullUnit")",
-            type: 'POST',
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ BrandID: $(BrandObject).val() }),
-            async: true,
-            success: function (data) {
-                if (data.length != 0) {
-
-                    $("#Detail_PullForceUnit").val(data.PullForceUnit);
-                    $("#PullForceUnitText").val(data.PullForceUnit);
-
-                    if (data.PullForceUnit == null || data.PullForceUnit == '') {
-                        msg.WithInfo("Pull Force Unit not found.");
-                    }
-                }
-                else {
-                    $("#Detail_PullForceUnit").val('');
-                    $("#PullForceUnitText").val('');
-                    msg.WithInfo("Pull Force Unit not found.");
-                }
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                console.log(xhr.responseText);
-            }
-        });*@
     }
 
     function ReloadDetail(obj) {
@@ -1044,7 +958,7 @@
     }
 
     function PullForceUnitChangeState(itemVal) {
-        if (itemVal == "U.ARMOUR") {
+        if (itemVal == "U.ARMOUR" || itemVal == "DOME") {
             $('#Detail_PullForceUnit').removeAttr("disabled").removeAttr("readonly");
         }
         else {
@@ -1053,7 +967,7 @@
     }
 
     function StyleTypeChangeState(brand, unit) {
-        if (brand == "U.ARMOUR" && unit == "IB") {
+        if ((brand == "U.ARMOUR" || brand == "DOME") && unit == "IB") {
             $("#Detail_StyleType option[value='']").remove();
             $('#Detail_StyleType').val('Adults').removeAttr("disabled").removeAttr("readonly");
         }
