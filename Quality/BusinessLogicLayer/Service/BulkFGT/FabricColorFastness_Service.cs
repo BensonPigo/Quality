@@ -487,15 +487,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Excel.Range cellBefore = worksheet.Cells[nowRow + 23, 1];
                 if (dataList[0].TestBeforePicture != null)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestBeforePicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 5, cellBefore.Width - 10, cellBefore.Height - 10);
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestBeforePicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);                    
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left , cellBefore.Top , 200, 300);
                 }
 
                 Excel.Range cellAfter = worksheet.Cells[nowRow + 23, 5];
                 if (dataList[0].TestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestAfterPicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, cellAfter.Width - 10, cellAfter.Height - 10);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left , cellAfter.Top , 200, 300);
                 }
 
                 nowRow = nowRow + 42;
