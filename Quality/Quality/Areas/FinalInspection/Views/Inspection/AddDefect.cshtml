@@ -108,11 +108,12 @@
                         , items[i].Operator
                         , items[i].OperatorText
                         , items[i].AreaCode
+                        , items[i].Remark
                     ]);
                 }
             }
 
-            adata.push([null, result[keyCount], 'Operation', 'Operator', 'AreaCode', temp])
+            adata.push([null, result[keyCount], 'Operation', 'Operator', 'AreaCode', 'Remark', temp])
             keyCount++
         }
 
@@ -125,9 +126,10 @@
                 columnDefs: [
                     { targets: 0, width: "2%", orderable: false },
                     { targets: 1, width: "38%", orderable: false },
-                    { targets: 2, width: "20%", orderable: false },
-                    { targets: 3, width: "20%", orderable: false },
-                    { targets: 4, width: "15%", orderable: false },
+                    { targets: 2, width: "13%", orderable: false },
+                    { targets: 3, width: "13%", orderable: false },
+                    { targets: 4, width: "13%", orderable: false },
+                    { targets: 5, width: "13%", orderable: false },
                 ],
                 columns: [
                     {
@@ -182,29 +184,35 @@
                 var defectCode = $(this).val();
                 var foundGroup = [];
                 if (defectCode != '') {
-                    adata.forEach(function (group1) {
+                    var domIdx = 0;
+                    adata.some(function (group1) {
                         var isFoundit = false;
-                        group1[5].forEach(function (group2) {
+                        group1[6].some(function (group2) {
                             var isExists = group2[1].includes(defectCode);
                             if (isExists) {
                                 isFoundit = true;
+                                domIdx = group2[4];
+                                return true;
                             }
                         });
 
                         if (isFoundit) {
                             foundGroup.push(group1[1].split('-')[0]);
+                            return true;
                         }
                     });
 
-                    foundGroup.forEach(function (value, index) {
+                    foundGroup.some(function (value, index) {
                         $(`#CheckListTable_${value}`).click();
+                        $(`input[name='addDefct.ListFinalInspectionDefectItem[${domIdx}].Qty`).focus();
+                        return true;
                     });
                 }
             });
         });
 
         function formatChildTable(dataList) {
-            var list = dataList[5];
+            var list = dataList[6];
             var sTr = "";
 
             $(list).each(function (index, value) {
@@ -214,6 +222,7 @@
                 var Operator = value[8];
                 var OperatorText = value[9];
                 var AreaCode = value[10];
+                var Remark = value[11];
 
                 sTr = sTr + "<tr><td style='width:30%'>" + value[1] + "</td>";
                 sTr = sTr + `<td style='vertical-align: middle'>
@@ -230,6 +239,9 @@
     </td>
     <td>
         <input type='text' style='width:100%' onclick="OpenAreaCode('${RowIndex}')" onchange='OperationChange("${value[6]}",${index},this)' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].AreaCode' readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].AreaCode' value='${AreaCode}'>
+    </td>
+    <td>
+        <input type='text' style='width:100%'  id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Remark' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Remark' value='${Remark}'>
     </td>
     </tr>`;
 
@@ -290,17 +302,9 @@
                     spliter = '';
                 }
                 strAreaCode += this.AreaCode + spliter;
-                //strOperatorText += this.Text + spliter;
-                //strOperator += this.Value + spliter;
             });
 
             $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].AreaCode']`).val(strAreaCode);
-            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].OperatorText']`).val(strOperatorText);
-            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operator']`).val(strOperator);
-
-            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operation']`).change();
-            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].OperatorText']`).change();
-            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operator']`).change();
         }
 
         // Qty改變時，把值寫回DataTable的Datasource

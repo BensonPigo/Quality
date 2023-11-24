@@ -34,7 +34,7 @@ namespace BusinessLogicLayer.Service
                     _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
 
                 others.FinalInspectionID = finalInspectionID;
-                others.CFA = finalInspection.CFA;
+                others.Clerk = finalInspection.Clerk;
                 others.ProductionStatus = finalInspection.ProductionStatus;
 
                 // ISP20211205l調整，事先帶出最後結果
@@ -120,7 +120,8 @@ namespace BusinessLogicLayer.Service
                 }
 
                 finalInspection.OthersRemark = others.OthersRemark;
-                finalInspection.CFA = UserID;
+                finalInspection.CFA = others.CFA;
+                finalInspection.Clerk = UserID;
                 finalInspection.ShipmentStatus = others.ShipmentStatus;
                 finalInspection.InspectionResult = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "Fail" : "Pass";
 

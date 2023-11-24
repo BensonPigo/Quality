@@ -51,6 +51,7 @@ namespace BusinessLogicLayer.Service
                 result.Team = finalInspection.Team;
                 result.InspectionTimes = finalInspection.InspectionTimes.ToString();
                 result.BrandID = finalInspection.BrandID;
+                result.ReInspection = finalInspection.ReInspection;
 
                 result.AcceptableQualityLevelsUkey = finalInspection.AcceptableQualityLevelsUkey.ToString();
                 result.AQLPlan = f.GetAQLPlanDesc(finalInspection.AcceptableQualityLevelsUkey);
@@ -287,6 +288,17 @@ namespace BusinessLogicLayer.Service
                             else
                             {
                                 AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "1" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
+                            }
+                            break;
+                        case "1.5 Level II":
+                            maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
+                            if (totalAvailableQty > maxStart)
+                            {
+                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "2").OrderByDescending(o => o.LotSize_Start);
+                            }
+                            else
+                            {
+                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "2" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
                             }
                             break;
                         case "2.5 Level I":

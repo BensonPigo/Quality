@@ -9,6 +9,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
     {
         public string FinalInspectionID { get; set; }
         public string CFA { get; set; }
+        public string Clerk { get; set; }
         public decimal? ProductionStatus { get; set; }
         public string InspectionResult { get; set; }
         public string ShipmentStatus { get; set; }

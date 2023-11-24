@@ -413,6 +413,38 @@ Where 1=1
             return ExecuteList<Window_Pass1>(CommandType.Text, SbSql.ToString(), paras);
         }
 
+        public IList<Window_Pass1> Get_FinalInspectionCFA(string ID, bool IsExact)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            SbSql.Append($@"
+select　DISTINCT   p.ID,
+        [Name] = IIF(isnull(pp1.Name,'') = '', mp1.name,pp1.name) 
+from ManufacturingExecution.dbo.Quality_Pass1 p WITH(NOLOCK)
+left join ManufacturingExecution.dbo.Pass1 mp1 WITH(NOLOCK) ON p.ID= mp1.ID
+left join MainServer.Production.dbo.Pass1 pp1 WITH(NOLOCK) on p.ID = pp1.id
+WHERE p.ID != 'SCIMIS'
+
+");
+
+            if (!string.IsNullOrEmpty(ID))
+            {
+                if (IsExact)
+                {
+                    SbSql.Append($@"AND p.ID = @ID ");
+                    paras.Add("@ID", DbType.String, ID);
+                }
+                else
+                {
+                    SbSql.Append($@"AND p.ID LIKE @ID ");
+                    paras.Add("@ID", DbType.String, ID + "%");
+                }
+            }
+
+            return ExecuteList<Window_Pass1>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
         public IList<Window_LocalSupp> Get_LocalSupp(string SuppID, string Name, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -1108,14 +1140,14 @@ drop table #base
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
 
-            string where = string.IsNullOrEmpty(AreaCode) ? string.Empty : $@" AND AreaCode LIKE @AreaCode";
+            string where = string.IsNullOrEmpty(AreaCode) ? string.Empty : $@" AND Description LIKE @AreaCode";
 
-            paras.Add("@FinalInspectionID ", DbType.String, FinalInspectionID);
+            //paras.Add("@FinalInspectionID ", DbType.String, FinalInspectionID);
             paras.Add("@AreaCode", DbType.String, AreaCode + "%");
 
             //台北
             SbSql.Append($@"
-select distinct AreaCode 
+/*select distinct AreaCode 
 from Inspection i
 inner join Inspection_Detail id on id.ID = i.ID
 where OrderId IN (
@@ -1123,9 +1155,12 @@ where OrderId IN (
 	from FinalInspection a
 	inner join FinalInspection_Order b on a.ID=b.ID
 	where a.ID = @FinalInspectionID
-)
+)*/
+SELECT AreaCode = ID , Description 
+FROM MainServer.Production.dbo.CfaArea WITH(NOLOCK)
+where 1=1
 {where}
-order by AreaCode
+order by ID
 ");
 
             return ExecuteList<Window_AreaCode>(CommandType.Text, SbSql.ToString(), paras);

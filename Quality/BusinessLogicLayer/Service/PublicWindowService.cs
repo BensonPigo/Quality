@@ -187,6 +187,26 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public List<Window_Pass1> Get_FinalInspectionCFA(string ID, bool IsExact)
+        {
+            List<Window_Pass1> result = new List<Window_Pass1>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_FinalInspectionCFA(ID, IsExact).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
         public List<Window_LocalSupp> Get_LocalSupp(string SuppID , string Name, bool IsExact)
         {
             List<Window_LocalSupp> result = new List<Window_LocalSupp>();

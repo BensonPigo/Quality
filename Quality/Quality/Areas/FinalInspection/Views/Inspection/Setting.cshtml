@@ -518,6 +518,9 @@
                 var idx = $(this).index();
                 var title = $(this).text();
 
+                if (idx == 0) {
+                    $(this).html('<input id="CTNSelectAll" type="checkbox" style="width: 1.4em; vertical-align: middle;" /> Select All');
+                }
                 if (idx == 2) {
                     $(this).html('<input id="CTNSearch" type="text" placeholder="Search ' + title + '" />');
                 }
@@ -750,10 +753,13 @@
                 var aql = $(this).val()
                 var TotalAvailableQty = $("#totalAvailableQty").text();
 
-                if (TotalAvailableQty == 0 && $("#FinalInspectionID".val() != '')) {
+                if (TotalAvailableQty == 0 && $("#FinalInspectionID").val() != '') {
                     msg.WithError("Total Available Qty cann't be 0.");
                     $(this).val('');
                     return;
+                }
+                if (TotalAvailableQty == '') {
+                    TotalAvailableQty = 0;
                 }
 
                 // 若不是100% Inspection，則AJAX回去取資料
@@ -858,7 +864,7 @@
                 "autoWidth": false,
                 "info": false,
                 destroy: true, // 設定這個才能重新初始化Datatables
-                //"filter": false,
+                //"filter": true,
                 "paging": false,
                 "scrollY": "40vh",
                 "scrollCollapse": true,
@@ -866,24 +872,70 @@
                     "search": sp+'-'
                 },
                 columnDefs: [
-                    { targets: 0, width: "30%" },
-                    { targets: 1, width: "30%" },
+                    { targets: 0, width: "30%", orderable: false },
+                    { targets: 1, width: "30%", orderable: false },
                     { targets: 2, width: "30%" , orderable: false,  },
                     { targets: 3, visible: false },
                 ],
                 initComplete: function () {
                     this.api().columns().every(function () {
 
-                        // 只有第一個欄位要有選單
+                        // 針對第一個header裡面的東西設定
+                        if (this.data().length > 0 && this.index() == 0) {
+
+                            var that = this;
+                            $('input', this.header()).on('change', function () {
+
+                                // 取得全選
+                                let checkAll = $(this).prop('checked');
+
+
+                                if (checkAll) {
+                                    $('[id^=Carton_Select_]').each(function () {
+                                        $(this).prop('checked', true);
+                                    });
+
+                                }
+                                else {
+
+                                    $('[id^=Carton_Select_]').each(function () {
+                                        $(this).prop('checked', false);
+                                    });
+
+                                }
+                            });
+
+                        }
+
+                        // 針對第三個header裡面的東西設定
                         if (this.data().length > 0 && this.index() == 2) {
 
                             var that = this;
-                            $('input', this.header()).on('keyup change clear', function () {
-                                if (that.search() !== this.value) {
-                                    that
-                                        .search(this.value)
-                                        .draw();
-                                }
+                            $('input', this.header()).on('keyup', function () {
+
+                                // 取得原始字串
+                                let rawVal = this.value.trim();
+                                
+                                let valList = rawVal.split(',');
+                                let newArr = valList.filter(item => item !== "")
+
+                                // 使用正規表達式進行搜尋
+                                let regex = '\\b(' + newArr.join('|') + ')\\b';
+
+                                that
+                                    .search(regex, true,true)
+                                    .draw();
+
+
+                                //$.each(valList, function (idx,val) {
+
+                                //    if (that.search() !== val) {
+                                //        that
+                                //            .search(['1','2'])
+                                //            .draw();
+                                //    }
+                                //})
+
                             });
 
                         }
@@ -1244,6 +1296,10 @@
             var CTNNo = $(self).attr("CTNNo");
             var icChecked = $(self).prop("checked");
             $("input[Type=hidden][ID=SelectCarton_" + Idx + "__Selected]").val(icChecked);
+
+            if (icChecked == false) {
+                $("#CTNSelectAll").prop("checked", false);
+            }
         }
 
         //選擇Seq時，將資料同步到Model的標籤

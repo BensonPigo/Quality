@@ -24,6 +24,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public int? AcceptQty { get; set; }
         public string AQLPlan { get; set; }
         public string AQLPlanNotFinal { get; set; }
+        public bool ReInspection { get; set; }
 
 
         public List<SelectSewing> SelectedSewing { get; set; }

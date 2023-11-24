@@ -722,18 +722,41 @@
                 var newValue = 0;
                 if ($(currentCol).val() != '') {
 
-                    //有分數，例如：1 1/2，把整數位獨立出來+1
+                    //有分數，例如：1 1/2，把分子獨立出來+1
                     if ($(currentCol).val().split(' ').length == 2) {
                         var interg = $(currentCol).val().split(' ')[0];
-                        var float = $(currentCol).val().split(' ')[1];
-                        var tmp = parseInt(interg) + 1;
-                        newValue = tmp + ` ${float}`;
 
+                        var float = $(currentCol).val().split(' ')[1];
+                        var numerator = float.split('/')[0];
+                        var denominator = float.split('/')[1];
+
+                        //var tmp = parseInt(numerator) + 1;
+                        var tmp = CacuFraction(float, '1/16', 'addition');
+                        //newValue = tmp + ` ${float}`;
+                        newValue = interg + ` ${tmp}`;
                     }
                     else {
-                        // 其餘直接轉成整數
-                        oldValue = parseFloat($(currentCol).val());
-                        newValue = oldValue + 1;
+
+                        // 是否為純分數
+                        if ($(currentCol).val().split('/').length == 2) {
+
+                            var tmp = CacuFraction($(currentCol).val(), '1/16', 'addition');
+                            if (tmp == '0/1') {
+                                newValue = 0;
+                            }
+                            else {
+                                newValue = tmp;
+                            }
+                        }
+                        else {
+
+                            var tmp = CacuFraction($(currentCol).val() + '/1', '1/16', 'addition');
+                            newValue = tmp;
+
+                            //// 其餘直接轉成整數
+                            //oldValue = parseFloat($(currentCol).val());
+                            //newValue = oldValue + 1;
+                        }
                     }
 
                 }
@@ -774,21 +797,52 @@
                     if ($(currentCol).val().split(' ').length == 2) {
                         var interg = $(currentCol).val().split(' ')[0];
                         var float = $(currentCol).val().split(' ')[1];
-                        var tmp = parseInt(interg) - 1;
 
-                        // 若整數位<=1，新值直接歸0
-                        if (interg <= 1) {
+
+                        var tmp = CacuFraction(float, '1/16', 'subtraction');
+                        //var tmp = parseInt(interg) - 1;
+
+                        // 整數、分數都是0
+                        if (parseInt(interg) == 0 && tmp == '0/1') {
                             newValue = 0;
                         }
+                        // 整數=0，分數!=0
+                        else if (parseInt(interg) == 0 && tmp != '0/1') {
+                            //newValue = 0;
+                            newValue = tmp;
+                        }
+                        // 整數!=0，分數=0
+                        else if (parseInt(interg) != 0 && tmp == '0/1') {
+                            //newValue = 0;
+                            newValue = parseInt(interg);
+                        }
                         else {
-                            newValue = tmp + ` ${float}`;
+                            //newValue = tmp + ` ${float}`;
+                            newValue = interg + ` ${tmp}`;
                         }
 
                     }
                     else {
-                        // 其餘直接轉成整數
-                        oldValue = parseFloat($(currentCol).val());
-                        newValue = oldValue - 1;
+
+                        // 是否為純分數
+                        if ($(currentCol).val().split('/').length == 2) {
+
+                            var tmp = CacuFraction($(currentCol).val(), '1/16', 'subtraction');
+                            if (tmp == '0/1') {
+                                newValue = 0;
+                            }
+                            else {
+                                newValue = tmp;
+                            }
+                        }
+                        else {
+                            var tmp = CacuFraction($(currentCol).val() + '/1', '1/16', 'subtraction');
+                            newValue = tmp;
+                            // 其餘直接轉成整數
+                            //oldValue = parseFloat($(currentCol).val());
+                            //newValue = oldValue - 1;
+                        }
+
                     }
 
                 }
@@ -831,7 +885,7 @@
                     });
                 }
                 else {
-                    $('#Content').html(generateTable(datas, "Measurement"));
+                    $('#Content').html(generateMeasurementEditTable(datas, "Measurement"));
                     $('#Content').children("table").addClass("table-striped");
                     ChangeColor();
                 }
@@ -919,5 +973,42 @@
             }
         }
     }
+
+    function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+    }
+
+    function lcm(a, b) {
+        return (a * b) / gcd(a, b);
+    }
+
+    function CacuFraction(valA, valB, action) {
+        const [numA, denA] = valA.split('/').map(Number);
+        const [numB, denB] = valB.split('/').map(Number);
+
+        let resultNum, resultDen;
+
+        switch (action) {
+            case 'addition':
+                resultNum = numA * denB + numB * denA;
+                resultDen = denA * denB;
+                break;
+            case 'subtraction':
+                resultNum = numA * denB - numB * denA;
+                resultDen = denA * denB;
+                break;
+            default:
+                throw new Error('Invalid action. Use "addition" or "subtraction".');
+        }
+
+        const commonGCD = gcd(resultNum, resultDen);
+        resultNum /= commonGCD;
+        resultDen /= commonGCD;
+
+        return `${resultNum}/${resultDen}`;
+    }
+
+
+
 
 </script>

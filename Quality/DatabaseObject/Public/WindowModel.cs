@@ -217,6 +217,7 @@ namespace DatabaseObject.Public
     public class Window_AreaCode
     {
         public string AreaCode { get; set; }
+        public string Description { get; set; }
     }
     public class Window_FabricRefNo
     {

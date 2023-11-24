@@ -31,7 +31,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string OperatorText { get; set; }
         public string Operator { get; set; }
         public string AreaCode { get; set; }
-
+        public string Remark { get; set; }        
         public int Qty { get; set; }
         public bool HasImage { get; set; }
 

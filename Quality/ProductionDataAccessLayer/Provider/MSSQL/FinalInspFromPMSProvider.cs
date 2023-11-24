@@ -271,7 +271,7 @@ UNION
 
 select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
 from AcceptableQualityLevels
-where  Junk = 0 and  AQLType in (1.5) and InspectionLevels IN ('1')  and AcceptedQty is not null 
+where  Junk = 0 and  AQLType in (1.5) and InspectionLevels IN ('1','2')  and AcceptedQty is not null 
 AND BrandID='LLL' AND Category = ''
 
 UNION
@@ -387,6 +387,7 @@ select  GarmentDefectTypeID,
         Qty,
         Ukey,
         AreaCode,
+        Remark,
 		Operation = Operation.Operation,
 		Operator = Operation.Operator,
 		OperatorText = Operation.OperatorText
@@ -424,14 +425,15 @@ select  [Ukey] = isnull(fd.Ukey, -1),
         Operation = ISNULL( fd.Operation ,''),
         Operator = ISNULL( fd.Operator ,''),
         OperatorText = ISNULL( fd.OperatorText ,''),
-        AreaCode = ISNULL( fd.AreaCode ,''),
+        Remark = ISNULL( fd.Remark ,''),
 		[RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
 		,HasImage = Cast(
 			IIF(EXISTS(
 				select 1 from SciPMSFile_FinalInspection_DetailImage img 
 				where img.FinalInspection_DetailUkey = isnull(fd.Ukey, -1)
 			),1,0)		
-		as bit)
+		as bit),
+        AreaCode = ISNULL( fd.AreaCode ,'')
     from [MainServer].Production.dbo.GarmentDefectType gdt with (nolock)
     inner join [MainServer].Production.dbo.GarmentDefectCode gdc with (nolock) on gdt.id=gdc.GarmentDefectTypeID
     left join   #FinalInspection_Detail fd on fd.GarmentDefectTypeID = gdt.ID and fd.GarmentDefectCodeID = gdc.ID
