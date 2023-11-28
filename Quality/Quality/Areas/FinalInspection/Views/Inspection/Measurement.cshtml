@@ -254,10 +254,19 @@
 
     $(".to-edit-detail").on("dialogclose", function (event, ui) {
         EditMode = false;
+
+        $("#btnViewEditSave").text('Edit');
+        $("#btnViewEditSave").removeClass('btn-red');
+        $("#btnViewEditSave").addClass('btn-blue');
+        $(".clsMeasurementDel").show();
+        $("#ViewListArticle").removeAttr("disabled");
+        $("#ViewListSize").removeAttr("disabled");
+        $("#ViewListProductType").removeAttr("disabled");
     });
 
 
     function open_View() {
+        ShowLoading();
         $.ajax({
             url: "@Url.Action("OpenView", new { Area = "FinalInspection" })",
             type: 'POST',
@@ -297,12 +306,12 @@
 
                 OpenViewObj = data;
                 ReloadViewData(data, currentArticle, currentSize, currentProductType);
+                NonLoading();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
             }
         });
-
         $(".to-edit-detail").dialog("open");
     }
 
@@ -668,15 +677,6 @@
         var dataList = $(".MeasurementValue");
         var paraList = [];
 
-        //$.each(dataList, function (index, data) {
-
-        //    var d = {
-        //        FinalInspection_MeasurementUkey: parseInt($(data).attr('FinalInspection_MeasurementUkey')),
-        //        ResultSizeSpec: $(data).val(),
-        //    };
-        //    paraList.push(d);
-        //});
-
         for (const data of dataList) {
             var d = {
                 FinalInspection_MeasurementUkey: parseInt($(data).attr('FinalInspection_MeasurementUkey')),
@@ -717,6 +717,83 @@
         });
     }
 
+    function MeasurementValueCheck(obj, unit) {
+
+        var val = $(obj).val();
+
+        if (val == "" || val <= 0) {
+            $(obj).val("");
+            return;
+        }
+
+        // 針對輸入的value進行約分
+        var vi = 0, vd = 0, vm = 0;
+
+        if (val.toString().indexOf(' ') > -1 && val.toString().indexOf('/') > -1 && val.toString().indexOf(".") < 0) {
+            // 分數
+            if (containsInvalidCharacters1(val) || unit == 'CM') {
+                val = 0;
+            }
+            vi = val.substr(0, val.toString().indexOf(' '));
+        }
+        else if (val.toString().indexOf(".") > 0 && val.toString().indexOf(' ') < 0 && val.toString().indexOf('/') < 0) {
+            // 小數
+            if (containsInvalidCharacters2(val) || unit == 'INCH') {
+                val = 0;
+            }
+            vi = val;
+        }
+        else if (val.toString().indexOf('/') > 0 && val.toString().indexOf(".") < 0) {
+            // 分數
+            if (containsInvalidCharacters1(val) || unit == 'CM') {
+                val = 0;
+            }
+        }
+        else if (val.toString().indexOf(".") > 0 && val.toString().indexOf(' ') > 0 && val.toString().indexOf('/') > 0) {
+            val = 0;
+        }
+
+        if (val == "" || val <= 0) {
+            $(obj).val(val);
+            return;
+        }
+
+        if (val.toString().indexOf('/') > -1) {
+            vd = val.substr(val.toString().indexOf(' ') + 1, val.toString().indexOf('/') - 1 - val.toString().indexOf(' '));
+            vm = val.substr(val.toString().indexOf('/') + 1, val.length - 1 - val.toString().indexOf('/'));
+
+            vi = parseInt(vi);
+            vd = parseInt(vd);
+            vm = parseInt(vm);
+
+            // 分子大於分母
+            if (vd > vm && vm > 0) {
+                vi = parseInt(vi + (vd / vm));
+                vd = vd % vm;
+            }
+            else if (vd == vm && vm > 0) {
+                vi = parseInt(vi + (vd / vm));
+                vd = 0;
+                vvm = 0;
+            }
+
+            if (vi > 0 && vd > 0 && vm > 0) {
+                val = vi + ' ' + vd + '/' + vm;
+            }
+            else {
+                val = vi;
+            }
+            $(obj).val(val);
+        }
+        else {
+            vd = 1;
+            vm = 1;
+            vi = vi - 1;
+        }
+    }
+
+    var listMeasurementItem = @Html.Raw(Json.Encode(Model.ListMeasurementItem));
+
     function ReloadData() {
 
         var dropArticle = document.getElementById("dropArticle");
@@ -744,10 +821,9 @@
         }
 
 
-        var items = @Html.Raw(Json.Encode(Model.ListMeasurementItem));
         var KeyIdx = 0;
         var relsizeUnit = SizeUnit;
-        $.each(items, function (index, value) {
+        $.each(listMeasurementItem, function (index, value) {
             const rules = /^.*[A-Za-z]+.*$/;
             var bol = rules.test(value.SizeSpec);
             if (bol) {
@@ -764,7 +840,7 @@
             }
         });
 
-        $.each(items, function (index, value) {
+        $.each(listMeasurementItem, function (index, value) {
             if (value.Size == dropSize.value) {
 
                 var readonly = "";
@@ -819,19 +895,35 @@
             // 針對輸入的value進行約分
             var vi = 0, vd = 0, vm = 0;
 
-            if (val.toString().indexOf(' ') > -1) {
+            if (val.toString().indexOf(' ') > -1 && val.toString().indexOf('/') > -1 && val.toString().indexOf(".") < 0) {
+                // 分數
+                if (containsInvalidCharacters1(val) || unit == 'CM') {
+                    val = 0;
+                }
                 vi = val.substr(0, val.toString().indexOf(' '));
             }
-            else if (val.toString().indexOf(" ") < 0 && val.toString().indexOf('/') < 0) {
+            else if (val.toString().indexOf(".") > 0 && val.toString().indexOf(' ') < 0 && val.toString().indexOf('/') < 0) {
+                // 小數
+                if (containsInvalidCharacters2(val) || unit == 'INCH') {
+                    val = 0;
+                }
                 vi = val;
             }
+            else if (val.toString().indexOf('/') > 0 && val.toString().indexOf(".") < 0) {
+                // 分數
+                if (containsInvalidCharacters1(val) || unit == 'CM') {
+                    val = 0;
+                }
+            }
+            else if (val.toString().indexOf(".") > 0 && val.toString().indexOf(' ') > 0 && val.toString().indexOf('/') > 0) {
+                val = 0;
+            }
 
-            if (val.toString().indexOf(" ") > -1) {
-                intVal = val.substr(0, val.toString().indexOf(' '));
+            if (val == "" || val <= 0) {
+                $(this).val(val);
+                return;
             }
-            else if (val.toString().indexOf(" ") < 0 && val.toString().indexOf('/') < 0) {
-                intVal = val;
-            }
+
             if (val.toString().indexOf('/') > -1) {
                 vd = val.substr(val.toString().indexOf(' ') + 1, val.toString().indexOf('/') - 1 - val.toString().indexOf(' '));
                 vm = val.substr(val.toString().indexOf('/') + 1, val.length - 1 - val.toString().indexOf('/'));
@@ -1107,32 +1199,39 @@
             var toll;
             var val;
             $.each($(this).children(), function () {
-                var tdName = $(this).attr('idx');
+                var targetDOM = this;
+                var tdName = $(targetDOM).attr('idx');
+                var isDatetime = !isNaN(Date.parse(tdName));
+
+                if (isDatetime) {
+                    targetDOM = $(targetDOM).find('input');
+                }
 
                 if (tdName == null) {
                     return false;
                 }
 
                 if (tdName == "Tol(+)") {
-                    tolh = $(this).html();
+                    tolh = $(targetDOM).html();
                 }
 
                 if (tdName == "Tol(-)") {
-                    toll = $(this).html();
+                    toll = $(targetDOM).html();
                 }
 
                 if (isDate(tdName)) {
-                    val = $(this).html();
-                    $(this).css('background-color', 'rgb(234, 234, 113);');
+                    val = $(targetDOM).val();
+                    $(targetDOM).css('background-color', 'rgb(234, 234, 113);');
+                    $(targetDOM).parent().css('background-color', 'rgb(234, 234, 113);');
                 }
 
                 if (tdName.indexOf('_aa') > -1) {
-                    standard = $(this).html();
-                    $(this).css('background-color', 'rgb(211, 211, 211);');
+                    standard = $(targetDOM).html();
+                    $(targetDOM).css('background-color', 'rgb(211, 211, 211);');
                 }
 
                 if (tdName.indexOf('diff') > -1) {
-                    $(this).css('background-color', 'rgb(234, 234, 113);');
+                    $(targetDOM).css('background-color', 'rgb(234, 234, 113);');
 
                     if (standard == null || val == null || tolh == null || toll == null) {
                         return;
@@ -1140,7 +1239,7 @@
                     else {
                         // 避免standard出現文字
                         if (parseInt(standard.toString()) >= 0) {
-                            cal(unit, standard.toString(), val.toString(), tolh.toString(), toll.toString(), $(this));
+                            cal(unit, standard.toString(), val.toString(), tolh.toString(), toll.toString(), $(targetDOM));
                         }
                     }
                 }
@@ -1213,6 +1312,16 @@
     }
 
 
+    // 檢查是否包含數字、/ 符號、空格以外的字元
+    function containsInvalidCharacters1(text) {
+        // 使用正则表达式检查是否包含数字、/ 以外的字符
+        const regex = /[^0-9\/\s]/;
+        return regex.test(text);
+    }
 
-
+    // 檢查是否包含數字、.符號以外的字元
+    function containsInvalidCharacters2(text) {
+        const regex = /[^0-9\.]/;
+        return regex.test(text);
+    }
 </script>

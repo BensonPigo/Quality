@@ -511,6 +511,10 @@ function generateMeasurementEditTable(jArray, type) {
     jArray.forEach(row => {
         let tr = document.createElement('tr');
         let FinalInspection_MeasurementUkey = 0;
+        let readonlyData = listMeasurementItem.filter(item => item.CanEdit === false);
+
+        let canEdit = true;
+
         Object.keys(row).forEach(tdName => {
 
             if (tdName.includes('FinalInspection_MeasurementUkey')) {
@@ -521,20 +525,36 @@ function generateMeasurementEditTable(jArray, type) {
                 let content = row[tdName];
                 td.setAttribute("idx", tdName);
 
+                if (tdName == 'Code') {
+                    var size = document.getElementById('ViewListSize').value.split(',')[1];
+                    var chkData = readonlyData.filter(item => item.Code === content && item.Size === size);
+                    if (chkData.length > 0) {
+                        canEdit = false;
+                    }
+                }
+
                 // 判斷是否日期
-                if (!isNaN(Date.parse(tdName)) && content != null) {
+                if (!isNaN(Date.parse(tdName)) && tdName.includes('/') && canEdit) {
                     let input = document.createElement('input');
-                    input.setAttribute("type", 'text');
+                    var unit = document.getElementById('ViewSizeUnit').value;
+                    if (unit == 'CM') {
+                        input.setAttribute("type", 'number');
+                    }
+                    else {
+                        input.setAttribute("type", 'text');
+                    }
 
                     if (FinalInspection_MeasurementUkey == null) {
                         FinalInspection_MeasurementUkey = 0;
                     }
-                    input.setAttribute("class", "MeasurementValue");
+                    input.setAttribute("class", "MeasurementValue"); 
+                    input.setAttribute("onchange", "MeasurementValueCheck(this,'" + unit + "')");
                     input.setAttribute("FinalInspection_MeasurementUkey", FinalInspection_MeasurementUkey);
                     input.setAttribute("readonly", 'readonly');
-                    input.setAttribute("style", "width:95%;background-color:rgb(234, 234, 113);");
+                    input.setAttribute("style", "width:100%;background-color:rgb(234, 234, 113);");
                     input.setAttribute("value", content);
                     td.appendChild(input);
+                    canEdit = true;
                 }
                 else {
                     td.textContent = content;
@@ -565,7 +585,7 @@ function generateMeasurementEditTable(jArray, type) {
                 newheader = header.replace(index, "");
             }
 
-            if (!isNaN(Date.parse(newheader))) {
+            if (!isNaN(Date.parse(newheader)) && newheader.includes('/')) {
                 let icon = document.createElement('img');
                 icon.setAttribute("style", "background: url('/Image/Icon/Delete.png')no-repeat center / 80% 80%;height: 1.5rem;width: 1.5rem;cursor:pointer;");
                 icon.setAttribute("addDate", newheader);

@@ -1610,7 +1610,7 @@ values
 ,@SizeCode
 ,@Location
 ,@Code
-,@SizeSpec
+,(SELECT dbo.getFractional(@SizeSpec))
 ,@MeasurementUkey
 ,@AddName
 ,@AddDate
@@ -1653,7 +1653,7 @@ values
 UPDATE FinalInspection_Measurement 
 SET EditDate=GETDATE()
 ,EditName = '{userID}'
-,SizeSpec = @SizeSpec{idx} 
+,SizeSpec = (SELECT dbo.getFractional(@))
 where Ukey = @Ukey{idx}";
                     stringBuilder.Append(sql);
                     idx++;

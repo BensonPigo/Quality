@@ -112,6 +112,15 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 foreach (MeasurementViewItem measurementViewItem in queryReport.ListMeasurementViewItem)
                 {
                     System.Data.DataTable dtMeasurementData = _FinalInspectionProvider.GetMeasurement(finalInspectionID, measurementViewItem.Article, measurementViewItem.Size, measurementViewItem.ProductType);
+
+                    for (int i = dtMeasurementData.Columns.Count - 1; i >= 0; i--)
+                    {
+                        DataColumn column = dtMeasurementData.Columns[i];
+                        if (column.ColumnName.StartsWith("FinalInspection_MeasurementUkey", StringComparison.OrdinalIgnoreCase))
+                        {
+                            dtMeasurementData.Columns.Remove(column);
+                        }
+                    }
                     measurementViewItem.MeasurementDataByJson = JsonConvert.SerializeObject(dtMeasurementData);
                 }
             }
