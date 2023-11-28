@@ -534,6 +534,7 @@ insert into FinalInspection(id                            ,
                             Team                          ,
                             AddName                       ,
                             AddDate                       ,
+                            ReInspection                   ,
                             MeasurementAQLUkey,
                             MeasurementSampleSize,
                             MeasurementAcceptQty
@@ -556,6 +557,7 @@ insert into FinalInspection(id                            ,
                        @Team                          ,
                        @UserID                       ,
                        GetDate()                     ,
+                       @ReInspection                   ,
                     ISNULL( (----用現用的AQL範圍，去找Measurement專用的AQL，所以要限定Category=Measurement
                         select TOP 1 b.Ukey
                         from SciProduction_AcceptableQualityLevels a
@@ -602,6 +604,7 @@ set     InspectionStage = @InspectionStage                         ,
         InspectionStep = 'Insp-Setting',
         Shift = @Shift          ,
         Team = @Team,
+        ReInspection = @ReInspection,                  
         EditName = @UserID                  ,
         EditDate= getdate(),
 
@@ -648,6 +651,7 @@ delete  FinalInspection_OrderCarton where ID = @FinalInspectionID
             objParameter.Add("@UserID", userID);
             objParameter.Add("@Team", setting.Team);
             objParameter.Add("@Shift", setting.Shift);
+            objParameter.Add("@ReInspection", setting.ReInspection);
 
             foreach (SelectedPO selectedPOItem in setting.SelectedPO)
             {
@@ -1567,7 +1571,7 @@ END
             return ctn > 0;
         }
 
-        public void UpdateMeasurement(DatabaseObject.ViewModel.FinalInspection.ServiceMeasurement measurement, string userID)
+        public void InsertMeasurement(DatabaseObject.ViewModel.FinalInspection.ServiceMeasurement measurement, string userID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
             DataTable dtDateTime = ExecuteDataTableByServiceConn(CommandType.Text, "select [DateTime] = getdate()", objParameter);
@@ -1619,6 +1623,46 @@ values
             }
         }
 
+        public void DeleteMeasurement(DatabaseObject.ViewModel.FinalInspection.ServiceMeasurement measurement, DateTime AddDate)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@ID", measurement.FinalInspectionID);
+            objParameter.Add("@AddDate", AddDate);
+
+
+            using (TransactionScope transactionScope = new TransactionScope())
+            {
+                string sql = @"delete from FinalInspection_Measurement where ID = @ID and CONVERT(varchar, AddDate,120) = @AddDate";
+                ExecuteNonQuery(CommandType.Text, sql, objParameter);
+                transactionScope.Complete();
+            }
+        }
+        public void UpdateMeasurement(List<MeasurementItem> measurementList, string userID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            using (TransactionScope transactionScope = new TransactionScope())
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                int idx = 0;
+                foreach (var measuremen in measurementList)
+                {
+                    objParameter.Add($@"@Ukey{idx}", measuremen.FinalInspection_MeasurementUkey);
+                    objParameter.Add($@"@SizeSpec{idx}", measuremen.ResultSizeSpec);
+                    string sql = $@"
+UPDATE FinalInspection_Measurement 
+SET EditDate=GETDATE()
+,EditName = '{userID}'
+,SizeSpec = @SizeSpec{idx} 
+where Ukey = @Ukey{idx}";
+                    stringBuilder.Append(sql);
+                    idx++;
+                }
+                ExecuteNonQuery(CommandType.Text, stringBuilder.ToString(), objParameter);
+                transactionScope.Complete();
+            }
+        }
+
         public IList<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -1631,6 +1675,7 @@ select  distinct    Article,
                     [MeasurementDataByJson] = ''
 from    FinalInspection_Measurement with (nolock)
 where   ID = @finalInspectionID
+Order BY Article,SizeCode,Location
 
 ";
             return ExecuteList<MeasurementViewItem>(CommandType.Text, sqlGetEndlineMoisture, objParameter);
@@ -1669,7 +1714,7 @@ where   Ukey IN (
     ----因為CustPONO會有空值的情況，所以不可以使用CustPONO去取Style，改成直接抓SP#
 )
 
-select  SizeSpec,        MeasurementUkey,        AddDate
+select  SizeSpec,        MeasurementUkey,        AddDate    ,FinalInspection_MeasurementUkey = Ukey
 into    #tmp_Inspection_Measurement
 from    FinalInspection_Measurement WITH(NOLOCK)
 where   ID = @finalInspectionID and
@@ -1689,6 +1734,7 @@ select m.Ukey
 	,[diff]= max(dbo.calculateSizeSpec(m.SizeSpec,im.SizeSpec, ss.SizeUnit))
 	,im.AddDate
 	,[HeadSizeCode] = FORMAT(im.AddDate,'yyyy/MM/dd HH:mm:ss')
+	,im.FinalInspection_MeasurementUkey
 into #tmp 
 from Measurement m with(nolock)
 INNER JOIN #Style_Size ss WITH(NOLOCK) ON m.StyleUkey = ss.StyleUkey 
@@ -1699,7 +1745,7 @@ AND (m.SizeSpec NOT LIKE '%!%' AND m.SizeSpec NOT LIKE '%@%' AND m.SizeSpec NOT 
 AND m.SizeSpec NOT LIKE '%$%'  AND m.SizeSpec NOT LIKE '%^%'  AND m.SizeSpec NOT LIKE '%&%' 
 AND m.SizeSpec NOT LIKE '%*%' AND m.SizeSpec NOT LIKE '%=%' AND m.SizeSpec NOT LIKE '%-%' 
 AND m.SizeSpec NOT LIKE '%(%' AND m.SizeSpec NOT LIKE '%)%')
-group by m.Ukey,iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN),m.Tol1,m.Tol2,m.Code,m.SizeCode,m.SizeSpec,im.SizeSpec,im.AddDate
+group by m.Ukey,iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN),m.Tol1,m.Tol2,m.Code,m.SizeCode,m.SizeSpec,im.SizeSpec,im.AddDate,im.FinalInspection_MeasurementUkey
 
 drop table #tmp_Inspection_Measurement
 
@@ -1717,6 +1763,7 @@ While @@FETCH_STATUS = 0
 Begin
 	
 	set @sql = @sql + '
+		,Max(case when HeadSizeCode ='''+@HeadSizeCode+''' and SizeCode ='''+@mSizeCode+''' then FinalInspection_MeasurementUkey end) as FinalInspection_MeasurementUkey'+@r_id+'
 		,Max(case when SizeCode ='''+@mSizeCode+''' then MeasurementSizeSpec end) as ['+@mSizeCode+'_aa]
 		,Max(case when HeadSizeCode ='''+@HeadSizeCode+''' and SizeCode ='''+@mSizeCode+''' then InspectionMeasurementSizeSpec end) as ['+@HeadSizeCode+']
 		,Max(case when HeadSizeCode ='''+@HeadSizeCode+''' and SizeCode ='''+@mSizeCode+''' then diff end) as diff'+@r_id+''
@@ -1995,6 +2042,7 @@ select  [FinalInspectionID] = f.ID,
 		[IsTransferToPivot88] = iif(f.IsExportToP88 = 1, 'Y', 'N'),
         [SampleSize] = cast(f.SampleSize as varchar),
         [SubmitDate] = format(f.SubmitDate, 'yyyy/MM/dd')   
+        ,f.ReInspection
 from FinalInspection f with (nolock)
 inner join FinalInspection_Order fo with (nolock) on fo.ID = f.ID
 inner join #tmpOrders o on fo.OrderID = o.ID
@@ -2054,6 +2102,7 @@ select top 200 [FinalInspectionID] = f.ID,
 		[IsTransferToPivot88] = iif(f.IsExportToP88 = 1, 'Y', 'N'),
         [SampleSize] = cast(f.SampleSize as varchar),
         [SubmitDate] = format(f.SubmitDate, 'yyyy/MM/dd')  
+        ,f.ReInspection
 from FinalInspection f with (nolock)
 inner join #default fo with (nolock) on fo.ID = f.ID
 inner join Production.dbo.Orders o with(nolock) on o.ID = fo.OrderID

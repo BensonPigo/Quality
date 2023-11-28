@@ -36,5 +36,6 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string IsTransferToPivot88 { get; set; }
         public string SampleSize { get; set; }
         public string SubmitDate { get; set; }
+        public bool ReInspection { get; set; }
     }
 }

@@ -113,9 +113,15 @@
             <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
 
             @*Basic*@
-            <div style="width:50%;height:27vh;float:left;">
+            <div style="width:50%;height:31vh;float:left;">
                 <div class="col-auto"><h2 class="sub_title">Basic</h2></div>
-                <table class="col-auto table_div" @*style="width:100%"*@>
+                <table class="col-auto table_div">
+                    <tr>
+                        <td><label>Re-Inspection</label></td>
+                        <td>
+                            @Html.CheckBoxFor(o => o.ReInspection, new { @style = "width: 1.4em;" })
+                        </td>
+                    </tr>
                     <tr>
                         <td><label>Choose Inspection Stage</label></td>
                         <td>@Html.DropDownListFor(o => o.InspectionStage, (List<SelectListItem>)ViewBag.InspectionStageList, null, new { @class = "form-control", @style = "width:157px", @onchange = "onInspectionStageChange(this.value)" })</td>
@@ -153,14 +159,14 @@
             </div>
 
             @*Inspection Number*@
-            <div style="width:50%;height:27vh;float:left;">
+            <div style="width:50%;height:31vh;float:left;">
                 <div class="col-auto"><h2 class="sub_title">Inspection Number</h2></div>
                 <div class="col-auto"><label style="padding-left:3em;font-weight:bold">This is <font style="color:#0000ff">@Html.DisplayFor(o => o.InspectionTimes)</font> times to inspect for this PO#</label></div>
                 @Html.HiddenFor(o => o.InspectionTimes)
             </div>
 
             @*Selected PO*@
-            <div style="width:50%;height:40vh;float:left;">
+            <div style="width:50%;height:39vh;float:left;">
                 <div class="col-auto"><h2 class="sub_title">Selected PO</h2></div>
                 <div class="col-auto">
                     <table id="SelectedPOTable" class="cell-border " style="width:100%"></table>
@@ -169,7 +175,7 @@
             </div>
 
             @*AQL Plan*@
-            <div style="width:50%;height:40vh;float:left;">
+            <div style="width:50%;height:39vh;float:left;">
                 <div class="col-auto"><h2 class="sub_title">AQL Plan</h2></div>
                 <table class="col-auto table_div" style="margin-left: 4em;">
                     <tr>

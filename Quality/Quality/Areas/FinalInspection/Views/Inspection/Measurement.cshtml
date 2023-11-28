@@ -166,8 +166,16 @@
 
 
 <div class="detail-dialog to-edit-detail" title="View">
-    <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
-        <table style="width: 100%; margin-top: 2vh; ">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh;display:block;">
+        <div id="divButton" style="display:flex;">
+            <div>
+                <button id="btnViewEditSave" class="btn btn-blue" style="height: 3vh;">Edit</button>
+            </div>
+            <div>
+                <button id="btnViewCancel" class="btn" style="height: 3vh;">Cancel</button>
+            </div>
+        </div>
+        <table style="width: 100%; ">
             <tbody>
                 <tr>
                     <td align="right">
@@ -213,6 +221,7 @@
 
     var msg = new MessagerAlert();
     var OpenViewObj;
+    var EditMode = false;
 
     $(".detail-dialog").dialog({
         autoOpen: false,
@@ -239,7 +248,7 @@
     });
 
     $(".to-edit-detail").dialog({
-        width: "70%",
+        width: "90%"
 
     });
 
@@ -316,6 +325,103 @@
 
 
         $("#Save").click(Save);
+
+        $("#dropSize").on("change", function () {
+
+            ReloadData();
+
+        });
+
+        $("#dropArticle").change(function () {
+
+            var article = $(this).val();
+
+            $.ajax({
+                url: "@Url.Action("GetNewSizeByArticle", "Inspection" )",
+                data: { Article: article },
+                type: 'POST',
+                dataType: "json",
+                async: false,
+                success: function (datas) {
+
+                    var sizeOption = "";
+                    var sizeArrList = [];
+
+                    $.each(datas, function (index, obj) {
+                        sizeArrList.push(obj.Value);
+                    });
+
+
+                    $.each(sizeArrList, function (index, value) {
+                        sizeOption += "<option value=" + value + " >" + value + "</option>";
+                    });
+
+                    $("#dropSize").html(sizeOption);
+
+                    ReloadData();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#btnViewEditSave").click(function () {
+
+            if ($("#ViewListArticle").val() == null) {
+                return;
+            }
+
+            if ($("#btnViewEditSave").text() == 'Edit') {
+                EditMode = true;
+                $("#btnViewEditSave").text('Save');
+                $("#btnViewEditSave").removeClass('btn-blue');
+                $("#btnViewEditSave").addClass('btn-red');
+                $(".clsMeasurementDel").hide();
+                $("#ViewListArticle").attr("disabled", "disabled");
+                $("#ViewListSize").attr("disabled", "disabled");
+                $("#ViewListProductType").attr("disabled", "disabled");
+
+                $(".MeasurementValue").removeAttr("readonly");
+            }
+            else if ($("#btnViewEditSave").text() == 'Save') {
+
+                MeasurementEdit();
+
+                EditMode = false;
+                $("#btnViewEditSave").text('Edit');
+                $("#btnViewEditSave").removeClass('btn-red');
+                $("#btnViewEditSave").addClass('btn-blue');
+                $(".clsMeasurementDel").show();
+                $("#ViewListArticle").removeAttr("disabled");
+                $("#ViewListSize").removeAttr("disabled");
+                $("#ViewListProductType").removeAttr("disabled");
+            }
+        });
+
+        $("#btnViewCancel").click(function () {
+
+            if (EditMode == true) {
+                msg.WithConfirm('Are you sure you want to cancel the edit?',
+                    function () {
+                        EditMode = false;
+                        $("#btnViewEditSave").text('Edit');
+                        $("#btnViewEditSave").removeClass('btn-red');
+                        $("#btnViewEditSave").addClass('btn-blue');
+                        $(".clsMeasurementDel").show();
+                        $("#ViewListArticle").removeAttr("disabled");
+                        $("#ViewListSize").removeAttr("disabled");
+                        $("#ViewListProductType").removeAttr("disabled");
+
+                        ShowLoading();
+                        open_View();
+                        NonLoading();
+                    }, null);
+
+            }
+        });
+
+        ReloadData();
     });
 
 
@@ -517,51 +623,99 @@
     }
 
 
-    $(document).ready(function () {
-        $("#dropSize").on("change", function () {
+    function MeasurementDel(MeasurementDate) {
+        if (EditMode == false) {
+            msg.WithConfirm('Do you want to delete the data ?',
+                function () {
+                    // AJAX 刪除動作
 
-            ReloadData();
+                    $.ajax({
+                        url: "@Url.Action("MeasurementDelete", new { Area = "FinalInspection" })",
+                        type: 'POST',
+                        data: jQuery.param({ FinalInspectionID: "@Model.FinalInspectionID", AddDate: MeasurementDate }),
+                        async: true,
+                        success: function (response) {
 
-        });
+                            if (response.Result != undefined) {
+                                if (response.Result) {
 
-        $("#dropArticle").change(function () {
+                                    msg.WithSuccesCheck("Success!", function () {
+                                        open_View();
+                                    });
+                                }
+                                else {
+                                    msg.WithErrorCheck(response.ErrorMessage, function () {
+                                        return false;
+                                    });
+                                }
+                            }
+                            else {
 
-            var article = $(this).val();
-
-            $.ajax({
-                url: "@Url.Action("GetNewSizeByArticle", "Inspection" )",
-                data: { Article: article },
-                type: 'POST',
-                dataType: "json",
-                async: false,
-                success: function (datas) {
-
-                    var sizeOption = "";
-                    var sizeArrList = [];
-
-                    $.each(datas, function (index, obj) {
-                        sizeArrList.push(obj.Value);
+                                // response.Result = undefined，代表什麼都沒輸入就按下Save
+                                return true;
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
+                        }
                     });
+                }, null);
 
+        }
+    }
 
-                    $.each(sizeArrList, function (index, value) {
-                        sizeOption += "<option value=" + value + " >" + value + "</option>";
-                    });
+    function MeasurementEdit() {
+        var dataList = $(".MeasurementValue");
+        var paraList = [];
 
-                    $("#dropSize").html(sizeOption);
+        //$.each(dataList, function (index, data) {
 
-                    ReloadData();
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
+        //    var d = {
+        //        FinalInspection_MeasurementUkey: parseInt($(data).attr('FinalInspection_MeasurementUkey')),
+        //        ResultSizeSpec: $(data).val(),
+        //    };
+        //    paraList.push(d);
+        //});
+
+        for (const data of dataList) {
+            var d = {
+                FinalInspection_MeasurementUkey: parseInt($(data).attr('FinalInspection_MeasurementUkey')),
+                ResultSizeSpec: $(data).val(),
+            };
+            paraList.push(d);
+        }
+
+        $.ajax({
+            url: "@Url.Action("MeasurementUpdate", new { Area = "FinalInspection" })",
+            type: 'POST',
+            data: jQuery.param({ mlMeasurementItemList: paraList }),
+            async: true,
+            success: function (response) {
+
+                if (response.Result != undefined) {
+                    if (response.Result) {
+
+                        msg.WithSuccesCheck("Success!", function () {
+                            open_View();
+                        });
+                    }
+                    else {
+                        msg.WithErrorCheck(response.ErrorMessage, function () {
+                            return false;
+                        });
+                    }
                 }
-            });
+                else {
+
+                    // response.Result = undefined，代表什麼都沒輸入就按下Save
+                    return true;
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
         });
-
-        ReloadData();
-    });
-
-
+    }
 
     function ReloadData() {
 
@@ -715,7 +869,7 @@
                 if ($(currentCol).val() != '') {
                     oldValue = parseFloat($(currentCol).val());
                 }
-                var newValue = oldValue + 1;
+                var newValue = oldValue + 0.0625;
                 $(currentCol).val(newValue).change();
             }
             if (tpye == "text") {
@@ -785,7 +939,7 @@
                 if ($(currentCol).val() != '') {
                     oldValue = parseFloat($(currentCol).val());
                 }
-                var newValue = oldValue - 1;
+                var newValue = oldValue - 0.0625;
                 $(currentCol).val(newValue).change();
             }
             if (tpye == "text") {

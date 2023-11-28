@@ -510,16 +510,38 @@ function generateMeasurementEditTable(jArray, type) {
     // 將所有資料列的資料轉成tbody
     jArray.forEach(row => {
         let tr = document.createElement('tr');
-
+        let FinalInspection_MeasurementUkey = 0;
         Object.keys(row).forEach(tdName => {
-            let td = document.createElement('td');
-            td.textContent = row[tdName];
-            td.setAttribute("idx", tdName);
-            if (!isNaN(Date.parse(tdName))) {
+
+            if (tdName.includes('FinalInspection_MeasurementUkey')) {
+                FinalInspection_MeasurementUkey = row[tdName];
+            }
+            else {
+                let td = document.createElement('td');
+                let content = row[tdName];
+                td.setAttribute("idx", tdName);
+
+                // 判斷是否日期
+                if (!isNaN(Date.parse(tdName)) && content != null) {
+                    let input = document.createElement('input');
+                    input.setAttribute("type", 'text');
+
+                    if (FinalInspection_MeasurementUkey == null) {
+                        FinalInspection_MeasurementUkey = 0;
+                    }
+                    input.setAttribute("class", "MeasurementValue");
+                    input.setAttribute("FinalInspection_MeasurementUkey", FinalInspection_MeasurementUkey);
+                    input.setAttribute("readonly", 'readonly');
+                    input.setAttribute("style", "width:95%;background-color:rgb(234, 234, 113);");
+                    input.setAttribute("value", content);
+                    td.appendChild(input);
+                }
+                else {
+                    td.textContent = content;
+                }
 
                 tr.appendChild(td);
             }
-            tr.appendChild(td);
         });
         tbody.appendChild(tr);
     });
@@ -529,20 +551,42 @@ function generateMeasurementEditTable(jArray, type) {
     let headerTr = document.createElement('tr')
 
     Object.keys(jArray[0]).forEach(header => {
-        let th = document.createElement('th')
-        var newheader = header;
-        if (header.toString().indexOf("_aa") > -1) {
-            newheader = header.replace(header.substr(header.toString().indexOf("_aa"), header.length - header.toString().indexOf("_aa")), "");
+
+        // <th> 排除FinalInspection_MeasurementUkey
+        if (!header.includes('FinalInspection_MeasurementUkey')) {
+            let th = document.createElement('th')
+            var newheader = header;
+            if (header.toString().indexOf("_aa") > -1) {
+                newheader = header.replace(header.substr(header.toString().indexOf("_aa"), header.length - header.toString().indexOf("_aa")), "");
+            }
+
+            if (header.toString().indexOf("diff") > -1) {
+                var index = header.replace("diff", "");
+                newheader = header.replace(index, "");
+            }
+
+            if (!isNaN(Date.parse(newheader))) {
+                let icon = document.createElement('img');
+                icon.setAttribute("style", "background: url('/Image/Icon/Delete.png')no-repeat center / 80% 80%;height: 1.5rem;width: 1.5rem;cursor:pointer;");
+                icon.setAttribute("addDate", newheader);
+                icon.setAttribute("class", "clsMeasurementDel");
+                icon.setAttribute("onclick", 'MeasurementDel("' + newheader + '")');
+
+
+                let sp = document.createElement('span');
+                sp.textContent = newheader;
+
+
+                th.appendChild(icon);
+                th.appendChild(sp);
+            }
+            else {
+                th.textContent = newheader
+            }
+
+
+            headerTr.appendChild(th)
         }
-
-        if (header.toString().indexOf("diff") > -1) {
-            var index = header.replace("diff", "");
-            newheader = header.replace(index, "");
-        }
-
-        th.textContent = newheader
-
-        headerTr.appendChild(th)
     });
 
     // 新增thead到table上

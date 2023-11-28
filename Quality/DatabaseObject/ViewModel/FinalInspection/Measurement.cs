@@ -43,6 +43,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string Code { get; set; }
         public long MeasurementUkey { get; set; }
         public bool CanEdit { get; set; }
+        public long FinalInspection_MeasurementUkey { get; set; }
     }
 
     public class ArticleSize

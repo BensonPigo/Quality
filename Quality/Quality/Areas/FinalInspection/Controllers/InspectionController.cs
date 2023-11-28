@@ -660,7 +660,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             }
 
             FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
-            BaseResult result = service.UpdateMeasurement(model, this.UserID);
+            BaseResult result = service.InsertMeasurement(model, this.UserID);
 
             int MeasurementRemainingAmount = 0;
             if (result)
@@ -702,6 +702,23 @@ namespace Quality.Areas.FinalInspection.Controllers
             return Json(result);
         }
 
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public ActionResult MeasurementDelete(string FinalInspectionID,string AddDate)
+        {
+            FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
+            BaseResult result = service.DeleteMeasurement(new ServiceMeasurement() { FinalInspectionID= FinalInspectionID }, Convert.ToDateTime(AddDate));
+            return Json(result);
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public ActionResult MeasurementUpdate(List<MeasurementItem> mlMeasurementItemList)
+        {
+            FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
+            BaseResult result = service.UpdateMeasurement(mlMeasurementItemList, this.UserID);
+            return Json(result);
+        }
         [HttpPost]
         [SessionAuthorizeAttribute]
         public ActionResult Measurement(ServiceMeasurement model, string goPage)
