@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Transactions;
 
@@ -1581,6 +1582,7 @@ END
                 foreach (MeasurementItem measurementItem in measurement.ListMeasurementItem)
                 {
                     objParameter = new SQLParameterCollection();
+                    objParameter.Add($@"@SizeUnit", measurement.SizeUnit);
                     objParameter.Add("@ID", measurement.FinalInspectionID);
                     objParameter.Add("@Article", measurement.SelectedArticle);
                     objParameter.Add("@SizeCode", measurement.SelectedSize);
@@ -1591,7 +1593,7 @@ END
                     objParameter.Add("@AddName", userID);
                     objParameter.Add("@AddDate", dtDateTime.Rows[0]["DateTime"]);
 
-                    string sqlInsertMeasurement = @"
+                    string sqlInsertMeasurement = $@"
 insert into FinalInspection_Measurement(
 ID
 ,Article
@@ -1610,7 +1612,7 @@ values
 ,@SizeCode
 ,@Location
 ,@Code
-,(SELECT dbo.getFractional(@SizeSpec))
+,(  IIF(@SizeUnit='CM' ,@SizeSpec, (SELECT dbo.getFractional(@SizeSpec)) ) )
 ,@MeasurementUkey
 ,@AddName
 ,@AddDate
@@ -1637,15 +1639,16 @@ values
                 transactionScope.Complete();
             }
         }
-        public void UpdateMeasurement(List<MeasurementItem> measurementList, string userID)
+        public void UpdateMeasurement(ServiceMeasurement model, string userID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add($@"@SizeUnit", model.SizeUnit);
 
             using (TransactionScope transactionScope = new TransactionScope())
             {
                 StringBuilder stringBuilder = new StringBuilder();
                 int idx = 0;
-                foreach (var measuremen in measurementList)
+                foreach (var measuremen in model.ListMeasurementItem)
                 {
                     objParameter.Add($@"@Ukey{idx}", measuremen.FinalInspection_MeasurementUkey);
                     objParameter.Add($@"@SizeSpec{idx}", measuremen.ResultSizeSpec);
@@ -1653,7 +1656,7 @@ values
 UPDATE FinalInspection_Measurement 
 SET EditDate=GETDATE()
 ,EditName = '{userID}'
-,SizeSpec = (SELECT dbo.getFractional(@))
+,SizeSpec = IIF(@SizeUnit='CM' ,@SizeSpec{idx}, (SELECT dbo.getFractional(@SizeSpec{idx})) )
 where Ukey = @Ukey{idx}";
                     stringBuilder.Append(sql);
                     idx++;

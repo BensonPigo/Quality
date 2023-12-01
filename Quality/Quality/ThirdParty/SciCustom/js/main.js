@@ -506,7 +506,7 @@ function generateMeasurementEditTable(jArray, type) {
     let tbody = document.createElement('tbody');
     let thead = document.createElement('thead');
     let table = document.createElement('table');
-
+    table.setAttribute("ID", "MeasurementView"); 
     // 將所有資料列的資料轉成tbody
     jArray.forEach(row => {
         let tr = document.createElement('tr');

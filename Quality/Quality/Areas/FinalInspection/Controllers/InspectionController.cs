@@ -713,10 +713,10 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public ActionResult MeasurementUpdate(List<MeasurementItem> mlMeasurementItemList)
+        public ActionResult MeasurementUpdate(ServiceMeasurement model)
         {
             FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
-            BaseResult result = service.UpdateMeasurement(mlMeasurementItemList, this.UserID);
+            BaseResult result = service.UpdateMeasurement(model, this.UserID);
             return Json(result);
         }
         [HttpPost]

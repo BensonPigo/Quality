@@ -109,64 +109,89 @@
         @Html.HiddenFor(o => o.FinalInspectionID)
         @Html.HiddenFor(o => o.AcceptableQualityLevelsUkey)
         @Html.HiddenFor(o => o.BrandID)
-        <div style="padding:2em 3em 2em 3em">
-            <div class="col-auto"><h1 style="font-size:2em">Inspection Setting</h1></div>
+        <div style="padding:2em 3em 2em 3em;display:flex;width:100%;flex-wrap:wrap;">
+            <div class="col-auto" style="width:100%"><h1 style="font-size:2em">Inspection Setting</h1></div>
 
             @*Basic*@
-            <div style="width:50%;height:31vh;float:left;">
-                <div class="col-auto"><h2 class="sub_title">Basic</h2></div>
-                <table class="col-auto table_div">
-                    <tr>
-                        <td><label>Re-Inspection</label></td>
-                        <td>
-                            @Html.CheckBoxFor(o => o.ReInspection, new { @style = "width: 1.4em;" })
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label>Choose Inspection Stage</label></td>
-                        <td>@Html.DropDownListFor(o => o.InspectionStage, (List<SelectListItem>)ViewBag.InspectionStageList, null, new { @class = "form-control", @style = "width:157px", @onchange = "onInspectionStageChange(this.value)" })</td>
-                    </tr>
-                    <tr>
-                        <td><label>What's day you audit?</label></td>
-                        <td>@Html.TextBoxFor(o => o.AuditDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })</td>
-                    </tr>
-                    <tr>
-                        <td><label>What's sewing line you audit?</label></td>
-                        <td>
-                            @Html.TextBoxFor(o => o.SewingLineID, new { @readonly = "readonly", @style = "width:40%;float:left;" })
-                            <input type="button" onclick="ClearSewing(this)" name="name" value="Clear" style="float:left;" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label>Shift</label>
-                            @*@Html.DropDownListFor(o => o.Shift, (List<SelectListItem>)ViewBag.Shift, null, new { @class = "form-control", @style = "width:100px" })*@
-                            @{var ShiftList = (List<SelectListItem>)ViewBag.Shift; }
-                            <select id="Shift" name="Shift" class="form-control" style="width:100px">
-                                @foreach (var item in ShiftList)
-                                {
-                                    string selected = Model.Shift == item.Value ? "selected" : "";
-                                    <option value="@item.Value" @selected>@item.Text</option>
-                                }
-                            </select>
-                        </td>
-                        <td>
-                            <label>Team</label>
-                            @Html.DropDownListFor(o => o.Team, (List<SelectListItem>)ViewBag.SewingTeam, null, new { @class = "form-control", @style = "width:100px" })
-                        </td>
-                    </tr>
-                </table>
+        <div style="width:50%;height:31vh;display:flex;flex-wrap:wrap;">
+            <div class="col-auto" style="width:100%;"><h2 class="sub_title">Basic</h2></div>
+            @*Row 1*@
+            <div style="width:10%;">
+            </div>
+            <div style="width:35%;">
+                <label style="font-weight:bold">Choose Inspection Stage</label>
+            </div>
+            <div style="width: 20%;">
+                @Html.DropDownListFor(o => o.InspectionStage, (List<SelectListItem>)ViewBag.InspectionStageList, null, new { @class = "form-control", @onchange = "onInspectionStageChange(this.value)" })
+            </div>
+            <div style="width:20%">
+                <label style="font-weight:bold">Re-Inspection</label>
+            </div>
+            <div style="width: 15%;">
+                @Html.CheckBoxFor(o => o.ReInspection, new { @style = "width: 2em;" })
             </div>
 
+
+
+
+            @*Row 2*@
+            <div style="width:10%;"></div>
+            <div style="width:35%;">
+                <label style="font-weight:bold">What's day you audit?</label>
+            </div>
+            <div style="width: 15%;">
+
+                @Html.TextBoxFor(o => o.AuditDate, "{0:yyyy/MM/dd}", new { @class = "date-picker", @style = "width:100%" })
+            </div>
+            <div style="width:40%;"></div>
+
+
+            @*Row 3*@
+            <div style="width:10%;"></div>
+            <div style="width:35%;">
+                <label style="font-weight:bold">What's sewing line you audit?</label>
+            </div>
+            <div style="width: 15%;">
+
+                @Html.TextBoxFor(o => o.SewingLineID, new { @readonly = "readonly", @style = "width:40%;float:left;" })
+                <input type="button" onclick="ClearSewing(this)" name="name" value="Clear" style="float:left;" />
+            </div>
+            <div style="width:40%;"></div>
+
+            @*Row 4*@
+            <div style="width:10%;"></div>
+            <div style="width:20%;">
+
+                <label style="font-weight:bold">Shift</label>
+                @*@Html.DropDownListFor(o => o.Shift, (List<SelectListItem>)ViewBag.Shift, null, new { @class = "form-control", @style = "width:100px" })*@
+                @{var ShiftList = (List<SelectListItem>)ViewBag.Shift; }
+                <select id="Shift" name="Shift" class="form-control" style="width:100px">
+                    @foreach (var item in ShiftList)
+                    {
+                        string selected = Model.Shift == item.Value ? "selected" : "";
+                        <option value="@item.Value" @selected>@item.Text</option>
+                    }
+                </select>
+
+            </div>
+            <div style="width: 30%;">
+
+                <label style="padding-left:3em;font-weight:bold">Team</label>
+                @Html.DropDownListFor(o => o.Team, (List<SelectListItem>)ViewBag.SewingTeam, null, new { @class = "form-control", @style = "width:100px" })
+            </div>
+            <div style="width: 40%;"></div>
+
+        </div>
+
             @*Inspection Number*@
-            <div style="width:50%;height:31vh;float:left;">
+            <div style="width:50%;height:31vh;">
                 <div class="col-auto"><h2 class="sub_title">Inspection Number</h2></div>
                 <div class="col-auto"><label style="padding-left:3em;font-weight:bold">This is <font style="color:#0000ff">@Html.DisplayFor(o => o.InspectionTimes)</font> times to inspect for this PO#</label></div>
                 @Html.HiddenFor(o => o.InspectionTimes)
             </div>
 
             @*Selected PO*@
-            <div style="width:50%;height:39vh;float:left;">
+            <div style="width:50%;height:39vh;">
                 <div class="col-auto"><h2 class="sub_title">Selected PO</h2></div>
                 <div class="col-auto">
                     <table id="SelectedPOTable" class="cell-border " style="width:100%"></table>
@@ -175,7 +200,7 @@
             </div>
 
             @*AQL Plan*@
-            <div style="width:50%;height:39vh;float:left;">
+            <div style="width:50%;height:39vh;">
                 <div class="col-auto"><h2 class="sub_title">AQL Plan</h2></div>
                 <table class="col-auto table_div" style="margin-left: 4em;">
                     <tr>
@@ -299,7 +324,7 @@
                         {
                             <tr class="row-content" style="vertical-align: middle; text-align: center;">
                                 <td>
-                                    <input type="checkbox" ID="ShipmodeSeq_Select_[@i]" class="messageCheckbox" Idx=@i Seq=@Model.SelectOrderShipSeq[i].Seq OrderID=@Model.SelectOrderShipSeq[i].OrderID onclick="SelectOrderShipSeqChange(this)" style="width: 1.4em;" qty=" @Model.SelectOrderShipSeq[i].Qty"/>
+                                    <input type="checkbox" ID="ShipmodeSeq_Select_[@i]" class="messageCheckbox" Idx=@i Seq=@Model.SelectOrderShipSeq[i].Seq OrderID=@Model.SelectOrderShipSeq[i].OrderID onclick="SelectOrderShipSeqChange(this)" style="width: 1.4em;" qty=" @Model.SelectOrderShipSeq[i].Qty" />
                                 </td>
                                 <td>
                                     @Html.DisplayFor(o => Model.SelectOrderShipSeq[i].Seq)
@@ -921,7 +946,7 @@
 
                                 // 取得原始字串
                                 let rawVal = this.value.trim();
-                                
+
                                 let valList = rawVal.split(',');
                                 let newArr = valList.filter(item => item !== "")
 

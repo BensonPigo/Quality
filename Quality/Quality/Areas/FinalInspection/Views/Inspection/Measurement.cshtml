@@ -466,6 +466,7 @@
             FinalInspectionID: '@Model.FinalInspectionID',
             SelectedArticle: $("#dropArticle").val(),
             SelectedSize: $("#dropSize").val(),
+            SizeUnit: $("#SizeUnit").val(),
             SelectedProductType: $("#dropProductType").val(),
             ListMeasurementItem: bodyList
         };
@@ -685,10 +686,16 @@
             paraList.push(d);
         }
 
+        var head =
+        {
+            SizeUnit: $("#SizeUnit").val(),
+            ListMeasurementItem: paraList
+        };
+
         $.ajax({
             url: "@Url.Action("MeasurementUpdate", new { Area = "FinalInspection" })",
             type: 'POST',
-            data: jQuery.param({ mlMeasurementItemList: paraList }),
+            data: jQuery.param({ model: head }),
             async: true,
             success: function (response) {
 
@@ -955,6 +962,11 @@
                 vd = 1;
                 vm = 1;
                 vi = vi - 1;
+                val = parseFloat(parseFloat(val).toFixed(2));
+                if (Number.isInteger(val)) {
+                    val = parseInt(val);
+                }
+                $(this).val(val);
             }
 
 
@@ -1012,6 +1024,7 @@
                     oldValue = parseFloat($(currentCol).val());
                 }
                 var newValue = oldValue + 0.0625;
+                newValue = newValue.toFixed(2);
                 $(currentCol).val(newValue).change();
             }
             if (tpye == "text") {
@@ -1082,6 +1095,7 @@
                     oldValue = parseFloat($(currentCol).val());
                 }
                 var newValue = oldValue - 0.0625;
+                newValue = newValue.toFixed(2);
                 $(currentCol).val(newValue).change();
             }
             if (tpye == "text") {
@@ -1156,6 +1170,7 @@
     function ReloadViewData(AjaxReturn, Article, Size, ProductType) {
 
         if (Article == "" || Size == "" || ProductType == "" || AjaxReturn.length <= 0) {
+            $("#Content").empty();
             return;
         }
 

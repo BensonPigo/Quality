@@ -175,7 +175,7 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
-        public BaseResult UpdateMeasurement(List<MeasurementItem> measurementList, string userID)
+        public BaseResult UpdateMeasurement(ServiceMeasurement model, string userID)
         {
             BaseResult result = new BaseResult();
 
@@ -183,7 +183,7 @@ namespace BusinessLogicLayer.Service
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-                _FinalInspectionProvider.UpdateMeasurement(measurementList, userID);
+                _FinalInspectionProvider.UpdateMeasurement(model, userID);
 
             }
             catch (Exception ex)

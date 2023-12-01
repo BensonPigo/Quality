@@ -158,6 +158,6 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         List<FinalInspectionBasicGeneral> GetAllGeneral();
         List<FinalInspectionBasicCheckList> GetAllCheckList();
         int GetAvailableQty(string FinalInspectionID);
-        void UpdateMeasurement(List<MeasurementItem> measurementList, string userID);
+        void UpdateMeasurement(ServiceMeasurement model, string userID);
     }
 }
