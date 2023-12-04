@@ -962,7 +962,7 @@
                 vd = 1;
                 vm = 1;
                 vi = vi - 1;
-                val = parseFloat(parseFloat(val).toFixed(2));
+                var val = parseFloat(parseFloat(val).toFixed(4));
                 if (Number.isInteger(val)) {
                     val = parseInt(val);
                 }
@@ -1024,7 +1024,7 @@
                     oldValue = parseFloat($(currentCol).val());
                 }
                 var newValue = oldValue + 0.0625;
-                newValue = newValue.toFixed(2);
+                newValue = newValue.toFixed(4);
                 $(currentCol).val(newValue).change();
             }
             if (tpye == "text") {
@@ -1095,7 +1095,7 @@
                     oldValue = parseFloat($(currentCol).val());
                 }
                 var newValue = oldValue - 0.0625;
-                newValue = newValue.toFixed(2);
+                newValue = newValue.toFixed(4);
                 $(currentCol).val(newValue).change();
             }
             if (tpye == "text") {

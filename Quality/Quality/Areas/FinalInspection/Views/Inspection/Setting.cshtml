@@ -987,17 +987,30 @@
                 }
             });
 
+            var totalCattonCTN = '@Model.SelectCarton.Count';
             var cartonValues = document.getElementById("SelectedPO[" + rowIndex + "].Cartons").value;
-            var cartonList = cartonValues.split(',');
-
+            var isSelectAll = true;
             if (cartonValues != '') {
+
+                var cartonList = cartonValues.split(',');
+
+
+                if (cartonList.length != totalCattonCTN) {
+                    isSelectAll = false;
+                }
 
                 $(cartonList).each(function () {
 
-                    //$('#carton_select_' + this).prop('checked', true);
                     $('input[Type=checkbox][CTNNo=' + this + ']').prop('checked', true);
                 });
             }
+            else {
+                isSelectAll = false;
+            }
+
+
+            $("#CTNSelectAll").prop("checked", isSelectAll);
+
             $("#currnetSelectedPO").val(rowIndex);
 
             NonLoading();
