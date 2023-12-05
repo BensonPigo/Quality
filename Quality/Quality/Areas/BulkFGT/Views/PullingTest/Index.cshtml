@@ -514,7 +514,7 @@
             para += "&" + "PKey_1=ReportNo";
             para += "&" + "PKey_1_Val=" + $('#Detail_ReportNo').val();
 
-            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
+            window.open('@Url.Action("PictureList", "PublicWindow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
         });
 
         $('#SendMail').unbind('click').on('click', function () {
@@ -551,17 +551,17 @@
 
     function QueryButtonBind() {
             $('#btnBrandSelectItem').on('click', function () {
-                 window.open('@Url.Action("BrandList","PublicWondow",new{Area=""})','Brand',config='toolbar=no,status=no,location=no,width=400,height=650');
+                 window.open('@Url.Action("BrandList","PublicWindow",new{Area=""})','Brand',config='toolbar=no,status=no,location=no,width=400,height=650');
             });
 
             $('#btnSeasonSelectItem').on('click', function () {
                 var para = "?BrandID=" + $('#BrandID').val();
-                window.open('@Url.Action("SeasonList","PublicWondow",new{Area=""})' + para,'Season',config='toolbar=no,status=no,location=no,width=400,height=650');
+                window.open('@Url.Action("SeasonList","PublicWindow",new{Area=""})' + para,'Season',config='toolbar=no,status=no,location=no,width=400,height=650');
             });
 
             $('#btnStyleSelectItem').on('click', function () {
                 var para = "?BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val();
-                window.open('@Url.Action("StyleList","PublicWondow",new{Area=""})' + para,'Style',config='toolbar=no,status=no,location=no,width=400,height=650');
+                window.open('@Url.Action("StyleList","PublicWindow",new{Area=""})' + para,'Style',config='toolbar=no,status=no,location=no,width=400,height=650');
             });
 
             $('#btnArticleSelectItem').on('click', function () {
@@ -571,7 +571,7 @@
                 }
 
                 var para = "?OrderID=&StyleUkey=0&BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val() + "&StyleID=" + $('#StyleID').val();
-                window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
+                window.open('@Url.Action("ArticleList","PublicWindow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
             });
 
             blurEvent('');
@@ -600,7 +600,7 @@
 
                 var BrandID = $('#' + name +'BrandID').val();
                 $.ajax({
-                    url: "@Url.Action("SeasonList","PublicWondow",new{Area=""})",
+                    url: "@Url.Action("SeasonList","PublicWindow",new{Area=""})",
                     type: 'POST',
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
@@ -630,7 +630,7 @@
                 var BrandID = $('#' + name +'BrandID').val();
                 var SeasonID = $('#' + name +'SeasonID').val();
                 $.ajax({
-                    url: "@Url.Action("StyleList","PublicWondow",new{Area=""})",
+                    url: "@Url.Action("StyleList","PublicWindow",new{Area=""})",
                     type: 'POST',
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
@@ -661,7 +661,7 @@
                 var SeasonID = $('#' + name +'SeasonID').val();
                 var StyleID = $('#' + name +'StyleID').val();
                 $.ajax({
-                    url: "@Url.Action("ArticleList","PublicWondow",new{Area=""})",
+                    url: "@Url.Action("ArticleList","PublicWindow",new{Area=""})",
                     type: 'POST',
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify({ BrandID: BrandID, StyleUkey : 0, SeasonID: SeasonID, StyleID: StyleID, Article: $(this).val(), ReturnType: "JSON" }),
@@ -693,7 +693,7 @@
                 var StyleID = $('#' + name + 'StyleID').val();
                 var Article = $('#' + name + 'Article').val();
                 $.ajax({
-                    url: "@Url.Action("SizeList","PublicWondow",new{Area=""})",
+                    url: "@Url.Action("SizeList","PublicWindow",new{Area=""})",
                     type: 'POST',
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify({ BrandID: BrandID, StyleUkey: 0, SeasonID: SeasonID, StyleID: StyleID, Article: Article, Size: $(this).val(), ReturnType: "JSON" }),
@@ -717,7 +717,7 @@
                 }
 
                 $.ajax({
-                    url: "@Url.Action("Pass1List","PublicWondow",new{Area=""})",
+                    url: "@Url.Action("Pass1List","PublicWindow",new{Area=""})",
                     type: 'POST',
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
@@ -737,7 +737,7 @@
 
     function DetailButtonBind() {
             $('#btnDetailBrandSelectItem').on('click', function () {
-                window.open('@Url.Action("BrandList","PublicWondow",new{Area=""})','BrandID',config='toolbar=no,status=no,location=no,width=400,height=650');
+                window.open('@Url.Action("BrandList","PublicWindow",new{Area=""})','BrandID',config='toolbar=no,status=no,location=no,width=400,height=650');
             });
 
             $('#btnDetailSeasonSelectItem').on('click', function () {
@@ -746,11 +746,11 @@
                 }
 
                 var para = "?BrandID=" + $('#Detail_BrandID').val();
-                window.open('@Url.Action("SeasonList","PublicWondow",new{Area=""})' + para,'SeasonID',config='toolbar=no,status=no,location=no,width=400,height=650');
+                window.open('@Url.Action("SeasonList","PublicWindow",new{Area=""})' + para,'SeasonID',config='toolbar=no,status=no,location=no,width=400,height=650');
             });
 
             $('#btnDetailInspectorSelectItem').on('click', function () {
-                window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
+                window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
             });
 
             $('#btnDetailStyleSelectItem').on('click', function () {
@@ -759,7 +759,7 @@
                 }
 
                 var para = "?BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val();
-                window.open('@Url.Action("StyleList","PublicWondow",new{Area=""})' + para,'StyleID',config='toolbar=no,status=no,location=no,width=400,height=650');
+                window.open('@Url.Action("StyleList","PublicWindow",new{Area=""})' + para,'StyleID',config='toolbar=no,status=no,location=no,width=400,height=650');
             });
 
             $('#btnDetailArticleSelectItem').on('click', function () {
@@ -774,7 +774,7 @@
                 else if (result == 2) {
                     para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val() + "&StyleID=" + $('#Detail_StyleID').val();
                 }
-                window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
+                window.open('@Url.Action("ArticleList","PublicWindow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
             });
 
             $('#btnDetailSizeCodeSelectItem').on('click', function () {
@@ -790,7 +790,7 @@
                     para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val() + "&StyleID=" + $('#Detail_StyleID').val();
                 }
 
-                window.open('@Url.Action("SizeList","PublicWondow",new{Area=""})' + para,'SizeCode',config='toolbar=no,status=no,location=no,width=400,height=650');
+                window.open('@Url.Action("SizeList","PublicWindow",new{Area=""})' + para,'SizeCode',config='toolbar=no,status=no,location=no,width=400,height=650');
             });
 
         blurEvent("Detail_");
@@ -864,7 +864,7 @@
         }
 
         $.ajax({
-            url: "@Url.Action("BrandList","PublicWondow",new{Area=""})",
+            url: "@Url.Action("BrandList","PublicWindow",new{Area=""})",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ BrandID: $(BrandObject).val(), ReturnType: "JSON" }),
@@ -1095,7 +1095,7 @@
 
     function FailMail() {
         var para = "?Title=Pulling Test&FactoryID=@ViewBag.FactoryID&Type=BulkFGT&ExitReload=False";
-        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+        window.open('@Url.Action("TestFailMailList", "PublicWindow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
 
     }
 

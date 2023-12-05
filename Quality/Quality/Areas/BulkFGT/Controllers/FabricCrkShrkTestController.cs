@@ -509,6 +509,211 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
         #endregion
 
+        #region Iron
+        [SessionAuthorizeAttribute]
+        public ActionResult IronTest(long ID)
+        {
+            FabricCrkShrkTestIron_Result fabricCrkShrkTestIron_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTestIron_Result(ID);
+            if (!fabricCrkShrkTestIron_Result.Result)
+            {
+                fabricCrkShrkTestIron_Result = new FabricCrkShrkTestIron_Result()
+                {
+                    Iron_Main = new FabricCrkShrkTestIron_Main(),
+                    Iron_Detail = new List<FabricCrkShrkTestIron_Detail>(),
+                    ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(fabricCrkShrkTestIron_Result.ErrorMessage) ? string.Empty : fabricCrkShrkTestIron_Result.ErrorMessage.Replace("'", string.Empty))}');",
+                };
+            }
+
+            if (TempData["ModelIronTest"] != null)
+            {
+                FabricCrkShrkTestIron_Result saveResult = (FabricCrkShrkTestIron_Result)TempData["ModelIronTest"];
+                fabricCrkShrkTestIron_Result.Iron_Main.IronRemark = saveResult.Iron_Main.IronRemark;
+                fabricCrkShrkTestIron_Result.Iron_Detail = saveResult.Iron_Detail;
+                fabricCrkShrkTestIron_Result.Result = saveResult.Result;
+                fabricCrkShrkTestIron_Result.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(saveResult.ErrorMessage) ? string.Empty : saveResult.ErrorMessage.Replace("'", string.Empty))}');EditMode = true;";
+            }
+
+            ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
+            ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
+            return View(fabricCrkShrkTestIron_Result);
+        }
+
+        [SessionAuthorizeAttribute]
+        public ActionResult AddIronDetailRow(int lastNO, string BrandID)
+        {
+            string defaultOriginalHorizontal = "0";
+            string defaultOriginalVertical = "0";
+
+            if (BrandID == "LLL")
+            {
+                defaultOriginalHorizontal = "30";
+                defaultOriginalVertical = "30";
+            }
+            string html = string.Empty;
+            html += $"<tr idx='{lastNO}' class='row-content' style='vertical-align: middle; text-align: center;'>";
+            html += "<td>";
+            html += "<div class='input-group'>";
+            html += $"<input class='inputRollSelectItem width6vw' id='Iron_Detail_{lastNO}__Roll' name='Iron_Detail[{lastNO}].Roll' type='text' value='' >";
+            html += "<input type='button' class='site-btn btn-blue btnRollSelectItem' style='margin:0;border:0;' value='...' >";
+            html += "</div>";
+            html += "</td>";
+            html += "<td>";
+            html += "<div class='input-group'>";
+            html += $"<input class='inputRollSelectItem width8vw' id='Iron_Detail_{lastNO}__Dyelot' name='Iron_Detail[{lastNO}].Dyelot' type='text' value='' >";
+            html += "<input type='button' class='site-btn btn-blue btnRollSelectItem' style='margin:0;border:0;' value='...' >";
+            html += "</div>";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalOriginal 必須是數字。' data-val-required='HorizontalOriginal 欄位是必要項。' id='Iron_Detail_{lastNO}__HorizontalOriginal' name='Iron_Detail[{lastNO}].HorizontalOriginal' step='0.01' type='number' value='{defaultOriginalHorizontal}' onchange='value=QtyCheck(value)'>";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Iron_Detail_{lastNO}__VerticalOriginal' name='Iron_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='{defaultOriginalVertical}' onchange='value=QtyCheck(value)'>";
+            html += "</td>";
+
+            html += "<td>";
+            html += $"<select id='Iron_Detail_{lastNO}__Result' name='Iron_Detail[{lastNO}].Result' class='blue width6vw' onchange='changeResultColor(this)'>";
+            html += "<option value='Pass'>Pass</option>";
+            html += "<option value='Fail'>Fail</option>";
+            html += "</select>";
+            html += "</td>";
+
+            html += "<td>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest1 必須是數字。' data-val-required='HorizontalTest1 欄位是必要項。' id='Iron_Detail_{lastNO}__HorizontalTest1' name='Iron_Detail[{lastNO}].HorizontalTest1' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest2 必須是數字。' data-val-required='HorizontalTest2 欄位是必要項。' id='Iron_Detail_{lastNO}__HorizontalTest2' name='Iron_Detail[{lastNO}].HorizontalTest2' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalTest3 必須是數字。' data-val-required='HorizontalTest3 欄位是必要項。' id='Iron_Detail_{lastNO}__HorizontalTest3' name='Iron_Detail[{lastNO}].HorizontalTest3' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input data-val='true' data-val-number='欄位 HorizontalAverage 必須是數字。' data-val-required='HorizontalAverage 欄位是必要項。' id='Iron_Detail_{lastNO}__HorizontalAverage' name='Iron_Detail[{lastNO}].HorizontalAverage' readonly='readonly' step='0.01' type='number' value='0' >";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input data-val='true' data-val-number='欄位 HorizontalRate 必須是數字。' data-val-required='HorizontalRate 欄位是必要項。' id='Iron_Detail_{lastNO}__HorizontalRate' name='Iron_Detail[{lastNO}].HorizontalRate' readonly='readonly' step='0.01' type='number' value='0' >";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest1 必須是數字。' data-val-required='VerticalTest1 欄位是必要項。' id='Iron_Detail_{lastNO}__VerticalTest1' name='Iron_Detail[{lastNO}].VerticalTest1' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest2 必須是數字。' data-val-required='VerticalTest2 欄位是必要項。' id='Iron_Detail_{lastNO}__VerticalTest2' name='Iron_Detail[{lastNO}].VerticalTest2' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalTest3 必須是數字。' data-val-required='VerticalTest3 欄位是必要項。' id='Iron_Detail_{lastNO}__VerticalTest3' name='Iron_Detail[{lastNO}].VerticalTest3' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input data-val='true' data-val-number='欄位 VerticalAverage 必須是數字。' data-val-required='VerticalAverage 欄位是必要項。' id='Iron_Detail_{lastNO}__VerticalAverage' name='Iron_Detail[{lastNO}].VerticalAverage' readonly='readonly' step='0.01' type='number' value='0' >";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input data-val='true' data-val-number='欄位 VerticalRate 必須是數字。' data-val-required='VerticalRate 欄位是必要項。' id='Iron_Detail_{lastNO}__VerticalRate' name='Iron_Detail[{lastNO}].VerticalRate' readonly='readonly' step='0.01' type='number' value='0' >";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input class='date-picker width9vw' data-val='true' data-val-date='欄位 Inspdate 必須是日期。' id='Iron_Detail_{lastNO}__Inspdate' name='Iron_Detail[{lastNO}].Inspdate' type='text' value='' >";
+            html += "</td>";
+            html += "<td>";
+            html += "<div class='input-group'>";
+            html += $"<input class='inputInspectorSelectItem' id='Iron_Detail_{lastNO}__Inspector' name='Iron_Detail[{lastNO}].Inspector' type='text' value='' >";
+            html += "<input id='btnDetailInspectorSelectItem' type='button' class='site-btn btn-blue btnInspectorSelectItem' style='margin:0;border:0;' value='...' >";
+            html += "</div>";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input id='Iron_Detail_{lastNO}__Name' name='Iron_Detail[{lastNO}].Name' readonly='readonly' type='text' value='' >";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input id='Iron_Detail_{lastNO}__Remark' name='Iron_Detail[{lastNO}].Remark' type='text' value='' >";
+            html += "</td>";
+            html += "<td>";
+            html += $"<input id='Iron_Detail_{lastNO}__LastUpdate' name='Iron_Detail[{lastNO}].LastUpdate' readonly='readonly' type='text' value='' >";
+            html += "</td>";
+            html += "<td>";
+            html += "<img class='detailDelete' src='/Image/Icon/Delete.png' style='min-width:30px'>";
+            html += "</td>";
+            html += "</tr>";
+            return Content(html);
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public ActionResult IronTestSave(FabricCrkShrkTestIron_Result Result)
+        {
+            if (Result.Iron_Detail == null)
+            {
+                Result.Iron_Detail = new List<FabricCrkShrkTestIron_Detail>();
+            }
+            Result.MDivisionID = this.MDivisionID;
+
+            Result.Iron_Main.IronTestBeforePicture = Result.Iron_Main.IronTestBeforePicture == null ? null : ImageHelper.ImageCompress(Result.Iron_Main.IronTestBeforePicture);
+            Result.Iron_Main.IronTestAfterPicture = Result.Iron_Main.IronTestAfterPicture == null ? null : ImageHelper.ImageCompress(Result.Iron_Main.IronTestAfterPicture);
+
+            BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestIronDetail(Result, this.UserID);
+
+            if (saveResult.Result)
+            {
+                return RedirectToAction("IronTest", new { ID = Result.ID });
+            }
+            Result.Result = saveResult.Result;
+            Result.ErrorMessage = saveResult.ErrorMessage;
+            TempData["ModelIronTest"] = Result;
+            ViewBag.UserMail = this.UserMail;
+            return RedirectToAction("IronTest", new { ID = Result.ID });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult Encode_Iron(long ID)
+        {
+            BaseResult result = _FabricCrkShrkTest_Service.EncodeFabricCrkShrkTestIronDetail(ID, this.UserID, out string testResult);
+            return Json(new { result.Result, result.ErrorMessage, testResult });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult Amend_Iron(long ID)
+        {
+            BaseResult result = _FabricCrkShrkTest_Service.AmendFabricCrkShrkTestIronDetail(ID);
+            return Json(new { result.Result, ErrorMessage = (result.ErrorMessage == null ? string.Empty : result.ErrorMessage.Replace("'", string.Empty)) });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult FailMail_Iron(long ID, string TO, string CC, string OrderID)
+        {
+            SendMail_Result result = _FabricCrkShrkTest_Service.SendIronFailResultMail(TO, CC, ID, false, OrderID);
+            return Json(result);
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult Report_Iron(long ID)
+        {
+            BaseResult result;
+            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestIronDetail(ID, out string FileName);
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult IronSendMail(long ID)
+        {
+            this.CheckSession();
+
+            BaseResult result = null;
+            string FileName = string.Empty;
+
+            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestIronDetail(ID, out FileName);
+
+            if (!result.Result)
+            {
+                result.ErrorMessage = result.ErrorMessage.ToString();
+            }
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+
+            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
+        }
+        #endregion
+
         #region Wash
         public ActionResult WashTest(long ID)
         {
@@ -543,8 +748,16 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public ActionResult AddWashDetailRow(int lastNO)
+        public ActionResult AddWashDetailRow(int lastNO, string BrandID)
         {
+            string defaultOriginalHorizontal = "0";
+            string defaultOriginalVertical = "0";
+
+            if (BrandID == "LLL")
+            {
+                defaultOriginalHorizontal = "25";
+                defaultOriginalVertical = "30";
+            }
             string html = string.Empty;
             html += $"<tr idx='{lastNO}' class='row-content' style='vertical-align: middle; text-align: center;'>";
             html += "<td>";
@@ -560,10 +773,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</div>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalOriginal 必須是數字。' data-val-required='HorizontalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalOriginal' name='Wash_Detail[{lastNO}].HorizontalOriginal' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalOriginal 必須是數字。' data-val-required='HorizontalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__HorizontalOriginal' name='Wash_Detail[{lastNO}].HorizontalOriginal' step='0.01' type='number' value='{defaultOriginalHorizontal}' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalOriginal' name='Wash_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Wash_Detail_{lastNO}__VerticalOriginal' name='Wash_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='{defaultOriginalVertical}' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
             html += $"<select id='Wash_Main_{lastNO}__Result' name='Wash_Detail[{lastNO}].Result' class='blue width6vw' onchange='changeResultColor(this)'>";

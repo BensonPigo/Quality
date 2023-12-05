@@ -14,7 +14,6 @@
     tr.row-name {
         color: black;
     }
-
     .row {
         --bs-gutter-x: 1.5rem;
         --bs-gutter-y: 0;
@@ -99,6 +98,7 @@
         font-weight: bold;
         border: solid 1px black;
         background-color: white;
+        table-layout: fixed;
     }
 
         .DataTable > tbody img {
@@ -119,6 +119,11 @@
             vertical-align: middle;
         }
 
+    .fixedColumn {
+        position: sticky;
+        left: 0;
+        width: 100%;
+    }
     .CheckBoxColor {
         background-color: rgb(255, 228, 225);
     }
@@ -270,9 +275,9 @@
                     <table cellspacing="100" class="DataTable DetailTable table table-striped display;" style="width: 250vw">
                         <thead>
                             <tr class="row-name" id="row-name">
-                                <th style="width:5vw">Report No</th>
-                                <th style="width:5vw">Seq</th>
-                                <th style="width:5vw">WKNo</th>
+                                <th style="width:5vw" class="fixedColumn">Report No</th>
+                                <th style="width:5vw" class="fixedColumn">Seq</th>
+                                <th style="width:5vw" class="fixedColumn">WKNo</th>
                                 <th style="width:5vw">Arrive W/H Date</th>
                                 <th style="width:5vw">SCI Refno</th>
                                 <th style="width:5vw">Refno</th>
@@ -297,6 +302,14 @@
                                 <th style="width:5vw">Heat Last Test Date</th>
                                 <th style="width:5vw">Remark</th>
                                 <th style="width:5vw">
+                                    Iron N/A<br />
+                                    <input id="selectAllIron" type="checkbox" name="name" />
+                                </th>
+                                <th style="width:5vw">Iron Result</th>
+                                <th style="width:5vw">Iron Last Test Date</th>
+                                <th style="width:5vw">Remark</th>
+
+                                <th style="width:5vw">
                                     Wash N/A<br />
                                     <input id="selectAllWash" type="checkbox" name="name" />
                                 </th>
@@ -306,6 +319,7 @@
                                 <th style="width:5vw">Receiving</th>
                                 <th style="width:5vw">Crocking</th>
                                 <th style="width:5vw">Heat</th>
+                                <th style="width:5vw">Iron</th>
                                 <th style="width:5vw">Wash</th>
                             </tr>
                         </thead>
@@ -314,14 +328,14 @@
                             {
                                 string styleColor = string.Empty;
                                 <tr class="row-content" style="vertical-align: middle; text-align: center;">
-                                    <td>
+                                    <td class="fixedColumn">
                                         @Html.DisplayFor(modelItem => Model.Details[i].ReportNo)
                                     </td>
-                                    <td>
+                                    <td class="fixedColumn">
                                         @Html.HiddenFor(modelItem => Model.Details[i].ID)
                                         @Html.DisplayFor(modelItem => Model.Details[i].Seq)
                                     </td>
-                                    <td>
+                                    <td class="fixedColumn">
                                         @Html.DisplayFor(modelItem => Model.Details[i].WKNo)
                                     </td>
                                     <td>
@@ -407,6 +421,31 @@
                                     <td class="HeatColor">
                                         @Html.DisplayFor(modelItem => Model.Details[i].HeatRemark)
                                     </td>
+
+                                    <td class="CheckBoxColor">
+                                        @Html.CheckBox("Details[" + i + "].NonIron", Convert.ToBoolean(Model.Details[i].NonIron), new { @class = "NonIron" })
+                                    </td>
+                                    <td class="IronColor">
+                                        @{
+                                            if (Model.Details[i].Iron == "Pass")
+
+                                            {
+                                                styleColor = "blue";
+                                            }
+                                            else
+                                            {
+                                                styleColor = "red";
+                                            }
+                                        }
+                                        <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].Iron)</font>
+                                    </td>
+                                    <td class="IronColor">
+                                        @Html.ValueFor(modelItem => Model.Details[i].IronDate, "{0:yyyy/MM/dd}")
+                                    </td>
+                                    <td class="IronColor">
+                                        @Html.DisplayFor(modelItem => Model.Details[i].IronRemark)
+                                    </td>
+
                                     <td class="CheckBoxColor">
                                         @Html.CheckBox("Details[" + i + "].NonWash", Convert.ToBoolean(Model.Details[i].NonWash), new { @class = "NonWash" })
                                     </td>
@@ -438,6 +477,7 @@
 
                                     <td><a class="link" href="@Url.Action("CrockingTest", @controllerName)?ID=@Model.Details[i].ID">CrockingTest</a></td>
                                     <td><a class="link" href="@Url.Action("HeatTest", @controllerName)?ID=@Model.Details[i].ID">HeatTest</a></td>
+                                    <td><a class="link" href="@Url.Action("IronTest", @controllerName)?ID=@Model.Details[i].ID">IronTest</a></td>
                                     <td><a class="link" href="@Url.Action("WashTest", @controllerName)?ID=@Model.Details[i].ID">WashTest</a></td>
                                 </tr>
                             }
@@ -473,6 +513,14 @@
 
             $('.NonHeat').prop('checked', !oldValue);
             $('.NonHeat').attr('checked', !oldValue);
+        });
+
+        $("#selectAllIron").mousedown(function () {
+
+            var oldValue = $(this).prop('checked');
+
+            $('.NonIron').prop('checked', !oldValue);
+            $('.NonIron').attr('checked', !oldValue);
         });
 
         $("#selectAllWash").mousedown(function () {
@@ -543,6 +591,7 @@
                     ReceiveSampleDate: $('#Details_' + index + '__ReceiveSampleDate').val(),
                     NonCrocking: $('#Details_' + index + '__NonCrocking').prop("checked"),
                     NonHeat: $('#Details_' + index + '__NonHeat').prop("checked"),
+                    NonIron: $('#Details_' + index + '__NonIron').prop("checked"),
                     NonWash: $('#Details_' + index + '__NonWash').prop("checked"),
                 });
             });

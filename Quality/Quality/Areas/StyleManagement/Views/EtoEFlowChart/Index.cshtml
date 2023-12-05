@@ -835,17 +835,17 @@
     function QueryButtonBind() {
         $('#btnBrandSelectItem').on('click', function () {
             var para = "?TargetID=Request_BrandID";
-            window.open('@Url.Action("BrandList","PublicWondow",new{Area=""})' + para, 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("BrandList","PublicWindow",new{Area=""})' + para, 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnSeasonSelectItem').on('click', function () {
             var para = "?TargetID=Request_SeasonID&BrandID=" + $('#Request_BrandID').val();
-            window.open('@Url.Action("SeasonList","PublicWondow",new{Area=""})' + para, 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("SeasonList","PublicWindow",new{Area=""})' + para, 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnStyleSelectItem').on('click', function () {
             var para = "?TargetID=Request_StyleID&BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val();
-            window.open('@Url.Action("StyleList","PublicWondow",new{Area=""})' + para, 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("StyleList","PublicWindow",new{Area=""})' + para, 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnArticleSelectItem').on('click', function () {
@@ -855,7 +855,7 @@
             }
 
             var para = "?TargetID=Request_Article&OrderID=&StyleUkey=0&BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val() + "&StyleID=" + $('#Request_StyleID').val();
-            window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("ArticleList","PublicWindow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         blurEvent('Request_');
@@ -874,7 +874,7 @@
             }
 
             $.ajax({
-                url: "@Url.Action("BrandList","PublicWondow",new{Area=""})",
+                url: "@Url.Action("BrandList","PublicWindow",new{Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
@@ -910,7 +910,7 @@
 
             var BrandID = $('#' + name + 'BrandID').val();
             $.ajax({
-                url: "@Url.Action("SeasonList","PublicWondow",new{Area=""})",
+                url: "@Url.Action("SeasonList","PublicWindow",new{Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
@@ -948,7 +948,7 @@
             var BrandID = $('#' + name + 'BrandID').val();
             var SeasonID = $('#' + name + 'SeasonID').val();
             $.ajax({
-                url: "@Url.Action("StyleList","PublicWondow",new{Area=""})",
+                url: "@Url.Action("StyleList","PublicWindow",new{Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
@@ -982,7 +982,7 @@
             var StyleID = $('#' + name + 'StyleID').val();
 
             $.ajax({
-                url: "@Url.Action("ArticleList","PublicWondow",new{Area=""})",
+                url: "@Url.Action("ArticleList","PublicWindow",new{Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, StyleUkey: 0, SeasonID: SeasonID, StyleID: StyleID, Article: $(this).val(), ReturnType: "JSON" }),

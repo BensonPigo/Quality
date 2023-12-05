@@ -925,17 +925,17 @@
     function DetailButtonBind() {
         $('#btnDetailArticleSelectItem').on('click', function () {
                 var para = "?OrderID=" + $('#Main_POID').val() + "&StyleUkey=0";
-                 window.open('@Url.Action("PoidArticleList", "PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
+                 window.open('@Url.Action("PoidArticleList", "PublicWindow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
             });
 
         $('#btnDetailInspectorSelectItem').on('click', function () {
-          window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
+          window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
         });
 
         $('#Main_Article').blur(function () {
             var OrderID = $('#Main_POID').val();
             $.ajax({
-                url: "@Url.Action("PoidArticleList", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("PoidArticleList", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ OrderID: OrderID, StyleUkey: 0, Article: $(this).val(), ReturnType: "JSON" }),
@@ -954,7 +954,7 @@
 
         $('#Main_Inspector').blur(function () {
             $.ajax({
-                url: "@Url.Action("Pass1List", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ID: $(this).val(), ReturnType: "JSON" }),
@@ -982,7 +982,7 @@
         $('.btnDetailSEQSelectItem').unbind('click').on('click', function () {
             var TargetID = $(this).attr("idv");
             var para = "?POID=" + $('#Main_POID').val() + "&FabricType=F&TargetID=" + TargetID;
-            window.open('@Url.Action("Po_Supp_DetailList", "PublicWondow",new{Area=""})' + para, '', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+            window.open('@Url.Action("Po_Supp_DetailList", "PublicWindow",new{Area=""})' + para, '', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
         });
 
         $('.btnDetailRollSelectItem').unbind('click').on('click', function () {
@@ -994,14 +994,14 @@
 
             var seq = $("#Details_" + TargetID + "__SEQ").val().split("-");
             var para = "?Title=Roll&POID=" + $('#Main_POID').val() + "&Seq1=" + seq[0] + "&Seq2=" + seq[1] + "&TargetID=" + TargetID;
-            window.open('@Url.Action("FtyInventoryList", "PublicWondow",new{Area=""})' + para, '', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+            window.open('@Url.Action("FtyInventoryList", "PublicWindow",new{Area=""})' + para, '', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
         });
 
         $('.InputDetailSEQSelectItem').unbind('blur').blur(function () {
             var TargetID = $(this).attr("idv");
             var POID = $('#Main_POID').val();
             $.ajax({
-                url: "@Url.Action("Po_Supp_DetailList", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("Po_Supp_DetailList", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ POID: POID, FabricType: 'F', Seq: $(this).val(), ReturnType: "JSON" }),
@@ -1059,7 +1059,7 @@
             var SEQ2 = seq[1];
 
             $.ajax({
-                url: "@Url.Action("FtyInventoryList", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("FtyInventoryList", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ POID: POID, Seq1: SEQ1, Seq2: SEQ2, Roll: $(this).val(), ReturnType: "JSON" }),
@@ -1184,7 +1184,7 @@
             para += "&" + "AfterColumn=TestAfterPicture";
             para += "&" + "PKey_1=ID";
             para += "&" + "PKey_1_Val=" + $('#Main_ID').val();
-            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
+            window.open('@Url.Action("PictureList", "PublicWindow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
         });
 
         $('#New').unbind('click').on('click', function () {
@@ -1544,7 +1544,7 @@
 
     function FailMail() {
         var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
-        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+        window.open('@Url.Action("TestFailMailList", "PublicWindow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
     }
 
     function GetTestFailMailList(data) {
