@@ -98,7 +98,6 @@
         font-weight: bold;
         border: solid 1px black;
         background-color: white;
-        table-layout: fixed;
     }
 
         .DataTable > tbody img {
@@ -119,10 +118,20 @@
             vertical-align: middle;
         }
 
-    .fixedColumn {
+    .fixedColumn1 {
         position: sticky;
         left: 0;
-        width: 100%;
+        background-color: mistyrose;
+    }
+    .fixedColumn2 {
+        position: sticky;
+        left: 5vw;
+        background-color: mistyrose;
+    }
+    .fixedColumn3 {
+        position: sticky;
+        left: 10vw;
+        background-color: mistyrose;
     }
     .CheckBoxColor {
         background-color: rgb(255, 228, 225);
@@ -275,9 +284,9 @@
                     <table cellspacing="100" class="DataTable DetailTable table table-striped display;" style="width: 250vw">
                         <thead>
                             <tr class="row-name" id="row-name">
-                                <th style="width:5vw" class="fixedColumn">Report No</th>
-                                <th style="width:5vw" class="fixedColumn">Seq</th>
-                                <th style="width:5vw" class="fixedColumn">WKNo</th>
+                                <th style="width:5vw" class="fixedColumn1">Report No</th>
+                                <th style="width:5vw" class="fixedColumn2">Seq</th>
+                                <th style="width:5vw" class="fixedColumn3">WKNo</th>
                                 <th style="width:5vw">Arrive W/H Date</th>
                                 <th style="width:5vw">SCI Refno</th>
                                 <th style="width:5vw">Refno</th>
@@ -328,14 +337,14 @@
                             {
                                 string styleColor = string.Empty;
                                 <tr class="row-content" style="vertical-align: middle; text-align: center;">
-                                    <td class="fixedColumn">
+                                    <td class="fixedColumn1">
                                         @Html.DisplayFor(modelItem => Model.Details[i].ReportNo)
                                     </td>
-                                    <td class="fixedColumn">
+                                    <td class="fixedColumn2">
                                         @Html.HiddenFor(modelItem => Model.Details[i].ID)
                                         @Html.DisplayFor(modelItem => Model.Details[i].Seq)
                                     </td>
-                                    <td class="fixedColumn">
+                                    <td class="fixedColumn3">
                                         @Html.DisplayFor(modelItem => Model.Details[i].WKNo)
                                     </td>
                                     <td>
