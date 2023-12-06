@@ -724,6 +724,7 @@
         });
     }
 
+    // View視窗裡面的數值處理
     function MeasurementValueCheck(obj, unit) {
 
         var val = $(obj).val();
@@ -786,6 +787,9 @@
 
             if (vi > 0 && vd > 0 && vm > 0) {
                 val = vi + ' ' + vd + '/' + vm;
+            }
+            else if (vd > 0 && vm > 0) {
+                val = vd + '/' + vm;
             }
             else {
                 val = vi;
@@ -883,6 +887,7 @@
         $('.MeasurementTable>thead').html(thead);
         $('.MeasurementTable>tbody').html(tbody);
 
+        // Measurement大表的數值處理
         $(".MeasurementTable>tbody>tr>td>input[idx='ResultSizeSpec']").on('change', function () {
             var unit = document.getElementById("SizeUnit").value;
             const rules = /^(((([0-9]{1,3}[ ])|(^))\d{1,2}[/]\d{1,2})|([0-9]{1,3}))$/;
@@ -952,6 +957,9 @@
 
                 if (vi > 0 && vd > 0 && vm > 0) {
                     val = vi + ' ' + vd + '/' + vm;
+                }
+                else if (vd > 0 && vm > 0) {
+                    val = vd + '/' + vm;
                 }
                 else {
                     val = vi;
