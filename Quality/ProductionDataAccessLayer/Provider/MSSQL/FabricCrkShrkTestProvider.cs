@@ -938,9 +938,19 @@ SET XACT_ABORT ON
 update  FIR_Laboratory set  HeatRemark = @HeatRemark
 where   ID = @ID 
 ;
-update  SciPMSFile_FIR_Laboratory set HeatTestBeforePicture = @HeatTestBeforePicture,
-                            HeatTestAfterPicture = @HeatTestAfterPicture
-where   ID = @ID 
+if exists(
+    select 1 from SciPMSFile_FIR_Laboratory where  ID = @ID 
+)
+begin
+    update  SciPMSFile_FIR_Laboratory set HeatTestBeforePicture = @HeatTestBeforePicture,
+                                HeatTestAfterPicture = @HeatTestAfterPicture
+    where   ID = @ID 
+end
+else
+begin
+    insert into SciPMSFile_FIR_Laboratory (ID,HeatTestBeforePicture,HeatTestAfterPicture)
+    values (@ID ,@HeatTestBeforePicture ,@HeatTestAfterPicture )
+end
 ";
 
 
@@ -1331,7 +1341,7 @@ where flc.ID = @ID
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@ID", fabricCrkShrkTestIron_Result.ID);
-            listPar.Add("@IronRemark", fabricCrkShrkTestIron_Result.Iron_Main.IronRemark);
+            listPar.Add("@IronRemark", fabricCrkShrkTestIron_Result.Iron_Main.IronRemark ?? string.Empty);
             listPar.Add("@IronTestBeforePicture", fabricCrkShrkTestIron_Result.Iron_Main.IronTestBeforePicture);
             listPar.Add("@IronTestAfterPicture", fabricCrkShrkTestIron_Result.Iron_Main.IronTestAfterPicture);
 
@@ -1341,9 +1351,19 @@ SET XACT_ABORT ON
 update  FIR_Laboratory set  IronRemark = @IronRemark
 where   ID = @ID 
 ;
-update  SciPMSFile_FIR_Laboratory set IronTestBeforePicture = @IronTestBeforePicture,
-                            IronTestAfterPicture = @IronTestAfterPicture
-where   ID = @ID 
+if exists(
+    select 1 from SciPMSFile_FIR_Laboratory where  ID = @ID 
+)
+begin
+    update  SciPMSFile_FIR_Laboratory set IronTestBeforePicture = @IronTestBeforePicture,
+                                IronTestAfterPicture = @IronTestAfterPicture
+    where   ID = @ID 
+end
+else
+begin
+    insert into SciPMSFile_FIR_Laboratory (ID,IronTestBeforePicture,IronTestAfterPicture)
+    values (@ID ,@IronTestBeforePicture ,@IronTestAfterPicture )
+end
 ";
 
 
@@ -1753,10 +1773,20 @@ SET XACT_ABORT ON
 update  FIR_Laboratory set  WashRemark = @WashRemark, 
                             SkewnessOptionID = @SkewnessOptionID
 where   ID = @ID 
-
-update  SciPMSFile_FIR_Laboratory set WashTestBeforePicture = @WashTestBeforePicture, 
-                            WashTestAfterPicture = @WashTestAfterPicture
-where   ID = @ID 
+;
+if exists(
+    select 1 from SciPMSFile_FIR_Laboratory where  ID = @ID 
+)
+begin
+    update  SciPMSFile_FIR_Laboratory set WashTestBeforePicture = @WashTestBeforePicture,
+                                WashTestAfterPicture = @WashTestAfterPicture
+    where   ID = @ID 
+end
+else
+begin
+    insert into SciPMSFile_FIR_Laboratory (ID,WashTestBeforePicture,WashTestAfterPicture)
+    values (@ID ,@WashTestBeforePicture ,@WashTestAfterPicture )
+end
 ";
 
 
