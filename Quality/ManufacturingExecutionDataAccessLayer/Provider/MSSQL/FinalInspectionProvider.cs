@@ -1577,6 +1577,7 @@ END
             SQLParameterCollection objParameter = new SQLParameterCollection();
             DataTable dtDateTime = ExecuteDataTableByServiceConn(CommandType.Text, "select [DateTime] = getdate()", objParameter);
 
+
             using (TransactionScope transactionScope = new TransactionScope())
             {
                 foreach (MeasurementItem measurementItem in measurement.ListMeasurementItem)
@@ -1592,6 +1593,18 @@ END
                     objParameter.Add("@MeasurementUkey", measurementItem.MeasurementUkey);
                     objParameter.Add("@AddName", userID);
                     objParameter.Add("@AddDate", dtDateTime.Rows[0]["DateTime"]);
+
+                    bool isFractional = false;
+                    if (measurementItem.ResultSizeSpec != null && measurementItem.ResultSizeSpec.Contains("/"))
+                    {
+                        isFractional = true;
+                    }
+
+                    string ins = "@SizeSpec";
+                    if (isFractional)
+                    {
+                        ins = "(SELECT dbo.getFractional(@SizeSpec))";
+                    }
 
                     string sqlInsertMeasurement = $@"
 insert into FinalInspection_Measurement(
@@ -1612,7 +1625,7 @@ values
 ,@SizeCode
 ,@Location
 ,@Code
-,(  IIF(@SizeUnit='CM' ,@SizeSpec, (SELECT dbo.getFractional(@SizeSpec)) ) )
+,{ins}
 ,@MeasurementUkey
 ,@AddName
 ,@AddDate
@@ -1652,11 +1665,24 @@ values
                 {
                     objParameter.Add($@"@Ukey{idx}", measuremen.FinalInspection_MeasurementUkey);
                     objParameter.Add($@"@SizeSpec{idx}", measuremen.ResultSizeSpec);
+
+                    bool isFractional = false;
+                    if (measuremen.ResultSizeSpec != null && measuremen.ResultSizeSpec.Contains("/"))
+                    {
+                        isFractional = true;
+                    }
+
+                    string ins = $@"@SizeSpec{idx}";
+                    if (isFractional)
+                    {
+                        ins = $@"(SELECT dbo.getFractional(@SizeSpec{idx}))";
+                    }
+
                     string sql = $@"
 UPDATE FinalInspection_Measurement 
 SET EditDate=GETDATE()
 ,EditName = '{userID}'
-,SizeSpec = IIF(@SizeUnit='CM' ,@SizeSpec{idx}, (SELECT dbo.getFractional(@SizeSpec{idx})) )
+,SizeSpec = {ins}
 where Ukey = @Ukey{idx}";
                     stringBuilder.Append(sql);
                     idx++;

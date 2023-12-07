@@ -724,7 +724,7 @@
         });
     }
 
-    // View視窗裡面的數值處理
+    // View視窗裡面的數值處理，必須與.MeasurementTable>tbody>tr>td>input[idx='ResultSizeSpec'] 同步
     function MeasurementValueCheck(obj, unit) {
 
         var val = $(obj).val();
@@ -734,36 +734,47 @@
             return;
         }
 
+        var isFractional = false;
+        if (val.toString().indexOf('/') > -1 && val.toString().indexOf(".") > -1) {
+            // 同時存在小數和分數符號
+            $(obj).val("");
+            return;
+        }
+        else if (val.toString().indexOf('/') > -1) {
+            // 只有分數符號
+            isFractional = true;
+        }
+        else if (val.toString().indexOf(".") > -1) {
+            // 只有小數符號
+            isFractional = false;
+        }
+
         // 針對輸入的value進行約分
         var vi = 0, vd = 0, vm = 0;
 
-        if (val.toString().indexOf(' ') > -1 && val.toString().indexOf('/') > -1 && val.toString().indexOf(".") < 0) {
-            // 分數
-            if (containsInvalidCharacters1(val) || unit == 'CM') {
+        if (isFractional) {
+            // 是分數，檢查有沒有多餘符號
+            if (containsInvalidCharacters1(val)) {
                 val = 0;
             }
-            vi = val.substr(0, val.toString().indexOf(' '));
+            else {
+                vi = val.substr(0, val.toString().indexOf(' '));
+            }
         }
-        else if (val.toString().indexOf(".") > 0 && val.toString().indexOf(' ') < 0 && val.toString().indexOf('/') < 0) {
-            // 小數
+        else {
+            // 是小數，檢查有沒有多餘符號
             if (containsInvalidCharacters2(val)) {
                 val = 0;
             }
             vi = val;
         }
-        else if (val.toString().indexOf('/') > 0 && val.toString().indexOf(".") < 0) {
-            // 分數
-            if (containsInvalidCharacters1(val) || unit == 'CM') {
-                val = 0;
-            }
-        }
-        else if (val.toString().indexOf(".") > 0 && val.toString().indexOf(' ') > 0 && val.toString().indexOf('/') > 0) {
-            val = 0;
-        }
 
         if (val == "" || val <= 0) {
             $(obj).val(val);
             return;
+        }
+        if (vi == '') {
+            vi = 0;
         }
 
         if (val.toString().indexOf('/') > -1) {
@@ -887,7 +898,7 @@
         $('.MeasurementTable>thead').html(thead);
         $('.MeasurementTable>tbody').html(tbody);
 
-        // Measurement大表的數值處理
+        // Measurement大表的數值處理，必須與function MeasurementValueCheck同步
         $(".MeasurementTable>tbody>tr>td>input[idx='ResultSizeSpec']").on('change', function () {
             var unit = document.getElementById("SizeUnit").value;
             const rules = /^(((([0-9]{1,3}[ ])|(^))\d{1,2}[/]\d{1,2})|([0-9]{1,3}))$/;
@@ -897,6 +908,7 @@
             var tolh = $(this).parent().parent().children().find("p[idx='Tol+']").html();
             var toll = $(this).parent().parent().children().find("p[idx='Tol-']").html();
 
+
             if (val == "" || val <= 0) {
                 $(this).val("");
                 $(this).parent().parent().children().find("p[class='Diff']").html('');
@@ -904,36 +916,50 @@
                 return;
             }
 
+            var isFractional = false;
+            if (val.toString().indexOf('/') > -1 && val.toString().indexOf(".") > -1) {
+                // 同時存在小數和分數符號
+                $(this).val("");
+                $(this).parent().parent().children().find("p[class='Diff']").html('');
+                $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
+                return;
+            }
+            else if (val.toString().indexOf('/') > -1) {
+                // 只有分數符號
+                isFractional = true;
+            }
+            else if (val.toString().indexOf(".") > -1) {
+                // 只有小數符號
+                isFractional = false;
+            }
+
             // 針對輸入的value進行約分
             var vi = 0, vd = 0, vm = 0;
 
-            if (val.toString().indexOf(' ') > -1 && val.toString().indexOf('/') > -1 && val.toString().indexOf(".") < 0) {
-                // 分數
-                if (containsInvalidCharacters1(val) || unit == 'CM') {
+            if (isFractional) {
+                // 是分數，檢查有沒有多餘符號
+                if (containsInvalidCharacters1(val)) {
                     val = 0;
                 }
-                vi = val.substr(0, val.toString().indexOf(' '));
+                else {
+                    vi = val.substr(0, val.toString().indexOf(' '));
+                }
             }
-            else if (val.toString().indexOf(".") > 0 && val.toString().indexOf(' ') < 0 && val.toString().indexOf('/') < 0) {
-                // 小數
+            else {
+                // 是小數，檢查有沒有多餘符號
                 if (containsInvalidCharacters2(val)) {
                     val = 0;
                 }
                 vi = val;
             }
-            else if (val.toString().indexOf('/') > 0 && val.toString().indexOf(".") < 0) {
-                // 分數
-                if (containsInvalidCharacters1(val) || unit == 'CM') {
-                    val = 0;
-                }
-            }
-            else if (val.toString().indexOf(".") > 0 && val.toString().indexOf(' ') > 0 && val.toString().indexOf('/') > 0) {
-                val = 0;
-            }
 
             if (val == "" || val <= 0) {
                 $(this).val(val);
                 return;
+            }
+
+            if (vi == '') {
+                vi = 0;
             }
 
             if (val.toString().indexOf('/') > -1) {
@@ -1039,8 +1065,15 @@
                 var newValue = 0;
                 if ($(currentCol).val() != '') {
 
+                    // 有可能同一個Measurement表裡面會同時包含小數和分數，因此tpye == "text"不一定都是分數，還要再把小數拉出來額外運算
+                    if ($(currentCol).val().indexOf('.') > -1) {
+                        oldValue = parseFloat($(currentCol).val());
+                        var newValue = oldValue + 0.0625;
+                        newValue = newValue.toFixed(4);
+                        $(currentCol).val(newValue).change();
+                    }
                     //有分數，例如：1 1/2，把分子獨立出來+1
-                    if ($(currentCol).val().split(' ').length == 2) {
+                    else if ($(currentCol).val().split(' ').length == 2) {
                         var interg = $(currentCol).val().split(' ')[0];
 
                         var float = $(currentCol).val().split(' ')[1];
@@ -1069,10 +1102,6 @@
 
                             var tmp = CacuFraction($(currentCol).val() + '/1', '1/16', 'addition');
                             newValue = tmp;
-
-                            //// 其餘直接轉成整數
-                            //oldValue = parseFloat($(currentCol).val());
-                            //newValue = oldValue + 1;
                         }
                     }
 
@@ -1111,11 +1140,17 @@
                 var newValue = 0;
                 if ($(currentCol).val() != '') {
 
+                    // 有可能同一個Measurement表裡面會同時包含小數和分數，因此tpye == "text"不一定都是分數，還要再把小數拉出來額外運算
+                    if ($(currentCol).val().indexOf('.') > -1) {
+                        oldValue = parseFloat($(currentCol).val());
+                        var newValue = oldValue - 0.0625;
+                        newValue = newValue.toFixed(4);
+                        $(currentCol).val(newValue).change();
+                    }
                     //有分數，例如：1 1/2，把整數位獨立出來-1
-                    if ($(currentCol).val().split(' ').length == 2) {
+                    else if ($(currentCol).val().split(' ').length == 2) {
                         var interg = $(currentCol).val().split(' ')[0];
                         var float = $(currentCol).val().split(' ')[1];
-
 
                         var tmp = CacuFraction(float, '1/16', 'subtraction');
                         //var tmp = parseInt(interg) - 1;
@@ -1157,8 +1192,6 @@
                             var tmp = CacuFraction($(currentCol).val() + '/1', '1/16', 'subtraction');
                             newValue = tmp;
                             // 其餘直接轉成整數
-                            //oldValue = parseFloat($(currentCol).val());
-                            //newValue = oldValue - 1;
                         }
 
                     }
