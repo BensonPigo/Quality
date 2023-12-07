@@ -746,7 +746,7 @@
         }
         else if (val.toString().indexOf(".") > 0 && val.toString().indexOf(' ') < 0 && val.toString().indexOf('/') < 0) {
             // 小數
-            if (containsInvalidCharacters2(val) || unit == 'INCH') {
+            if (containsInvalidCharacters2(val)) {
                 val = 0;
             }
             vi = val;
@@ -916,7 +916,7 @@
             }
             else if (val.toString().indexOf(".") > 0 && val.toString().indexOf(' ') < 0 && val.toString().indexOf('/') < 0) {
                 // 小數
-                if (containsInvalidCharacters2(val) || unit == 'INCH') {
+                if (containsInvalidCharacters2(val)) {
                     val = 0;
                 }
                 vi = val;
