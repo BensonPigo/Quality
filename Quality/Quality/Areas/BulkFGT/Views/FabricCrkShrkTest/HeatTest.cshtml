@@ -777,11 +777,13 @@
             lastNO = 0;
         }
 
+        var brandid = '@Model.Heat_Main.BrandID';
+
         $.ajax({
             url: "@Url.Action("AddHeatDetailRow", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ lastNO: lastNO }),
+            data: JSON.stringify({ lastNO: lastNO, BrandID: brandid }),
             async: false,
             success: function (data) {
                 $('.DetailTable > thead > tr').show();

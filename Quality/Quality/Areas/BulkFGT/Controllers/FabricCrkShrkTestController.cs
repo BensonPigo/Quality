@@ -343,9 +343,18 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
 
         [SessionAuthorizeAttribute]
-        public ActionResult AddHeatDetailRow(int lastNO)
+        public ActionResult AddHeatDetailRow(int lastNO, string BrandID)
         {
             string html = string.Empty;
+            string defaultOriginalHorizontal = "0";
+            string defaultOriginalVertical = "0";
+
+            if (BrandID == "LLL")
+            {
+                defaultOriginalHorizontal = "30";
+                defaultOriginalVertical = "30";
+            }
+
             html += $"<tr idx='{lastNO}' class='row-content' style='vertical-align: middle; text-align: center;'>";
             html += "<td>";
             html += "<div class='input-group'>";
@@ -360,10 +369,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += "</div>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalOriginal 必須是數字。' data-val-required='HorizontalOriginal 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalOriginal' name='Heat_Detail[{lastNO}].HorizontalOriginal' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
+            html += $"<input class='HorizontalTest' data-val='true' data-val-number='欄位 HorizontalOriginal 必須是數字。' data-val-required='HorizontalOriginal 欄位是必要項。' id='Heat_Detail_{lastNO}__HorizontalOriginal' name='Heat_Detail[{lastNO}].HorizontalOriginal' step='0.01' type='number' value='{defaultOriginalHorizontal}' onchange='value=QtyCheck(value)'>";
             html += "</td>";
             html += "<td>";
-            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalOriginal' name='Heat_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='0' onchange='value=QtyCheck(value)'>";
+            html += $"<input class='VerticalTest' data-val='true' data-val-number='欄位 VerticalOriginal 必須是數字。' data-val-required='VerticalOriginal 欄位是必要項。' id='Heat_Detail_{lastNO}__VerticalOriginal' name='Heat_Detail[{lastNO}].VerticalOriginal' step='0.01' type='number' value='{defaultOriginalVertical}' onchange='value=QtyCheck(value)'>";
             html += "</td>";
 
             html += "<td>";
@@ -755,7 +764,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (BrandID == "LLL")
             {
-                defaultOriginalHorizontal = "25";
+                defaultOriginalHorizontal = "30";
                 defaultOriginalVertical = "30";
             }
             string html = string.Empty;
