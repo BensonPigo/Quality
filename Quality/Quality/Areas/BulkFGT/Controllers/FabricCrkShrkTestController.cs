@@ -764,8 +764,8 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (BrandID == "LLL")
             {
-                defaultOriginalHorizontal = "30";
-                defaultOriginalVertical = "30";
+                defaultOriginalHorizontal = "25";
+                defaultOriginalVertical = "25";
             }
             string html = string.Empty;
             html += $"<tr idx='{lastNO}' class='row-content' style='vertical-align: middle; text-align: center;'>";
