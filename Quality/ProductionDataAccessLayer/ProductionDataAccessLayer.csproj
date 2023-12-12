@@ -163,7 +163,7 @@
     <Compile Include="Provider\MSSQL\OvenDetailProvider.cs" />
     <Compile Include="Provider\MSSQL\OvenProvider.cs" />
     <Compile Include="Provider\MSSQL\Pass1Provider.cs" />
-    <Compile Include="Provider\MSSQL\PublicWondowProvider.cs" />
+    <Compile Include="Provider\MSSQL\PublicWindowProvider.cs" />
     <Compile Include="Provider\MSSQL\ScaleProvider.cs" />
     <Compile Include="Provider\MSSQL\SeasonProvider.cs" />
     <Compile Include="Provider\MSSQL\SewingLineProvider.cs" />

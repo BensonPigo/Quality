@@ -84,6 +84,31 @@ namespace BusinessLogicLayer.Service
             return baseResult;
         }
 
+        public BaseResult AmendFabricCrkShrkTestIronDetail(long ID)
+        {
+            BaseResult baseResult = new BaseResult();
+            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                FabricCrkShrkTestIron_Main fabricCrkShrkTestIron_Main = _FabricCrkShrkTestProvider.GetFabricIronTest_Main(ID);
+
+                if (fabricCrkShrkTestIron_Main.IronEncode == false)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $"This record is not Encode";
+                    return baseResult;
+                }
+
+                _FabricCrkShrkTestProvider.AmendFabricIron(ID);
+            }
+            catch (Exception ex)
+            {
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
+            }
+
+            return baseResult;
+        }
         public BaseResult AmendFabricCrkShrkTestWashDetail(long ID)
         {
             BaseResult baseResult = new BaseResult();
@@ -202,6 +227,52 @@ namespace BusinessLogicLayer.Service
             }
         }
 
+        public BaseResult EncodeFabricCrkShrkTestIronDetail(long ID, string userID, out string testResult)
+        {
+            BaseResult baseResult = new BaseResult();
+            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+            testResult = string.Empty;
+            try
+            {
+                FabricCrkShrkTestIron_Result fabricCrkShrkTestIron_Result = this.GetFabricCrkShrkTestIron_Result(ID);
+
+                if (fabricCrkShrkTestIron_Result.Iron_Main.IronEncode == true)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $"This record already Encode";
+                    return baseResult;
+                }
+
+                if (fabricCrkShrkTestIron_Result.Iron_Detail.Count == 0)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $"Please test one Roll least.";
+                    return baseResult;
+                }
+
+                string IronResult = "Pass";
+
+                if (fabricCrkShrkTestIron_Result.Iron_Detail.Any(s => s.Result.ToUpper() == "FAIL"))
+                {
+                    IronResult = "Fail";
+                }
+
+                testResult = IronResult;
+
+                DateTime? IronDate = fabricCrkShrkTestIron_Result.Iron_Detail.Max(s => s.Inspdate);
+
+                _FabricCrkShrkTestProvider.EncodeFabricIron(ID, testResult, IronDate, userID);
+
+                return baseResult;
+            }
+            catch (Exception ex)
+            {
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
+                return baseResult;
+            }
+        }
+
         public BaseResult EncodeFabricCrkShrkTestWashDetail(long ID, string userID, out string testResult)
         {
             BaseResult baseResult = new BaseResult();
@@ -303,6 +374,32 @@ namespace BusinessLogicLayer.Service
             }
 
             return fabricCrkShrkTestHeat_Result;
+        }
+        public FabricCrkShrkTestIron_Result GetFabricCrkShrkTestIron_Result(long ID)
+        {
+            FabricCrkShrkTestIron_Result fabricCrkShrkTestIron_Result = new FabricCrkShrkTestIron_Result();
+            try
+            {
+                _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+
+                _ScaleProvider = new ScaleProvider(Common.ProductionDataAccessLayer);
+
+                fabricCrkShrkTestIron_Result.Iron_Main = _FabricCrkShrkTestProvider.GetFabricIronTest_Main(ID);
+
+                fabricCrkShrkTestIron_Result.Iron_Detail = _FabricCrkShrkTestProvider.GetFabricIronTest_Detail(ID);
+
+                fabricCrkShrkTestIron_Result.ID = ID;
+
+                fabricCrkShrkTestIron_Result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                fabricCrkShrkTestIron_Result.Result = false;
+
+                fabricCrkShrkTestIron_Result.ErrorMessage = ex.Message.Replace("'", string.Empty);
+            }
+
+            return fabricCrkShrkTestIron_Result;
         }
 
         public FabricCrkShrkTestWash_Result GetFabricCrkShrkTestWash_Result(long ID)
@@ -544,6 +641,103 @@ namespace BusinessLogicLayer.Service
             return baseResult;
         }
 
+        public BaseResult SaveFabricCrkShrkTestIronDetail(FabricCrkShrkTestIron_Result fabricCrkShrkTestIron_Result, string userID)
+        {
+            BaseResult baseResult = new BaseResult();
+            try
+            {
+                bool isRollDyelotEmpty = fabricCrkShrkTestIron_Result.Iron_Detail.Any(s => MyUtility.Check.Empty(s.Roll) || MyUtility.Check.Empty(s.Dyelot));
+                if (isRollDyelotEmpty)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = "Roll and Dyelot cannot be empty.";
+                    return baseResult;
+                }
+
+                bool isHorizontalVerticalEmpty = fabricCrkShrkTestIron_Result.Iron_Detail.Any(s =>
+                                                    MyUtility.Check.Empty(s.VerticalOriginal) ||
+                                                    MyUtility.Check.Empty(s.HorizontalOriginal) ||
+                                                    MyUtility.Check.Empty(s.HorizontalTest1) ||
+                                                    MyUtility.Check.Empty(s.HorizontalTest2) ||
+                                                    MyUtility.Check.Empty(s.HorizontalTest3) ||
+                                                    MyUtility.Check.Empty(s.VerticalTest1) ||
+                                                    MyUtility.Check.Empty(s.VerticalTest2) ||
+                                                    MyUtility.Check.Empty(s.VerticalTest3)
+                                                    );
+
+                if (isHorizontalVerticalEmpty)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = "Horizontal and Vertical cannot be empty.";
+                    return baseResult;
+                }
+
+                bool isInspectorEmpty = fabricCrkShrkTestIron_Result.Iron_Detail.Any(s => MyUtility.Check.Empty(s.Inspector));
+                if (isInspectorEmpty)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = "Lab Tech cannot be empty.";
+                    return baseResult;
+                }
+
+                bool isResultEmpty = fabricCrkShrkTestIron_Result.Iron_Detail.Any(s => MyUtility.Check.Empty(s.Result));
+                if (isResultEmpty)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = "Result cannot be empty.";
+                    return baseResult;
+                }
+
+                var listKeyDuplicateItems = fabricCrkShrkTestIron_Result
+                    .Iron_Detail.GroupBy(s => new
+                    {
+                        s.Roll,
+                        s.Dyelot,
+                    })
+                    .Where(groupItem => groupItem.Count() > 1);
+
+                if (listKeyDuplicateItems.Any())
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $@"The following data is duplicated
+{listKeyDuplicateItems.Select(s => $"[Roll]{s.Key.Roll}, [Dyelot]{s.Key.Dyelot}").JoinToString(Environment.NewLine)}
+";
+                    return baseResult;
+                }
+
+                // 重算HorizontalRate, VerticalRate
+                foreach (FabricCrkShrkTestIron_Detail fabricCrkShrkTestIron_Detail in fabricCrkShrkTestIron_Result.Iron_Detail)
+                {
+                    fabricCrkShrkTestIron_Detail.HorizontalAverage = (fabricCrkShrkTestIron_Detail.HorizontalTest1 + fabricCrkShrkTestIron_Detail.HorizontalTest2 + fabricCrkShrkTestIron_Detail.HorizontalTest3) / 3;
+                    fabricCrkShrkTestIron_Detail.HorizontalRate = Math.Round((fabricCrkShrkTestIron_Detail.HorizontalAverage - fabricCrkShrkTestIron_Detail.HorizontalOriginal) / fabricCrkShrkTestIron_Detail.HorizontalOriginal * 100, 2);
+
+                    fabricCrkShrkTestIron_Detail.VerticalAverage = (fabricCrkShrkTestIron_Detail.VerticalTest1 + fabricCrkShrkTestIron_Detail.VerticalTest2 + fabricCrkShrkTestIron_Detail.VerticalTest3) / 3;
+                    fabricCrkShrkTestIron_Detail.VerticalRate = Math.Round((fabricCrkShrkTestIron_Detail.VerticalAverage - fabricCrkShrkTestIron_Detail.VerticalOriginal) / fabricCrkShrkTestIron_Detail.VerticalOriginal * 100, 2);
+                }
+
+                _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+
+                if (fabricCrkShrkTestIron_Result.Iron_Main.IronTestBeforePicture == null)
+                {
+                    fabricCrkShrkTestIron_Result.Iron_Main.IronTestBeforePicture = new byte[0];
+                }
+
+                if (fabricCrkShrkTestIron_Result.Iron_Main.IronTestAfterPicture == null)
+                {
+                    fabricCrkShrkTestIron_Result.Iron_Main.IronTestAfterPicture = new byte[0];
+                }
+
+                _FabricCrkShrkTestProvider.UpdateFabricIronTestDetail(fabricCrkShrkTestIron_Result, userID);
+            }
+            catch (Exception ex)
+            {
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
+            }
+
+            return baseResult;
+        }
+
         public BaseResult SaveFabricCrkShrkTestMain(FabricCrkShrkTest_Result fabricCrkShrkTest_Result)
         {
             BaseResult baseResult = new BaseResult();
@@ -721,126 +915,6 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        /*
-        public BaseResult ToExcelFabricCrkShrkTestCrockingDetail(long ID, out string excelFileName, bool isTest)
-        {
-            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
-            _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
-            BaseResult result = new BaseResult();
-            excelFileName = string.Empty;
-
-            try
-            {
-                string baseFilePath = isTest ? Directory.GetCurrentDirectory() : System.Web.HttpContext.Current.Server.MapPath("~/");
-                DataTable dtCrockingDetail = _FabricCrkShrkTestProvider.GetCrockingDetailForReport(ID);
-                FabricCrkShrkTestCrocking_Main fabricCrkShrkTestCrocking_Main = _FabricCrkShrkTestProvider.GetFabricCrockingTest_Main(ID);
-                string[] columnNames;
-                string excelName = string.Empty;
-
-                int crockingTestOption = _FabricCrkShrkTestProvider.GetCrockingTestOption(ID);
-
-                switch (crockingTestOption)
-                {
-                    case 0:
-                        columnNames = new string[] { "Roll", "Dyelot", "DryScale", "WetScale", "Result", "InspDate", "Inspector", "Remark", "LastUpdate" };
-                        excelName = baseFilePath + "\\XLT\\FabricCrockingTest.xltx";
-                        break;
-                    default:
-                        columnNames = new string[] { "Roll", "Dyelot", "DryScale", "DryScale_Weft", "WetScale", "WetScale_Weft", "Result", "InspDate", "Inspector", "Remark", "LastUpdate" };
-                        excelName = baseFilePath + "\\XLT\\FabricCrockingTestWeftWarp.xltx";
-                        break;
-                }
-
-                var ret = Array.CreateInstance(typeof(object), dtCrockingDetail.Rows.Count, columnNames.Length) as object[,];
-                for (int i = 0; i < dtCrockingDetail.Rows.Count; i++)
-                {
-                    DataRow row = dtCrockingDetail.Rows[i];
-                    for (int j = 0; j < columnNames.Length; j++)
-                    {
-                        ret[i, j] = row[columnNames[j]];
-                    }
-                }
-
-                if (dtCrockingDetail.Rows.Count == 0)
-                {
-                    result.Result = false;
-                    result.ErrorMessage = "Data not found!";
-                    return result;
-                }
-
-                // 撈取seasonID
-                List<Orders> listOrders = _OrdersProvider.Get(new Orders() { ID = fabricCrkShrkTestCrocking_Main.POID }).ToList();
-
-                string seasonID;
-
-                if (listOrders.Count == 0)
-                {
-                    seasonID = string.Empty;
-                }
-                else
-                {
-                    seasonID = listOrders[0].SeasonID;
-                }
-
-                Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(excelName);
-                //MyUtility.Excel.CopyToXls(ret, xltFileName: excelName, fileName: string.Empty, openfile: false, headerline: 5, excelAppObj: excel);
-
-                Microsoft.Office.Interop.Excel.Worksheet excelSheets = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-                excel.Cells[2, 2] = fabricCrkShrkTestCrocking_Main.POID;
-                excel.Cells[2, 4] = fabricCrkShrkTestCrocking_Main.SEQ;
-                excel.Cells[2, 6] = fabricCrkShrkTestCrocking_Main.ColorID;
-                excel.Cells[2, 8] = fabricCrkShrkTestCrocking_Main.StyleID;
-                excel.Cells[2, 10] = seasonID;
-                excel.Cells[3, 2] = fabricCrkShrkTestCrocking_Main.SCIRefno;
-                excel.Cells[3, 4] = fabricCrkShrkTestCrocking_Main.ExportID;
-                excel.Cells[3, 6] = fabricCrkShrkTestCrocking_Main.Crocking;
-                excel.Cells[3, 8] = fabricCrkShrkTestCrocking_Main.CrockingDate == null ? string.Empty : ((DateTime)fabricCrkShrkTestCrocking_Main.CrockingDate).ToString("yyyy/MM/dd");
-                excel.Cells[3, 10] = fabricCrkShrkTestCrocking_Main.BrandID;
-                excel.Cells[4, 2] = fabricCrkShrkTestCrocking_Main.Refno;
-                excel.Cells[4, 4] = fabricCrkShrkTestCrocking_Main.ArriveQty;
-                excel.Cells[4, 6] = fabricCrkShrkTestCrocking_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestCrocking_Main.WhseArrival).ToString("yyyy/MM/dd");
-                excel.Cells[4, 8] = fabricCrkShrkTestCrocking_Main.Supp;
-                excel.Cells[4, 10] = fabricCrkShrkTestCrocking_Main.NonCrocking.ToString();
-
-                int RowIdx = 0;
-                foreach (DataRow dr in dtCrockingDetail.Rows)
-                {
-                    int colIndex = 1;
-                    foreach (string col in columnNames)
-                    {
-                        excel.Cells[RowIdx + 6, colIndex] = dtCrockingDetail.Rows[RowIdx][col].ToString();
-                        colIndex++;
-                    }
-
-                    RowIdx++;
-                }
-
-                excel.Cells.EntireColumn.AutoFit();    // 自動欄寬
-                excel.Cells.EntireRow.AutoFit();       ////自動欄高
-
-                #region Save & Show Excel
-                excelFileName = $"FabricCrockingTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-                string filepath = Path.Combine(baseFilePath, "TMP", excelFileName);
-
-                Excel.Workbook workbook = excel.ActiveWorkbook;
-                workbook.SaveAs(filepath);
-
-                workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(excel);
-                Marshal.ReleaseComObject(excelSheets);
-                #endregion
-
-            }
-            catch (Exception ex)
-            {
-                result.Result = false;
-                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
-            }
-
-            return result;
-        }
-        */
         public BaseResult ToExcelFabricCrkShrkTestHeatDetail(long ID, out string excelFileName)
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
@@ -947,6 +1021,132 @@ namespace BusinessLogicLayer.Service
 
                 #region Save & Show Excel
                 excelFileName = $"FabricHeatTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string filepath = Path.Combine(baseFilePath, "TMP", excelFileName);
+
+                Excel.Workbook workbook = excel.ActiveWorkbook;
+                workbook.SaveAs(filepath);
+
+                workbook.Close();
+                excel.Quit();
+                Marshal.ReleaseComObject(excel);
+                Marshal.ReleaseComObject(excelSheets);
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
+            }
+
+            return result;
+
+        }
+        public BaseResult ToExcelFabricCrkShrkTestIronDetail(long ID, out string excelFileName)
+        {
+            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+            _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            BaseResult result = new BaseResult();
+            excelFileName = string.Empty;
+
+            try
+            {
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
+                DataTable dtIronDetail = _FabricCrkShrkTestProvider.GetIronDetailForReport(ID);
+                FabricCrkShrkTestIron_Main fabricCrkShrkTestIron_Main = _FabricCrkShrkTestProvider.GetFabricIronTest_Main(ID);
+
+                string excelName = baseFilePath + "\\XLT\\FabricIronTest.xltx";
+                string[] columnNames = new string[]
+                {
+                "Roll", "Dyelot", "HorizontalOriginal", "VerticalOriginal", "Result", "HorizontalTest1", "HorizontalTest2", "HorizontalTest3", "HorizontalAverage", "HorizontalRate",
+                "VerticalTest1", "VerticalTest2", "VerticalTest3", "VerticalAverage", "VerticalRate", "InspDate", "Inspector", "Name", "Remark", "LastUpdate",
+                };
+
+                var ret = Array.CreateInstance(typeof(object), dtIronDetail.Rows.Count, columnNames.Length) as object[,];
+                for (int i = 0; i < dtIronDetail.Rows.Count; i++)
+                {
+                    DataRow row = dtIronDetail.Rows[i];
+                    for (int j = 0; j < columnNames.Length; j++)
+                    {
+                        ret[i, j] = row[columnNames[j]];
+                    }
+                }
+
+                if (dtIronDetail.Rows.Count == 0)
+                {
+                    result.Result = false;
+                    result.ErrorMessage = "Data not found!";
+                    return result;
+                }
+
+                // 撈seasonID
+                // 撈取seasonID
+                List<Orders> listOrders = _OrdersProvider.Get(new Orders() { ID = fabricCrkShrkTestIron_Main.POID }).ToList();
+
+                string seasonID;
+
+                if (listOrders.Count == 0)
+                {
+                    seasonID = string.Empty;
+                }
+                else
+                {
+                    seasonID = listOrders[0].SeasonID;
+                }
+
+                Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(excelName);
+
+                Microsoft.Office.Interop.Excel.Worksheet excelSheets = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
+                excelSheets.Cells[2, 2] = fabricCrkShrkTestIron_Main.ReportNo;
+                excelSheets.Cells[3, 2] = fabricCrkShrkTestIron_Main.POID;
+                excelSheets.Cells[3, 4] = fabricCrkShrkTestIron_Main.SEQ;
+                excelSheets.Cells[3, 6] = fabricCrkShrkTestIron_Main.ColorID;
+                excelSheets.Cells[3, 8] = fabricCrkShrkTestIron_Main.StyleID;
+                excelSheets.Cells[3, 10] = seasonID;
+                excelSheets.Cells[4, 2] = fabricCrkShrkTestIron_Main.SCIRefno;
+                excelSheets.Cells[4, 4] = fabricCrkShrkTestIron_Main.ExportID;
+                excelSheets.Cells[4, 6] = fabricCrkShrkTestIron_Main.Iron;
+                excelSheets.Cells[4, 8] = fabricCrkShrkTestIron_Main.IronDate == null ? string.Empty : ((DateTime)fabricCrkShrkTestIron_Main.IronDate).ToString("yyyy/MM/dd");
+                excelSheets.Cells[4, 10] = fabricCrkShrkTestIron_Main.BrandID;
+                excelSheets.Cells[5, 2] = fabricCrkShrkTestIron_Main.Refno;
+                excelSheets.Cells[5, 4] = fabricCrkShrkTestIron_Main.ArriveQty;
+                excelSheets.Cells[5, 6] = fabricCrkShrkTestIron_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestIron_Main.WhseArrival).ToString("yyyy/MM/dd");
+                excelSheets.Cells[5, 8] = fabricCrkShrkTestIron_Main.Supp;
+                excelSheets.Cells[5, 10] = fabricCrkShrkTestIron_Main.NonIron.ToString();
+
+                int RowIdx = 0;
+                foreach (DataRow dr in dtIronDetail.Rows)
+                {
+                    int colIndex = 1;
+                    foreach (string col in columnNames)
+                    {
+                        excel.Cells[RowIdx + 7, colIndex] = dtIronDetail.Rows[RowIdx][col].ToString();
+                        colIndex++;
+                    }
+
+                    RowIdx++;
+                }
+
+                #region 添加圖片
+                Excel.Range cellBeforePicture = excelSheets.Cells[22, 1];
+                if (fabricCrkShrkTestIron_Main.IronTestBeforePicture != null)
+                {
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestIron_Main.IronTestBeforePicture, fabricCrkShrkTestIron_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
+                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
+                }
+
+                Excel.Range cellAfterPicture = excelSheets.Cells[22, 7];
+                if (fabricCrkShrkTestIron_Main.IronTestAfterPicture != null)
+                {
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestIron_Main.IronTestAfterPicture, fabricCrkShrkTestIron_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
+                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 323, 255);
+                }
+                #endregion
+
+                excel.Cells.EntireColumn.AutoFit();    // 自動欄寬
+                excel.Cells.EntireRow.AutoFit();       ////自動欄高
+
+                #region Save & Show Excel
+                excelFileName = $"FabricIronTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
                 string filepath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
                 Excel.Workbook workbook = excel.ActiveWorkbook;
@@ -1132,37 +1332,7 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
-        /*
-        public BaseResult ToPdfFabricCrkShrkTestCrockingDetail(long ID, out string pdfFileName, bool isTest)
-        {
-            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
 
-            BaseResult result = new BaseResult();
-            pdfFileName = string.Empty;
-
-            try
-            {
-                int crockingTestOption = _FabricCrkShrkTestProvider.GetCrockingTestOption(ID);
-
-                if (crockingTestOption == 0)
-                {
-                    pdfFileName = this.CreateExcelOnlyWetDry(ID, isTest);
-                }
-                else
-                {
-                    pdfFileName = this.CreateExcelOnlyWEFTandWARP(ID, isTest);
-                }
-            }
-            catch (Exception ex)
-            {
-
-                result.Result = false;
-                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
-            }
-
-            return result;
-        }
-        */
         private string CreateExcelOnlyWetDry(long ID, bool isTest)
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
@@ -1658,6 +1828,47 @@ namespace BusinessLogicLayer.Service
                     To = toAddress,
                     CC = ccAddress,
                     Subject = "Fabric Heat Test - Test Fail",
+                    //Body = mailBody,
+                    //alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Fabric Crocking & Shrinkage Test",
+                    OrderID = OrderID,
+                };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+
+                sendMail_Request.Body = mailBody;
+                sendMail_Request.alternateView = plainView;
+
+                result = MailTools.SendMail(sendMail_Request);
+
+            }
+            catch (Exception ex)
+            {
+                result.result = false;
+                result.resultMsg = ex.Message.Replace("'", string.Empty);
+            }
+
+            return result;
+        }
+        public SendMail_Result SendIronFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID)
+        {
+            SendMail_Result result = new SendMail_Result();
+            try
+            {
+                _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+                DataTable dtResult = _FabricCrkShrkTestProvider.GetIronFailMailContentData(ID);
+                BaseResult baseResult = ToExcelFabricCrkShrkTestIronDetail(ID, out string excelFileName);
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
+                SendMail_Request sendMail_Request = new SendMail_Request()
+                {
+                    To = toAddress,
+                    CC = ccAddress,
+                    Subject = "Fabric Iron Test - Test Fail",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },

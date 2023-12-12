@@ -3,7 +3,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@model DatabaseObject.ResultModel.FabricCrkShrkTestCrocking_Result
+@model DatabaseObject.ResultModel.FabricCrkShrkTestIron_Result
 
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
 <link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
@@ -15,9 +15,9 @@
         display: flex
     }
 
-        .input-group > input:nth-child(1) {
-            flex-grow: 2
-        }
+    .input-group > input:nth-child(1) {
+        flex-grow: 2
+    }
 
         .input-group > input:nth-child(2) {
             flex-grow: 1
@@ -104,40 +104,23 @@
         background-color: white;
     }
 
-        .DataTable > tbody img {
-            cursor: pointer;
-        }
-
-        .DataTable > tbody > tr:nth-of-type(odd) {
-            background-color: #ffffff;
-        }
-
-        .DataTable > tbody > tr:nth-of-type(even) {
-            background-color: #F0F2F2;
-        }
-
-        .DataTable > tbody > tr > td {
-            border: solid 1px gray;
-            padding: 0.5em;
-            vertical-align: middle;
-        }
-
-    .CheckBoxColor {
-        background-color: rgb(255, 228, 225);
+    .DataTable > tbody img {
+        cursor: pointer;
     }
 
-    .CrockingColor {
-        background-color: rgb(255, 250, 205);
+    .DataTable > tbody > tr:nth-of-type(odd) {
+        background-color: #ffffff;
     }
 
-    .HeatColor {
-        background-color: rgb(224, 255, 255);
+    .DataTable > tbody > tr:nth-of-type(even) {
+        background-color: #F0F2F2;
     }
 
-    .WashColor {
-        background-color: rgb(173, 216, 230);
+    .DataTable > tbody > tr > td {
+        border: solid 1px gray;
+        padding: 0.5em;
+        vertical-align: middle;
     }
-
     .width6vw {
         width: 6vw;
     }
@@ -150,7 +133,7 @@
         width: 9vw;
     }
 </style>
-@using (Html.BeginForm("CrockingTestSave", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+@using (Html.BeginForm("IronTestSave", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
 {
     <div class="main-content">
         <header class="page-header">
@@ -160,7 +143,7 @@
             <div class="breadcrumb">
                 <div>Home</div>
                 <div>Fabric Crocking & Shrinkage Test</div>
-                <div class="current">CrockingTest</div>
+                <div class="current">IronTest</div>
             </div>
         </header>
         <div class="main-area">
@@ -174,7 +157,7 @@
                                     <tr>
                                         <td>
                                             <h4 id="Exit" style="margin-right: 1em;">
-                                                <a href="@Url.Action("IndexBack", ViewContext.RouteData.GetRequiredString("Controller"), new { POID = Model.Crocking_Main.POID })">
+                                                <a href="@Url.Action("IndexBack", ViewContext.RouteData.GetRequiredString("Controller"), new { POID = Model.Iron_Main.POID })">
                                                     <img src="~/Image/Icon/Exit.png" width="30" />
                                                     Exit
                                                 </a>
@@ -213,12 +196,6 @@
                                             </h4>
                                         </td>
                                         <td>
-                                            <h4 id="PDF" style="margin-right: 1em;">
-                                                <img src="~/Image/Icon/PDF.png" width="30" />
-                                                PDF
-                                            </h4>
-                                        </td>
-                                        <td>
                                             <h4 id="SendMail" style="margin-right: 1em;">
                                                 <img src="~/Image/Icon/SendMail.png" width="30" />
                                                 Send to MR
@@ -238,7 +215,7 @@
                                                 New Item
                                             </h4>
                                         </td>
-                                </tbody>
+</tbody>
                             </table>
                         </div>
                     </div>
@@ -250,48 +227,48 @@
                                     @if (Model != null)
                                     {
                                         @Html.HiddenFor(o => o.ID)
-                                        @Html.HiddenFor(o => o.Crocking_Main.CrockingTestBeforePicture)
-                                        @Html.HiddenFor(o => o.Crocking_Main.CrockingTestAfterPicture)
+                                        @Html.HiddenFor(o => o.Iron_Main.IronTestBeforePicture)
+                                        @Html.HiddenFor(o => o.Iron_Main.IronTestAfterPicture)
                                     }
 
                                     <tr>
                                         <td style="width: 10vw;"><h5>SP#</h5></td>
                                         <td style="width: 20vw;">
-                                            @Html.DisplayFor(o => o.Crocking_Main.POID)
+                                            @Html.DisplayFor(o => o.Iron_Main.POID)
                                         </td>
                                         <td style="width: 10vw;"><h5>SEQ#</h5></td>
                                         <td style="width: 20vw;">
-                                            @Html.DisplayFor(o => o.Crocking_Main.SEQ)
+                                            @Html.DisplayFor(o => o.Iron_Main.SEQ)
                                         </td>
                                         <td style="width: 10vw;"><h5>Color</h5></td>
                                         <td style="width: 20vw;">
-                                            @Html.DisplayFor(o => o.Crocking_Main.ColorID)
+                                            @Html.DisplayFor(o => o.Iron_Main.ColorID)
                                         </td>
                                     </tr>
                                     <tr>
                                         <td><h5>Arrive Qty</h5></td>
                                         <td>
-                                            @Model.Crocking_Main.ArriveQty.ToString()
+                                            @Html.DisplayFor(o => o.Iron_Main.ArriveQty)
                                         </td>
                                         <td><h5>Arrive W/H Date</h5></td>
                                         <td>
-                                            @Html.ValueFor(o => o.Crocking_Main.WhseArrival, "{0:yyyy/MM/dd}")
+                                            @Html.ValueFor(o => o.Iron_Main.WhseArrival, "{0:yyyy/MM/dd}")
                                         </td>
                                         <td><h5>WK#</h5></td>
                                         <td>
-                                            @Html.DisplayFor(o => o.Crocking_Main.ExportID)
+                                            @Html.DisplayFor(o => o.Iron_Main.ExportID)
                                         </td>
                                     </tr>
                                     <tr>
                                         <td><h5>Supp</h5></td>
                                         <td>
-                                            @Html.DisplayFor(o => o.Crocking_Main.Supp)
+                                            @Html.DisplayFor(o => o.Iron_Main.Supp)
                                         </td>
                                         <td><h5>Result</h5></td>
                                         <td>
                                             @{
                                                 string styleColor = "";
-                                                if (Model.Crocking_Main.Crocking == "Pass")
+                                                if (Model.Iron_Main.Iron == "Pass")
                                                 {
                                                     styleColor = "blue";
                                                 }
@@ -300,51 +277,51 @@
                                                     styleColor = "red";
                                                 }
                                             }
-                                            <font class="@styleColor">@Html.DisplayFor(o => o.Crocking_Main.Crocking)</font>
+                                            <font class="@styleColor">@Html.DisplayFor(o => o.Iron_Main.Iron)</font>
                                         </td>
                                         <td><h5>Last Inspeciton Date</h5></td>
                                         <td>
-                                            @Html.ValueFor(o => o.Crocking_Main.CrockingDate, "{0:yyyy/MM/dd}")
+                                            @Html.ValueFor(o => o.Iron_Main.IronDate, "{0:yyyy/MM/dd}")
                                         </td>
                                     </tr>
                                     <tr>
                                         <td><h5>Style#</h5></td>
                                         <td>
-                                            @Html.DisplayFor(o => o.Crocking_Main.StyleID)
+                                            @Html.DisplayFor(o => o.Iron_Main.StyleID)
                                         </td>
                                         <td><h5>SCI Refno</h5></td>
                                         <td>
-                                            @Html.DisplayFor(o => o.Crocking_Main.SCIRefno)
+                                            @Html.DisplayFor(o => o.Iron_Main.SCIRefno)
                                         </td>
-                                        <td><h5>Crocking Inspector</h5></td>
+                                        <td><h5>Iron Inspector</h5></td>
                                         <td>
-                                            @Html.DisplayFor(o => o.Crocking_Main.Name)
+                                            @Html.DisplayFor(o => o.Iron_Main.Name)
                                         </td>
                                     </tr>
                                     <tr>
                                         <td><h5>Brand</h5></td>
                                         <td>
-                                            @Html.DisplayFor(o => o.Crocking_Main.BrandID)
+                                            @Html.DisplayFor(o => o.Iron_Main.BrandID)
                                         </td>
                                         <td><h5>Brand Refno</h5></td>
                                         <td>
-                                            @Html.DisplayFor(o => o.Crocking_Main.Refno)
+                                            @Html.DisplayFor(o => o.Iron_Main.Refno)
                                         </td>
                                         <td><h5>N/A</h5></td>
                                         <td>
-                                            @Html.CheckBox("Crocking_Main.NonCrocking", Convert.ToBoolean(Model.Crocking_Main.NonCrocking), new { @disabled = "disabled" })
+                                            @Html.CheckBox("Iron_Main.NonIron", Convert.ToBoolean(Model.Iron_Main.NonIron), new { @disabled = "disabled" })
                                         </td>
                                     </tr>
                                     <tr>
                                         <td><h5>Description</h5></td>
                                         <td colspan="5">
-                                            @Html.DisplayFor(o => o.Crocking_Main.DescDetail)
+                                            @Html.DisplayFor(o => o.Iron_Main.DescDetail)
                                         </td>
                                     </tr>
                                     <tr>
                                         <td><h5>Remark</h5></td>
                                         <td colspan="5">
-                                            @Html.TextBoxFor(o => o.Crocking_Main.CrockingRemark, new { @style = "width:100%", @disabled = "disabled" })
+                                            @Html.TextBoxFor(o => o.Iron_Main.IronRemark, new { @style = "width:100%", @disabled = "disabled" })
                                         </td>
                                     </tr>
                                 </tbody>
@@ -353,205 +330,124 @@
                     </div>
 
                     <div style="margin-top: 1em; overflow:auto">
-                        <table cellspacing="100" id="crocking_Detail" class="DataTable DetailTable table table-striped display;">
+                        <table cellspacing="100" id="Iron_Detail" class="DataTable DetailTable table table-striped display;">
                             <thead>
                                 <tr class="row-name" id="row-name">
                                     <th style="width:5vw">Roll#</th>
                                     <th style="width:5vw">Dyelot</th>
+                                    <th style="width:5vw">Original Horizontal</th>
+                                    <th style="width:5vw"> Original Vertical</th>
                                     <th style="width:5vw">Result</th>
-                                    @if (Model.CrockingTestOption == 0)
-                                    {
-                                        <th style="width:5vw">Dry Scale</th>
-                                        <th style="width:5vw">Result(Dry)</th>
-                                        <th style="width:5vw" notShow="testOption">Dry Scale (Weft)</th>
-                                        <th style="width:5vw" notShow="testOption">Dry Result (Waft)</th>
-                                        <th style="width:5vw">Wet Scale</th>
-                                        <th style="width:5vw">Result(Wet)</th>
-                                        <th style="width:5vw" notShow="testOption">Wet Scale (Weft)</th>
-                                        <th style="width:5vw" notShow="testOption">Wet Result (Weft)</th>
-                                    }
-                                    else
-                                    {
-                                        // 使用testOption，決定是否隱藏
-                                        <th style="width:5vw">Dry Scale (Warp)</th>
-                                        <th style="width:5vw">Dry Result (Warp)</th>
-                                        <th style="width:5vw">Dry Scale (Weft)</th>
-                                        <th style="width:5vw">Dry Result (Waft)</th>
-                                        <th style="width:5vw">Wet Scale (Warp)</th>
-                                        <th style="width:5vw">Wet Result (Warp)</th>
-                                        <th style="width:5vw">Wet Scale (Weft)</th>
-                                        <th style="width:5vw">Wet Result (Weft)</th>
-                                    }
+                                    <th style="width:5vw">Horizontal 1</th>
+                                    <th style="width:5vw">Horizontal 2</th>
+                                    <th style="width:5vw">Horizontal 3</th>
+                                    <th style="width:5vw">Horizontal Average</th>
 
-                                    <th style="width:5vw">Insp. Date</th>
+                                    <th style="width:5vw">Horizontal Shrinkage Rate</th>
+                                    <th style="width:5vw">Vertical 1</th>
+                                    <th style="width:5vw">Vertical 2</th>
+                                    <th style="width:5vw">Vertical 3</th>
+                                    <th style="width:5vw">Vertical Average</th>
+                                    <th style="width:5vw">Vertical Shrinkage Rate</th>
+                                    <th style="width:5vw">Test Date</th>
                                     <th style="width:5vw">Lab Tech</th>
                                     <th style="width:5vw">Name</th>
                                     <th style="width:5vw">Remark</th>
-                                    <th style="width:5vw">Last Update</th>
+                                    <th style="width:5vw">Last update</th>
                                     <th style="width:5vw"></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @for (int i = 0; i < Model.Crocking_Detail.Count; i++)
+                                @for (int i = 0; i < Model.Iron_Detail.Count; i++)
                                 {
                                     <tr idx="@i" class="row-content" style="vertical-align: middle; text-align: center;">
                                         <td>
                                             <div class="input-group">
-                                                @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Roll, new { @class = "inputRollSelectItem width6vw" })
+                                                @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].Roll, new { @class = "inputRollSelectItem width6vw" })
                                                 <input type="button" class="site-btn btn-blue btnRollSelectItem" style="margin:0;border:0;" value="..." />
                                             </div>
                                         </td>
                                         <td>
                                             <div class="input-group">
-                                                @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Dyelot, new { @class = "inputRollSelectItem width8vw" })
+                                                @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].Dyelot, new { @class = "inputRollSelectItem width8vw" })
                                                 <input type="button" class="site-btn btn-blue btnRollSelectItem" style="margin:0;border:0;" value="..." />
                                             </div>
                                         </td>
                                         <td>
-                                            @{
-                                                if (Model.Crocking_Detail[i].Result == "Pass")
-                                                {
-                                                    styleColor = "blue";
-                                                }
-                                                else
-                                                {
-                                                    styleColor = "red";
-                                                }
-                                            }
-                                            @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Result, new { @readonly = "readonly", @class = styleColor + " width6vw" })
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].HorizontalOriginal, new { @class = "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                         </td>
-                                        <td style="color:red">
-                                            <select id="Crocking_Detail_@{@i}__DryScale" name="Crocking_Detail[@i].DryScale" disabled="disabled" style="width:157px">
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.ScaleIDsList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Crocking_Detail[i].DryScale) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].VerticalOriginal, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                         </td>
                                         <td>
                                             @{
-                                                if (Model.Crocking_Detail[i].ResultDry == "Pass")
+                                                if (Model.Iron_Detail[i].Result == "Pass")
                                                 {
-                                                    styleColor = "blue";
+                                                    styleColor = "blue width6vw";
                                                 }
                                                 else
                                                 {
-                                                    styleColor = "red";
+                                                    styleColor = "red width6vw";
                                                 }
                                             }
-                                            <select class="result@{@i} @styleColor" id="Crocking_Detail_@{@i}__ResultDry" name="Crocking_Detail[@i].ResultDry" disabled="disabled" style="width:157px;" onchange="changeResultColor(this)">
+                                            <select id="Iron_Detail_@{@i}_Result" name="Iron_Detail[@i].Result" disabled="disabled" class="@styleColor" onchange="changeResultColor(this)">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
                                                 {
-                                                    string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultDry) ? "selected" : "";
+                                                    string selected = item.Text.Equals(Model.Iron_Detail[i].Result) ? "selected" : "";
                                                     <option value="@item.Value" @selected>@item.Text</option>
                                                 }
                                             </select>
                                         </td>
                                         <td>
-                                            <select id="Crocking_Detail_@{@i}__DryScale_Weft" name="Crocking_Detail[@i].DryScale_Weft" disabled="disabled" style="width:157px">
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.ScaleIDsList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Crocking_Detail[i].DryScale_Weft) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].HorizontalTest1, new { @class= "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                         </td>
                                         <td>
-                                            @{
-                                                if (Model.Crocking_Detail[i].ResultDry_Weft == "Pass")
-                                                {
-                                                    styleColor = "blue";
-                                                }
-                                                else
-                                                {
-                                                    styleColor = "red";
-                                                }
-                                            }
-                                            <select class="result@{@i} @styleColor" id="Crocking_Detail_@{@i}__ResultDry_Weft" name="Crocking_Detail[@i].ResultDry_Weft" disabled="disabled" style="width:157px;" onchange="changeResultColor(this)">
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultDry_Weft) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].HorizontalTest2, new { @class = "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                         </td>
                                         <td>
-                                            <select id="Crocking_Detail_@{@i}__WetScale" name="Crocking_Detail[@i].WetScale" disabled="disabled" style="width:157px">
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.ScaleIDsList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Crocking_Detail[i].WetScale) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].HorizontalTest3, new { @class = "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                         </td>
                                         <td>
-                                            @{
-                                                if (Model.Crocking_Detail[i].ResultWet == "Pass")
-                                                {
-                                                    styleColor = "blue";
-                                                }
-                                                else
-                                                {
-                                                    styleColor = "red";
-                                                }
-                                            }
-                                            <select class="result@{@i} @styleColor" id="Crocking_Detail__@{@i}__ResultWet" name="Crocking_Detail[@i].ResultWet" disabled="disabled" style="width:157px;" onchange="changeResultColor(this)">
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultWet) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].HorizontalAverage, new { @type = "number", @step = "0.01", @readonly="readonly" })
                                         </td>
                                         <td>
-                                            <select id="Crocking_Detail_@{@i}__WetScale_Weft" name="Crocking_Detail[@i].WetScale_Weft" disabled="disabled" style="width:157px">
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.ScaleIDsList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Crocking_Detail[i].WetScale_Weft) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].HorizontalRate, new { @type = "number", @step = "0.01", @readonly = "readonly" })
                                         </td>
                                         <td>
-                                            @{
-                                                if (Model.Crocking_Detail[i].ResultWet_Weft == "Pass")
-                                                {
-                                                    styleColor = "blue";
-                                                }
-                                                else
-                                                {
-                                                    styleColor = "red";
-                                                }
-                                            }
-                                            <select class="result@{@i} @styleColor" id="Crocking_Detail_@{@i}__ResultWet_Weft" name="Crocking_Detail[@i].ResultWet_Weft" disabled="disabled" style="width:157px;" onchange="changeResultColor(this)">
-                                                @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
-                                                {
-                                                    string selected = item.Text.Equals(Model.Crocking_Detail[i].ResultWet_Weft) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].VerticalTest1, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker width9vw" })
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].VerticalTest2, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].VerticalTest3, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].VerticalAverage, new { @type = "number", @step = "0.01", @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].VerticalRate, new { @type = "number", @step = "0.01", @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].Inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker width9vw" })
                                         </td>
                                         <td>
                                             <div class="input-group">
-                                                @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Inspector, new { @class = "inputInspectorSelectItem" })
+                                                @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].Inspector, new { @class = "inputInspectorSelectItem" })
                                                 <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue btnInspectorSelectItem" style="margin:0;border:0;" value="..." />
                                             </div>
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Name, new { @readonly = "readonly" })
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].Name, new { @readonly = "readonly" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].Remark)
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].Remark)
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].LastUpdate, new { @readonly = "readonly" })
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].LastUpdate, new { @readonly = "readonly" })
                                         </td>
                                         <td>
-                                            <img class='detailDelete' src="~/Image/Icon/Delete.png" width='30'>
+                                            <img class='detailDelete' src="~/Image/Icon/Delete.png" style="min-width:30px">
                                         </td>
                                     </tr>
                                 }
@@ -561,7 +457,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+         </div>
     </div>
 }
 <script type="text/javascript">
@@ -569,27 +465,13 @@
     var EditMode;
     var True = true;
     var False = false;
-    var poid = '@Model.Crocking_Main.POID';
-    var seq1 = '@Model.Crocking_Main.SEQ'.split(' ')[0];
-    var seq2 = '@Model.Crocking_Main.SEQ'.split(' ')[1];
-    var hiddenColumns = [];
+    var poid = '@Model.Iron_Main.POID';
+    var seq1 = '@Model.Iron_Main.SEQ'.split(' ')[0];
+    var seq2 = '@Model.Iron_Main.SEQ'.split(' ')[1];
 
     $(function () {
-        //  $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
         msg = new MessagerAlert();
         EditMode = false;
-
-        if (@Model.CrockingTestOption == 0) {
-            $('.DetailTable th').each(function (index, data) {
-                if ($(this).attr('notShow') == 'testOption') {
-                    var i = index + 1;
-                    hiddenColumns.push(i);
-                    $('.DetailTable th:nth-child(' + i + ')').hide();
-                    $('.DetailTable td:nth-child(' + i + ')').hide();
-                }
-            });
-        }
-
         @Html.Raw(Model.ErrorMessage);
         IsEditModeChange();
     });
@@ -599,27 +481,29 @@
         $('#Picture').addClass("IsEditMode");
         // 按編輯為控制disabled，如果是編輯模式下不給使用者操作，請在元件身上加上readonly
         if (EditMode) {
-            $("#Edit, #Encode, #Amend, #Excel, #PDF ,#SendMail").removeClass("IsEditMode");
-            $('#Encode, #Amend, #Excel, #PDF ,#SendMail').unbind('click');
+
+            $("#Edit, #Encode, #Amend, #Excel ,#SendMail").removeClass("IsEditMode");
+            $('#Encode, #Amend, #Excel ,#SendMail').unbind('click');
 
             $('#Save, #New').addClass("IsEditMode");
             $(".DataTable:not(.DetailTable) textarea").removeAttr("disabled", "disabled");
-            $(".DetailTable input,.DetailTable select, #Crocking_Main_CrockingRemark").removeAttr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select, #Iron_Main_IronRemark").removeAttr("disabled", "disabled");
             $(".detailDelete").show();
             DetailButtonBind();
         }
         else {
             $('#Save, #New').unbind('click').removeClass("IsEditMode");
             $(".DataTable:not(.DetailTable) textarea").attr("disabled", "disabled");
-            $(".DetailTable input,.DetailTable select, #Crocking_Main_CrockingRemark").attr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select, #Iron_Main_IronRemark").attr("disabled", "disabled");
             $(".detailDelete").hide();
-            $('#Excel, #PDF ,#SendMail').addClass("IsEditMode");
-            if (@Model.Crocking_Main.CrockingEncdoe == false) {
+            $('#Excel ,#SendMail').addClass("IsEditMode");
+
+            if (@Model.Iron_Main.IronEncode == false) {
                 $("#Edit, #Encode").addClass("IsEditMode");
                 $("#Amend").unbind('click');
             }
 
-            if (@Model.Crocking_Main.CrockingEncdoe == true) {
+            if (@Model.Iron_Main.IronEncode == true) {
                 $("#Amend").addClass("IsEditMode");
                 $("#Edit, #Encode").unbind('click');
             }
@@ -640,9 +524,10 @@
 
             $('.DetailTable > tbody > tr').each(function (index, data) {
                 var idx = $(this).closest('tr').attr('idx');
-                var roll = $('#Crocking_Detail_' + idx + '__Roll').val();
-                var dyelot = $('#Crocking_Detail_' + idx + '__Dyelot').val();
-                var inspector = $('#Crocking_Detail_' + idx + '__Inspector').val();
+                var roll = $('Iron_Detail__' + idx + '__Roll').val();
+                var dyelot = $('#Iron_Detail_' + idx + '__Dyelot').val();
+                var inspector = $('#Iron_Detail_' + idx + '__Inspector').val();
+                var restult = $('#Iron_Detail_' + idx + '__Result').val();
 
                 if (roll == "" || dyelot == "") {
                     ErrMsg += "Roll and Dyelot cannot be empty";
@@ -650,26 +535,28 @@
                 }
 
                 var checkValue = [];
-                checkValue.push($('#Crocking_Detail_' + idx + '__DryScale').val());
-                checkValue.push($('#Crocking_Detail_' + idx + '__ResultDry').val());
-                checkValue.push($('#Crocking_Detail_' + idx + '__WetScale').val());
-                checkValue.push($('#Crocking_Detail_' + idx + '__ResultWet').val());
+                checkValue.push($('#Iron_Detail_' + idx + '__HorizontalOriginal').val());
+                checkValue.push($('#Iron_Detail_' + idx + '__VerticalOriginal').val());
 
-                    @if (Model.CrockingTestOption != 0)
-                    {
-                        @:checkValue.push($('#Crocking_Detail_' + idx + '__DryScale_Weft').val());
-                        @:checkValue.push($('#Crocking_Detail_' + idx + '__ResultDry_Weft').val());
-                        @:checkValue.push($('#Crocking_Detail_' + idx + '__WetScale_Weft').val());
-                        @:checkValue.push($('#Crocking_Detail_' + idx + '__ResultWet_Weft').val());
-                    }
+                checkValue.push($('#Iron_Detail_' + idx + '__HorizontalTest1').val());
+                checkValue.push($('#Iron_Detail_' + idx + '__HorizontalTest2').val());
+                checkValue.push($('#Iron_Detail_' + idx + '__HorizontalTest3').val());
+                checkValue.push($('#Iron_Detail_' + idx + '__VerticalTest1').val());
+                checkValue.push($('#Iron_Detail_' + idx + '__VerticalTest2').val());
+                checkValue.push($('#Iron_Detail_' + idx + '__VerticalTest3').val());
 
                 if (checkValue.includes("") || checkValue.includes(null)) {
-                    ErrMsg += "Scale and Result cannot be empty";
+                    ErrMsg += "Horizontal and Vertical cannot be empty.";
                     return false;
                 }
 
                 if (inspector == "") {
                     ErrMsg += "Lab Tech cannot be empty";
+                    return false;
+                }
+
+                if (restult == "") {
+                    ErrMsg += "Result cannot be empty";
                     return false;
                 }
             });
@@ -683,14 +570,14 @@
             $('.DetailTable > tbody > tr').each(function (index, data) {
                 var idx = $(this).closest('tr').attr('idx');
                 if (idx != index) {
-                    $.each($(this).find("input[id^='Crocking_Detail']"), function () {
+                    $.each($(this).find("input[id^='Iron_Detail']"), function () {
                         var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
                         var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
                         $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
                         $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
                     });
 
-                    $.each($(this).find("select[id^='Crocking_Detail']"), function () {
+                    $.each($(this).find("select[id^='Iron_Detail']"), function () {
                         var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
                         var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
                         $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
@@ -705,10 +592,10 @@
         $('#Picture').on('click', function () {
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
             para += "&" + "Table=FIR_Laboratory";
-            para += "&" + "TargetBeforeColumn=Crocking_Main_CrockingTestBeforePicture";
-            para += "&" + "TargetAfterColumn=Crocking_Main_CrockingTestAfterPicture";
-            para += "&" + "BeforeColumn=CrockingTestBeforePicture";
-            para += "&" + "AfterColumn=CrockingTestAfterPicture";
+            para += "&" + "TargetBeforeColumn=Iron_Main_IronTestBeforePicture";
+            para += "&" + "TargetAfterColumn=Iron_Main_IronTestAfterPicture";
+            para += "&" + "BeforeColumn=IronTestBeforePicture";
+            para += "&" + "AfterColumn=IronTestAfterPicture";
             para += "&" + "PKey_1=ID";
             para += "&" + "PKey_1_Val=" + $('#ID').val();
             window.open('@Url.Action("PictureList", "PublicWindow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
@@ -719,17 +606,13 @@
         });
 
         $('#Excel').unbind('click').on('click', function () {
-            ToReport(0);
-        });
-
-        $('#PDF').unbind('click').on('click', function () {
-            ToReport(1);
+            ToReport();
         });
 
         $('#SendMail').unbind('click').on('click', function () {
 
             $.ajax({
-                url: "@Url.Action("CrockingSendMail", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+                url: "@Url.Action("IronSendMail", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({
@@ -740,12 +623,12 @@
                     if (data.Result) {
                         var para = "?To=";
                         para += "&CC=" + '@ViewBag.UserMail';
-                        para += "&Subject=" + "Fabric Crocking Test – Seq:" + '@Model.Crocking_Main.SEQ';
-                        para += "&Body=" + "Attachment is Fabric Crocking Test– Seq:" + '@Model.Crocking_Main.SEQ' + " detail data";
+                        para += "&Subject=" + "Fabric Iron Test – Seq:" + '@Model.Iron_Main.SEQ';
+                        para += "&Body=" + "Attachment is Fabric Iron Test– Seq:" + '@Model.Iron_Main.SEQ' + " detail data";
                         para += "&file=" + data.FileName;
                         @*para += "&IsShowAIComment=true";
                         para += "&Type=Fabric Crocking & Shrinkage Test";
-                        para += "&OrderID=" + '@Model.Crocking_Main.POID';*@
+                        para += "&OrderID=" + '@Model.Iron_Main.POID';*@
                         window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
                     }
                     else {
@@ -758,7 +641,7 @@
             });
         });
 
-        if (@Model.Crocking_Main.CrockingEncdoe == false) {
+        if (@Model.Iron_Main.IronEncode == false) {
             $('#Encode').on('click', function (e) {
                 var detail = [];
                 var ErrMsg = "";
@@ -771,7 +654,7 @@
                 }
 
                 $.ajax({
-                    url: "@Url.Action("Encode_Crocking", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+                    url: "@Url.Action("Encode_Iron", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
                     type: 'POST',
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify({ ID: $('#ID').val() }),
@@ -798,10 +681,10 @@
             });
         }
 
-        if (@Model.Crocking_Main.CrockingEncdoe  == true) {
+        if (@Model.Iron_Main.IronEncode  == true) {
             $('#Amend').on('click', function (e) {
                 $.ajax({
-                    url: "@Url.Action("Amend_Crocking", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+                    url: "@Url.Action("Amend_Iron", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
                     type: 'POST',
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify({ ID: $('#ID').val() }),
@@ -824,12 +707,12 @@
         }
     }
 
-    function ToReport(IsToPDF) {
+    function ToReport() {
         $.ajax({
-            url: "@Url.Action("Report_Crocking", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+            url: "@Url.Action("Report_Iron", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ ID: $('#ID').val(), IsToPDF: IsToPDF }),
+            data: JSON.stringify({ ID: $('#ID').val() }),
             async: false,
             success: function (data) {
                 if (data.Result) {
@@ -857,9 +740,10 @@
             to += value.To + ';';
             cc += value.CC + ';';
         });
-        var poid = '@Model.Crocking_Main.POID';
+        var poid = '@Model.Iron_Main.POID';
+
         $.ajax({
-            url: "@Url.Action("FailMail_Crocking", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+            url: "@Url.Action("FailMail_Iron", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ ID: $('#ID').val(), TO: to, CC: cc, OrderID: poid }),
@@ -893,21 +777,18 @@
             lastNO = 0;
         }
 
+        var brandid = '@Model.Iron_Main.BrandID';
+
         $.ajax({
-            url: "@Url.Action("AddCrockingDetailRow", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+            url: "@Url.Action("AddIronDetailRow", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ lastNO: lastNO }),
+            data: JSON.stringify({ lastNO: lastNO, BrandID: brandid }),
             async: false,
             success: function (data) {
                 $('.DetailTable > thead > tr').show();
                 $('.DetailTable > tbody').append(data);
-                $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
-                if (@Model.CrockingTestOption == 0) {
-                    $(hiddenColumns).each(function () {
-                        $('.DetailTable td:nth-child(' + this + ')').hide();
-                    });
-                }
+
                 DetailButtonBind();
                 $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
             },
@@ -919,44 +800,11 @@
 
     function changeResultColor(obj) {
         var result = $(obj).val();
-        $(obj).removeClass('blue').removeClass('red');
         if (result == "Pass") {
-            $(obj).addClass('blue');
+            $(obj).removeClass('red').addClass('blue');
         }
         else {
-            $(obj).addClass('red');
-        }
-
-        // checkAllResult
-        var idx = $(obj).closest("tr").attr("idx");
-        var result = true;
-        $(".result" + idx).each(function () {
-            var id = $(this).attr('id');
-                @{
-                    int testOption = Model.CrockingTestOption;
-                    if (testOption == 0)
-                    {
-                        @:if (id.includes('ResultDry_Weft')) {
-                            @:return;
-                        @:}
-                        @:else if (id.includes('ResultWet_Weft')) {
-                           @:return;
-                        @:}
-                    }
-                }
-
-            if ($(this).val() != "Pass") {
-                result = false;
-            }
-        });
-
-        var resultItem = $("#Crocking_Detail_" + idx + "__Result");
-
-        if (result) {
-            resultItem.val("Pass").removeClass('red').addClass("blue");
-        }
-        else {
-            resultItem.val("Fail").removeClass('blue').addClass("red");
+            $(obj).removeClass('blue').addClass('red');
         }
     }
 
@@ -964,10 +812,10 @@
         // 卸掉重新綁定
         $('.inputRollSelectItem').unbind('blur').on('blur', function () {
             var targetID = $(this).closest('tr').attr('idx');
-            var checkValue = $("#Crocking_Detail_" + targetID + "__Roll").val();
+            var checkValue = $("#Iron_Detail_" + targetID + "__Roll").val();
 
             if (checkValue == "") {
-                $("#Crocking_Detail_" + targetID + "__Dyelot").val('');
+                $("#Iron_Detail_" + targetID + "__Dyelot").val('');
                 return;
             }
 
@@ -979,13 +827,13 @@
                 async: true,
                 success: function (data) {
                     if (data.length == 0) {
-                        $("#Crocking_Detail_" + targetID + "__Roll").val('');
-                        $("#Crocking_Detail_" + targetID + "__Dyelot").val('');
+                        $("#Iron_Detail_" + targetID + "__Roll").val('');
+                        $("#Iron_Detail_" + targetID + "__Dyelot").val('');
                         msg.WithError('Roll# Not Found');
                     }
                     else {
-                        $("#Crocking_Detail_" + targetID + "__Roll").val(data[0].Roll);
-                        $("#Crocking_Detail_" + targetID + "__Dyelot").val(data[0].Dyelot);
+                        $("#Iron_Detail_" + targetID + "__Roll").val(data[0].Roll);
+                        $("#Iron_Detail_" + targetID + "__Dyelot").val(data[0].Dyelot);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -1004,8 +852,8 @@
             var targetID = $(this).closest('tr').attr('idx');
 
             if ($(this).val() == "") {
-                $("#Crocking_Detail_" + targetID + "__Name").val('');
-                $("#Crocking_Detail_" + targetID + "__Remark").val('');
+                $("#Iron_Detail_" + targetID + "__Name").val('');
+                $("#Iron_Detail_" + targetID + "__Remark").val('');
                 return;
             }
 
@@ -1017,13 +865,13 @@
                 async: true,
                 success: function (data) {
                     if (data.length == 0) {
-                        $("#Crocking_Detail_" + targetID + "__Inspector").val('');
-                        $("#Crocking_Detail_" + targetID + "__Name").val('');
+                        $("#Iron_Detail_" + targetID + "__Inspector").val('');
+                        $("#Iron_Detail_" + targetID + "__Name").val('');
                         msg.WithError('Lab Tech Not Found');
                     }
                     else {
-                        $("#Crocking_Detail_" + targetID + "__Inspector").val(data[0].ID);
-                        $("#Crocking_Detail_" + targetID + "__Name").val(data[0].Name + ' Ext.' + data[0].ExtNo);
+                        $("#Iron_Detail_" + targetID + "__Inspector").val(data[0].ID);
+                        $("#Iron_Detail_" + targetID + "__Name").val(data[0].Name + ' Ext.' + data[0].ExtNo);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -1047,20 +895,74 @@
                     msg.WithSuccess("Delete Success");
                 }, null);
         });
+
+        $('.HorizontalTest').unbind('blur').on('blur', function () {
+            var idx = $(this).closest('tr').attr('idx');
+            var value1 = parseFloat($('#Iron_Detail_' + idx + '__HorizontalTest1').val());
+            var value2 = parseFloat($('#Iron_Detail_' + idx + '__HorizontalTest2').val());
+            var value3 = parseFloat($('#Iron_Detail_' + idx + '__HorizontalTest3').val());
+            var original = parseFloat($('#Iron_Detail_' + idx + '__HorizontalOriginal').val());
+
+            // 四折五入到第二位
+            // ( HorizontalTest1 + HorizontalTest2  + HorizontalTest3 ) / 3
+            var avg = Round(accDiv(accAdd(accAdd(value1, value2), value3), 3));
+            $('#Iron_Detail_' + idx + '__HorizontalAverage').val(avg);
+
+            if (original == 0) {
+                $('#Iron_Detail_' + idx + '__HorizontalRate').val(0);
+                return;
+            }
+            // (HorizontalAverage - HorizontalOriginal) / HorizontalOriginal * 100
+            var rate = Round(accMul(accDiv(accSubtr(avg, original), original), 100));
+            $('#Iron_Detail_' + idx + '__HorizontalRate').val(rate > 100 ? 100 : rate);
+        });
+
+        $('.VerticalTest').unbind('blur').on('blur', function () {
+            var idx = $(this).closest('tr').attr('idx');
+            var value1 = parseFloat($('#Iron_Detail_' + idx + '__VerticalTest1').val());
+            var value2 = parseFloat($('#Iron_Detail_' + idx + '__VerticalTest2').val());
+            var value3 = parseFloat($('#Iron_Detail_' + idx + '__VerticalTest3').val());
+            var original = parseFloat($('#Iron_Detail_' + idx + '__VerticalOriginal').val());
+
+            // 四折五入到第二位
+            // ( VerticalTest1 + VerticalTest2 + VerticalTest3 ) / 3
+            var avg = Round(accDiv(accAdd(accAdd(value1, value2), value3), 3));
+            $('#Iron_Detail_' + idx + '__VerticalAverage').val(avg);
+
+            if (original == 0) {
+                $('#Iron_Detail_' + idx + '__VerticalRate').val(0);
+                return;
+            }
+
+            // (VerticalAverage - VerticalOriginal) / VerticalOriginal * 100
+            var rate = Round(accMul(accDiv(accSubtr(avg, original), original), 100));
+            $('#Iron_Detail_' + idx + '__VerticalRate').val(rate > 100 ? 100 : rate);
+        });
     }
 
     function GetFtyInventory(data, targetID) {
-        $("#Crocking_Detail_" + targetID + "__Roll").val(data.Roll);
-        $("#Crocking_Detail_" + targetID + "__Dyelot").val(data.Dyelot);
+        $("#Iron_Detail_" + targetID + "__Roll").val(data.Roll);
+        $("#Iron_Detail_" + targetID + "__Dyelot").val(data.Dyelot);
     }
 
     function GetPass1(data, targetID) {
-        $("#Crocking_Detail_" + targetID + "__Inspector").val(data.ID);
-        $("#Crocking_Detail_" + targetID + "__Name").val(data.Name + ' Ext.' + data.ExtNo);
+        $("#Iron_Detail_" + targetID + "__Inspector").val(data.ID);
+        $("#Iron_Detail_" + targetID + "__Name").val(data.Name + ' Ext.' + data.ExtNo);
     }
 
     function GetPicture(data) {
-        $('#Crocking_Main_CrockingTestBeforePicture').val(data.BeforePicture.replace("data:image/png;base64,", ""));
-        $('#Crocking_Main_CrockingTestAfterPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
+        $('#Iron_Main_IronTestBeforePicture').val(data.BeforePicture.replace("data:image/png;base64,", ""));
+        $('#Iron_Main_IronTestAfterPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
+    }
+
+    function QtyCheck(value) {
+        if (parseFloat(value) >= 100) {
+            return 100;
+        }
+        else if (parseFloat(value) < 0) {
+            return 0;
+        }
+
+        return Number.parseFloat(value).toFixed(2);
     }
 </script>

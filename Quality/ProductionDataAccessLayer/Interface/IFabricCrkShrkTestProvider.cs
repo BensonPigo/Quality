@@ -56,6 +56,22 @@ namespace ProductionDataAccessLayer.Interface
 
         DataTable GetHeatDetailForReport(long ID);
 
+
+        // Iron
+        FabricCrkShrkTestIron_Main GetFabricIronTest_Main(long ID);
+
+        List<FabricCrkShrkTestIron_Detail> GetFabricIronTest_Detail(long ID);
+
+        void UpdateFabricIronTestDetail(FabricCrkShrkTestIron_Result fabricCrkShrkTestIron_Result, string userID);
+
+        void EncodeFabricIron(long ID, string testResult, DateTime? IronDate, string userID);
+
+        DataTable GetIronFailMailContentData(long ID);
+
+        void AmendFabricIron(long ID);
+
+        DataTable GetIronDetailForReport(long ID);
+
         // Wash
         FabricCrkShrkTestWash_Main GetFabricWashTest_Main(long ID);
 
