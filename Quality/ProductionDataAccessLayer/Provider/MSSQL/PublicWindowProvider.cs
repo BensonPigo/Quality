@@ -10,11 +10,11 @@ using System.Text;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
-    public class PublicWondowProvider : SQLDAL
+    public class PublicWindowProvider : SQLDAL
     {
         #region 底層連線
-        public PublicWondowProvider(string ConString) : base(ConString) { }
-        public PublicWondowProvider(SQLDataTransaction tra) : base(tra) { }
+        public PublicWindowProvider(string ConString) : base(ConString) { }
+        public PublicWindowProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
 

@@ -871,14 +871,14 @@
         $('.btnDetailInspectorSelectItem').unbind('click').on('click', function () {
             var targetID = $(this).closest('tr').attr('idx');
             var para = "?TargetID=" + targetID;
-            window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})' + para, 'Inspector', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+            window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})' + para, 'Inspector', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
         });
 
         $('.Inspector').unbind('blur').blur(function () {
             var targetID = $(this).closest('tr').attr('idx');
 
             $.ajax({
-                url: "@Url.Action("Pass1List", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
@@ -965,17 +965,17 @@
 
     function QueryButtonBind() {
         $('#btnBrandSelectItem').on('click', function () {
-             window.open('@Url.Action("BrandList", "PublicWondow",new { Area=""})', 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+             window.open('@Url.Action("BrandList", "PublicWindow",new { Area=""})', 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnSeasonSelectItem').on('click', function () {
             var para = "?BrandID=" + $('#Brand').val();
-            window.open('@Url.Action("SeasonList", "PublicWondow",new { Area=""})' + para, 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("SeasonList", "PublicWindow",new { Area=""})' + para, 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnStyleSelectItem').on('click', function () {
             var para = "?BrandID=" + $('#Brand').val() + "&SeasonID=" + $('#Season').val();
-            window.open('@Url.Action("StyleList", "PublicWondow",new { Area=""})' + para, 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("StyleList", "PublicWindow",new { Area=""})' + para, 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnArticleSelectItem').on('click', function () {
@@ -985,12 +985,12 @@
             }
 
             var para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Brand').val() + "&SeasonID=" + $('#Season').val() + "&StyleID=" + $('#Style').val();
-            window.open('@Url.Action("ArticleList", "PublicWondow",new { Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("ArticleList", "PublicWindow",new { Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $("#Brand").blur(function () {
             $.ajax({
-                url: "@Url.Action("BrandList", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("BrandList", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
@@ -1010,7 +1010,7 @@
         $("#Season").blur(function () {
             var BrandID = $('#Brand').val();
             $.ajax({
-                url: "@Url.Action("SeasonList", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("SeasonList", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
@@ -1031,7 +1031,7 @@
             var BrandID = $('#Brand').val();
             var SeasonID = $('#Season').val();
             $.ajax({
-                url: "@Url.Action("StyleList", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("StyleList", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
@@ -1053,7 +1053,7 @@
             var SeasonID = $('#Season').val();
             var StyleID = $('#Style').val();
             $.ajax({
-                url: "@Url.Action("ArticleList", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("ArticleList", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, StyleUkey : 0, SeasonID: SeasonID, StyleID: StyleID, ArticleID: $(this).val(), ReturnType: "JSON" }),

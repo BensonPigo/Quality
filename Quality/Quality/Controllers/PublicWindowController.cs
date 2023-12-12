@@ -7,17 +7,17 @@ using System.Web.Mvc;
 
 namespace Quality.Controllers
 {
-    public class PublicWondowController : BaseController
+    public class PublicWindowController : BaseController
     {
         private PublicWindowService _PublicWindowService;
 
-        public PublicWondowController()
+        public PublicWindowController()
         {
             _PublicWindowService = new PublicWindowService();
         }
 
 
-        // GET: PublicWondow
+        // GET: PublicWindow
         public ActionResult BrandList(string TargetID)
         {
             var model = _PublicWindowService.Get_Brand(null, false);

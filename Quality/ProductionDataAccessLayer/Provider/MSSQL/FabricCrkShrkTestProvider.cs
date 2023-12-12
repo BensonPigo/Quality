@@ -173,6 +173,10 @@ select	[ID] = f.ID,
         [Heat] = fl.Heat,
         [HeatDate] = fl.HeatDate,
         [HeatRemark] = fl.HeatRemark,
+        [NonIron] = fl.nonIron,
+        [Iron] = fl.Iron,
+        [IronDate] = fl.IronDate,
+        [IronRemark] = fl.IronRemark,
         [NonWash] = fl.nonWash,
         [Wash] = fl.Wash,
         [WashDate] = fl.WashDate,
@@ -196,7 +200,7 @@ where f.POID = @POID
         public void SaveFabricCrkShrkTest_Main(FabricCrkShrkTest_Result fabricCrkShrkTest_Result)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
-            listPar.Add("@Remark", fabricCrkShrkTest_Result.Main.FirLaboratoryRemark);
+            listPar.Add("@Remark", fabricCrkShrkTest_Result.Main.FirLaboratoryRemark ?? string.Empty);
             listPar.Add("@POID", fabricCrkShrkTest_Result.Main.POID);
 
             string sqlUpdatePO = @"
@@ -210,6 +214,7 @@ exec UpdateInspPercent 'FIRLab',@POID
 update  FIR_Laboratory set  ReceiveSampleDate = @ReceiveSampleDate,
                             nonCrocking = @nonCrocking,
                             nonHeat = @nonHeat,
+                            nonIron = @nonIron,
                             nonWash = @nonWash
 where   ID = @ID
 
@@ -228,6 +233,7 @@ where   ID = @ID
                         listDetailPar.Add("@ReceiveSampleDate", fabricCrkShrkTest_Detail.ReceiveSampleDate);
                         listDetailPar.Add("@nonCrocking", fabricCrkShrkTest_Detail.NonCrocking);
                         listDetailPar.Add("@nonHeat", fabricCrkShrkTest_Detail.NonHeat);
+                        listDetailPar.Add("@NonIron", fabricCrkShrkTest_Detail.NonIron);
                         listDetailPar.Add("@nonWash", fabricCrkShrkTest_Detail.NonWash);
 
                         ExecuteNonQuery(CommandType.Text, sqlUpdateFIR_Laboratory, listDetailPar);
@@ -932,9 +938,19 @@ SET XACT_ABORT ON
 update  FIR_Laboratory set  HeatRemark = @HeatRemark
 where   ID = @ID 
 ;
-update  SciPMSFile_FIR_Laboratory set HeatTestBeforePicture = @HeatTestBeforePicture,
-                            HeatTestAfterPicture = @HeatTestAfterPicture
-where   ID = @ID 
+if exists(
+    select 1 from SciPMSFile_FIR_Laboratory where  ID = @ID 
+)
+begin
+    update  SciPMSFile_FIR_Laboratory set HeatTestBeforePicture = @HeatTestBeforePicture,
+                                HeatTestAfterPicture = @HeatTestAfterPicture
+    where   ID = @ID 
+end
+else
+begin
+    insert into SciPMSFile_FIR_Laboratory (ID,HeatTestBeforePicture,HeatTestAfterPicture)
+    values (@ID ,@HeatTestBeforePicture ,@HeatTestAfterPicture )
+end
 ";
 
 
@@ -1235,6 +1251,423 @@ where flc.ID = @ID
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetFabricCrkShrkTestHeat_Detail, listPar);
         }
 
+
+        #region Iron
+        public FabricCrkShrkTestIron_Main GetFabricIronTest_Main(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlGetFabricCrkShrkTestIron_Main = @"
+
+select	[POID] = f.POID,
+        [SEQ] = Concat(f.Seq1, ' ', f.Seq2),
+        [ColorID] = pc.SpecValue,
+        [ArriveQty] = f.ArriveQty,
+        [WhseArrival] = r.WhseArrival,
+        [ExportID] = r.ExportID,
+        [Supp] = Concat(f.SuppID, s.AbbEn),
+        [Iron] = fl.Iron,
+        [IronDate] = fl.IronDate,
+        [StyleID] = o.StyleID,
+        [SCIRefno] = f.SCIRefno,
+        [Name] = (select Name from pass1 WITH(NOLOCK) where ID = fl.IronInspector),
+        [BrandID] = o.BrandID,
+        [Refno] = f.Refno,
+        [NonIron] = fl.NonIron,
+        [DescDetail] = fab.DescDetail,
+        [IronRemark] = fl.IronRemark,
+        [IronEncode] = fl.IronEncode,
+        [IronTestBeforePicture] =  (select top 1 IronTestBeforePicture from SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) where fli.ID = fl.ID ),  
+        [IronTestAfterPicture] = (select top 1 IronTestAfterPicture from SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) where fli.ID = fl.ID),
+        [ReportNo] = fl.ReportNo
+from FIR f with (nolock)
+left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
+left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
+left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join Supp s with (nolock) on s.ID = f.SuppID
+left join Orders o with (nolock) on o.ID = f.POID
+left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno
+where f.ID = @ID
+";
+
+            IList<FabricCrkShrkTestIron_Main> listResult = ExecuteList<FabricCrkShrkTestIron_Main>(CommandType.Text, sqlGetFabricCrkShrkTestIron_Main, listPar);
+
+            if (listResult.Count == 0)
+            {
+                throw new Exception("No data found");
+            }
+
+            return listResult[0];
+        }
+
+        public List<FabricCrkShrkTestIron_Detail> GetFabricIronTest_Detail(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlGetFabricCrkShrkTestIron_Detail = @"
+
+select	[Roll] = flc.Roll,
+        [Dyelot] = flc.Dyelot,
+        [HorizontalOriginal] = flc.HorizontalOriginal,
+        [VerticalOriginal] = flc.VerticalOriginal,
+        [Result] = flc.Result,
+        [HorizontalTest1] = flc.HorizontalTest1,
+        [HorizontalTest2] = flc.HorizontalTest2,
+        [HorizontalTest3] = flc.HorizontalTest3,
+        [HorizontalRate] = flc.HorizontalRate,
+        [HorizontalAverage] = Cast(Round((isnull(flc.HorizontalTest1, 0) + isnull(flc.HorizontalTest2, 0)  + isnull(flc.HorizontalTest3, 0)) / 3.0, 2) as numeric(5, 2)),
+        [VerticalTest1] = flc.VerticalTest1,
+        [VerticalTest2] = flc.VerticalTest2,
+        [VerticalTest3] = flc.VerticalTest3,
+        [VerticalRate] = flc.VerticalRate,
+        [VerticalAverage] = Cast(Round((isnull(flc.VerticalTest1, 0) + isnull(flc.VerticalTest2, 0)  + isnull(flc.VerticalTest3, 0)) / 3.0, 2) as numeric(5, 2)),
+        [Inspdate] = flc.Inspdate,
+        [Inspector] = flc.Inspector,
+        [Name] = (select Concat(Name, 'Ext.', ExtNo) from pass1 WITH(NOLOCK) where ID = flc.Inspector),
+        [Remark] = flc.Remark,
+        [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(flc.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(flc.AddDate, 'yyyy/MM/dd HH:mm:ss')))
+from FIR_Laboratory_Iron flc with (nolock)
+outer apply (select [val] = Name_Extno from View_ShowName where ID = iif(isnull(flc.EditName, '') = '', flc.AddName, flc.EditName)) LastUpdateName
+where flc.ID = @ID
+";
+
+            return ExecuteList<FabricCrkShrkTestIron_Detail>(CommandType.Text, sqlGetFabricCrkShrkTestIron_Detail, listPar).ToList();
+        }
+
+        public void UpdateFabricIronTestDetail(FabricCrkShrkTestIron_Result fabricCrkShrkTestIron_Result, string userID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", fabricCrkShrkTestIron_Result.ID);
+            listPar.Add("@IronRemark", fabricCrkShrkTestIron_Result.Iron_Main.IronRemark ?? string.Empty);
+            listPar.Add("@IronTestBeforePicture", fabricCrkShrkTestIron_Result.Iron_Main.IronTestBeforePicture);
+            listPar.Add("@IronTestAfterPicture", fabricCrkShrkTestIron_Result.Iron_Main.IronTestAfterPicture);
+
+            string sqlUpdateCrocking = @"
+SET XACT_ABORT ON
+-----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
+update  FIR_Laboratory set  IronRemark = @IronRemark
+where   ID = @ID 
+;
+if exists(
+    select 1 from SciPMSFile_FIR_Laboratory where  ID = @ID 
+)
+begin
+    update  SciPMSFile_FIR_Laboratory set IronTestBeforePicture = @IronTestBeforePicture,
+                                IronTestAfterPicture = @IronTestAfterPicture
+    where   ID = @ID 
+end
+else
+begin
+    insert into SciPMSFile_FIR_Laboratory (ID,IronTestBeforePicture,IronTestAfterPicture)
+    values (@ID ,@IronTestBeforePicture ,@IronTestAfterPicture )
+end
+";
+
+
+            List<FabricCrkShrkTestIron_Detail> oldIronData = GetFabricIronTest_Detail(fabricCrkShrkTestIron_Result.ID);
+
+            List<FabricCrkShrkTestIron_Detail> needUpdateDetailList =
+                PublicClass.CompareListValue<FabricCrkShrkTestIron_Detail>(
+                    fabricCrkShrkTestIron_Result.Iron_Detail,
+                    oldIronData,
+                    "Roll,Dyelot",
+                    "HorizontalOriginal,VerticalOriginal,Result,HorizontalTest1,HorizontalTest2,HorizontalTest3,VerticalTest1,VerticalTest2,VerticalTest3,Inspdate,Inspector,Remark");
+
+            string NewReportNo = GetID(fabricCrkShrkTestIron_Result.MDivisionID + "FT", "FIR_Laboratory", DateTime.Today, 2, "ReportNo");
+
+            string sqlInsertDetail = @"
+insert into FIR_Laboratory_Iron(
+ID                   ,
+Roll                 ,
+Dyelot               ,
+Inspdate             ,
+Inspector            ,
+Result               ,
+Remark               ,
+AddName              ,
+AddDate              ,
+HorizontalRate       ,
+HorizontalOriginal   ,
+HorizontalTest1      ,
+HorizontalTest2      ,
+HorizontalTest3      ,
+VerticalRate         ,
+VerticalOriginal     ,
+VerticalTest1        ,
+VerticalTest2        ,
+VerticalTest3
+
+)
+values
+(
+@ID                   ,
+@Roll                 ,
+@Dyelot               ,
+@Inspdate             ,
+@Inspector            ,
+@Result               ,
+@Remark               ,
+@AddName              ,
+getDate()              ,
+@HorizontalRate       ,
+@HorizontalOriginal   ,
+@HorizontalTest1      ,
+@HorizontalTest2      ,
+@HorizontalTest3      ,
+@VerticalRate         ,
+@VerticalOriginal     ,
+@VerticalTest1        ,
+@VerticalTest2        ,
+@VerticalTest3
+)
+;
+UPDATE FIR_Laboratory
+SET ReportNo = @ReportNo
+WHERE ReportNo = '' AND ID= @ID
+";
+
+            string sqlDeleteDetail = @"
+delete  FIR_Laboratory_Iron
+where   ID = @ID and
+        Roll = @Roll and
+        Dyelot = @Dyelot
+";
+
+            string sqlUpdateDetail = @"
+update  FIR_Laboratory_Iron set Inspdate            = @Inspdate             ,
+                                Inspector           = @Inspector            ,
+                                Result              = @Result               ,
+                                Remark              = @Remark               ,
+                                EditName            = @EditName             ,
+                                EditDate            = getDate()             ,
+                                HorizontalRate      = @HorizontalRate       ,
+                                HorizontalOriginal  = @HorizontalOriginal   ,
+                                HorizontalTest1     = @HorizontalTest1      ,
+                                HorizontalTest2     = @HorizontalTest2      ,
+                                HorizontalTest3     = @HorizontalTest3      ,
+                                VerticalRate        = @VerticalRate         ,
+                                VerticalOriginal    = @VerticalOriginal     ,
+                                VerticalTest1       = @VerticalTest1        ,
+                                VerticalTest2       = @VerticalTest2        ,
+                                VerticalTest3       = @VerticalTest3     
+        where   ID = @ID and
+                Roll = @Roll and
+                Dyelot = @Dyelot
+";
+
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                ExecuteDataTableByServiceConn(CommandType.Text, sqlUpdateCrocking, listPar);
+                foreach (FabricCrkShrkTestIron_Detail detailItem in needUpdateDetailList)
+                {
+                    SQLParameterCollection listDetailPar = new SQLParameterCollection();
+
+                    switch (detailItem.StateType)
+                    {
+                        case DatabaseObject.Public.CompareStateType.Add:
+                            listDetailPar.Add("@ID", fabricCrkShrkTestIron_Result.ID);
+                            listDetailPar.Add("@Roll", detailItem.Roll);
+                            listDetailPar.Add("@Dyelot", detailItem.Dyelot);
+                            listDetailPar.Add("@Inspdate", detailItem.Inspdate);
+                            listDetailPar.Add("@Inspector", detailItem.Inspector);
+                            listDetailPar.Add("@Result", detailItem.Result);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
+                            listDetailPar.Add("@AddName", userID);
+                            listDetailPar.Add("@HorizontalRate", detailItem.HorizontalRate);
+                            listDetailPar.Add("@HorizontalOriginal", detailItem.HorizontalOriginal);
+                            listDetailPar.Add("@HorizontalTest1", detailItem.HorizontalTest1);
+                            listDetailPar.Add("@HorizontalTest2", detailItem.HorizontalTest2);
+                            listDetailPar.Add("@HorizontalTest3", detailItem.HorizontalTest3);
+                            listDetailPar.Add("@VerticalRate", detailItem.VerticalRate);
+                            listDetailPar.Add("@VerticalOriginal", detailItem.VerticalOriginal);
+                            listDetailPar.Add("@VerticalTest1", detailItem.VerticalTest1);
+                            listDetailPar.Add("@VerticalTest2", detailItem.VerticalTest2);
+                            listDetailPar.Add("@VerticalTest3", detailItem.VerticalTest3);
+                            listDetailPar.Add("@ReportNo", NewReportNo);
+
+                            ExecuteNonQuery(CommandType.Text, sqlInsertDetail, listDetailPar);
+                            break;
+                        case DatabaseObject.Public.CompareStateType.Edit:
+                            listDetailPar.Add("@ID", fabricCrkShrkTestIron_Result.ID);
+                            listDetailPar.Add("@Roll", detailItem.Roll);
+                            listDetailPar.Add("@Dyelot", detailItem.Dyelot);
+                            listDetailPar.Add("@Inspdate", detailItem.Inspdate);
+                            listDetailPar.Add("@Inspector", detailItem.Inspector);
+                            listDetailPar.Add("@Result", detailItem.Result);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
+                            listDetailPar.Add("@EditName", userID);
+                            listDetailPar.Add("@HorizontalRate", detailItem.HorizontalRate);
+                            listDetailPar.Add("@HorizontalOriginal", detailItem.HorizontalOriginal);
+                            listDetailPar.Add("@HorizontalTest1", detailItem.HorizontalTest1);
+                            listDetailPar.Add("@HorizontalTest2", detailItem.HorizontalTest2);
+                            listDetailPar.Add("@HorizontalTest3", detailItem.HorizontalTest3);
+                            listDetailPar.Add("@VerticalRate", detailItem.VerticalRate);
+                            listDetailPar.Add("@VerticalOriginal", detailItem.VerticalOriginal);
+                            listDetailPar.Add("@VerticalTest1", detailItem.VerticalTest1);
+                            listDetailPar.Add("@VerticalTest2", detailItem.VerticalTest2);
+                            listDetailPar.Add("@VerticalTest3", detailItem.VerticalTest3);
+
+                            ExecuteNonQuery(CommandType.Text, sqlUpdateDetail, listDetailPar);
+                            break;
+                        case DatabaseObject.Public.CompareStateType.Delete:
+                            listDetailPar.Add("@ID", fabricCrkShrkTestIron_Result.ID);
+                            listDetailPar.Add("@Roll", detailItem.Roll);
+                            listDetailPar.Add("@Dyelot", detailItem.Dyelot);
+
+                            ExecuteNonQuery(CommandType.Text, sqlDeleteDetail, listDetailPar);
+                            break;
+                        case DatabaseObject.Public.CompareStateType.None:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                string UpdateInspPercent = $@"
+DECLARE @POID as varchar(15)= (SELECT TOP 1  POID from FIR_Laboratory where ID = @ID)
+exec UpdateInspPercent 'FIRLab', @POID";
+                ExecuteDataTableByServiceConn(CommandType.Text, UpdateInspPercent, listPar);
+
+                transaction.Complete();
+            }
+        }
+
+
+        public void EncodeFabricIron(long ID, string testResult, DateTime? IronDate, string userID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+            listPar.Add("@testResult", testResult);
+            listPar.Add("@IronDate", IronDate);
+            listPar.Add("@userID", userID);
+
+            string sqlUpdateFIR_Laboratory = $@"
+update  FIR_Laboratory  set Iron = @testResult,
+                            IronDate = @IronDate,
+                            IronEncode  = 1,
+                            IronInspector = @userID
+     where  ID = @ID
+
+{FIR_Laboratory_Utility.UpdateResultSql}
+
+declare @POID varchar(13)
+
+select @POID = POID from FIR_Laboratory WITH(NOLOCK) where ID = @ID
+
+exec UpdateInspPercent 'FIRLab',@POID 
+";
+
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                ExecuteNonQuery(CommandType.Text, sqlUpdateFIR_Laboratory, listPar);
+                transaction.Complete();
+            }
+        }
+
+
+        public DataTable GetIronFailMailContentData(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlGetData = @"
+select	[SP#] = f.POID,
+        [Style] = o.StyleID,
+        [Brand] = o.BrandID,
+        [Season] = o.SeasonID,
+        [SEQ] = Concat(f.Seq1, ' ', f.Seq2),
+        [WK#] = r.ExportID,
+        [Arrive WH Date] = Format(r.WhseArrival, 'yyyy/MM/dd'),
+        [SCI Refno] = f.SCIRefno,
+        [Refno] = f.Refno,
+        [Color] = pc.SpecValue,
+        [Supplier] = Concat(f.SuppID, s.AbbEn),
+        [Arrive Qty] = f.ArriveQty,
+        [Iron Result] = fl.Iron,
+        [Iron Last Test Date] = Format(fl.IronDate, 'yyyy/MM/dd'),
+        [Iron Remark] = fl.IronRemark
+from FIR f with (nolock)
+left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
+left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
+left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join Supp s with (nolock) on s.ID = f.SuppID
+left join Orders o with (nolock) on o.ID = f.POID
+left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno
+where f.ID = @ID
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, listPar);
+        }
+
+        public void AmendFabricIron(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlUpdateFIR_Laboratory = $@"
+update  FIR_Laboratory  set Iron = '',
+                            IronDate = null,
+                            IronEncode = 0,
+                            IronInspector = ''
+     where  ID = @ID
+
+{FIR_Laboratory_Utility.UpdateResultSql}
+
+declare @POID varchar(13)
+
+select @POID = POID from FIR_Laboratory WITH(NOLOCK) where ID = @ID
+
+exec UpdateInspPercent 'FIRLab',@POID 
+";
+
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                ExecuteNonQuery(CommandType.Text, sqlUpdateFIR_Laboratory, listPar);
+                transaction.Complete();
+            }
+        }
+
+        public DataTable GetIronDetailForReport(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlGetFabricCrkShrkTestIron_Detail = @"
+
+select	[Roll] = flc.Roll,
+        [Dyelot] = flc.Dyelot,
+        [HorizontalOriginal] = flc.HorizontalOriginal,
+        [VerticalOriginal] = flc.VerticalOriginal,
+        [Result] = flc.Result,
+        [HorizontalTest1] = flc.HorizontalTest1,
+        [HorizontalTest2] = flc.HorizontalTest2,
+        [HorizontalTest3] = flc.HorizontalTest3,
+        [HorizontalRate] = flc.HorizontalRate,
+        [HorizontalAverage] = (isnull(flc.HorizontalTest1, 0) + isnull(flc.HorizontalTest2, 0)  + isnull(flc.HorizontalTest3, 0)) / 3.0,
+        [VerticalTest1] = flc.VerticalTest1,
+        [VerticalTest2] = flc.VerticalTest2,
+        [VerticalTest3] = flc.VerticalTest3,
+        [VerticalRate] = flc.VerticalRate,
+        [VerticalAverage] = (isnull(flc.VerticalTest1, 0) + isnull(flc.VerticalTest2, 0)  + isnull(flc.VerticalTest3, 0)) / 3.0,
+        [Inspdate] = flc.Inspdate,
+        [Inspector] = flc.Inspector,
+        [Name] = (select Concat(Name, ' Ext.', ExtNo) from pass1 WITH(NOLOCK) where ID = flc.Inspector),
+        [Remark] = flc.Remark,
+        [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(flc.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(flc.AddDate, 'yyyy/MM/dd HH:mm:ss')))
+from FIR_Laboratory_Iron flc with (nolock)
+outer apply (select [val] = Name_Extno from View_ShowName where ID = iif(isnull(flc.EditName, '') = '', flc.AddName, flc.EditName)) LastUpdateName
+where flc.ID = @ID
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetFabricCrkShrkTestIron_Detail, listPar);
+        }
+
+        #endregion
+
         public FabricCrkShrkTestWash_Main GetFabricWashTest_Main(long ID)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
@@ -1340,10 +1773,20 @@ SET XACT_ABORT ON
 update  FIR_Laboratory set  WashRemark = @WashRemark, 
                             SkewnessOptionID = @SkewnessOptionID
 where   ID = @ID 
-
-update  SciPMSFile_FIR_Laboratory set WashTestBeforePicture = @WashTestBeforePicture, 
-                            WashTestAfterPicture = @WashTestAfterPicture
-where   ID = @ID 
+;
+if exists(
+    select 1 from SciPMSFile_FIR_Laboratory where  ID = @ID 
+)
+begin
+    update  SciPMSFile_FIR_Laboratory set WashTestBeforePicture = @WashTestBeforePicture,
+                                WashTestAfterPicture = @WashTestAfterPicture
+    where   ID = @ID 
+end
+else
+begin
+    insert into SciPMSFile_FIR_Laboratory (ID,WashTestBeforePicture,WashTestAfterPicture)
+    values (@ID ,@WashTestBeforePicture ,@WashTestAfterPicture )
+end
 ";
 
 

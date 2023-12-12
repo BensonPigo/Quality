@@ -139,9 +139,11 @@ namespace DatabaseObject.ProductionDB
         public static readonly string UpdateResultSql = @"
 update  FIR_Laboratory set  Result = case when  (Crocking = 'Pass' or nonCrocking = 1) and 
                                                 (Heat = 'Pass' or nonHeat = 1) and 
+                                                (Iron = 'Pass' or nonIron = 1) and 
                                                 (Wash = 'Pass' or nonWash = 1) then 'Pass'
                                           when  (Crocking = '' and nonCrocking = 0) or
                                                 (Heat = '' and nonHeat = 0) or
+                                                (Iron = '' and nonIron = 0) or
                                                 (Wash = '' and nonWash = 0) then ''
                                           else  'Fail' end
 where   ID = @ID

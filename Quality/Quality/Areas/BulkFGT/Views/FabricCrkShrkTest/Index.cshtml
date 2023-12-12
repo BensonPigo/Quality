@@ -119,6 +119,80 @@
             vertical-align: middle;
         }
 
+        .DataTable > thead > tr > th {
+            width: 5vw;
+        }
+    .DetailDataArea {
+        width: 260%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .DetailDataAreaItem1 {
+        width: 3%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+    }
+    .DetailDataAreaItem2 {
+        width: 1.5%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+    }
+    .DetailDataAreaItem3 {
+        width: 4.5%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+    }
+    .colHead {
+        background-color: wheat;
+        color: darkslategray;
+        font-size: 1rem;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+    .colBody {
+        font-size: 1rem;
+    }
+    .fixedColumn1 {
+        position: sticky;
+        left: 1px;
+        background-color: mistyrose;
+        /*width: 5vw;*/
+        /*border: solid 1px gray;*/
+    }
+
+    .fixedColumn2 {
+        position: sticky;
+        /*width: 5vw;*/
+        left: 7.8%;
+        background-color: mistyrose;
+        /*border: solid 1px gray;*/
+    }
+
+    .fixedColumn3 {
+        position: sticky;
+        /*width: 5vw;*/
+        left:11.7%;
+        background-color: mistyrose;
+        border-left:0;
+        /*border: solid 1px gray;*/
+    }
+
     .CheckBoxColor {
         background-color: rgb(255, 228, 225);
     }
@@ -266,184 +340,226 @@
                     </div>
                 </div>
 
-                <div style="margin-top: 1em;overflow:auto">
-                    <table cellspacing="100" class="DataTable DetailTable table table-striped display;" style="width: 250vw">
-                        <thead>
-                            <tr class="row-name" id="row-name">
-                                <th style="width:5vw">Report No</th>
-                                <th style="width:5vw">Seq</th>
-                                <th style="width:5vw">WKNo</th>
-                                <th style="width:5vw">Arrive W/H Date</th>
-                                <th style="width:5vw">SCI Refno</th>
-                                <th style="width:5vw">Refno</th>
-                                <th style="width:5vw">Color</th>
-                                <th style="width:5vw">Supplier</th>
-                                <th style="width:5vw">Arrive Qty</th>
-                                <th style="width:5vw">Sample Rcv. Date</th>
-                                <th style="width:5vw">Insp. Deadline</th>
-                                <th style="width:5vw">All Result</th>
-                                <th style="width:5vw">
-                                    Crocking N/A<br />
-                                    <input id="selectAllCrocking" type="checkbox" name="name" />
-                                </th>
-                                <th style="width:5vw">Crocking Result</th>
-                                <th style="width:5vw">Crocking Test Date</th>
-                                <th style="width:5vw">Remark</th>
-                                <th style="width:5vw">
-                                    HT N/A<br />
-                                    <input id="selectAllHT" type="checkbox" name="name" />
-                                </th>
-                                <th style="width:5vw">Heat Result</th>
-                                <th style="width:5vw">Heat Last Test Date</th>
-                                <th style="width:5vw">Remark</th>
-                                <th style="width:5vw">
-                                    Wash N/A<br />
-                                    <input id="selectAllWash" type="checkbox" name="name" />
-                                </th>
-                                <th style="width:5vw">Wash Result</th>
-                                <th style="width:5vw">Wash Last Test Date</th>
-                                <th style="width:5vw">Remark</th>
-                                <th style="width:5vw">Receiving</th>
-                                <th style="width:5vw">Crocking</th>
-                                <th style="width:5vw">Heat</th>
-                                <th style="width:5vw">Wash</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (int i = 0; i < Model.Details.Count; i++)
+
+                <div class="bodyDiv" style="overflow:auto;">
+
+                    <div class="detailDataDiv">
+                        <br />
+                        <div class="DetailDataArea">
+                            <!--#region Head-->
+                            <div class="DetailDataAreaItem1 colHead fixedColumn1">Report No</div>
+                            <div class="DetailDataAreaItem2 colHead fixedColumn2">Seq</div>
+                            <div class="DetailDataAreaItem1 colHead fixedColumn3">WKNo</div>
+                            <div class="DetailDataAreaItem1 colHead">Arrive W/H Date</div>
+                            <div class="DetailDataAreaItem3 colHead">SCI Refno</div>
+                            <div class="DetailDataAreaItem1 colHead">Refno</div>
+                            <div class="DetailDataAreaItem1 colHead">Color</div>
+                            <div class="DetailDataAreaItem1 colHead">Supplier</div>
+                            <div class="DetailDataAreaItem1 colHead">Arrive Qty</div>
+                            <div class="DetailDataAreaItem1 colHead">Sample Rcv. Date</div>
+                            <div class="DetailDataAreaItem1 colHead">Insp. Deadline</div>
+                            <div class="DetailDataAreaItem1 colHead">All Result</div>
+                            <div class="DetailDataAreaItem1 colHead">
+                                Crocking N/A<br />
+                                <input id="selectAllCrocking" type="checkbox" class="CanEdit" name="name" />
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">Crocking Result</div>
+                            <div class="DetailDataAreaItem1 colHead">Crocking Test Date</div>
+                            <div class="DetailDataAreaItem1 colHead">Remark</div>
+                            <div class="DetailDataAreaItem1 colHead">
+                                HT N/A<br />
+                                <input id="selectAllHT" type="checkbox" class="CanEdit" name="name" />
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">Heat Result</div>
+                            <div class="DetailDataAreaItem1 colHead">Heat Last Test Date</div>
+                            <div class="DetailDataAreaItem1 colHead">Remark</div>
+                            <div class="DetailDataAreaItem1 colHead">
+                                Iron N/A<br />
+                                <input id="selectAllIron" type="checkbox" class="CanEdit" name="name" />
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">Iron Result</div>
+                            <div class="DetailDataAreaItem1 colHead">Iron Last Test Date</div>
+                            <div class="DetailDataAreaItem1 colHead">Remark</div>
+
+                            <div class="DetailDataAreaItem1 colHead">
+                                Wash N/A<br />
+                                <input id="selectAllWash" type="checkbox" class="CanEdit" name="name" />
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">Wash Result</div>
+                            <div class="DetailDataAreaItem1 colHead">Wash Last Test Date</div>
+                            <div class="DetailDataAreaItem1 colHead">Remark</div>
+                            <div class="DetailDataAreaItem1 colHead">Receiving</div>
+                            <div class="DetailDataAreaItem1 colHead">Crocking</div>
+                            <div class="DetailDataAreaItem1 colHead">Heat</div>
+                            <div class="DetailDataAreaItem1 colHead">Iron</div>
+                            <div class="DetailDataAreaItem1 colHead">Wash</div>
+
+                            <!--#endregion-->
+
+                            @if (Model.Details != null)
                             {
-                                string styleColor = string.Empty;
-                                <tr class="row-content" style="vertical-align: middle; text-align: center;">
-                                    <td>
-                                        @Html.DisplayFor(modelItem => Model.Details[i].ReportNo)
-                                    </td>
-                                    <td>
-                                        @Html.HiddenFor(modelItem => Model.Details[i].ID)
-                                        @Html.DisplayFor(modelItem => Model.Details[i].Seq)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => Model.Details[i].WKNo)
-                                    </td>
-                                    <td>
-                                        @Html.ValueFor(modelItem => Model.Details[i].WhseArrival, "{0:yyyy/MM/dd}")
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => Model.Details[i].SCIRefno)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => Model.Details[i].Refno)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => Model.Details[i].ColorID)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => Model.Details[i].Supplier)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => Model.Details[i].ArriveQty)
-                                    </td>
-                                    <td style="background-color:rgb(255, 228, 225)">
-                                        @Html.TextBoxFor(modelItem => Model.Details[i].ReceiveSampleDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
-                                    </td>
-                                    <td>
-                                        @Html.ValueFor(modelItem => Model.Details[i].InspDeadline, "{0:yyyy/MM/dd}")
-                                    </td>
-                                    <td>
-                                        @{
-                                            if (Model.Details[i].AllResult == "Pass")
-                                            {
-                                                styleColor = "blue";
-                                            }
-                                            else
-                                            {
-                                                styleColor = "red";
-                                            }
-                                        }
-                                        <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].AllResult)</font>
-                                    </td>
-                                    <td class="CheckBoxColor">
-                                        @Html.CheckBox("Details[" + i + "].NonCrocking", Convert.ToBoolean(Model.Details[i].NonCrocking), new { @class = "NonCrocking" })
-                                    </td>
-                                    <td class="CrockingColor">
-                                        @{
-                                            if (Model.Details[i].Crocking == "Pass")
+                                for (int i = 0; i < Model.Details.Count; i++)
+                                {
+                                    string rowName = $@"Row{i}";
+                                    string styleColor = string.Empty;
+                                    string controllerName = ViewContext.RouteData.GetRequiredString("Controller");
 
-                                            {
-                                                styleColor = "blue";
-                                            }
-                                            else
-                                            {
-                                                styleColor = "red";
-                                            }
-                                        }
-                                        <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].Crocking)</font>
-                                    </td>
-                                    <td class="CrockingColor">
-                                        @Html.ValueFor(modelItem => Model.Details[i].CrockingDate, "{0:yyyy/MM/dd}")
-                                    </td>
-                                    <td class="CrockingColor">
-                                        @Html.DisplayFor(modelItem => Model.Details[i].CrockingRemark)
-                                    </td>
-                                    <td class="CheckBoxColor">
-                                        @Html.CheckBox("Details[" + i + "].NonHeat", Convert.ToBoolean(Model.Details[i].NonHeat), new { @class = "NonHeat" })
-                                    </td>
-                                    <td class="HeatColor">
-                                        @{
-                                            if (Model.Details[i].Heat == "Pass")
+                                    <div class="detailRow" style="width:100%;display:flex;">
 
-                                            {
-                                                styleColor = "blue";
+                                        <div class="DetailDataAreaItem1 colBody @rowName fixedColumn1">
+                                            @Html.DisplayFor(modelItem => Model.Details[i].ReportNo)
+                                        </div>
+                                        <div class="DetailDataAreaItem2 colBody @rowName fixedColumn2">
+                                            @Html.HiddenFor(modelItem => Model.Details[i].ID)
+                                            @Html.DisplayFor(modelItem => Model.Details[i].Seq)
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName fixedColumn3">
+                                            @Html.DisplayFor(modelItem => Model.Details[i].WKNo)
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @Html.ValueFor(modelItem => Model.Details[i].WhseArrival, "{0:yyyy/MM/dd}")
+                                        </div>
+                                        <div class="DetailDataAreaItem3 colBody @rowName">
+                                            @Html.DisplayFor(modelItem => Model.Details[i].SCIRefno)
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @Html.DisplayFor(modelItem => Model.Details[i].Refno)
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @Html.DisplayFor(modelItem => Model.Details[i].ColorID)
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @Html.DisplayFor(modelItem => Model.Details[i].Supplier)
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @Html.DisplayFor(modelItem => Model.Details[i].ArriveQty)
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody" style="background-color:rgb(255, 228, 225)">
+                                            @Html.TextBoxFor(modelItem => Model.Details[i].ReceiveSampleDate, "{0:yyyy/MM/dd}", new { @class = "date-picker CanEdit ReceiveSampleDate", @style = "width: 100%;background-color:rgb(255, 228, 225);" })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @Html.ValueFor(modelItem => Model.Details[i].InspDeadline, "{0:yyyy/MM/dd}")
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @{
+                                                if (Model.Details[i].AllResult == "Pass")
+                                                {
+                                                    styleColor = "blue";
+                                                }
+                                                else
+                                                {
+                                                    styleColor = "red";
+                                                }
                                             }
-                                            else
-                                            {
-                                                styleColor = "red";
-                                            }
-                                        }
-                                        <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].Heat)</font>
-                                    </td>
-                                    <td class="HeatColor">
-                                        @Html.ValueFor(modelItem => Model.Details[i].HeatDate, "{0:yyyy/MM/dd}")
-                                    </td>
-                                    <td class="HeatColor">
-                                        @Html.DisplayFor(modelItem => Model.Details[i].HeatRemark)
-                                    </td>
-                                    <td class="CheckBoxColor">
-                                        @Html.CheckBox("Details[" + i + "].NonWash", Convert.ToBoolean(Model.Details[i].NonWash), new { @class = "NonWash" })
-                                    </td>
-                                    <td class="WashColor">
-                                        @{
-                                            if (Model.Details[i].Wash == "Pass")
-                                            {
-                                                styleColor = "blue";
-                                            }
-                                            else
-                                            {
-                                                styleColor = "red";
-                                            }
-                                        }
-                                        <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].Wash)</font>
-                                    </td>
-                                    <td class="WashColor">
-                                        @Html.ValueFor(modelItem => Model.Details[i].WashDate, "{0:yyyy/MM/dd}")
-                                    </td>
-                                    <td class="WashColor">
-                                        @Html.DisplayFor(modelItem => Model.Details[i].WashRemark)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => Model.Details[i].ReceivingID)
-                                    </td>
-                                    @{
-                                        string controllerName = ViewContext.RouteData.GetRequiredString("Controller");
-                                    }
+                                            <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].AllResult)</font>
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody CheckBoxColor @rowName">
+                                            @Html.CheckBox("Details[" + i + "].NonCrocking", Convert.ToBoolean(Model.Details[i].NonCrocking), new { @class = "NonCrocking CanEdit" })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody CrockingColor @rowName">
+                                            @{
+                                                if (Model.Details[i].Crocking == "Pass")
 
-                                    <td><a class="link" href="@Url.Action("CrockingTest", @controllerName)?ID=@Model.Details[i].ID">CrockingTest</a></td>
-                                    <td><a class="link" href="@Url.Action("HeatTest", @controllerName)?ID=@Model.Details[i].ID">HeatTest</a></td>
-                                    <td><a class="link" href="@Url.Action("WashTest", @controllerName)?ID=@Model.Details[i].ID">WashTest</a></td>
-                                </tr>
+                                                {
+                                                    styleColor = "blue";
+                                                }
+                                                else
+                                                {
+                                                    styleColor = "red";
+                                                }
+                                            }
+                                            <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].Crocking)</font>
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody CrockingColor @rowName">
+                                            @Html.ValueFor(modelItem => Model.Details[i].CrockingDate, "{0:yyyy/MM/dd}")
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody CrockingColor @rowName">
+                                            @Html.DisplayFor(modelItem => Model.Details[i].CrockingRemark)
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody CheckBoxColor @rowName">
+                                            @Html.CheckBox("Details[" + i + "].NonHeat", Convert.ToBoolean(Model.Details[i].NonHeat), new { @class = "NonHeat CanEdit" })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody HeatColor @rowName">
+                                            @{
+                                                if (Model.Details[i].Heat == "Pass")
+
+                                                {
+                                                    styleColor = "blue";
+                                                }
+                                                else
+                                                {
+                                                    styleColor = "red";
+                                                }
+                                            }
+                                            <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].Heat)</font>
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody HeatColor @rowName">
+                                            @Html.ValueFor(modelItem => Model.Details[i].HeatDate, "{0:yyyy/MM/dd}")
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody HeatColor @rowName">
+                                            @Html.DisplayFor(modelItem => Model.Details[i].HeatRemark)
+                                        </div>
+
+                                        <div class="DetailDataAreaItem1 colBody CheckBoxColor @rowName">
+                                            @Html.CheckBox("Details[" + i + "].NonIron", Convert.ToBoolean(Model.Details[i].NonIron), new { @class = "NonIron CanEdit" })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody IronColor @rowName">
+                                            @{
+                                                if (Model.Details[i].Iron == "Pass")
+
+                                                {
+                                                    styleColor = "blue";
+                                                }
+                                                else
+                                                {
+                                                    styleColor = "red";
+                                                }
+                                            }
+                                            <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].Iron)</font>
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody IronColor @rowName">
+                                            @Html.ValueFor(modelItem => Model.Details[i].IronDate, "{0:yyyy/MM/dd}")
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody IronColor @rowName">
+                                            @Html.DisplayFor(modelItem => Model.Details[i].IronRemark)
+                                        </div>
+
+                                        <div class="DetailDataAreaItem1 colBody CheckBoxColor @rowName">
+                                            @Html.CheckBox("Details[" + i + "].NonWash", Convert.ToBoolean(Model.Details[i].NonWash), new { @class = "NonWash CanEdit" })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody WashColor @rowName">
+                                            @{
+                                                if (Model.Details[i].Wash == "Pass")
+                                                {
+                                                    styleColor = "blue";
+                                                }
+                                                else
+                                                {
+                                                    styleColor = "red";
+                                                }
+                                            }
+                                            <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].Wash)</font>
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody WashColor @rowName">
+                                            @Html.ValueFor(modelItem => Model.Details[i].WashDate, "{0:yyyy/MM/dd}")
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody WashColor @rowName">
+                                            @Html.DisplayFor(modelItem => Model.Details[i].WashRemark)
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @Html.DisplayFor(modelItem => Model.Details[i].ReceivingID)
+                                        </div>
+
+                                        <div class="DetailDataAreaItem1 colBody @rowName"><a class="link" href="@Url.Action("CrockingTest", @controllerName)?ID=@Model.Details[i].ID">CrockingTest</a></div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName"><a class="link" href="@Url.Action("HeatTest", @controllerName)?ID=@Model.Details[i].ID">HeatTest</a></div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName"><a class="link" href="@Url.Action("IronTest", @controllerName)?ID=@Model.Details[i].ID">IronTest</a></div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName"><a class="link" href="@Url.Action("WashTest", @controllerName)?ID=@Model.Details[i].ID">WashTest</a></div>
+                                    </div>
+                                }
                             }
-                        </tbody>
 
-                    </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -475,6 +591,14 @@
             $('.NonHeat').attr('checked', !oldValue);
         });
 
+        $("#selectAllIron").mousedown(function () {
+
+            var oldValue = $(this).prop('checked');
+
+            $('.NonIron').prop('checked', !oldValue);
+            $('.NonIron').attr('checked', !oldValue);
+        });
+
         $("#selectAllWash").mousedown(function () {
 
             var oldValue = $(this).prop('checked');
@@ -492,20 +616,34 @@
         EditModeButtionBind();
 
         if (EditMode) {
+            // 可編輯欄位開啟
+            $('.CanEdit').removeAttr("disabled");
+            $('.CanEdit').removeAttr("readonly");
+
+            $('.ReceiveSampleDate').addClass('date-picker');
+            $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+
             $(".rowHeader input[type='text']").attr("disabled", "disabled");
             $(".rowHeader input[type='button']").unbind('click').addClass("IsEditModeQuery");
             $('#btnQuery').addClass("IsEditModeQuery");
 
             $("#Edit").removeClass("IsEditMode");
             $('#Save, #Undo, #New').addClass("IsEditMode");
-            $(".DataTable input").removeAttr("disabled", "disabled");
+
             $(".link").hide();
         }
         else {
             $(".rowHeader input[type='text']").removeAttr("disabled");
             $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
             $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
-            $(".DataTable input").attr("disabled", "disabled");
+
+
+            $('.ReceiveSampleDate').removeClass('date-picker');
+            // 可編輯欄位關閉
+            $('.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select ,.DetailDataAreaItem3 select').attr("disabled", true);
+            $('.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input ,.DetailDataAreaItem3 input').attr("readonly", "readonly");
+            $('.DetailDataAreaItem1 input[type="checkbox"] ,.DetailDataAreaItem2 input[type="checkbox"] ,.DetailDataAreaItem3 input[type="checkbox"]').attr("disabled", true);
+
             $(".link").show();
             if ('@Model.Main.POID' != '') {
                 $("#Edit").addClass("IsEditMode");
@@ -537,12 +675,13 @@
 
             var detail = [];
             var ErrMsg = "";
-            $('.DetailTable > tbody > tr').each(function (index, value) {
+            $('.detailRow').each(function (index, value) {
                 detail.push({
                     ID: parseInt($('#Details_' + index + '__ID').val()),
                     ReceiveSampleDate: $('#Details_' + index + '__ReceiveSampleDate').val(),
                     NonCrocking: $('#Details_' + index + '__NonCrocking').prop("checked"),
                     NonHeat: $('#Details_' + index + '__NonHeat').prop("checked"),
+                    NonIron: $('#Details_' + index + '__NonIron').prop("checked"),
                     NonWash: $('#Details_' + index + '__NonWash').prop("checked"),
                 });
             });
