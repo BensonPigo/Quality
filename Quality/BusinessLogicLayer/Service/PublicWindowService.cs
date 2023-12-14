@@ -643,16 +643,16 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
-        public List<Window_BrandGarmentTestItem> Get_BrandGarmentTestItem(string BrandID, string TestITem)
+        public List<Window_BrandBulkTestItem> Get_BrandBulkTestItem(string BrandID, string TestITem)
         {
-            List<Window_BrandGarmentTestItem> result = new List<Window_BrandGarmentTestItem>();
+            List<Window_BrandBulkTestItem> result = new List<Window_BrandBulkTestItem>();
 
             try
             {
                 _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
-                result = _Provider.Get_BrandGarmentTestItem(BrandID, TestITem).ToList();
+                result = _Provider.Get_BrandBulkTestItem(BrandID, TestITem).ToList();
 
             }
             catch (Exception ex)

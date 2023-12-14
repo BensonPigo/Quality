@@ -1,6 +1,6 @@
 ﻿@using DatabaseObject.ViewModel.BulkFGT
 
-@model BrandGarmentTest_ViewModel
+@model BrandBulkTest_ViewModel
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -216,11 +216,11 @@
 <div class="main-content">
     <header class="page-header">
         <h3>
-            <i class=""></i><span>Brand Garment Test</span>
+            <i class=""></i><span>Bulk Test By Brand</span>
         </h3>
         <div class="breadcrumb">
             <div>Home</div>
-            <div class="current">Brand Garment Test</div>
+            <div class="current">Bulk Test By Brand</div>
         </div>
     </header>
 
@@ -238,7 +238,7 @@
 
                     <div class="buttonArea">
                         <div class="buttonAreaItem">
-                            <a href="@Url.Action("IndexGet", "BrandGarmentTest", new { POID = Model.Main.ReportNo})">
+                            <a href="@Url.Action("IndexGet", "BrandBulkTest", new { POID = Model.Main.ReportNo})">
                                 <img src="~/Image/Icon/Exit.png" width="30" />
                                 Exit
                             </a>
@@ -442,22 +442,22 @@
 
                                 <!--#endregion-->
 
-                                @if (Model.BrandGarmentTestDoxList != null)
+                                @if (Model.BrandBulkTestDoxList != null)
                                     {
-                                        for (int i = 0; i < Model.BrandGarmentTestDoxList.Count; i++)
+                                        for (int i = 0; i < Model.BrandBulkTestDoxList.Count; i++)
                                         {
                                             string rowName = $@"Row{i}";
-                                            string fileID = $@"BrandGarmentTestDoxList_{i}__BrandGarmentTestDoxFile";
+                                            string fileID = $@"BrandBulkTestDoxList_{i}__BrandBulkTestDoxFile";
                                         <div class="DetailDataAreaItem1 colBody @rowName">
                                             <input type="hidden" class="detailRowIdx" name="name" value="@i" />
-                                            <input id="@fileID" name="BrandGarmentTestDoxList[@i].BrandGarmentTestDoxFile" type="file" style="display:none;">
-                                            @Html.HiddenFor(o => Model.BrandGarmentTestDoxList[i].IsOldFile, new { @class = "" })
-                                            @Html.HiddenFor(o => Model.BrandGarmentTestDoxList[i].ReportNo, new { @class = "" })
-                                            @Html.HiddenFor(o => Model.BrandGarmentTestDoxList[i].Ukey, new { @class = "" })
-                                            @Html.TextBoxFor(o => Model.BrandGarmentTestDoxList[i].FileName, new { @class = "" })
+                                            <input id="@fileID" name="BrandBulkTestDoxList[@i].BrandBulkTestDoxFile" type="file" style="display:none;">
+                                            @Html.HiddenFor(o => Model.BrandBulkTestDoxList[i].IsOldFile, new { @class = "" })
+                                            @Html.HiddenFor(o => Model.BrandBulkTestDoxList[i].ReportNo, new { @class = "" })
+                                            @Html.HiddenFor(o => Model.BrandBulkTestDoxList[i].Ukey, new { @class = "" })
+                                            @Html.TextBoxFor(o => Model.BrandBulkTestDoxList[i].FileName, new { @class = "" })
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
-                                            @Model.BrandGarmentTestDoxList[i].CreateBy
+                                            @Model.BrandBulkTestDoxList[i].CreateBy
                                         </div>
                                         <div class="DetailDataAreaItem2 colBody @rowName">
                                             <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" style="display:none;"/>
@@ -552,13 +552,13 @@
                 return;
             }
             var para = "?TargetID=Main_TestItem&BrandID=" + $('#Main_BrandID').val();
-            window.open('@Url.Action("BrandGarmentTestItemList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=700');
+            window.open('@Url.Action("BrandBulkTestItemList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=700');
         }
     }
 
-    function GetBrandGarmentTestItemList(BrandGarmentTestItemData) {
-        $('#Main_TestItemUkey').val(BrandGarmentTestItemData.Ukey);
-        $('#Main_TestItem').val(BrandGarmentTestItemData.TestItem);
+    function GetBrandBulkTestItemList(BrandBulkTestItemData) {
+        $('#Main_TestItemUkey').val(BrandBulkTestItemData.Ukey);
+        $('#Main_TestItem').val(BrandBulkTestItemData.TestItem);
     }
 
     function ClickEventBind() {
@@ -592,8 +592,8 @@
 
                     $.each($(`.Row${idx} .DetailInput`), function () {
                         let colName = $(this).attr("Name").split('.')[1];
-                        let newName = `BrandGarmentTestDoxList[${index}].${colName}`;
-                        let newID = `BrandGarmentTestDoxList_${index}__${colName}`;
+                        let newName = `BrandBulkTestDoxList[${index}].${colName}`;
+                        let newID = `BrandBulkTestDoxList_${index}__${colName}`;
                         $(this).removeClass(`Row${idx}`);
                         $(this).addClass(`Row${index}`);
                         $(this).attr("ID", newID);
@@ -785,8 +785,8 @@
                 $(".DetailDataArea").append(html);
 
                 
-                var newFileID = "BrandGarmentTestDoxList_" + alllastNO + "__BrandGarmentTestDoxFile";
-                var newFileName = "BrandGarmentTestDoxList[" + alllastNO + "].BrandGarmentTestDoxFile";
+                var newFileID = "BrandBulkTestDoxList_" + alllastNO + "__BrandBulkTestDoxFile";
+                var newFileName = "BrandBulkTestDoxList[" + alllastNO + "].BrandBulkTestDoxFile";
                 copyFile('UploadSubmit', newFileID, newFileName);
 
                 ClickEventBind();
@@ -846,19 +846,19 @@
             var oldIndex = $(this).val();
 
             // 取得Name或ID用到舊索引的控制項，一律換成新索引
-            $(`input[name^="BrandGarmentTestDoxList[${oldIndex}]"]`).each(function () {
+            $(`input[name^="BrandBulkTestDoxList[${oldIndex}]"]`).each(function () {
                 var oldName = $(this).attr('name');
                 var newName = oldName.replace(oldIndex, newIndex);
                 $(this).attr('name', newName);
             })
 
-            $(`input[id^="BrandGarmentTestDoxList_${oldIndex}_"]`).each(function () {
+            $(`input[id^="BrandBulkTestDoxList_${oldIndex}_"]`).each(function () {
                 var oldID = $(this).attr('id');
                 var newID = oldID.replace(oldIndex, newIndex);
                 $(this).attr('id', newID);
             })
 
-            $(`select[name^="BrandGarmentTestDoxList[${oldIndex}]"]`).each(function () {
+            $(`select[name^="BrandBulkTestDoxList[${oldIndex}]"]`).each(function () {
                 var oldName = $(this).attr('name');
                 var newName = oldName.replace(oldIndex, newIndex);
                 $(this).attr('name', newName);

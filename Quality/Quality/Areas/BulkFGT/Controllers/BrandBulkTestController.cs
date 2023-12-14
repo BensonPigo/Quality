@@ -14,30 +14,30 @@ using static Quality.Helper.Attribute;
 namespace Quality.Areas.BulkFGT.Controllers
 {
 
-    public class BrandGarmentTestController : BaseController
+    public class BrandBulkTestController : BaseController
     {
-        private BrandGarmentTestService _Service;
-        public BrandGarmentTestController()
+        private BrandBulkTestService _Service;
+        public BrandBulkTestController()
         {
-            _Service = new BrandGarmentTestService();
-            ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.BrandGarmentTest,,";
+            _Service = new BrandBulkTestService();
+            ViewBag.OnlineHelp = this.OnlineHelp + "BulkFGT.BrandBulkTest,,";
         }
-        // GET: BulkFGT/BrandGarmentTest
+        // GET: BulkFGT/BrandBulkTest
         public ActionResult Index()
         {
-            BrandGarmentTest_ViewModel model = _Service.GetDefaultModel();
+            BrandBulkTest_ViewModel model = _Service.GetDefaultModel();
 
-            if (TempData["NewSaveBrandGarmentTestModel"] != null)
+            if (TempData["NewSaveBrandBulkTestModel"] != null)
             {
-                model = (BrandGarmentTest_ViewModel)TempData["NewSaveBrandGarmentTestModel"];
+                model = (BrandBulkTest_ViewModel)TempData["NewSaveBrandBulkTestModel"];
             }
-            else if (TempData["EditSaveBrandGarmentTestModel"] != null)
+            else if (TempData["EditSaveBrandBulkTestModel"] != null)
             {
-                model = (BrandGarmentTest_ViewModel)TempData["EditSaveBrandGarmentTestModel"];
+                model = (BrandBulkTest_ViewModel)TempData["EditSaveBrandBulkTestModel"];
             }
-            else if (TempData["DeleteBrandGarmentTestModel"] != null)
+            else if (TempData["DeleteBrandBulkTestModel"] != null)
             {
-                model = (BrandGarmentTest_ViewModel)TempData["DeleteBrandGarmentTestModel"];
+                model = (BrandBulkTest_ViewModel)TempData["DeleteBrandBulkTestModel"];
             }
 
             return View(model);
@@ -48,13 +48,13 @@ namespace Quality.Areas.BulkFGT.Controllers
         /// </summary>
         public ActionResult IndexGet(string ReportNo, string BrandID, string SeasonID, string StyleID, string Article)
         {
-            BrandGarmentTest_ViewModel model = _Service.GetDefaultModel();
+            BrandBulkTest_ViewModel model = _Service.GetDefaultModel();
             if (string.IsNullOrEmpty(ReportNo) && string.IsNullOrEmpty(ReportNo))
             {
                 return View("Index", model);
             }
 
-            BrandGarmentTest_Request request = new BrandGarmentTest_Request()
+            BrandBulkTest_Request request = new BrandBulkTest_Request()
             {
                 ReportNo = ReportNo,
                 BrandID = BrandID,
@@ -75,9 +75,9 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         [SessionAuthorizeAttribute]
         [MultipleButton(Name = "action", Argument = "Query")]
-        public ActionResult Query(BrandGarmentTest_Request request)
+        public ActionResult Query(BrandBulkTest_Request request)
         {
-            BrandGarmentTest_ViewModel model = _Service.GetMainList(request);
+            BrandBulkTest_ViewModel model = _Service.GetMainList(request);
 
             if (!model.Result)
             {
@@ -87,9 +87,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View("Index", model);
         }
 
-        public ActionResult Detail(BrandGarmentTest_Request request)
+        public ActionResult Detail(BrandBulkTest_Request request)
         {
-            BrandGarmentTest_ViewModel model = _Service.GetDefaultModel(true);
+            BrandBulkTest_ViewModel model = _Service.GetDefaultModel(true);
 
             model = _Service.GetMain(request);
 
@@ -98,7 +98,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         public ActionResult New()
         {
-            BrandGarmentTest_ViewModel model = _Service.GetDefaultModel(true);
+            BrandBulkTest_ViewModel model = _Service.GetDefaultModel(true);
 
             model.Main.EditType = "New";
 
@@ -108,56 +108,56 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         [SessionAuthorizeAttribute]
         [MultipleButton(Name = "action", Argument = "NewSave")]
-        public ActionResult NewSave(BrandGarmentTest_ViewModel requestModel)
+        public ActionResult NewSave(BrandBulkTest_ViewModel requestModel)
         {
-            BrandGarmentTest_ViewModel model = _Service.NewSave(requestModel, this.MDivisionID, this.UserID);
+            BrandBulkTest_ViewModel model = _Service.NewSave(requestModel, this.MDivisionID, this.UserID);
 
             if (!model.Result)
             {
                 model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("'", string.Empty)}"");";
             }
-            TempData["NewSaveBrandGarmentTestModel"] = model;
+            TempData["NewSaveBrandBulkTestModel"] = model;
 
-            return RedirectToAction("Detail", new BrandGarmentTest_Request() { ReportNo = model.Main.ReportNo });
+            return RedirectToAction("Detail", new BrandBulkTest_Request() { ReportNo = model.Main.ReportNo });
         }
 
         [HttpPost]
         [SessionAuthorizeAttribute]
         [MultipleButton(Name = "action", Argument = "EditSave")]
-        public ActionResult EditSave(BrandGarmentTest_ViewModel requestModel)
+        public ActionResult EditSave(BrandBulkTest_ViewModel requestModel)
         {
-            BrandGarmentTest_ViewModel model = _Service.EditSave(requestModel, this.UserID);
+            BrandBulkTest_ViewModel model = _Service.EditSave(requestModel, this.UserID);
 
             if (!model.Result)
             {
                 model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("'", string.Empty)}"");";
             }
 
-            TempData["EditSaveBrandGarmentTestModel"] = model;
+            TempData["EditSaveBrandBulkTestModel"] = model;
 
-            return RedirectToAction("Detail", new BrandGarmentTest_Request() { ReportNo = model.Main.ReportNo });
+            return RedirectToAction("Detail", new BrandBulkTest_Request() { ReportNo = model.Main.ReportNo });
         }
 
         [HttpPost]
         [SessionAuthorizeAttribute]
         [MultipleButton(Name = "action", Argument = "Delete")]
-        public ActionResult Delete(BrandGarmentTest_ViewModel requestModel)
+        public ActionResult Delete(BrandBulkTest_ViewModel requestModel)
         {
-            BrandGarmentTest_ViewModel model = _Service.Delete(requestModel);
+            BrandBulkTest_ViewModel model = _Service.Delete(requestModel);
 
             if (!model.Result)
             {
                 model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("'", string.Empty)}"");";
                 return View("Index", model);
             }
-            TempData["DeleteBrandGarmentTestModel"] = model;
+            TempData["DeleteBrandBulkTestModel"] = model;
             return RedirectToAction("Index");
         }
 
 
         public ActionResult OrderIDCheck(string orderID)
         {
-            BrandGarmentTest_ViewModel model = _Service.GetOrderInfo(orderID);
+            BrandBulkTest_ViewModel model = _Service.GetOrderInfo(orderID);
 
             if (!model.Result)
             {
@@ -190,13 +190,13 @@ namespace Quality.Areas.BulkFGT.Controllers
 
 <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
     <input type=""hidden"" class=""detailRowIdx"" name=""name"" value=""{lastNo}"" readonly=""readonly"">
-    <input class="""" id=""BrandGarmentTestDoxList_{lastNo}__BrandGarmentTestDoxFile"" name=""BrandGarmentTestDoxList[{lastNo}].BrandGarmentTestDoxFile"" type=""file"" style=""display:none;"">
-    <input class="""" id=""BrandGarmentTestDoxList_{lastNo}__IsOldFile"" name=""BrandGarmentTestDoxList[{lastNo}].IsOldFile"" type=""hidden"" value=""false"" readonly=""readonly"">
-    <input class="""" id=""BrandGarmentTestDoxList_{lastNo}__ReportNo"" name=""BrandGarmentTestDoxList[{lastNo}].ReportNo"" type=""hidden"" value=""{ReportNo}"" readonly=""readonly"">
-    <input class="""" id=""BrandGarmentTestDoxList_{lastNo}__FileName"" name=""BrandGarmentTestDoxList[{lastNo}].FileName"" type=""text"" value=""{FileName}"" readonly=""readonly"">
+    <input class="""" id=""BrandBulkTestDoxList_{lastNo}__BrandBulkTestDoxFile"" name=""BrandBulkTestDoxList[{lastNo}].BrandBulkTestDoxFile"" type=""file"" style=""display:none;"">
+    <input class="""" id=""BrandBulkTestDoxList_{lastNo}__IsOldFile"" name=""BrandBulkTestDoxList[{lastNo}].IsOldFile"" type=""hidden"" value=""false"" readonly=""readonly"">
+    <input class="""" id=""BrandBulkTestDoxList_{lastNo}__ReportNo"" name=""BrandBulkTestDoxList[{lastNo}].ReportNo"" type=""hidden"" value=""{ReportNo}"" readonly=""readonly"">
+    <input class="""" id=""BrandBulkTestDoxList_{lastNo}__FileName"" name=""BrandBulkTestDoxList[{lastNo}].FileName"" type=""text"" value=""{FileName}"" readonly=""readonly"">
 </div>
 <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
-    <input class="""" id=""BrandGarmentTestDoxList_{lastNo}__CreateBy"" name=""BrandGarmentTestDoxList[{lastNo}].CreateBy"" type=""text"" value=""""  readonly=""readonly"">
+    <input class="""" id=""BrandBulkTestDoxList_{lastNo}__CreateBy"" name=""BrandBulkTestDoxList[{lastNo}].CreateBy"" type=""text"" value=""""  readonly=""readonly"">
 </div>
 
 <div class=""DetailDataAreaItem2 colBody Row{lastNo}"">
@@ -212,17 +212,17 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         public ActionResult GetIndexFileRow(string ReportNo)
         {
-            BrandGarmentTest_ViewModel model = _Service.GetDefaultModel(true);
+            BrandBulkTest_ViewModel model = _Service.GetDefaultModel(true);
 
-            model = _Service.GetMain(new BrandGarmentTest_Request() { ReportNo = ReportNo });
+            model = _Service.GetMain(new BrandBulkTest_Request() { ReportNo = ReportNo });
 
             string html = string.Empty;
 
-            foreach (var dox in model.BrandGarmentTestDoxList)
+            foreach (var dox in model.BrandBulkTestDoxList)
             {
                 html += $@"
 <div class=""FileListAreaItem1 fileColBody"">
-    <input type=""checkbox"" class=""chkBrandGarmentTestDox"" BrandGarmentTestDoxUkey=""{dox.Ukey}"" />
+    <input type=""checkbox"" class=""chkBrandBulkTestDox"" BrandBulkTestDoxUkey=""{dox.Ukey}"" />
 </div>
 
 <div class=""FileListAreaItem2 fileColBody"">
@@ -236,9 +236,9 @@ namespace Quality.Areas.BulkFGT.Controllers
         }
         //public ActionResult Download(string ReportNo)
         //{
-        //    BrandGarmentTest_ViewModel model = _Service.GetDefaultModel(true);
+        //    BrandBulkTest_ViewModel model = _Service.GetDefaultModel(true);
 
-        //    model = _Service.Download(new BrandGarmentTest_Request() { ReportNo = ReportNo });
+        //    model = _Service.Download(new BrandBulkTest_Request() { ReportNo = ReportNo });
 
         //    string zipFullName = model.DownloadFileFullName;
         //    string zipName = model.DownloadFileName;
@@ -258,11 +258,11 @@ namespace Quality.Areas.BulkFGT.Controllers
         //    return null;
         //}
 
-        public ActionResult Download(List<BrandGarmentTestDox> brandGarmentTestDoxList)
+        public ActionResult Download(List<BrandBulkTestDox> brandBulkTestDoxList)
         {
-            BrandGarmentTest_ViewModel model = _Service.GetDefaultModel(true);
+            BrandBulkTest_ViewModel model = _Service.GetDefaultModel(true);
 
-            model = _Service.Download(brandGarmentTestDoxList);
+            model = _Service.Download(brandBulkTestDoxList);
 
             string zipFullName = model.DownloadFileFullName;
             string zipName = model.DownloadFileName;

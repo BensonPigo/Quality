@@ -22,16 +22,16 @@ using DatabaseObject.ResultModel.EtoEFlowChart;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
-    public class BrandGarmentTestProvider : SQLDAL
+    public class BrandBulkTestProvider : SQLDAL
     {
         #region 底層連線
-        public BrandGarmentTestProvider(string ConString) : base(ConString) { }
-        public BrandGarmentTestProvider(SQLDataTransaction tra) : base(tra) { }
+        public BrandBulkTestProvider(string ConString) : base(ConString) { }
+        public BrandBulkTestProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
 
 
-        public List<DatabaseObject.ProductionDB.Orders> GetOrderInfo(BrandGarmentTest_Request Req)
+        public List<DatabaseObject.ProductionDB.Orders> GetOrderInfo(BrandBulkTest_Request Req)
         {
             SQLParameterCollection paras = new SQLParameterCollection();
 
@@ -55,7 +55,7 @@ where o.Category ='B'  --只抓大貨單
             return tmp.Any() ? tmp.ToList() : new List<DatabaseObject.ProductionDB.Orders>();
         }
 
-        public List<BrandGarmentTest> GetMainList(BrandGarmentTest_Request Req)
+        public List<BrandBulkTest> GetMainList(BrandBulkTest_Request Req)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
@@ -69,8 +69,8 @@ where o.Category ='B'  --只抓大貨單
             string sqlcmd = $@"
 select a.*
 ,b.TestItem
-from BrandGarmentTest a WITH(NOLOCK)
-left join BrandGarmentTestItem b  WITH(NOLOCK) on a.TestItemUkey = b.Ukey
+from BrandBulkTest a WITH(NOLOCK)
+left join BrandBulkTestItem b  WITH(NOLOCK) on a.TestItemUkey = b.Ukey
 where 1=1
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -110,16 +110,16 @@ where 1=1
             }
 
 
-            var tmp = ExecuteList<BrandGarmentTest>(CommandType.Text, sqlcmd, objParameter);
-            return tmp.Any() ? tmp.ToList() : new List<BrandGarmentTest>();
+            var tmp = ExecuteList<BrandBulkTest>(CommandType.Text, sqlcmd, objParameter);
+            return tmp.Any() ? tmp.ToList() : new List<BrandBulkTest>();
         }
-        public List<BrandGarmentTestItem> GetBrandGarmentTestItemList(BrandGarmentTest_Request Req)
+        public List<BrandBulkTestItem> GetBrandBulkTestItemList(BrandBulkTest_Request Req)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
 
             string sqlcmd = $@"
 select *
-from BrandGarmentTestItem a WITH(NOLOCK)
+from BrandBulkTestItem a WITH(NOLOCK)
 where 1=1
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -128,17 +128,17 @@ where 1=1
                 objParameter.Add("@BrandID", Req.BrandID);
             }
 
-            var tmp = ExecuteList<BrandGarmentTestItem>(CommandType.Text, sqlcmd, objParameter);
-            return tmp.Any() ? tmp.ToList() : new List<BrandGarmentTestItem>();
+            var tmp = ExecuteList<BrandBulkTestItem>(CommandType.Text, sqlcmd, objParameter);
+            return tmp.Any() ? tmp.ToList() : new List<BrandBulkTestItem>();
         }
-        public List<BrandGarmentTestDox> GetBrandGarmentTestDoxList(BrandGarmentTest_Request Req)
+        public List<BrandBulkTestDox> GetBrandBulkTestDoxList(BrandBulkTest_Request Req)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
 
             string sqlcmd = $@"
 select a.*
 ,IsOldFile = Cast(1 as bit)
-from BrandGarmentTestDox a WITH(NOLOCK)
+from BrandBulkTestDox a WITH(NOLOCK)
 where 1=1
 ";
             if (!string.IsNullOrEmpty(Req.ReportNo))
@@ -147,12 +147,12 @@ where 1=1
                 objParameter.Add("@ReportNo", Req.ReportNo);
             }
 
-            var tmp = ExecuteList<BrandGarmentTestDox>(CommandType.Text, sqlcmd, objParameter);
-            return tmp.Any() ? tmp.ToList() : new List<BrandGarmentTestDox>();
+            var tmp = ExecuteList<BrandBulkTestDox>(CommandType.Text, sqlcmd, objParameter);
+            return tmp.Any() ? tmp.ToList() : new List<BrandBulkTestDox>();
         }
 
 
-        public List<BrandGarmentTestDox> GetBrandGarmentTestDoxList(List<BrandGarmentTestDox> ReqList)
+        public List<BrandBulkTestDox> GetBrandBulkTestDoxList(List<BrandBulkTestDox> ReqList)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
 
@@ -161,17 +161,17 @@ where 1=1
             string sqlcmd = $@"
 select a.*
 ,IsOldFile = Cast(1 as bit)
-from BrandGarmentTestDox a WITH(NOLOCK)
+from BrandBulkTestDox a WITH(NOLOCK)
 where 1=1
 AND Ukey IN ({ukeys})
 ";          
-            var tmp = ExecuteList<BrandGarmentTestDox>(CommandType.Text, sqlcmd, objParameter);
-            return tmp.Any() ? tmp.ToList() : new List<BrandGarmentTestDox>();
+            var tmp = ExecuteList<BrandBulkTestDox>(CommandType.Text, sqlcmd, objParameter);
+            return tmp.Any() ? tmp.ToList() : new List<BrandBulkTestDox>();
         }
-        public int Insert_BrandGarmentTest(BrandGarmentTest_ViewModel sources, string MDivision, string UserID, out string NewReportNo)
+        public int Insert_BrandBulkTest(BrandBulkTest_ViewModel sources, string MDivision, string UserID, out string NewReportNo)
         {
-            NewReportNo = GetID(MDivision + "BG", "BrandGarmentTest", DateTime.Today, 2, "ReportNo");
-            BrandGarmentTest result = new BrandGarmentTest();
+            NewReportNo = GetID(MDivision + "BB", "BrandBulkTest", DateTime.Today, 2, "ReportNo");
+            BrandBulkTest result = new BrandBulkTest();
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
                 { "@ReportNo", NewReportNo } ,
@@ -188,9 +188,9 @@ AND Ukey IN ({ukeys})
                 { "@EditName", UserID },
             };
 
-            // 自動判斷BrandGarmentTest 是要新增還是更新
+            // 自動判斷BrandBulkTest 是要新增還是更新
             string sqlcmd = $@"
-    INSERT INTO dbo.BrandGarmentTest
+    INSERT INTO dbo.BrandBulkTest
                (ReportNo           ,BrandID           ,SeasonID           ,StyleID           ,Article           ,OrderID           ,FactoryID
                ,ReportDate           ,TestItemUkey           ,Result           ,Remark           ,AddDate           ,AddName           ,EditDate           ,EditName)
     VALUES
@@ -201,9 +201,9 @@ AND Ukey IN ({ukeys})
 
             return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
-        public int Update_BrandGarmentTest(BrandGarmentTest_ViewModel sources, string UserID)
+        public int Update_BrandBulkTest(BrandBulkTest_ViewModel sources, string UserID)
         {
-            BrandGarmentTest result = new BrandGarmentTest();
+            BrandBulkTest result = new BrandBulkTest();
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
                 { "@ReportNo", sources.Main.ReportNo } ,
@@ -213,9 +213,9 @@ AND Ukey IN ({ukeys})
                 { "@EditName", UserID },
             };
 
-            // 自動判斷BrandGarmentTest 是要新增還是更新
+            // 自動判斷BrandBulkTest 是要新增還是更新
             string sqlcmd = $@"
-UPDATE BrandGarmentTest
+UPDATE BrandBulkTest
     SET EditDate = GETDATE()
         ,EditName = @EditName
         ,ReportDate = @ReportDate
@@ -226,17 +226,17 @@ WHERE ReportNo = @ReportNo
 
             return ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
-        public bool Delete_BrandGarmentTest(BrandGarmentTest_ViewModel sources)
+        public bool Delete_BrandBulkTest(BrandBulkTest_ViewModel sources)
         {
-            BrandGarmentTest result = new BrandGarmentTest();
+            BrandBulkTest result = new BrandBulkTest();
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
                 { "@ReportNo", sources.Main.ReportNo } ,
             };
 
             string sqlcmd = $@"
-DELETE FROM BrandGarmentTest where ReportNo = @ReportNo
-DELETE FROM BrandGarmentTestDox where ReportNo = @ReportNo
+DELETE FROM BrandBulkTest where ReportNo = @ReportNo
+DELETE FROM BrandBulkTestDox where ReportNo = @ReportNo
 ";
 
             ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
@@ -244,27 +244,27 @@ DELETE FROM BrandGarmentTestDox where ReportNo = @ReportNo
         }
 
 
-        public bool Processe_BrandGarmentTestDox(BrandGarmentTest_ViewModel sources, string UserID ,bool isSaveDetailPage = false)
+        public bool Processe_BrandBulkTestDox(BrandBulkTest_ViewModel sources, string UserID ,bool isSaveDetailPage = false)
         {
 
-            List<BrandGarmentTestDox> oldDetailData = this.GetBrandGarmentTestDoxList(new BrandGarmentTest_Request() { ReportNo = sources.Main.ReportNo }).ToList();
+            List<BrandBulkTestDox> oldDetailData = this.GetBrandBulkTestDoxList(new BrandBulkTest_Request() { ReportNo = sources.Main.ReportNo }).ToList();
 
             // 若是Detail頁面的Save，只需比對相同ReportNo的資料
-            if (isSaveDetailPage && sources.BrandGarmentTestDoxList.Any())
+            if (isSaveDetailPage && sources.BrandBulkTestDoxList.Any())
             {
-                oldDetailData = oldDetailData.Where(o => o.ReportNo == sources.BrandGarmentTestDoxList.FirstOrDefault().ReportNo).ToList();
+                oldDetailData = oldDetailData.Where(o => o.ReportNo == sources.BrandBulkTestDoxList.FirstOrDefault().ReportNo).ToList();
             }
 
-            List<BrandGarmentTestDox> needUpdateDetailList =
-                PublicClass.CompareListValue<BrandGarmentTestDox>(
-                    sources.BrandGarmentTestDoxList,
+            List<BrandBulkTestDox> needUpdateDetailList =
+                PublicClass.CompareListValue<BrandBulkTestDox>(
+                    sources.BrandBulkTestDoxList,
                     oldDetailData,
                     "ReportNo,Ukey",
                     "FileName");
 
 
-            string insertDetail = $@" ----寫入 BrandGarmentTestDox
-INSERT INTO BrandGarmentTestDox
+            string insertDetail = $@" ----寫入 BrandBulkTestDox
+INSERT INTO BrandBulkTestDox
            (ReportNo
            ,FileName
            ,FilePath
@@ -278,17 +278,17 @@ VALUES
            ,@AddName)
 ;
 ";
-            string updateDetail = $@" ----更新 BrandGarmentTestDox
+            string updateDetail = $@" ----更新 BrandBulkTestDox
 
-UPDATE BrandGarmentTestDox
+UPDATE BrandBulkTestDox
 SET EditDate = GETDATE() , EditName = @EditName
     ,FileName = @FileName
     ,FilePath = @FilePath
 WHERE ReportNo = @ReportNo AND Ukey = @Ukey
 ";
-            string deleteDetail = $@" ----刪除 BrandGarmentTestDox
+            string deleteDetail = $@" ----刪除 BrandBulkTestDox
 
-DELETE FROM BrandGarmentTestDox where ReportNo = @ReportNo  AND Ukey = @Ukey
+DELETE FROM BrandBulkTestDox where ReportNo = @ReportNo  AND Ukey = @Ukey
 ";
 
             foreach (var detailItem in needUpdateDetailList)

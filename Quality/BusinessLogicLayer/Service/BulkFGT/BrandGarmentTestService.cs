@@ -22,23 +22,23 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
-    public class BrandGarmentTestService
+    public class BrandBulkTestService
     {
         private string UploadFileRootPath = ConfigurationManager.AppSettings["UploadFileRootPath"];
-        private string UploadFilePath = $@"{ConfigurationManager.AppSettings["UploadFileRootPath"]}BulkFGT\BrandGarmentTest\";
+        private string UploadFilePath = $@"{ConfigurationManager.AppSettings["UploadFileRootPath"]}BulkFGT\BrandBulkTest\";
 
-        private BrandGarmentTestProvider _Provider;
-        public BrandGarmentTest_ViewModel GetDefaultModel(bool iNew = false)
+        private BrandBulkTestProvider _Provider;
+        public BrandBulkTest_ViewModel GetDefaultModel(bool iNew = false)
         {
-            BrandGarmentTest_ViewModel model = new BrandGarmentTest_ViewModel()
+            BrandBulkTest_ViewModel model = new BrandBulkTest_ViewModel()
             {
-                Request = new BrandGarmentTest_Request(),
-                Main = new BrandGarmentTest()
+                Request = new BrandBulkTest_Request(),
+                Main = new BrandBulkTest()
                 {
                     Result = "Pass"
                 },
-                MainList = new List<BrandGarmentTest>(),
-                BrandGarmentTestDoxList = new List<BrandGarmentTestDox>(),
+                MainList = new List<BrandBulkTest>(),
+                BrandBulkTestDoxList = new List<BrandBulkTestDox>(),
                 Article_Source = new List<SelectListItem>(),
             };
 
@@ -50,14 +50,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
         /// </summary>
         /// <param name="Req"></param>
         /// <returns></returns>
-        public BrandGarmentTest_ViewModel GetMainList(BrandGarmentTest_Request Req)
+        public BrandBulkTest_ViewModel GetMainList(BrandBulkTest_Request Req)
         {
-            BrandGarmentTest_ViewModel model = this.GetDefaultModel();
+            BrandBulkTest_ViewModel model = this.GetDefaultModel();
 
             try
             {
-                _Provider = new BrandGarmentTestProvider(Common.ManufacturingExecutionDataAccessLayer);
-                List<BrandGarmentTest> tmpList = new List<BrandGarmentTest>();
+                _Provider = new BrandBulkTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                List<BrandBulkTest> tmpList = new List<BrandBulkTest>();
 
                 // 取得列表資料
                 tmpList = _Provider.GetMainList(Req);
@@ -83,14 +83,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-        public BrandGarmentTest_ViewModel GetMain(BrandGarmentTest_Request Req)
+        public BrandBulkTest_ViewModel GetMain(BrandBulkTest_Request Req)
         {
-            BrandGarmentTest_ViewModel model = this.GetDefaultModel();
+            BrandBulkTest_ViewModel model = this.GetDefaultModel();
 
             try
             {
-                _Provider = new BrandGarmentTestProvider(Common.ManufacturingExecutionDataAccessLayer);
-                List<BrandGarmentTest> tmpList = new List<BrandGarmentTest>();
+                _Provider = new BrandBulkTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                List<BrandBulkTest> tmpList = new List<BrandBulkTest>();
 
                 // 取得列表資料
                 tmpList = _Provider.GetMainList(Req);
@@ -100,13 +100,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     model.Main = tmpList.FirstOrDefault();
 
-                    List<BrandGarmentTestDox> doxList = _Provider.GetBrandGarmentTestDoxList(new BrandGarmentTest_Request() { ReportNo = model.Main.ReportNo });
+                    List<BrandBulkTestDox> doxList = _Provider.GetBrandBulkTestDoxList(new BrandBulkTest_Request() { ReportNo = model.Main.ReportNo });
 
-                    model.BrandGarmentTestDoxList = doxList;
+                    model.BrandBulkTestDoxList = doxList;
 
                     // 取得Article 下拉選單
-                    _Provider = new BrandGarmentTestProvider(Common.ProductionDataAccessLayer);
-                    List<DatabaseObject.ProductionDB.Orders> tmpOrders = _Provider.GetOrderInfo(new BrandGarmentTest_Request() { OrderID = model.Main.OrderID });
+                    _Provider = new BrandBulkTestProvider(Common.ProductionDataAccessLayer);
+                    List<DatabaseObject.ProductionDB.Orders> tmpOrders = _Provider.GetOrderInfo(new BrandBulkTest_Request() { OrderID = model.Main.OrderID });
 
                     foreach (var oriData in tmpOrders)
                     {
@@ -135,15 +135,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-        public BrandGarmentTest_ViewModel GetOrderInfo(string OrderID)
+        public BrandBulkTest_ViewModel GetOrderInfo(string OrderID)
         {
-            BrandGarmentTest_ViewModel model = this.GetDefaultModel();
+            BrandBulkTest_ViewModel model = this.GetDefaultModel();
             List<DatabaseObject.ProductionDB.Orders> tmpOrders = new List<DatabaseObject.ProductionDB.Orders>();
             try
             {
-                _Provider = new BrandGarmentTestProvider(Common.ProductionDataAccessLayer);
+                _Provider = new BrandBulkTestProvider(Common.ProductionDataAccessLayer);
 
-                tmpOrders = _Provider.GetOrderInfo(new BrandGarmentTest_Request() { OrderID = OrderID });
+                tmpOrders = _Provider.GetOrderInfo(new BrandBulkTest_Request() { OrderID = OrderID });
 
 
                 // 確認SP#是否存在
@@ -186,15 +186,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-        public BrandGarmentTest_ViewModel NewSave(BrandGarmentTest_ViewModel Req, string MDivision, string UserID)
+        public BrandBulkTest_ViewModel NewSave(BrandBulkTest_ViewModel Req, string MDivision, string UserID)
         {
-            BrandGarmentTest_ViewModel model = this.GetDefaultModel();
+            BrandBulkTest_ViewModel model = this.GetDefaultModel();
             string newReportNo = string.Empty;
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
 
             try
             {
-                _Provider = new BrandGarmentTestProvider(_ISQLDataTransaction);
+                _Provider = new BrandBulkTestProvider(_ISQLDataTransaction);
 
                 if (string.IsNullOrEmpty(Req.Main.OrderID) || string.IsNullOrEmpty(Req.Main.BrandID) || string.IsNullOrEmpty(Req.Main.SeasonID) || string.IsNullOrEmpty(Req.Main.StyleID) || string.IsNullOrEmpty(Req.Main.Article))
                 {
@@ -203,17 +203,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
 
                 // 新增，並取得ReportNo
-                _Provider.Insert_BrandGarmentTest(Req, MDivision, UserID, out newReportNo);
+                _Provider.Insert_BrandBulkTest(Req, MDivision, UserID, out newReportNo);
                 Req.Main.ReportNo = newReportNo;
 
-                // BrandGarmentTestDoxList 檔案上傳
-                if (Req.BrandGarmentTestDoxList == null || !Req.BrandGarmentTestDoxList.Any())
+                // BrandBulkTestDoxList 檔案上傳
+                if (Req.BrandBulkTestDoxList == null || !Req.BrandBulkTestDoxList.Any())
                 {
-                    Req.BrandGarmentTestDoxList = new List<BrandGarmentTestDox>();
+                    Req.BrandBulkTestDoxList = new List<BrandBulkTestDox>();
                 }
                 else
                 {
-                    foreach (var dox in Req.BrandGarmentTestDoxList.Where(o => o.IsOldFile == false))
+                    foreach (var dox in Req.BrandBulkTestDoxList.Where(o => o.IsOldFile == false))
                     {
                         dox.FilePath = this.UploadFilePath;
                         this.CreateMachineReportFile(dox);
@@ -221,12 +221,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
 
-                _Provider.Processe_BrandGarmentTestDox(Req, UserID);
+                _Provider.Processe_BrandBulkTestDox(Req, UserID);
 
                 _ISQLDataTransaction.Commit();
 
                 // 重新查詢資料
-                model.Main = this.GetMain(new BrandGarmentTest_Request()
+                model.Main = this.GetMain(new BrandBulkTest_Request()
                 {
                     ReportNo = Req.Main.ReportNo,
                 }).Main;
@@ -246,40 +246,40 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-        public BrandGarmentTest_ViewModel EditSave(BrandGarmentTest_ViewModel Req, string UserID)
+        public BrandBulkTest_ViewModel EditSave(BrandBulkTest_ViewModel Req, string UserID)
         {
-            BrandGarmentTest_ViewModel model = this.GetDefaultModel();
+            BrandBulkTest_ViewModel model = this.GetDefaultModel();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
 
             try
             {
-                _Provider = new BrandGarmentTestProvider(_ISQLDataTransaction);
+                _Provider = new BrandBulkTestProvider(_ISQLDataTransaction);
 
 
                 // 更新表頭，並取得ReportNo
-                _Provider.Update_BrandGarmentTest(Req, UserID);
+                _Provider.Update_BrandBulkTest(Req, UserID);
 
 
-                // BrandGarmentTestDoxList 檔案上傳
-                if (Req.BrandGarmentTestDoxList == null || !Req.BrandGarmentTestDoxList.Any())
+                // BrandBulkTestDoxList 檔案上傳
+                if (Req.BrandBulkTestDoxList == null || !Req.BrandBulkTestDoxList.Any())
                 {
-                    Req.BrandGarmentTestDoxList = new List<BrandGarmentTestDox>();
+                    Req.BrandBulkTestDoxList = new List<BrandBulkTestDox>();
                 }
                 else
                 {
-                    foreach (var dox in Req.BrandGarmentTestDoxList.Where(o => o.IsOldFile == false))
+                    foreach (var dox in Req.BrandBulkTestDoxList.Where(o => o.IsOldFile == false))
                     {
                         dox.FilePath = this.UploadFilePath;
                         this.CreateMachineReportFile(dox);
                     }
                 }
 
-                _Provider.Processe_BrandGarmentTestDox(Req, UserID);
+                _Provider.Processe_BrandBulkTestDox(Req, UserID);
 
                 _ISQLDataTransaction.Commit();
 
                 // 重新查詢資料
-                model.Main = this.GetMain(new BrandGarmentTest_Request()
+                model.Main = this.GetMain(new BrandBulkTest_Request()
                 {
                     ReportNo = Req.Main.ReportNo,
                 }).Main;
@@ -299,22 +299,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-        public BrandGarmentTest_ViewModel Delete(BrandGarmentTest_ViewModel Req)
+        public BrandBulkTest_ViewModel Delete(BrandBulkTest_ViewModel Req)
         {
-            BrandGarmentTest_ViewModel model = this.GetDefaultModel();
+            BrandBulkTest_ViewModel model = this.GetDefaultModel();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
 
             try
             {
-                _Provider = new BrandGarmentTestProvider(_ISQLDataTransaction);
+                _Provider = new BrandBulkTestProvider(_ISQLDataTransaction);
 
                 // 更新表頭，並取得ReportNo
-                _Provider.Delete_BrandGarmentTest(Req);
+                _Provider.Delete_BrandBulkTest(Req);
 
                 _ISQLDataTransaction.Commit();
 
                 // 重新查詢資料
-                model = this.GetMainList(new BrandGarmentTest_Request()
+                model = this.GetMainList(new BrandBulkTest_Request()
                 {
                     BrandID = Req.Main.BrandID,
                     SeasonID = Req.Main.SeasonID,
@@ -322,7 +322,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Article = Req.Main.Article,
                 });
 
-                model.Request = new BrandGarmentTest_Request()
+                model.Request = new BrandBulkTest_Request()
                 {
                     BrandID = model.Main.BrandID,
                     SeasonID = model.Main.SeasonID,
@@ -345,27 +345,27 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-        public BrandGarmentTest_ViewModel Download(BrandGarmentTest_Request Req)
+        public BrandBulkTest_ViewModel Download(BrandBulkTest_Request Req)
         {
-            BrandGarmentTest_ViewModel model = this.GetDefaultModel();
+            BrandBulkTest_ViewModel model = this.GetDefaultModel();
 
             try
             {
-                _Provider = new BrandGarmentTestProvider(Common.ManufacturingExecutionDataAccessLayer);
-                List<BrandGarmentTest> tmpList = new List<BrandGarmentTest>();
+                _Provider = new BrandBulkTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                List<BrandBulkTest> tmpList = new List<BrandBulkTest>();
 
                 // 取得列表資料
 
-                List<BrandGarmentTestDox> fileList = _Provider.GetBrandGarmentTestDoxList(Req);
+                List<BrandBulkTestDox> fileList = _Provider.GetBrandBulkTestDoxList(Req);
 
                 if (fileList.Any())
                 {
                     // Zip檔若出現亂碼，須設定編碼方式為 UTF8
                     Ionic.Zip.ZipFile zipFile = new Ionic.Zip.ZipFile(encoding: Encoding.UTF8);
-                    string zipName = $"BrandGarmentTestDox_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.zip";
+                    string zipName = $"BrandBulkTestDox_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.zip";
                     string zipPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", zipName);
 
-                    foreach (BrandGarmentTestDox dox in fileList)
+                    foreach (BrandBulkTestDox dox in fileList)
                     {
                         string file = Path.Combine(dox.FilePath, dox.FileName);
                         zipFile.AddFile(file, string.Empty);
@@ -394,27 +394,27 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public BrandGarmentTest_ViewModel Download(List<BrandGarmentTestDox> ReqList)
+        public BrandBulkTest_ViewModel Download(List<BrandBulkTestDox> ReqList)
         {
-            BrandGarmentTest_ViewModel model = this.GetDefaultModel();
+            BrandBulkTest_ViewModel model = this.GetDefaultModel();
 
             try
             {
-                _Provider = new BrandGarmentTestProvider(Common.ManufacturingExecutionDataAccessLayer);
-                List<BrandGarmentTest> tmpList = new List<BrandGarmentTest>();
+                _Provider = new BrandBulkTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                List<BrandBulkTest> tmpList = new List<BrandBulkTest>();
 
                 // 取得列表資料
 
-                List<BrandGarmentTestDox> fileList = _Provider.GetBrandGarmentTestDoxList(ReqList);
+                List<BrandBulkTestDox> fileList = _Provider.GetBrandBulkTestDoxList(ReqList);
 
                 if (fileList.Any())
                 {
                     // Zip檔若出現亂碼，須設定編碼方式為 UTF8
                     Ionic.Zip.ZipFile zipFile = new Ionic.Zip.ZipFile(encoding: Encoding.UTF8);
-                    string zipName = $"BrandGarmentTestDox_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.zip";
+                    string zipName = $"BrandBulkTestDox_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.zip";
                     string zipPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", zipName);
 
-                    foreach (BrandGarmentTestDox dox in fileList)
+                    foreach (BrandBulkTestDox dox in fileList)
                     {
                         string file = Path.Combine(dox.FilePath, dox.FileName);
                         zipFile.AddFile(file, string.Empty);
@@ -442,13 +442,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-        public void CreateMachineReportFile(BrandGarmentTestDox dox)
+        public void CreateMachineReportFile(BrandBulkTestDox dox)
         {
-            dox.FileName = dox.BrandGarmentTestDoxFile.FileName;
+            dox.FileName = dox.BrandBulkTestDoxFile.FileName;
 
             // 可能有各種檔案，因此需要取得副檔名
-            string FileNameWithoutExtension = Path.GetFileNameWithoutExtension(dox.BrandGarmentTestDoxFile.FileName);
-            string FileExtension = Path.GetExtension(dox.BrandGarmentTestDoxFile.FileName);
+            string FileNameWithoutExtension = Path.GetFileNameWithoutExtension(dox.BrandBulkTestDoxFile.FileName);
+            string FileExtension = Path.GetExtension(dox.BrandBulkTestDoxFile.FileName);
 
             if (!System.IO.Directory.Exists(this.UploadFilePath))
             {
@@ -460,8 +460,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             using (var fileStream = System.IO.File.Create(FullFileName))
             {
-                dox.BrandGarmentTestDoxFile.InputStream.Seek(0, SeekOrigin.Begin);
-                dox.BrandGarmentTestDoxFile.InputStream.CopyTo(fileStream);
+                dox.BrandBulkTestDoxFile.InputStream.Seek(0, SeekOrigin.Begin);
+                dox.BrandBulkTestDoxFile.InputStream.CopyTo(fileStream);
             }
             dox.FileName = FileName + FileExtension;
         }

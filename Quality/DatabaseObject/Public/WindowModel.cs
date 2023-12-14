@@ -238,7 +238,7 @@ namespace DatabaseObject.Public
         public string Roll { get; set; }
         public string Dyelot { get; set; }
     }
-    public class Window_BrandGarmentTestItem
+    public class Window_BrandBulkTestItem
     {
         public long Ukey { get; set; }
         public string BrandID { get; set; }

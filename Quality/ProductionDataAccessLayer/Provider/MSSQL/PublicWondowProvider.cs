@@ -1260,7 +1260,7 @@ AND Seq1 = @Seq1 AND Seq2 = @Seq2 AND POID IN (
             return ExecuteList<Window_RollDyelot>(CommandType.Text, SbSql.ToString(), paras);
 
         }
-        public IList<Window_BrandGarmentTestItem> Get_BrandGarmentTestItem(string BrandID, string TestItem)
+        public IList<Window_BrandBulkTestItem> Get_BrandBulkTestItem(string BrandID, string TestItem)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -1273,14 +1273,14 @@ AND Seq1 = @Seq1 AND Seq2 = @Seq2 AND POID IN (
             //台北
             SbSql.Append($@"
 Select Ukey, BrandID,TestClassify, DocType, TestItem
-From ManufacturingExecution.dbo.BrandGarmentTestItem
+From ManufacturingExecution.dbo.BrandBulkTestItem
 Where  BrandID = @BrandID 
 ");
             if (!string.IsNullOrEmpty(TestItem))
             {
                 SbSql.Append($@"and TestItem = @TestItem ");
             }
-            return ExecuteList<Window_BrandGarmentTestItem>(CommandType.Text, SbSql.ToString(), paras);
+            return ExecuteList<Window_BrandBulkTestItem>(CommandType.Text, SbSql.ToString(), paras);
 
         }
     }

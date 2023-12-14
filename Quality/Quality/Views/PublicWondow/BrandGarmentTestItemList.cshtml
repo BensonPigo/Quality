@@ -7,7 +7,7 @@
 
 }
 
-@model List<Window_BrandGarmentTestItem>
+@model List<Window_BrandBulkTestItem>
 
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
@@ -94,7 +94,7 @@
             // 取得整個Row
             var RowData = table.row(this).data();
 
-            var BrandGarmentTestItemData = {
+            var BrandBulkTestItemData = {
                 BrandID: RowData[0],
                 TestClassify: RowData[1],
                 DocType: RowData[2],
@@ -103,7 +103,7 @@
             }
 
             // 呼叫父視窗的GetTechnician Function，把物件傳回去
-            window.opener.GetBrandGarmentTestItemList(BrandGarmentTestItemData);
+            window.opener.GetBrandBulkTestItemList(BrandBulkTestItemData);
 
             window.close();
         });

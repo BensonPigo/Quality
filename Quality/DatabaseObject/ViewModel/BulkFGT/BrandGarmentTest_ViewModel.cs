@@ -9,12 +9,12 @@ using System.Web.Mvc;
 
 namespace DatabaseObject.ViewModel.BulkFGT
 {
-    public class BrandGarmentTest_ViewModel : BaseResult
+    public class BrandBulkTest_ViewModel : BaseResult
     {
-        public BrandGarmentTest_Request Request { get; set; }
-        public BrandGarmentTest Main { get; set; }
-        public List<BrandGarmentTest> MainList { get; set; }
-        public List<BrandGarmentTestDox> BrandGarmentTestDoxList { get; set; }
+        public BrandBulkTest_Request Request { get; set; }
+        public BrandBulkTest Main { get; set; }
+        public List<BrandBulkTest> MainList { get; set; }
+        public List<BrandBulkTestDox> BrandBulkTestDoxList { get; set; }
 
         public List<SelectListItem> Article_Source { get; set; }
         public List<SelectListItem> Result_Source
@@ -33,7 +33,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string DownloadFileFullName { get; set; }
 
     }
-    public class BrandGarmentTest_Request
+    public class BrandBulkTest_Request
     {
         public string BrandID { get; set; }
         public string SeasonID { get; set; }
@@ -44,7 +44,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string TestItem { get; set; }
     }
 
-    public class BrandGarmentTest
+    public class BrandBulkTest
     {
         public string ReportNo { get; set; }
         public string BrandID { get; set; }
@@ -95,7 +95,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string EditType { get; set; }
     }
 
-    public class BrandGarmentTestItem
+    public class BrandBulkTestItem
     {
         public long Ukey { get; set; }
         public string BrandID { get; set; }
@@ -104,7 +104,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string DocType { get; set; }
         public string TestItem { get; set; }
     }
-    public class BrandGarmentTestDox : CompareBase
+    public class BrandBulkTestDox : CompareBase
     {
         public string ReportNo { get; set; }
         public long Ukey { get; set; }
@@ -114,7 +114,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         /// </summary>
         public bool IsOldFile{ get; set; }
         public string FileName { get; set; }
-        public HttpPostedFileBase BrandGarmentTestDoxFile { get; set; }
+        public HttpPostedFileBase BrandBulkTestDoxFile { get; set; }
 
         public string FilePath { get; set; }
         public string AddName { get; set; }
