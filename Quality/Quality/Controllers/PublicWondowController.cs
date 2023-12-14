@@ -642,5 +642,25 @@ namespace Quality.Controllers
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
+        public ActionResult BrandGarmentTestItemList(string Title, string BrandID, string TargetID)
+        {
+            var model = _PublicWindowService.Get_BrandGarmentTestItem(BrandID, string.Empty);
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult BrandGarmentTestItemList(string Title, string BrandID, string TestItem, string TargetID, string ReturnType = "")
+        {
+            var model = _PublicWindowService.Get_BrandGarmentTestItem(BrandID, TestItem);
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
+            return View(model);
+        }
     }
 }

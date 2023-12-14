@@ -185,6 +185,7 @@
     <Compile Include="Areas\BulkFGT\BulkFGTAreaRegistration.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\AccessoryOvenWashController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\AgingHydrolysisTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\BrandGarmentTesController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\BulkFGTMailGroupController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\DailyMoistureController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\FabricColorFastnessController.cs" />
@@ -469,6 +470,8 @@
     <Content Include="Areas\BulkFGT\Views\WaterAbsorbency\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\WickingHeightTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\EvaporationRateTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\BrandGarmentTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\BrandGarmentTest\Detail.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -1044,11 +1047,13 @@
     <Content Include="XLT\EvaporationRateTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\PublicWondow\BrandGarmentTestItemList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Authority\Data\" />
     <Folder Include="Areas\BulkFGT\Data\" />
+    <Folder Include="Areas\BulkFGT\Views\BrandGarmentTes\" />
     <Folder Include="Areas\FinalInspection\Models\" />
     <Folder Include="Areas\SampleRFT\Data\" />
     <Folder Include="Areas\StyleManagement\Models\" />

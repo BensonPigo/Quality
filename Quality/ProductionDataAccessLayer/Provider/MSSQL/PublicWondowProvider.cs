@@ -1260,6 +1260,29 @@ AND Seq1 = @Seq1 AND Seq2 = @Seq2 AND POID IN (
             return ExecuteList<Window_RollDyelot>(CommandType.Text, SbSql.ToString(), paras);
 
         }
+        public IList<Window_BrandGarmentTestItem> Get_BrandGarmentTestItem(string BrandID, string TestItem)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            paras.Add("@BrandID ", DbType.String, BrandID);
+            paras.Add("@TestITem ", DbType.String, TestItem);
+
+            string where = string.Empty;
+
+            //台北
+            SbSql.Append($@"
+Select Ukey, BrandID,TestClassify, DocType, TestItem
+From ManufacturingExecution.dbo.BrandGarmentTestItem
+Where  BrandID = @BrandID 
+");
+            if (!string.IsNullOrEmpty(TestItem))
+            {
+                SbSql.Append($@"and TestItem = @TestItem ");
+            }
+            return ExecuteList<Window_BrandGarmentTestItem>(CommandType.Text, SbSql.ToString(), paras);
+
+        }
     }
 }
 

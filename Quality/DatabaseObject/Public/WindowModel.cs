@@ -238,4 +238,14 @@ namespace DatabaseObject.Public
         public string Roll { get; set; }
         public string Dyelot { get; set; }
     }
+    public class Window_BrandGarmentTestItem
+    {
+        public long Ukey { get; set; }
+        public string BrandID { get; set; }
+        public string Category { get; set; }
+        public string TestClassify { get; set; }
+        public string DocType { get; set; }
+        public string TestItem { get; set; }
+    }
+
 }

@@ -643,5 +643,24 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+        public List<Window_BrandGarmentTestItem> Get_BrandGarmentTestItem(string BrandID, string TestITem)
+        {
+            List<Window_BrandGarmentTestItem> result = new List<Window_BrandGarmentTestItem>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_BrandGarmentTestItem(BrandID, TestITem).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
     }
 }
