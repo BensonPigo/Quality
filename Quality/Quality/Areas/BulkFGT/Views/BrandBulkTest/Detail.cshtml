@@ -81,6 +81,15 @@
         display: flex;
         align-items: center;
     }
+    .MainAreaItem2 {
+        width: 33.2%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+    }
+
 
     .DetailDataAreaItem1 {
         width: 45%;
@@ -289,139 +298,206 @@
                     </div>
 
                     @*表頭*@
-                    <div class="MainArea">
-                        <!-- #region Row 1-->
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Report No</h4>
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.ReportNo, new { @class = "" })
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Report Date</h4>
-
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            @Html.HiddenFor(o => o.Main.ReportDate)
-                            @Html.TextBoxFor(o => o.Main.ReportDateText, new { @class = "CanEdit" })
-
-                        </div>
-
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">SP#</h4>
-
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.OrderID, new { @class = "CanEdit OnlyNew odd" })
-
-                        </div>
-
-                        <!-- #endregion -->
-                        <!-- #region Row 2-->
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Brand</h4>
-
-                        </div>
-
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.BrandID, new { @class = "even" })
-
-                        </div>
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Season</h4>
-
-                        </div>
-
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.SeasonID, new { @class = "even" })
-                        </div>
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Style</h4>
-
-                        </div>
-
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.StyleID, new { @class = "even" })
-
-                        </div>
-
-                        <!-- #endregion -->
-                        <!-- #region Row 3-->
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Article</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            <select id="Main_Article" name="Main.Article" class="CanEdit">
-                                @foreach (var item in Model.Article_Source)
-                                {
-                                    string selected = item.Value.Equals(Model.Main.Article) ? "selected" : "";
-                                    <option value="@item.Value" @selected>@item.Text</option>
-                                }
-                            </select>
-
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Test Item</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.HiddenFor(o => o.Main.TestItemUkey, new { @class = "" })
-                            @Html.TextBoxFor(o => o.Main.TestItem, new { @class = "", @onclick = "OpenWindow('TestItem')" })
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Result</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @{
-                                string styleColor = "red";
-                                if (Model.Main.Result == "Pass")
-                                {
-                                    styleColor = "blue";
-                                }
-                            }
-                            <select id="Main_Result" class="CanEdit @styleColor" name="Main.Result" onchange="changeResult(this)">
-                                @foreach (var item in (List<SelectListItem>)Model.Result_Source)
-                                {
-                                    string selected = item.Text.Equals(Model.Main.Result) ? "selected" : "";
-                                    <option value="@item.Value" @selected>@item.Text</option>
-                                }
-                            </select>
-                        </div>
-
-                        <!-- #endregion -->
-                        <!-- #region Row 4-->
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Last Upadate</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "even", @style = "width:100%" })
-                        </div>
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Remark</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.Remark, new { @class = "even CanEdit" })
-                        </div>
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle"></h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                        </div>
-                        <!-- #endregion -->
+                <div class="MainArea">
+                    <!-- #region Row 1-->
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Report No</h4>
                     </div>
+
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.ReportNo, new { @class = "" })
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Report Date</h4>
+
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        @Html.HiddenFor(o => o.Main.ReportDate)
+                        @Html.TextBoxFor(o => o.Main.ReportDateText, new { @class = "CanEdit" })
+
+                    </div>
+
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">SP#</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.OrderID, new { @class = "CanEdit OnlyNew odd" })
+
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 2-->
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Brand</h4>
+
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.BrandID, new { @class = "even" })
+
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Season</h4>
+
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.SeasonID, new { @class = "even" })
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Style</h4>
+
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.StyleID, new { @class = "even" })
+
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 3-->
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Article</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        <select id="Main_Article" name="Main.Article" class="CanEdit">
+                            @foreach (var item in Model.Article_Source)
+                            {
+                                string selected = item.Value.Equals(Model.Main.Article) ? "selected" : "";
+                                <option value="@item.Value" @selected>@item.Text</option>
+                            }
+                        </select>
+
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Test Item</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.HiddenFor(o => o.Main.TestItemUkey, new { @class = "" })
+                        @Html.TextBoxFor(o => o.Main.TestItem, new { @class = "", @onclick = "OpenWindow('TestItem')" })
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Result</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @{
+                            string styleColor = "red";
+                            if (Model.Main.Result == "Pass")
+                            {
+                                styleColor = "blue";
+                            }
+                        }
+                        <select id="Main_Result" class="CanEdit @styleColor" name="Main.Result" onchange="changeResult(this)">
+                            @foreach (var item in (List<SelectListItem>)Model.Result_Source)
+                            {
+                                string selected = item.Text.Equals(Model.Main.Result) ? "selected" : "";
+                                <option value="@item.Value" @selected>@item.Text</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 4-->
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Fabric Refno</h4>
+                    </div>
+                    <div class="MainAreaItem2 even">
+                        @Html.TextBoxFor(o => o.Main.FabricRefno, new { @class = "even", @style = "width:100%", @onclick = "OpenWindow('FabricRefNo')" })
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Fabric Color</h4>
+                    </div>
+                    <div class="MainAreaItem2 even">
+                        @Html.TextBoxFor(o => o.Main.FabricColor, new { @class = "even", @style = "width:100%" })
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 5-->
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Accessory Refno</h4>
+                    </div>
+                    <div class="MainAreaItem2 odd">
+                        @Html.TextBoxFor(o => o.Main.AccessoryRefno, new { @class = "" ,@style="width:100%" , @onclick = "OpenWindow('AccRefNo')" })
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Accessory Color</h4>
+                    </div>
+                    <div class="MainAreaItem2 odd">
+                        @Html.TextBoxFor(o => o.Main.AccessoryColor, new { @class = "", @style = "width:100%" })
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 6-->
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Artwork</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+
+
+                        <select id="Main_Artwork" class="CanEdit even" name="Main.Artwork">
+                            @foreach (var item in (List<SelectListItem>)Model.Artwork_Source)
+                            {
+                                string selected = item.Text.Equals(Model.Main.Artwork) ? "selected" : "";
+                                <option value="@item.Value" @selected>@item.Text</option>
+                            }
+                        </select>
+
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Artwork Refno</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.ArtworkRefno, new { @class = "even", @style = "width:100%", @onclick = "OpenWindow('ArtworkRefNo')" })
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Artwork Colorr</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.ArtworkColor, new { @class = "even", @style = "width:100%" })
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 7-->
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Last Upadate</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "", @style = "width:100%" })
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Remark</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.Remark, new { @class = "CanEdit" })
+                    </div>
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle"></h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                    </div>
+                    <!-- #endregion -->
+                </div>
 
                     @*表身*@
                     <div class="bodyDiv">
@@ -554,11 +630,99 @@
             var para = "?TargetID=Main_TestItem&BrandID=" + $('#Main_BrandID').val();
             window.open('@Url.Action("BrandBulkTestItemList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=700');
         }
+
+        if (WindowType == "FabricRefNo" && EditMode) {
+
+            if ($('#Main_OrderID').val() == '') {
+                msg.WithError('Please input SP# first.');
+                return;
+            }
+            var para = "?TargetID=Main_FabricRefno&OrderID=" + $('#Main_OrderID').val();
+            window.open('@Url.Action("MulitipleFabricRefNoList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
+        }
+        if (WindowType == "AccRefNo" && EditMode) {
+
+            if ($('#Main_OrderID').val() == '') {
+                msg.WithError('Please input SP# first.');
+                return;
+            }
+            var para = "?TargetID=Main_AccessoryRefno&OrderID=" + $('#Main_OrderID').val();
+            window.open('@Url.Action("MulitipleAccRefNoList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
+        }
+        if (WindowType == "ArtworkRefNo" && EditMode) {
+
+            if ($('#Main_OrderID').val() == '') {
+                msg.WithError('Please input SP# first.');
+                return;
+            }
+            var para = "?TargetID=Main_ArtworkRefno&OrderID=" + $('#Main_OrderID').val();
+            window.open('@Url.Action("MulitipleArtworkRefNoList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
+        }
     }
 
     function GetBrandBulkTestItemList(BrandBulkTestItemData) {
         $('#Main_TestItemUkey').val(BrandBulkTestItemData.Ukey);
         $('#Main_TestItem').val(BrandBulkTestItemData.TestItem);
+    }
+
+    function GetMulitipleFabricRefNoList(FabricRefNoDataList) {
+        let refNoList = [];
+        var colorList = [];
+
+        FabricRefNoDataList.forEach(function (element) {
+
+            if (!refNoList.some( t => t == element.Refno)) {
+                refNoList.push(element.Refno);
+            }
+            if (!colorList.some(t => t == element.Color)) {
+                colorList.push(element.Color);
+            }
+        });
+
+        // 在這邊取得開窗選擇的FabricRefNoData，進行後續動作
+        $("#Main_FabricRefno").val(refNoList.join(','));
+        $("#Main_FabricColor").val(colorList.join(','));
+
+    }
+
+    function GetMulitipleAccRefNoList(AccRefNoDataList) {
+        let refNoList = [];
+        var colorList = [];
+
+        AccRefNoDataList.forEach(function (element) {
+
+            if (!refNoList.some(t => t == element.Refno)) {
+                refNoList.push(element.Refno);
+            }
+            if (!colorList.some(t => t == element.Color)) {
+                colorList.push(element.Color);
+            }
+        });
+
+        // 在這邊取得開窗選擇的AccRefNoData，進行後續動作
+        $("#Main_AccessoryRefno").val(refNoList.join(','));
+        $("#Main_AccessoryColor").val(colorList.join(','));
+
+    }
+
+    function GetMulitipleArtworkRefNoList(ArtworkRefNoDataList) {
+        let refNoList = [];
+        var colorList = [];
+
+        ArtworkRefNoDataList.forEach(function (element) {
+
+            if (!refNoList.some(t => t == element.Refno)) {
+                refNoList.push(element.Refno);
+            }
+            if (!colorList.some(t => t == element.Color)) {
+                colorList.push(element.Color);
+            }
+        });
+
+        // 在這邊取得開窗選擇的ArtworkRefNoData，進行後續動作
+        $("#Main_ArtworkRefno").val(refNoList.join(','));
+        $("#Main_ArtworkColor").val(colorList.join(','));
+
     }
 
     function ClickEventBind() {
@@ -784,7 +948,7 @@
 
                 $(".DetailDataArea").append(html);
 
-                
+
                 var newFileID = "BrandBulkTestDoxList_" + alllastNO + "__BrandBulkTestDoxFile";
                 var newFileName = "BrandBulkTestDoxList[" + alllastNO + "].BrandBulkTestDoxFile";
                 copyFile('UploadSubmit', newFileID, newFileName);

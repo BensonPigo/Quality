@@ -227,6 +227,7 @@ namespace DatabaseObject.Public
         public string Refno { get; set; }
         public string Color { get; set; }
         public string SuppID { get; set; }
+        public string WeaveTypeID { get; set; }
     }
     public class Window_InkType
     {

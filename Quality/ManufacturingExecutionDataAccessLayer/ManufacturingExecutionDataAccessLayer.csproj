@@ -97,7 +97,7 @@
     <Compile Include="Interface\IRFTPicDuringDummyFittingProvider.cs" />
     <Compile Include="Interface\ISearchListProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Provider\MSSQL\BrandGarmentTest_Provider.cs" />
+    <Compile Include="Provider\MSSQL\BrandBulkTestProvider.cs" />
     <Compile Include="Provider\MSSQL\HydrostaticPressureWaterproofTestProvider.cs" />
     <Compile Include="Provider\MSSQL\RandomTumblePillingTestProvider.cs" />
     <Compile Include="Provider\MSSQL\PhenolicYellowTestProvider.cs" />

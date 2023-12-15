@@ -1047,7 +1047,11 @@
     <Content Include="XLT\EvaporationRateTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PublicWondow\BrandGarmentTestItemList.cshtml" />
+    <Content Include="Views\PublicWondow\BrandBulkTestItemList.cshtml" />
+    <Content Include="Views\PublicWondow\ArtworkRefNoList.cshtml" />
+    <Content Include="Views\PublicWondow\MulitipleAccRefNoList.cshtml" />
+    <Content Include="Views\PublicWondow\MulitipleFabricRefNoList.cshtml" />
+    <Content Include="Views\PublicWondow\MulitipleArtworkRefNoList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

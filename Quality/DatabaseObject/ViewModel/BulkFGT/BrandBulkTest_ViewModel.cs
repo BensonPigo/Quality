@@ -17,6 +17,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public List<BrandBulkTestDox> BrandBulkTestDoxList { get; set; }
 
         public List<SelectListItem> Article_Source { get; set; }
+        public List<SelectListItem> Artwork_Source { get; set; }
         public List<SelectListItem> Result_Source
         {
             get
@@ -69,6 +70,13 @@ namespace DatabaseObject.ViewModel.BulkFGT
         }
         public long TestItemUkey { get; set; }
         public string TestItem { get; set; }
+        public string FabricRefno { get; set; }
+        public string FabricColor { get; set; }
+        public string AccessoryRefno { get; set; }
+        public string AccessoryColor { get; set; }
+        public string Artwork { get; set; }
+        public string ArtworkRefno { get; set; }
+        public string ArtworkColor { get; set; }
         public string Result { get; set; }
         public string Remark { get; set; }
         public string AddName { get; set; }

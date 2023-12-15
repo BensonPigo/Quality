@@ -605,6 +605,25 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+        public List<Window_FabricRefNo> Get_ArtworkRefNo(string OrderID, string Refno)
+        {
+            List<Window_FabricRefNo> result = new List<Window_FabricRefNo>();
+
+            try
+            {
+                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_ArtworkRefNo(OrderID, Refno).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }        
         public List<Window_InkType> Get_InkType(string BrandID, string SeasonID, string StyleID)
         {
             List<Window_InkType> result = new List<Window_InkType>();

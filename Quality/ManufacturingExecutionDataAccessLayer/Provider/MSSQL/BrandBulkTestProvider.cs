@@ -30,6 +30,17 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         #endregion
 
 
+        public List<SelectListItem> GetArtworkSource()
+        {
+            string sqlcmd = @"
+select distinct  Text=ID , Value=ID
+from ArtworkType WITH(NOLOCK)  
+WHERE Junk=0 
+";
+            var tmp = ExecuteList<SelectListItem>(CommandType.Text, sqlcmd, new SQLParameterCollection());
+
+            return tmp.Any() ? tmp.ToList() : new List<SelectListItem>();
+        }
 
         public List<DatabaseObject.ProductionDB.Orders> GetOrderInfo(BrandBulkTest_Request Req)
         {
@@ -182,6 +193,15 @@ AND Ukey IN ({ukeys})
                 { "@OrderID", sources.Main.OrderID } ,
                 { "@ReportDate", sources.Main.ReportDate } ,
                 { "@TestItemUkey", sources.Main.TestItemUkey } ,
+
+                { "@FabricRefno", sources.Main.FabricRefno } ,
+                { "@FabricColor", sources.Main.FabricColor } ,
+                { "@AccessoryRefno", sources.Main.AccessoryRefno } ,
+                { "@AccessoryColor", sources.Main.AccessoryColor } ,
+                { "@Artwork", sources.Main.Artwork } ,
+                { "@ArtworkRefno", sources.Main.ArtworkRefno } ,
+                { "@ArtworkColor", sources.Main.ArtworkColor } ,
+
                 { "@Result", sources.Main.Result ?? "Pass"} ,
                 { "@Remark", sources.Main.Remark ?? ""} ,
                 { "@AddName", UserID },
@@ -192,10 +212,12 @@ AND Ukey IN ({ukeys})
             string sqlcmd = $@"
     INSERT INTO dbo.BrandBulkTest
                (ReportNo           ,BrandID           ,SeasonID           ,StyleID           ,Article           ,OrderID           ,FactoryID
+                ,FabricRefno           ,FabricColor           ,AccessoryRefno           ,AccessoryColor           ,Artwork           ,ArtworkRefno           ,ArtworkColor
                ,ReportDate           ,TestItemUkey           ,Result           ,Remark           ,AddDate           ,AddName           ,EditDate           ,EditName)
     VALUES
                (@ReportNo           ,@BrandID           ,@SeasonID           ,@StyleID           ,@Article           ,@OrderID           ,(select top 1 FactoryID from SciProduction_Orders with(NOLOCK) where ID = @OrderID)
-               ,@ReportDate           ,@TestItemUkey           ,@Result           ,@Remark           ,GETDATE()           ,@AddName,           GETDATE()           ,@EditName)
+               ,@FabricRefno           ,@FabricColor           ,@AccessoryRefno           ,@AccessoryColor           ,@Artwork           ,@ArtworkRefno           ,@ArtworkColor
+               ,@ReportDate           ,@TestItemUkey           ,@Result           ,@Remark           ,GETDATE()           ,@AddName           ,GETDATE()           ,@EditName)
 
 ";
 
@@ -208,6 +230,15 @@ AND Ukey IN ({ukeys})
             {
                 { "@ReportNo", sources.Main.ReportNo } ,
                 { "@ReportDate", sources.Main.ReportDate } ,
+
+                { "@FabricRefno", sources.Main.FabricRefno } ,
+                { "@FabricColor", sources.Main.FabricColor } ,
+                { "@AccessoryRefno", sources.Main.AccessoryRefno } ,
+                { "@AccessoryColor", sources.Main.AccessoryColor } ,
+                { "@Artwork", sources.Main.Artwork } ,
+                { "@ArtworkRefno", sources.Main.ArtworkRefno } ,
+                { "@ArtworkColor", sources.Main.ArtworkColor } ,
+
                 { "@Result", sources.Main.Result ?? "Pass"} ,
                 { "@Remark", sources.Main.Remark ?? ""} ,
                 { "@EditName", UserID },
@@ -221,6 +252,13 @@ UPDATE BrandBulkTest
         ,ReportDate = @ReportDate
         ,Result = @Result
         ,Remark = @Remark
+        ,FabricRefno = @FabricRefno
+        ,FabricColor = @FabricColor
+        ,AccessoryRefno = @AccessoryRefno
+        ,AccessoryColor = @AccessoryColor
+        ,Artwork = @Artwork
+        ,ArtworkRefno = @ArtworkRefno
+        ,ArtworkColor = @ArtworkColor
 WHERE ReportNo = @ReportNo
 ";
 

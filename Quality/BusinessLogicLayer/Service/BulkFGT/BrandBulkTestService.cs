@@ -42,6 +42,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Article_Source = new List<SelectListItem>(),
             };
 
+            try
+            {
+                _Provider = new BrandBulkTestProvider(Common.ProductionDataAccessLayer);
+                model.Artwork_Source = _Provider.GetArtworkSource();
+
+                model.Result = true;
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.Message;
+            }
             return model;
         }
 
@@ -393,7 +405,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-
         public BrandBulkTest_ViewModel Download(List<BrandBulkTestDox> ReqList)
         {
             BrandBulkTest_ViewModel model = this.GetDefaultModel();
