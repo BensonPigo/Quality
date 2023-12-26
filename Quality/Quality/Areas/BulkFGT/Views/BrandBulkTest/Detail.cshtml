@@ -628,7 +628,7 @@
                 return;
             }
             var para = "?TargetID=Main_TestItem&BrandID=" + $('#Main_BrandID').val();
-            window.open('@Url.Action("BrandBulkTestItemList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=700');
+            window.open('@Url.Action("BrandBulkTestItemList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=700');
         }
 
         if (WindowType == "FabricRefNo" && EditMode) {
@@ -638,7 +638,7 @@
                 return;
             }
             var para = "?TargetID=Main_FabricRefno&Title=Fabric Refno&OrderID=" + $('#Main_OrderID').val();
-            window.open('@Url.Action("MulitipleFabricRefNoList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
+            window.open('@Url.Action("MulitipleFabricRefNoList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
         }
         if (WindowType == "AccRefNo" && EditMode) {
 
@@ -647,7 +647,7 @@
                 return;
             }
             var para = "?TargetID=Main_AccessoryRefno&Title=Accessory Refno&OrderID=" + $('#Main_OrderID').val();
-            window.open('@Url.Action("MulitipleAccRefNoList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
+            window.open('@Url.Action("MulitipleAccRefNoList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
         }
         if (WindowType == "ArtworkRefNo" && EditMode) {
 
@@ -656,7 +656,7 @@
                 return;
             }
             var para = "?TargetID=Main_ArtworkRefno&Title=Artwork Refno&OrderID=" + $('#Main_OrderID').val();
-            window.open('@Url.Action("MulitipleArtworkRefNoList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
+            window.open('@Url.Action("MulitipleArtworkRefNoList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
         }
     }
 

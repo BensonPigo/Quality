@@ -513,7 +513,7 @@
 
         $("#Request_BrandID").blur(function () {
             $.ajax({
-                url: "@Url.Action("BrandList", "PublicWondow", new { Area = "" })",
+                url: "@Url.Action("BrandList", "PublicWindow", new { Area = "" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
@@ -533,7 +533,7 @@
         $("#Request_SeasonID").blur(function () {
             var BrandID = $('#Request_BrandID').val();
             $.ajax({
-                url: "@Url.Action("SeasonList", "PublicWondow", new { Area = "" })",
+                url: "@Url.Action("SeasonList", "PublicWindow", new { Area = "" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
@@ -554,7 +554,7 @@
             var BrandID = $('#Request_BrandID').val();
             var SeasonID = $('#Request_SeasonID').val();
             $.ajax({
-                url: "@Url.Action("StyleList", "PublicWondow", new { Area = "" })",
+                url: "@Url.Action("StyleList", "PublicWindow", new { Area = "" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
@@ -580,7 +580,7 @@
             var SeasonID = $('#Request_SeasonID').val();
             var StyleID = $('#Request_StyleID').val();
             $.ajax({
-                url: "@Url.Action("ArticleList", "PublicWondow", new { Area = "" })",
+                url: "@Url.Action("ArticleList", "PublicWindow", new { Area = "" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: StyleID, Article: $(this).val(), StyleUkey:0 , ReturnType: "JSON" }),
@@ -601,7 +601,7 @@
         $("#Request_TestItem").blur(function () {
             var BrandID = $('#Request_BrandID').val();
             $.ajax({
-                url: "@Url.Action("BrandBulkTestItemList", "PublicWondow", new { Area = "" })",
+                url: "@Url.Action("BrandBulkTestItemList", "PublicWindow", new { Area = "" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, TestItem: $(this).val(), ReturnType: "JSON" }),
@@ -621,7 +621,7 @@
 
     function OpenWindow(WindowType) {
         if (WindowType == "BrandID") {
-            window.open('@Url.Action("BrandList", "PublicWondow", new { Area = "" })', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("BrandList", "PublicWindow", new { Area = "" })', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
         if (WindowType == "SeasonID") {
 
@@ -630,7 +630,7 @@
                 return;
             }
             var para = "?BrandID=" + $('#Request_BrandID').val();
-            window.open('@Url.Action("SeasonList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("SeasonList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
         if (WindowType == "StyleID") {
 
@@ -639,7 +639,7 @@
                 return;
             }
             var para = "?BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val();
-            window.open('@Url.Action("StyleList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("StyleList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
         if (WindowType == "Article") {
             if ($('#Request_BrandID').val() == '' || $('#Request_SeasonID').val() == '' || $('#Request_StyleID').val() == '') {
@@ -647,7 +647,7 @@
                 return;
             }
             var para = "?TargetID=Request_Article&StyleUkey=0&BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val() + "&StyleID=" + $('#Request_StyleID').val();
-            window.open('@Url.Action("ArticleList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("ArticleList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
 
         if (WindowType == "TestItem") {
@@ -657,7 +657,7 @@
                 return;
             }
             var para = "?TargetID=Request_TestItem&BrandID=" + $('#Request_BrandID').val() + "&TestItem=" + $('#Request_TestItem').val();
-            window.open('@Url.Action("BrandBulkTestItemList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=700');
+            window.open('@Url.Action("BrandBulkTestItemList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=700');
         }
     }
 

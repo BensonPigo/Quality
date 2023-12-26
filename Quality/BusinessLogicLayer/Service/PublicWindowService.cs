@@ -611,7 +611,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_ArtworkRefNo(OrderID, Refno).ToList();
@@ -668,7 +668,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_BrandBulkTestItem(BrandID, TestITem).ToList();
