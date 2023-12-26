@@ -54,6 +54,12 @@ namespace DatabaseObject.ResultModel
         public string Heat { get; set; }
         public DateTime? HeatDate { get; set; }
         public string HeatRemark { get; set; }
+
+        public bool? NonIron { get; set; }
+        public string Iron { get; set; }
+        public DateTime? IronDate { get; set; }
+        public string IronRemark { get; set; }
+
         public bool? NonWash { get; set; }
         public string Wash { get; set; }
         public DateTime? WashDate { get; set; }
@@ -155,6 +161,38 @@ namespace DatabaseObject.ResultModel
         public List<FabricCrkShrkTestHeat_Detail> Heat_Detail { get; set; }
     }
 
+    public class FabricCrkShrkTestIron_Result : BaseResult
+    {
+        public long ID { get; set; }
+        public string MDivisionID { get; set; }
+        public FabricCrkShrkTestIron_Main Iron_Main { get; set; }
+
+        public List<FabricCrkShrkTestIron_Detail> Iron_Detail { get; set; }
+    }
+    public class FabricCrkShrkTestIron_Main
+    {
+        public string ReportNo { get; set; }
+        public string POID { get; set; }
+        public string SEQ { get; set; }
+        public string ColorID { get; set; }
+        public decimal ArriveQty { get; set; }
+        public DateTime? WhseArrival { get; set; }
+        public string ExportID { get; set; }
+        public string Supp { get; set; }
+        public string Iron { get; set; }
+        public DateTime? IronDate { get; set; }
+        public string StyleID { get; set; }
+        public string SCIRefno { get; set; }
+        public string Name { get; set; }
+        public string BrandID { get; set; }
+        public string Refno { get; set; }
+        public bool? NonIron { get; set; }
+        public string DescDetail { get; set; }
+        public string IronRemark { get; set; }
+        public bool IronEncode { get; set; }
+        public byte[] IronTestBeforePicture { get; set; }
+        public byte[] IronTestAfterPicture { get; set; }
+    }
     public class FabricCrkShrkTestHeat_Main
     {
         public string ReportNo { get; set; }
@@ -181,6 +219,30 @@ namespace DatabaseObject.ResultModel
     }
 
     public class FabricCrkShrkTestHeat_Detail : CompareBase
+    {
+        public string Roll { get; set; }
+        public string Dyelot { get; set; }
+        public decimal HorizontalOriginal { get; set; }
+        public decimal VerticalOriginal { get; set; }
+        public string Result { get; set; }
+        public decimal HorizontalTest1 { get; set; }
+        public decimal HorizontalTest2 { get; set; }
+        public decimal HorizontalTest3 { get; set; }
+        public decimal HorizontalAverage { get; set; }
+        public decimal HorizontalRate { get; set; }
+        public decimal VerticalTest1 { get; set; }
+        public decimal VerticalTest2 { get; set; }
+        public decimal VerticalTest3 { get; set; }
+        public decimal VerticalAverage { get; set; }
+        public decimal VerticalRate { get; set; }
+        public DateTime? Inspdate { get; set; }
+        public string Inspector { get; set; }
+        public string Name { get; set; }
+        public string Remark { get; set; }
+        public string LastUpdate { get; set; }
+    }
+
+    public class FabricCrkShrkTestIron_Detail : CompareBase
     {
         public string Roll { get; set; }
         public string Dyelot { get; set; }

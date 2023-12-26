@@ -590,17 +590,17 @@
     function QueryButtonBind() {
         $('#btnBrandSelectItem').on('click', function () {
             var para = "?TargetID=Request_BrandID";
-            window.open('@Url.Action("BrandList","PublicWondow",new{Area=""})' + para, 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("BrandList","PublicWindow",new{Area=""})' + para, 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnSeasonSelectItem').on('click', function () {
             var para = "?TargetID=Request_SeasonID&BrandID=" + $('#Request_BrandID').val();
-            window.open('@Url.Action("SeasonList","PublicWondow",new{Area=""})' + para, 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("SeasonList","PublicWindow",new{Area=""})' + para, 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnStyleSelectItem').on('click', function () {
             var para = "?TargetID=Request_StyleID&BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val();
-            window.open('@Url.Action("StyleList","PublicWondow",new{Area=""})' + para, 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("StyleList","PublicWindow",new{Area=""})' + para, 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnArticleSelectItem').on('click', function () {
@@ -610,7 +610,7 @@
             }
 
             var para = "?TargetID=Request_Article&OrderID=&StyleUkey=0&BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val() + "&StyleID=" + $('#Request_StyleID').val();
-            window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("ArticleList","PublicWindow",new{Area=""})' + para, 'Article', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         blurEvent('Request_');
@@ -627,7 +627,7 @@
             }
 
             $.ajax({
-                url: "@Url.Action("BrandList","PublicWondow",new{Area=""})",
+                url: "@Url.Action("BrandList","PublicWindow",new{Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
@@ -661,7 +661,7 @@
 
             var BrandID = $('#' + name +'BrandID').val();
             $.ajax({
-                url: "@Url.Action("SeasonList","PublicWondow",new{Area=""})",
+                url: "@Url.Action("SeasonList","PublicWindow",new{Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
@@ -696,7 +696,7 @@
             var BrandID = $('#' + name +'BrandID').val();
             var SeasonID = $('#' + name +'SeasonID').val();
             $.ajax({
-                url: "@Url.Action("StyleList","PublicWondow",new{Area=""})",
+                url: "@Url.Action("StyleList","PublicWindow",new{Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
@@ -728,7 +728,7 @@
             var SeasonID = $('#' + name +'SeasonID').val();
             var StyleID = $('#' + name +'StyleID').val();
             $.ajax({
-                url: "@Url.Action("ArticleList","PublicWondow",new{Area=""})",
+                url: "@Url.Action("ArticleList","PublicWindow",new{Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, StyleUkey : 0, SeasonID: SeasonID, StyleID: StyleID, Article: $(this).val(), ReturnType: "JSON" }),
@@ -795,7 +795,7 @@
             }
 
             $.ajax({
-                url: "@Url.Action("LocalSuppList", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("LocalSuppList", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ SuppID:$(this).val(), ReturnType: "JSON" }),
@@ -826,7 +826,7 @@
             }
 
             $.ajax({
-                url: "@Url.Action("TechnicianList", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("TechnicianList", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ CallFunction:"MockupCrocking", ID:$(this).val(), ReturnType: "JSON" }),
@@ -858,7 +858,7 @@
             }
 
             $.ajax({
-                url: "@Url.Action("Pass1List", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ ID:$(this).val(), ReturnType: "JSON" }),
@@ -998,7 +998,7 @@
             para += "&" + "AfterColumn=TestAfterPicture";
             para += "&" + "PKey_1=ReportNo";
             para += "&" + "PKey_1_Val=" + $('#ReportNo').val();
-            window.open('@Url.Action("PictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
+            window.open('@Url.Action("PictureList", "PublicWindow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
         });
 
         $('#PDF').on('click', function () {
@@ -1087,36 +1087,36 @@
     function DetailButtonBind() {
         $('#btnDetailBrandSelectItem').on('click', function () {
             var para = "?TargetID=BrandID";
-            window.open('@Url.Action("BrandList","PublicWondow",new{Area=""})' + para,'BrandID',config='toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("BrandList","PublicWindow",new{Area=""})' + para,'BrandID',config='toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnDetailSeasonSelectItem').on('click', function () {
             var para = "?TargetID=SeasonID&BrandID=" + $('#BrandID').val();
-            window.open('@Url.Action("SeasonList","PublicWondow",new{Area=""})' + para,'SeasonID',config='toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("SeasonList","PublicWindow",new{Area=""})' + para,'SeasonID',config='toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnT1SubconSelectItem').on('click', function () {
-            window.open('@Url.Action("LocalSuppList", "PublicWondow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
+            window.open('@Url.Action("LocalSuppList", "PublicWindow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
         });
 
         $('#btnTechnicianSelectItem').on('click', function () {
             var para = "?CallFunction=MockupCrocking";
-            window.open('@Url.Action("TechnicianList", "PublicWondow",new{Area=""})' + para,'Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
+            window.open('@Url.Action("TechnicianList", "PublicWindow",new{Area=""})' + para,'Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
         });
 
         $('#btnMRSelectItem').on('click', function () {
             var para = "?TargetID=MR";
-            window.open('@Url.Action("Pass1List","PublicWondow",new{Area=""})' + para,'Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
+            window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})' + para,'Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
         });
 
         $('#btnDetailStyleSelectItem').on('click', function () {
             var para = "?TargetID=StyleID&BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val();
-            window.open('@Url.Action("StyleList","PublicWondow",new{Area=""})' + para,'StyleID',config='toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("StyleList","PublicWindow",new{Area=""})' + para,'StyleID',config='toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('#btnDetailArticleSelectItem').on('click', function () {
             var para = "?TargetID=Article&OrderID=&StyleUkey=0&BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val() + "&StyleID=" + $('#StyleID').val();
-            window.open('@Url.Action("ArticleList","PublicWondow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("ArticleList","PublicWindow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('.btnArtworkColorItem').on('click', function () {
@@ -1128,7 +1128,7 @@
 
             var idx = $(this).closest('tr').attr('idx');
             var para = "?TargetID=" + idx + "__ArtworkColor&BrandID=" + brandid + "&Title=Artwork Color";
-            window.open('@Url.Action("ColorList", "PublicWondow",new{Area=""})' + para, 'Artwork Color', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("ColorList", "PublicWindow",new{Area=""})' + para, 'Artwork Color', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $('.btnFabricColorItem').on('click', function () {
@@ -1140,7 +1140,7 @@
 
             var idx = $(this).closest('tr').attr('idx');
             var para = "?TargetID=" + idx + "__FabricColor&BrandID=" + brandid + "&Title=Fabric Color";;
-            window.open('@Url.Action("ColorList", "PublicWondow",new{Area=""})' + para, 'Fabric Color', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("ColorList", "PublicWindow",new{Area=""})' + para, 'Fabric Color', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         blurEvent("");
@@ -1297,7 +1297,7 @@
 
     function FailMail() {
         var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT&ExitReload=False";
-        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+        window.open('@Url.Action("TestFailMailList", "PublicWindow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
     }
 
     function GetTestFailMailList(data) {

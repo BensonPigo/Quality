@@ -43,6 +43,17 @@ namespace BusinessLogicLayer.Interface
 
         BaseResult ToExcelFabricCrkShrkTestHeatDetail(long ID, out string excelFileName);
 
+        // Iron
+        FabricCrkShrkTestIron_Result GetFabricCrkShrkTestIron_Result(long ID);
+
+        BaseResult SaveFabricCrkShrkTestIronDetail(FabricCrkShrkTestIron_Result fabricCrkShrkTestIron_Result, string userID);
+
+        BaseResult EncodeFabricCrkShrkTestIronDetail(long ID, string userID, out string ovenTestResult);
+        SendMail_Result SendIronFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID);
+        BaseResult AmendFabricCrkShrkTestIronDetail(long ID);
+
+        BaseResult ToExcelFabricCrkShrkTestIronDetail(long ID, out string excelFileName);
+
         // Wash
         FabricCrkShrkTestWash_Result GetFabricCrkShrkTestWash_Result(long ID);
 

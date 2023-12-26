@@ -163,17 +163,17 @@
             // 共用元件使用方式
             // 1. 開啟 BrandList 視窗
             // 2. 宣告Callbacl事件，命名方式：Get + 開始視窗的Action名字，以這邊為例即是 GetBrandList即可取得回傳值
-            window.open('@Url.Action("BrandList", "PublicWondow",new { Area=""})', 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("BrandList", "PublicWindow",new { Area=""})', 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $("#btnSeason").on('click', function () {
 
-            window.open('@Url.Action("SeasonList", "PublicWondow",new { Area=""})' + '?BrandID=' + $("#txtBrandID").val(), 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
+            window.open('@Url.Action("SeasonList", "PublicWindow",new { Area=""})' + '?BrandID=' + $("#txtBrandID").val(), 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
         });
 
         $("#btnStyle").on('click', function () {
 
-            window.open('@Url.Action("StyleList", "PublicWondow",new { Area=""})' + '?BrandID=' + $("#txtBrandID").val() + '&SeasonID=' + $("#txtSeasonID").val(), 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
+            window.open('@Url.Action("StyleList", "PublicWindow",new { Area=""})' + '?BrandID=' + $("#txtBrandID").val() + '&SeasonID=' + $("#txtSeasonID").val(), 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
         });
 
         blurEvent('txt');
@@ -203,7 +203,7 @@
             }
 
             $.ajax({
-                url: "@Url.Action("BrandList","PublicWondow",new{Area=""})",
+                url: "@Url.Action("BrandList","PublicWindow",new{Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
@@ -239,7 +239,7 @@
 
             var BrandID = $('#' + name + 'BrandID').val();
             $.ajax({
-                url: "@Url.Action("SeasonList","PublicWondow",new{Area=""})",
+                url: "@Url.Action("SeasonList","PublicWindow",new{Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
@@ -277,7 +277,7 @@
             var BrandID = $('#' + name + 'BrandID').val();
             var SeasonID = $('#' + name + 'SeasonID').val();
             $.ajax({
-                url: "@Url.Action("StyleList","PublicWondow",new{Area=""})",
+                url: "@Url.Action("StyleList","PublicWindow",new{Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
