@@ -597,6 +597,30 @@ namespace Quality.Controllers
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
+        public ActionResult MulitipleFabricRefNoList(string Title, string OrderID, string TargetID)
+        {
+            var model = _PublicWindowService.Get_FabricRefNo(OrderID, string.Empty);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+        public ActionResult MulitipleAccRefNoList(string Title, string OrderID, string TargetID)
+        {
+            var model = _PublicWindowService.Get_AccRefNo(OrderID, string.Empty);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+        public ActionResult MulitipleArtworkRefNoList(string Title, string OrderID, string TargetID)
+        {
+            var model = _PublicWindowService.Get_ArtworkRefNo(OrderID, string.Empty);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
 
         [HttpPost]
         public ActionResult FabricRefNoList(string Title, string OrderID, string Refno, string TargetID)
@@ -626,6 +650,24 @@ namespace Quality.Controllers
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
+        public ActionResult ArtworkRefNoList(string Title, string OrderID, string TargetID)
+        {
+            var model = _PublicWindowService.Get_ArtworkRefNo(OrderID, string.Empty);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult ArtworkRefNoList(string Title, string OrderID, string Refno, string TargetID)
+        {
+            var model = _PublicWindowService.Get_ArtworkRefNo(OrderID, Refno);
+
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
         public ActionResult InkTypeList(string Title, string BrandID, string SeasonID, string StyleID, string TargetID)
         {
             var model = _PublicWindowService.Get_InkType(BrandID, SeasonID, StyleID);
@@ -640,6 +682,26 @@ namespace Quality.Controllers
             var model = _PublicWindowService.Get_RollDyelot(OrderID, Seq1 , Seq2);
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+        public ActionResult BrandBulkTestItemList(string Title, string BrandID, string TargetID)
+        {
+            var model = _PublicWindowService.Get_BrandBulkTestItem(BrandID, string.Empty);
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult BrandBulkTestItemList(string Title, string BrandID, string TestItem, string TargetID, string ReturnType = "")
+        {
+            var model = _PublicWindowService.Get_BrandBulkTestItem(BrandID, TestItem);
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
             return View(model);
         }
     }

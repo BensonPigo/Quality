@@ -185,6 +185,7 @@
     <Compile Include="Areas\BulkFGT\BulkFGTAreaRegistration.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\AccessoryOvenWashController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\AgingHydrolysisTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\BrandBulkTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\BulkFGTMailGroupController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\DailyMoistureController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\FabricColorFastnessController.cs" />
@@ -469,6 +470,8 @@
     <Content Include="Areas\BulkFGT\Views\WaterAbsorbency\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\WickingHeightTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\EvaporationRateTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\BrandBulkTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\BrandBulkTest\Detail.cshtml" />
     <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\IronTest.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
@@ -1048,6 +1051,11 @@
     <Content Include="XLT\FabricIronTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\PublicWindow\ArtworkRefNoList.cshtml" />
+    <Content Include="Views\PublicWindow\BrandBulkTestItemList.cshtml" />
+    <Content Include="Views\PublicWindow\MulitipleAccRefNoList.cshtml" />
+    <Content Include="Views\PublicWindow\MulitipleArtworkRefNoList.cshtml" />
+    <Content Include="Views\PublicWindow\MulitipleFabricRefNoList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

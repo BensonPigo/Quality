@@ -22,8 +22,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
 {
     public class TPeelStrengthTestService
     {
-        private string UplodaFileRootPath = ConfigurationManager.AppSettings["UplodaFileRootPath"];
-        private string UplodaFilePath = $@"{ConfigurationManager.AppSettings["UplodaFileRootPath"]}BulkFGT\TPeelStrengthTest\";
+        private string UploadFileRootPath = ConfigurationManager.AppSettings["UploadFileRootPath"];
+        private string UploadFilePath = $@"{ConfigurationManager.AppSettings["UploadFileRootPath"]}BulkFGT\TPeelStrengthTest\";
         private TPeelStrengthTestProvider _Provider;
 
         public TPeelStrengthTest_ViewModel GetDefaultModel(bool iNew = false)
@@ -51,14 +51,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
             };
 
 
-            if (!System.IO.Directory.Exists($@"{UplodaFileRootPath}\BulkFGT\"))
+            if (!System.IO.Directory.Exists($@"{UploadFileRootPath}\BulkFGT\"))
             {
-                System.IO.Directory.CreateDirectory($@"{UplodaFileRootPath}\BulkFGT\");
+                System.IO.Directory.CreateDirectory($@"{UploadFileRootPath}\BulkFGT\");
             }
 
-            if (!System.IO.Directory.Exists($@"{UplodaFileRootPath}\BulkFGT\TPeelStrengthTest"))
+            if (!System.IO.Directory.Exists($@"{UploadFileRootPath}\BulkFGT\TPeelStrengthTest"))
             {
-                System.IO.Directory.CreateDirectory($@"{UplodaFileRootPath}\BulkFGT\TPeelStrengthTest");
+                System.IO.Directory.CreateDirectory($@"{UploadFileRootPath}\BulkFGT\TPeelStrengthTest");
             }
 
             return model;
@@ -567,7 +567,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     if (!string.IsNullOrEmpty(machineReport))
                     {
-                        string machineReportFile = this.UplodaFilePath + machineReport;
+                        string machineReportFile = this.UploadFilePath + machineReport;
                         string pdf2Path = machineReportFile;
 
                         // 建立一個新的 PDF 文件
@@ -661,14 +661,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
             //string FileName= Req.Main.MachineReportFile.FileName;
             string FileNameWithoutExtension = Path.GetFileNameWithoutExtension(Req.Main.MachineReportFile.FileName);
             string FileExtension = Path.GetExtension(Req.Main.MachineReportFile.FileName);
-            string FullFileName = $@"{this.UplodaFilePath}\{Req.Main.MachineReport}";
+            string FullFileName = $@"{this.UploadFilePath}\{Req.Main.MachineReport}";
 
             int count = 1;
             string FileName = FileNameWithoutExtension;
             while (File.Exists(FullFileName))
             {
                 FileName = $"{FileNameWithoutExtension} ({count})";
-                FullFileName = Path.Combine(this.UplodaFilePath, $"{FileName}{FileExtension}");
+                FullFileName = Path.Combine(this.UploadFilePath, $"{FileName}{FileExtension}");
                 count++;
             }
 

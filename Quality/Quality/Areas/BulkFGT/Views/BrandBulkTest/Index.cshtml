@@ -1,0 +1,778 @@
+﻿@using DatabaseObject.ViewModel.BulkFGT
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model BrandBulkTest_ViewModel
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+
+<style>
+    .SearchDiv {
+        width: 100%;
+        /*height: 8vh;*/
+        /*background-color: pink;*/
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        display: flex;
+    }
+
+    .colDiv {
+        width: 4.3%;
+        padding: 2px;
+    }
+
+    .colDiv2 {
+        width: 13%;
+        padding: 2px;
+    }
+
+
+    .searchTitle {
+        color: white;
+    }
+
+    .row-name {
+        color: gray;
+        font-size: 1.2em;
+        background-color: wheat;
+    }
+
+    .bodyDiv {
+        width: 100%;
+        overflow-x: scroll;
+    }
+
+    .buttonArea, .MainArea, .DetailDataArea ,.FileListArea {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+
+    .buttonAreaItem {
+        width: 9%;
+        padding: 2px;
+    }
+
+    .MainAreaItem100 {
+        width: 99.6%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    .MainAreaItem {
+        width: 16.6%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+    }
+
+    .MainAreaItem33 {
+        width: 33.2%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+    }
+
+    .DetailDataAreaItem1 {
+        width: 10%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+    }
+
+    .DetailDataAreaItem2 {
+        width: 20%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+    }
+
+    .DetailDataAreaItem1 input, .DetailDataAreaItem1 select, .FileListAreaItem1 input{
+        width: 100%;
+    }
+
+    .DetailDataAreaItem2 input, .DetailDataAreaItem2 select, .FileListAreaItem2 input {
+        width: 100%;
+    }
+
+
+    .FileListAreaItem1 {
+        width: 10%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+    }
+
+    .FileListAreaItem2 {
+        width: 90%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+    }
+    .colHead {
+        background-color: wheat;
+        color: darkslategray;
+        font-size: 1rem;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+    .fileColHead {
+        background-color: wheat;
+        color: darkslategray;
+        font-size: 1rem;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+    /*   .colHead label{
+        font-weight:bold;
+        font-size:1rem;
+    }*/
+    .MainAreaItemSpan3 {
+        width: 37.5%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+    }
+
+    .MainAreaItemSpan7 {
+        width: 87.5%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+    }
+
+
+    .odd {
+        background-color: white;
+    }
+
+    .even {
+        background-color: lightgray;
+    }
+
+    .actionBtn {
+        width: 100%;
+    }
+
+    .colTitle {
+        /*color: white;*/
+    }
+
+    .canUse {
+        color: white !important;
+        cursor: pointer;
+    }
+
+
+    .textArenDiv {
+        height: 5rem;
+    }
+
+    textarea {
+        padding: 2px;
+        width: 100%;
+        height: 4.5rem;
+    }
+
+    input:-webkit-autofill {
+        -webkit-text-fill-color: black;
+    }
+
+    h4 {
+        font-size: 1rem;
+    }
+    #frontDiv {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1001;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,.6);
+    }
+    #dilogDownload {
+        display: none;
+        position: absolute;
+        top: 10%;
+        left: 35%;
+        height: 100%;
+        background-color: lavender;
+        padding: 5px;
+        border-radius: 5px;
+        z-index: 1002;
+        width: 30%;
+        height: 75vh;
+        overflow: auto;
+    }
+
+    .black_overlay {
+        display: none;
+        position: absolute;
+        top: 0%;
+        left: 0%;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        z-index: 1001;
+        opacity: .80;
+    }
+
+    input, select, a, div {
+        font-size: 1rem;
+    }
+</style>
+
+<div class="main-content">
+    <header class="page-header">
+        <h3>
+            <i class=""></i><span>Bulk Test By Brand</span>
+        </h3>
+        <div class="breadcrumb">
+            <div>Home</div>
+            <div class="current">Bulk Test By Brand</div>
+        </div>
+    </header>
+
+
+
+    @using (Html.BeginForm("Index", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { }))
+    {
+        <div class="main-area">
+
+
+            <div class="SearchDiv">
+                <!-- #region Row 1-->
+                <div class="colDiv">
+                    <h4 class="searchTitle">Brand</h4>
+                </div>
+                <div class="colDiv2">
+                    @Html.TextBoxFor(o => o.Request.BrandID, new { @value = Model.Request.BrandID, @style = "width:80%" })
+                    <input id="btnBrandID" onclick="OpenWindow('BrandID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                </div>
+                <div class="colDiv">
+                    <h4 class="searchTitle">Season</h4>
+                </div>
+                <div class="colDiv2">
+                    @Html.TextBoxFor(o => o.Request.SeasonID, new { @value = Model.Request.SeasonID, @style = "width:80%" })
+                    <input id="btnSeasonID" onclick="OpenWindow('SeasonID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                </div>
+                <div class="colDiv">
+                    <h4 class="searchTitle">Style</h4>
+                </div>
+                <div class="colDiv2">
+                    @Html.TextBoxFor(o => o.Request.StyleID, new { @value = Model.Request.StyleID, @style = "width:80%" })
+                    <input id="btnStyleID" onclick="OpenWindow('StyleID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                </div>
+                <div class="colDiv">
+                    <h4 class="searchTitle">Article</h4>
+                </div>
+                <div class="colDiv2">
+                    @Html.TextBoxFor(o => o.Request.Article, new { @value = Model.Request.Article, @style = "width:80%" })
+                    <input id="btnArticle" onclick="OpenWindow('Article')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                </div>
+                <div class="colDiv">
+                    <h4 class="searchTitle">Test Item</h4>
+                </div>
+                <div class="colDiv2">
+                    @Html.TextBoxFor(o => o.Request.TestItem, new { @value = Model.Request.StyleID, @style = "width:80%" })
+                    <input id="btnTestItem" onclick="OpenWindow('TestItem')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                </div>
+                <div class="colDiv">
+                    <input type="submit" class="site-btn btn-blue actionBtn" name="action:Query" id="btnQuery" value="Query" />
+                </div>
+                <div class="colDiv">
+                    <input type="button" class="site-btn btn-green actionBtn" id="btnNew" value="New" />
+                </div>
+                <div class="colDiv">
+                </div>
+                <!-- #endregion -->
+
+            </div>
+
+            <div class="content-scroll">
+
+                <div class="inner-scroll" style="float:left">
+
+
+                    @*表頭*@
+
+                    @*表身*@
+                    <div class="bodyDiv">
+
+                        <div class="detailDataDiv">
+                            <br />
+                            <div class="DetailDataArea">
+                                <!--#region Head-->
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Report No
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Brand
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Season
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Style
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Atricle
+                                </div>
+                                <div class="DetailDataAreaItem2 colHead">
+                                    Test Item
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Report Date
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Result
+                                </div>
+                                <div class="DetailDataAreaItem1 colHead">
+                                    Download
+                                </div>
+                                <!--#endregion-->
+
+                                @if (Model.MainList != null)
+                                {
+                                    for (int i = 0; i < Model.MainList.Count; i++)
+                                    {
+                                        string rowName = $@"Row{i}";
+                                        string resultColor = "blue";
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @Html.ActionLink(Model.MainList[i].ReportNo, "Detail", new BrandBulkTest_Request() { ReportNo = Model.MainList[i].ReportNo })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @Html.TextBoxFor(o => Model.MainList[i].BrandID, new { })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @Html.TextBoxFor(o => Model.MainList[i].SeasonID, new { })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @Html.TextBoxFor(o => Model.MainList[i].StyleID, new { })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @Html.TextBoxFor(o => Model.MainList[i].Article, new { })
+                                        </div>
+                                        <div class="DetailDataAreaItem2 colBody @rowName">
+                                            @Html.TextBoxFor(o => Model.MainList[i].TestItem, new { })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @Html.TextBoxFor(o => Model.MainList[i].ReportDateText, new { })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @{ resultColor = Model.MainList[i].Result == "Fail" ? "red" : "blue";}
+                                            @Html.TextBoxFor(o => Model.MainList[i].Result, new { @class = "", @style = $@"color:{resultColor}" })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName">
+                                            @{
+                                                string linkUrl = Url.Action("Download", new { ReportNo = Model.MainList[i].ReportNo });
+                                            }
+                                            @*<a href="@linkUrl">
+                                                    <img class="fileDownload" src="~/Image/Icon/Download.png" width="30" />
+                                                </a>*@
+
+                                            <img class="fileDownload" src="~/Image/Icon/Download.png" ReportNo="@Model.MainList[i].ReportNo" width="30" />
+                                        </div>
+                                    }
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div id="frontDiv"></div>
+<div id="dilogDownload">
+    <input id="btnDownload" class="btn-blue" type="button" value="Download" />
+    <input id="btnSelectAll" class="btn-blue" type="button" value="Select All" />
+    <input id="btnClose" class="btn-red" type="button" value="Close" />
+    <br />
+    <div class="FileListArea">
+        <!--#region Head-->
+        <div class="FileListAreaItem1 fileColHead">
+            Select
+        </div>
+        <div class="FileListAreaItem2 fileColHead">
+            FileName
+        </div>
+        <!--#endregion-->
+
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var msg = new MessagerAlert();
+    var EditType = "@Model.Main.EditType";
+    var EditMode;
+
+    $(function () {
+        EditMode = false;
+
+        IsEditModeChange();
+        if (EditType == 'New') {
+            EditMode = true;
+            $("#SaveSubmit").attr("name", "Action:NewSave");
+            IsEditModeChange();
+        }
+        QueryBind();
+
+        @Html.Raw(Model.ErrorMessage)
+    });
+
+    function IsEditModeChange() {
+
+        // 控制項重置
+        ClickEventBind();
+        BlurEventBind();
+        $('.toolBarItem').removeClass("canUse");
+        //$("#Main_SubmitDateText").removeClass('date-picker');
+
+        if ($('#Main_ReportNo').val() == '' && EditType != 'New') {
+
+            // 可編輯欄位關閉
+            $('.MainArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select').attr("disabled", true);
+            $('.MainArea input ,.MainArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
+        }
+        else {
+            //根據模式區分
+            if (EditMode) {
+                // 可編輯欄位開啟
+                $('.CanEdit').removeAttr("disabled");
+                $('.CanEdit').removeAttr("readonly");
+
+                // 編輯模式可用功能開啟
+                $('#Save, #Undo ,#Picture ,#NewItem').addClass("canUse");
+                $(".detailDelete").show();
+                $("#Main_SubmitDateText").addClass('date-picker');
+                $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+
+            }
+            else {
+                // 可編輯欄位關閉
+                $('.MainArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select').attr("disabled", true);
+                $('.MainArea input ,.MainArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
+                $(".detailDelete").hide();
+
+
+            }
+
+        }
+
+        // 移除不可用功能的事件
+        $('.toolBarItem:not(.canUse)').unbind('click');
+    }
+
+    function QueryBind() {
+
+        $('#btnQuery').on('click', function () {
+            if ($('#Request_BrandID').val() == '' && $('#Request_TestItem').val() == '') {
+                msg.WithError("<Brand> and <Test Item> cannot be empty");
+                return false;
+            }
+
+        });
+
+        $("#Request_BrandID").blur(function () {
+            $.ajax({
+                url: "@Url.Action("BrandList", "PublicWindow", new { Area = "" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Request_BrandID").val('');
+                        msg.WithError('Brand Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#Request_SeasonID").blur(function () {
+            var BrandID = $('#Request_BrandID').val();
+            $.ajax({
+                url: "@Url.Action("SeasonList", "PublicWindow", new { Area = "" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Request_SeasonID").val('');
+                        msg.WithError('Season Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#Request_StyleID").blur(function () {
+            var BrandID = $('#Request_BrandID').val();
+            var SeasonID = $('#Request_SeasonID').val();
+            $.ajax({
+                url: "@Url.Action("StyleList", "PublicWindow", new { Area = "" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Request_StyleID").val('');
+                        msg.WithError('Style Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#Request_Article").blur(function () {
+            if ($('#Request_Article').val() == '') {
+                return;
+
+            }
+            var BrandID = $('#Request_BrandID').val();
+            var SeasonID = $('#Request_SeasonID').val();
+            var StyleID = $('#Request_StyleID').val();
+            $.ajax({
+                url: "@Url.Action("ArticleList", "PublicWindow", new { Area = "" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: StyleID, Article: $(this).val(), StyleUkey:0 , ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Request_Article").val('');
+                        msg.WithError('Article Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+
+        $("#Request_TestItem").blur(function () {
+            var BrandID = $('#Request_BrandID').val();
+            $.ajax({
+                url: "@Url.Action("BrandBulkTestItemList", "PublicWindow", new { Area = "" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, TestItem: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Request_TestItem").val('');
+                        msg.WithError('Test item Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    }
+
+    function OpenWindow(WindowType) {
+        if (WindowType == "BrandID") {
+            window.open('@Url.Action("BrandList", "PublicWindow", new { Area = "" })', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        if (WindowType == "SeasonID") {
+
+            if ($('#Request_BrandID').val() == '' ) {
+                msg.WithError('Please input brand  first.');
+                return;
+            }
+            var para = "?BrandID=" + $('#Request_BrandID').val();
+            window.open('@Url.Action("SeasonList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        if (WindowType == "StyleID") {
+
+            if ($('#Request_BrandID').val() == '' || $('#Request_SeasonID').val() == '') {
+                msg.WithError('Please input brand and season first.');
+                return;
+            }
+            var para = "?BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val();
+            window.open('@Url.Action("StyleList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        if (WindowType == "Article") {
+            if ($('#Request_BrandID').val() == '' || $('#Request_SeasonID').val() == '' || $('#Request_StyleID').val() == '') {
+                msg.WithError('Please input brand season ,and Style first.');
+                return;
+            }
+            var para = "?TargetID=Request_Article&StyleUkey=0&BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val() + "&StyleID=" + $('#Request_StyleID').val();
+            window.open('@Url.Action("ArticleList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+
+        if (WindowType == "TestItem") {
+
+            if ($('#Request_BrandID').val() == '' ) {
+                msg.WithError('Please input brand first.');
+                return;
+            }
+            var para = "?TargetID=Request_TestItem&BrandID=" + $('#Request_BrandID').val() + "&TestItem=" + $('#Request_TestItem').val();
+            window.open('@Url.Action("BrandBulkTestItemList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=700');
+        }
+    }
+
+    function GetBrandList(BrandID) {
+        $("#Request_BrandID").val(BrandID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+
+    function GetSeasonList(SeasonID) {
+        $("#Request_SeasonID").val(SeasonID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+
+    function GetStyleList(StyleID) {
+        $("#Request_StyleID").val(StyleID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+
+    function GetArticleList(Article) {
+        $("#Request_Article").val(Article);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+
+
+    function GetBrandBulkTestItemList(BrandBulkTestItemData) {
+        $('#Request_TestItem').val(BrandBulkTestItemData.TestItem);
+    }
+
+    function ClickEventBind() {
+        $('.toolBarItem ,detailDelete').unbind('click');
+
+        $('#btnNew').on('click', function () {
+            window.location = '@Url.Action("New")';
+        });
+
+        $(".fileDownload").click(function () {
+
+            $(".FileListArea").empty();
+            let ReportNo = $(this).attr('ReportNo');
+
+            $.ajax({
+                url: "@Url.Action("GetIndexFileRow")",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ReportNo: ReportNo }),
+                async: true,
+                success: function (html) {
+                    $(".FileListArea").append(html);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
+
+            $("#frontDiv").toggle();
+            $("#dilogDownload").toggle();
+        });
+
+        $("#btnClose").click(function () {
+            $("#frontDiv").toggle();
+            $("#dilogDownload").toggle();
+        });
+
+        var selectAll = false;
+        $("#btnSelectAll").click(function () {
+            $(".chkBrandBulkTestDox").prop("checked", !selectAll);
+            selectAll = !selectAll;
+        });
+
+        $("#btnDownload").click(function () {
+            let selectList = $(".chkBrandBulkTestDox:checked");
+            let brandBulkTestDoxList = [];
+
+            $.each(selectList, function (dox, idx) {
+                var ukey = $(this).attr('BrandBulkTestDoxUkey');
+                var brandBulkTestDox = {
+                    Ukey: ukey
+                };
+                brandBulkTestDoxList.push(brandBulkTestDox);
+            });
+
+            $.ajax({
+                url: "@Url.Action("Download")",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ brandBulkTestDoxList: brandBulkTestDoxList }),
+                async: true,
+                success: function (data) {
+                    if (data.Result == true) {
+                        window.location.href = data.FilaName;
+                    }
+                    else {
+                        msg.WithError(data.ErrMsg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    }
+
+    function BlurEventBind() {
+        $('input ,select').unbind('blur').unbind('change');
+    }
+
+    function QtyCheck(sel) {
+        if ($('#Main_OrderID').val() == '') {
+            msg.WithError('Please input SP# first.');
+            sel.value = null;
+            return;
+        }
+
+
+    }
+
+</script>
