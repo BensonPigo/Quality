@@ -607,7 +607,7 @@ namespace Quality.Controllers
         }
         public ActionResult MulitipleAccRefNoList(string Title, string OrderID, string TargetID)
         {
-            var model = _PublicWindowService.Get_FabricRefNo(OrderID, string.Empty);
+            var model = _PublicWindowService.Get_AccRefNo(OrderID, string.Empty);
 
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
@@ -615,7 +615,7 @@ namespace Quality.Controllers
         }
         public ActionResult MulitipleArtworkRefNoList(string Title, string OrderID, string TargetID)
         {
-            var model = _PublicWindowService.Get_FabricRefNo(OrderID, string.Empty);
+            var model = _PublicWindowService.Get_ArtworkRefNo(OrderID, string.Empty);
 
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;

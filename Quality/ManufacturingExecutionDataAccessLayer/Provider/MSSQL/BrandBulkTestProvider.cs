@@ -33,6 +33,8 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         public List<SelectListItem> GetArtworkSource()
         {
             string sqlcmd = @"
+select Text='' ,Value=''
+UNION
 select distinct  Text=ID , Value=ID
 from ArtworkType WITH(NOLOCK)  
 WHERE Junk=0 

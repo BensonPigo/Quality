@@ -637,7 +637,7 @@
                 msg.WithError('Please input SP# first.');
                 return;
             }
-            var para = "?TargetID=Main_FabricRefno&OrderID=" + $('#Main_OrderID').val();
+            var para = "?TargetID=Main_FabricRefno&Title=Fabric Refno&OrderID=" + $('#Main_OrderID').val();
             window.open('@Url.Action("MulitipleFabricRefNoList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
         }
         if (WindowType == "AccRefNo" && EditMode) {
@@ -646,7 +646,7 @@
                 msg.WithError('Please input SP# first.');
                 return;
             }
-            var para = "?TargetID=Main_AccessoryRefno&OrderID=" + $('#Main_OrderID').val();
+            var para = "?TargetID=Main_AccessoryRefno&Title=Accessory Refno&OrderID=" + $('#Main_OrderID').val();
             window.open('@Url.Action("MulitipleAccRefNoList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
         }
         if (WindowType == "ArtworkRefNo" && EditMode) {
@@ -655,7 +655,7 @@
                 msg.WithError('Please input SP# first.');
                 return;
             }
-            var para = "?TargetID=Main_ArtworkRefno&OrderID=" + $('#Main_OrderID').val();
+            var para = "?TargetID=Main_ArtworkRefno&Title=Artwork Refno&OrderID=" + $('#Main_OrderID').val();
             window.open('@Url.Action("MulitipleArtworkRefNoList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
         }
     }
@@ -671,12 +671,14 @@
 
         FabricRefNoDataList.forEach(function (element) {
 
-            if (!refNoList.some( t => t == element.Refno)) {
-                refNoList.push(element.Refno);
-            }
-            if (!colorList.some(t => t == element.Color)) {
-                colorList.push(element.Color);
-            }
+            refNoList.push(element.Refno);
+            colorList.push(element.Color);
+            //if (!refNoList.some( t => t == element.Refno)) {
+            //    refNoList.push(element.Refno);
+            //}
+            //if (!colorList.some(t => t == element.Color)) {
+            //    colorList.push(element.Color);
+            //}
         });
 
         // 在這邊取得開窗選擇的FabricRefNoData，進行後續動作
@@ -691,12 +693,14 @@
 
         AccRefNoDataList.forEach(function (element) {
 
-            if (!refNoList.some(t => t == element.Refno)) {
-                refNoList.push(element.Refno);
-            }
-            if (!colorList.some(t => t == element.Color)) {
-                colorList.push(element.Color);
-            }
+            refNoList.push(element.Refno);
+            colorList.push(element.Color);
+            //if (!refNoList.some(t => t == element.Refno)) {
+            //    refNoList.push(element.Refno);
+            //}
+            //if (!colorList.some(t => t == element.Color)) {
+            //    colorList.push(element.Color);
+            //}
         });
 
         // 在這邊取得開窗選擇的AccRefNoData，進行後續動作
@@ -711,12 +715,14 @@
 
         ArtworkRefNoDataList.forEach(function (element) {
 
-            if (!refNoList.some(t => t == element.Refno)) {
-                refNoList.push(element.Refno);
-            }
-            if (!colorList.some(t => t == element.Color)) {
-                colorList.push(element.Color);
-            }
+            refNoList.push(element.Refno);
+            colorList.push(element.Color);
+            //if (!refNoList.some(t => t == element.Refno)) {
+            //    refNoList.push(element.Refno);
+            //}
+            //if (!colorList.some(t => t == element.Color)) {
+            //    colorList.push(element.Color);
+            //}
         });
 
         // 在這邊取得開窗選擇的ArtworkRefNoData，進行後續動作
