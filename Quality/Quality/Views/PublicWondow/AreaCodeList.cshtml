@@ -47,7 +47,8 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td><input type="checkbox" name="name" value="" GroupName="@item.AreaCode" /></td>
+                        @{ string isChecked = item.Selected ? "checked" : "";}
+                        <td><input type="checkbox" name="name" value="" GroupName="@item.AreaCode" @isChecked/></td>
                         <td>
                             @item.AreaCode
                         </td>

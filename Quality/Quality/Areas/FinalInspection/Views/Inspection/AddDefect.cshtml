@@ -238,10 +238,10 @@
         <input type='hidden' style='width:100%' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operator' onchange='OperatorChange("${value[6]}",${index},this)'  readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operator' value='${Operator}'>
     </td>
     <td>
-        <input type='text' style='width:100%' onclick="OpenAreaCode('${RowIndex}')" onchange='OperationChange("${value[6]}",${index},this)' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].AreaCode' readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].AreaCode' value='${AreaCode}'>
+        <input type='text' style='width:100%' onclick="OpenAreaCode('${RowIndex}')" onchange='AreaCodeChange("${value[6]}",${index},this)' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].AreaCode' readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].AreaCode' value='${AreaCode}'>
     </td>
     <td>
-        <input type='text' style='width:100%'  id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Remark' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Remark' value='${Remark}'>
+        <input type='text' style='width:100%'  id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Remark' onchange='RemarkChange("${value[6]}",${index},this)' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Remark' value='${Remark}'>
     </td>
     </tr>`;
 
@@ -257,7 +257,9 @@
         }
 
         function OpenAreaCode(targetID) {
-            var para = `?FinalInspectionID=${$('#FinalInspectionID').val()}&TargetID=${targetID}&Title=Operation`;
+            var val = $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].AreaCode']`).val();
+            var para = `?FinalInspectionID=${$('#FinalInspectionID').val()}&TargetID=${targetID}&Title=Operation&oldValue=${val}`;
+
             window.open('@Url.Action("AreaCodeList", "PublicWondow",new{Area=""})' + para, 'Operation List', config = 'toolbar=no,status=no,location=no,width=800,height=750');
         }
 
@@ -305,29 +307,38 @@
             });
 
             $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].AreaCode']`).val(strAreaCode);
+            $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].AreaCode']`).change();
         }
 
         // Qty改變時，把值寫回DataTable的Datasource
         function QtyChange(DefectType, index,obj) {
 
-            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[4][index][2] = $(obj).val();
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[6][index][2] = $(obj).val();
         }
 
         // Operation改變時，把值寫回DataTable的Datasource
         function OperationChange(DefectType, index, obj) {
 
-            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[4][index][7] = $(obj).val();
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[6][index][7] = $(obj).val();
         }
 
         function OperatorChange(DefectType, index, obj) {
 
-            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[4][index][8] = $(obj).val();
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[6][index][8] = $(obj).val();
         }
 
+        function AreaCodeChange(AreaCode, index, obj) {
+
+            table.row($(`#CheckListTable_${AreaCode}`).closest('tr')).data()[6][index][10] = $(obj).val();
+        }
+        function RemarkChange(DefectType, index, obj) {
+
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[6][index][11] = $(obj).val();
+        }
 
         function OperatorTextChange(DefectType, index, obj) {
 
-            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[4][index][9] = $(obj).val();
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[6][index][9] = $(obj).val();
         }
 
         function checkValue(self) {

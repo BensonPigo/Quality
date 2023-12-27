@@ -568,7 +568,7 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
-        public List<Window_AreaCode> Get_AreaCode(string FinalInspectionID, string AreaCode)
+        public List<Window_AreaCode> Get_AreaCode(string FinalInspectionID, string AreaCode, string oldValue)
         {
             List<Window_AreaCode> result = new List<Window_AreaCode>();
 
@@ -577,7 +577,7 @@ namespace BusinessLogicLayer.Service
                 _Provider = new PublicWondowProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 //取得登入資訊
-                result = _Provider.Get_AreaCode(FinalInspectionID, AreaCode).ToList();
+                result = _Provider.Get_AreaCode(FinalInspectionID, AreaCode , oldValue).ToList();
 
             }
             catch (Exception ex)

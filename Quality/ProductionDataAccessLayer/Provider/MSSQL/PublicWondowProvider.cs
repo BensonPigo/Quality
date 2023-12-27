@@ -424,22 +424,30 @@ select　DISTINCT   p.ID,
 from ManufacturingExecution.dbo.Quality_Pass1 p WITH(NOLOCK)
 left join ManufacturingExecution.dbo.Pass1 mp1 WITH(NOLOCK) ON p.ID= mp1.ID
 left join MainServer.Production.dbo.Pass1 pp1 WITH(NOLOCK) on p.ID = pp1.id
-WHERE p.ID != 'SCIMIS'
+WHERE p.ID != 'SCIMIS' and p.Junk=0
 
 ");
 
-            if (!string.IsNullOrEmpty(ID))
+            if (!string.IsNullOrEmpty(ID.Trim()))
             {
+                SbSql.Append($@"AND ( ");
+
                 if (IsExact)
                 {
-                    SbSql.Append($@"AND p.ID = @ID ");
-                    paras.Add("@ID", DbType.String, ID);
+                    SbSql.Append($@" p.ID = @ID ");
+                    paras.Add("@ID", DbType.String, ID.Trim());
                 }
                 else
                 {
-                    SbSql.Append($@"AND p.ID LIKE @ID ");
-                    paras.Add("@ID", DbType.String, ID + "%");
+                    SbSql.Append($@" p.ID LIKE @ID ");
                 }
+
+
+                SbSql.Append($@"OR IIF(isnull(pp1.Name,'') = '', mp1.name,pp1.name)  LIKE @ID ");
+
+
+                SbSql.Append($@" ) ");
+                paras.Add("@ID", DbType.String, "%" + ID.Trim() + "%");
             }
 
             return ExecuteList<Window_Pass1>(CommandType.Text, SbSql.ToString(), paras);
@@ -1135,28 +1143,37 @@ drop table #base
 
             return ExecuteList<Window_Operation>(CommandType.Text, SbSql.ToString(), paras);
         }
-        public IList<Window_AreaCode> Get_AreaCode(string FinalInspectionID, string AreaCode)
+        public IList<Window_AreaCode> Get_AreaCode(string FinalInspectionID, string AreaCode, string oldValue)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
 
+            List<string> areas = oldValue.Split(',').ToList();
+
             string where = string.IsNullOrEmpty(AreaCode) ? string.Empty : $@" AND Description LIKE @AreaCode";
+            string SqlSelected = where;
+            if (areas.Where(o=>!string.IsNullOrEmpty(o)).Any())
+            {
+
+                SqlSelected += $@"
+
+SELECT Selected=Cast(1 as bit) ,AreaCode = ID , Description 
+FROM MainServer.Production.dbo.CfaArea WITH(NOLOCK)
+where 1=1
+{where}
+AND ID IN('{string.Join("','", areas)}')
+UNION
+";
+                where += Environment.NewLine + $@"AND ID NOT IN('{string.Join("','", areas)}')";
+            }
 
             //paras.Add("@FinalInspectionID ", DbType.String, FinalInspectionID);
             paras.Add("@AreaCode", DbType.String, AreaCode + "%");
 
             //台北
             SbSql.Append($@"
-/*select distinct AreaCode 
-from Inspection i
-inner join Inspection_Detail id on id.ID = i.ID
-where OrderId IN (
-	select b.OrderID
-	from FinalInspection a
-	inner join FinalInspection_Order b on a.ID=b.ID
-	where a.ID = @FinalInspectionID
-)*/
-SELECT AreaCode = ID , Description 
+{SqlSelected}
+SELECT Selected=Cast(0 as bit) ,AreaCode = ID , Description 
 FROM MainServer.Production.dbo.CfaArea WITH(NOLOCK)
 where 1=1
 {where}

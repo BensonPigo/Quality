@@ -45,7 +45,7 @@
 
 <fieldset style="width:900px;height:700px;">
     <legend>@title</legend>
-    @using (Html.BeginForm("Pass1List", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @width = "100%", @height = "5%", @style = "margin-bottom:10px;" }))
+    @using (Html.BeginForm("FinalInspectionCFAList", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @width = "100%", @height = "5%", @style = "margin-bottom:10px;" }))
     {
         <input type="text" name="ID" value="" />
         @Html.Hidden("Title", title);

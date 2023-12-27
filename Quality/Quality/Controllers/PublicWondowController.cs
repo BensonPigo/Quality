@@ -592,9 +592,9 @@ namespace Quality.Controllers
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
-        public ActionResult AreaCodeList(string Title, string FinalInspectionID, string TargetID)
+        public ActionResult AreaCodeList(string Title, string FinalInspectionID, string TargetID, string oldValue)
         {
-            var model = _PublicWindowService.Get_AreaCode(FinalInspectionID, string.Empty);
+            var model = _PublicWindowService.Get_AreaCode(FinalInspectionID, string.Empty , oldValue);
 
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
@@ -602,9 +602,9 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult AreaCodeList(string Title, string FinalInspectionID, string AreaCode, string TargetID)
+        public ActionResult AreaCodeList(string Title, string FinalInspectionID, string AreaCode, string TargetID, string oldValue)
         {
-            var model = _PublicWindowService.Get_AreaCode(FinalInspectionID, AreaCode);
+            var model = _PublicWindowService.Get_AreaCode(FinalInspectionID, AreaCode, oldValue);
 
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
