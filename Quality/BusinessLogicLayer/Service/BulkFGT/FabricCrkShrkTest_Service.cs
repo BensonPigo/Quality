@@ -987,6 +987,19 @@ namespace BusinessLogicLayer.Service
                 excelSheets.Cells[5, 8] = fabricCrkShrkTestHeat_Main.Supp;
                 excelSheets.Cells[5, 10] = fabricCrkShrkTestHeat_Main.NonHeat.ToString();
 
+                int defaultRowCount = 10;
+                int otherCount = dtHeatDetail.Rows.Count - defaultRowCount;
+                if (otherCount > 0)
+                {
+                    // Rate List 複製Row：若有第4筆，則複製一次；有第5筆，則複製2次
+                    for (int i = 0; i < otherCount; i++)
+                    {
+                        Microsoft.Office.Interop.Excel.Range paste = excelSheets.get_Range($"A{defaultRowCount + i}", Type.Missing);
+                        Microsoft.Office.Interop.Excel.Range copyRow = excelSheets.get_Range($"A{defaultRowCount}").EntireRow;
+                        paste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
+                    }
+                }
+
                 int RowIdx = 0;
                 foreach (DataRow dr in dtHeatDetail.Rows)
                 {
@@ -1112,6 +1125,19 @@ namespace BusinessLogicLayer.Service
                 excelSheets.Cells[5, 6] = fabricCrkShrkTestIron_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestIron_Main.WhseArrival).ToString("yyyy/MM/dd");
                 excelSheets.Cells[5, 8] = fabricCrkShrkTestIron_Main.Supp;
                 excelSheets.Cells[5, 10] = fabricCrkShrkTestIron_Main.NonIron.ToString();
+
+                int defaultRowCount = 10;
+                int otherCount = dtIronDetail.Rows.Count - defaultRowCount;
+                if (otherCount > 0)
+                {
+                    // Rate List 複製Row：若有第4筆，則複製一次；有第5筆，則複製2次
+                    for (int i = 0; i < otherCount; i++)
+                    {
+                        Microsoft.Office.Interop.Excel.Range paste = excelSheets.get_Range($"A{defaultRowCount + i}", Type.Missing);
+                        Microsoft.Office.Interop.Excel.Range copyRow = excelSheets.get_Range($"A{defaultRowCount}").EntireRow;
+                        paste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
+                    }
+                }
 
                 int RowIdx = 0;
                 foreach (DataRow dr in dtIronDetail.Rows)
@@ -1243,6 +1269,19 @@ namespace BusinessLogicLayer.Service
                 excelSheets.Cells[5, 6] = fabricCrkShrkTestWash_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestWash_Main.WhseArrival).ToString("yyyy/MM/dd");
                 excelSheets.Cells[5, 8] = fabricCrkShrkTestWash_Main.Supp;
                 excelSheets.Cells[5, 10] = fabricCrkShrkTestWash_Main.NonWash;
+
+                int defaultRowCount = 24;
+                int otherCount = dtWashDetail.Rows.Count - defaultRowCount;
+                if (otherCount > 0)
+                {
+                    // Rate List 複製Row：若有第4筆，則複製一次；有第5筆，則複製2次
+                    for (int i = 0; i < otherCount; i++)
+                    {
+                        Microsoft.Office.Interop.Excel.Range paste = excelSheets.get_Range($"A{defaultRowCount + i}", Type.Missing);
+                        Microsoft.Office.Interop.Excel.Range copyRow = excelSheets.get_Range($"A{defaultRowCount}").EntireRow;
+                        paste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
+                    }
+                }
 
                 int RowIdx = 0;
                 foreach (DataRow dr in dtWashDetail.Rows)
