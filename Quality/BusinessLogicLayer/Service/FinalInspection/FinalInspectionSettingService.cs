@@ -54,6 +54,7 @@ namespace BusinessLogicLayer.Service
                 result.ReInspection = finalInspection.ReInspection;
 
                 result.AcceptableQualityLevelsUkey = finalInspection.AcceptableQualityLevelsUkey.ToString();
+                result.AcceptableQualityLevelsProUkey = finalInspection.AcceptableQualityLevelsProUkey.ToString();
                 result.AQLPlan = f.GetAQLPlanDesc(finalInspection.AcceptableQualityLevelsUkey);
 
                 result.SampleSize = finalInspection.SampleSize;
@@ -147,30 +148,41 @@ namespace BusinessLogicLayer.Service
                 result.SelectOrderShipSeq = _FinalInspFromPMSProvider.GetSelectOrderShipSeqForSetting(listOrderID).ToList();
                 result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(listOrderID).ToList();
 
-                if (result.SelectedPO.Any(o=>o.BrandID.ToUpper() == "ADIDAS" || o.BrandID.ToUpper() == "REEBOK"))
+                // AQL 現有兩種規則
+                // AcceptableQualityLevels：根據訂單數量，有不同的抽樣數量標準，每個標準有對應的瑕疵數量上限，e.g 數量500瑕疵上限10；數量1200瑕疵上限15
+                // AcceptableQualityLevelsPro：根據訂單數量，有不同的抽樣數量標準，不同標準下有不同的瑕疵數量上限，，e.g 數量500瑕疵上限10；數量1200瑕疵上限15
+                if (BrandID.ToUpper() != "MOODY")
                 {
-                    Quality_Pass1 Pass1 = tmp.Any() ? tmp.ToList().FirstOrDefault() : new Quality_Pass1();
-                    if (string.IsNullOrEmpty(Pass1.Pivot88UserName) && UserID.ToUpper() != "SCIMIS")
+                    if (result.SelectedPO.Any(o => o.BrandID.ToUpper() == "ADIDAS" || o.BrandID.ToUpper() == "REEBOK"))
                     {
-                        result.Result = false;
-                        result.ErrorMessage = $@"msg.WithError(""No Pivot88 account, please contact to local IT."")";
-                        return result;
+                        Quality_Pass1 Pass1 = tmp.Any() ? tmp.ToList().FirstOrDefault() : new Quality_Pass1();
+                        if (string.IsNullOrEmpty(Pass1.Pivot88UserName) && UserID.ToUpper() != "SCIMIS")
+                        {
+                            result.Result = false;
+                            result.ErrorMessage = $@"msg.WithError(""No Pivot88 account, please contact to local IT."")";
+                            return result;
+                        }
                     }
-                }
 
-                var tmpAcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand" || o.BrandID == BrandID);
+                    var tmpAcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand" || o.BrandID == BrandID);
 
 
-                // 判斷該品牌有沒有特別設定，有的話就用特別設定；沒有的話用預設
-                if (tmpAcceptableQualityLevels.Where(o => o.BrandID != string.Empty && o.BrandID != "AllBrand").Any())
-                {
-                    // 有的話就用特別設定
-                    result.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => o.BrandID == BrandID || o.BrandID == "AllBrand").OrderBy(o => o.AQLType).ToList();
+                    // 判斷該品牌有沒有特別設定，有的話就用特別設定；沒有的話用預設
+                    if (tmpAcceptableQualityLevels.Where(o => o.BrandID != string.Empty && o.BrandID != "AllBrand").Any())
+                    {
+                        // 有的話就用特別設定
+                        result.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => o.BrandID == BrandID || o.BrandID == "AllBrand").OrderBy(o => o.AQLType).ToList();
+                    }
+                    else
+                    {
+                        // 沒有的話用預設
+                        result.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand").OrderBy(o => o.AQLType).ToList();
+                    }
                 }
                 else
                 {
-                    // 沒有的話用預設
-                    result.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand").OrderBy(o => o.AQLType).ToList();
+                    var tmpAQLProPlanList = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsProListForSetting(BrandID);
+                    result.AcceptableQualityLevelsPros = tmpAQLProPlanList.ToList();
                 }
             }
             catch (Exception ex)

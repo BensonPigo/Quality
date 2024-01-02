@@ -296,6 +296,14 @@ where Junk = 0 and AQLType in (1) and InspectionLevels IN ('S-4')
 and AcceptedQty is not null 
 AND BrandID='REI' AND Category = ''
 UNION 
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where Junk = 0 and AQLType in (1.5) and InspectionLevels IN ('1') 
+and AcceptedQty is not null 
+AND BrandID='Kolon' AND Category = ''
+UNION 
+
 select BrandID='AllBrand',AQLType=100,InspectionLevels='100% Inspection'
 ,LotSize_Start=0,LotSize_End=0,SampleSize=0,AcceptedQty=0,Ukey=0
 
@@ -309,6 +317,21 @@ drop table #AllData
             return ExecuteList<AcceptableQualityLevels>(CommandType.Text, sqlGetData, listPar);
         }
 
+        public IList<AcceptableQualityLevelsProList> GetAcceptableQualityLevelsProListForSetting(string BrandID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@BrandID", BrandID);
+
+            string sqlGetData = $@"
+select a.ProUkey,a.BrandID,a.InspectionLevels,a.AQLType,a.LotSize_Start,a.LotSize_End,a.SampleSize,b.AQLDefectCategoryUkey,c.Description,b.AcceptedQty
+from AcceptableQualityLevelsPro a WITH(NOLOCK)
+inner join AcceptableQualityLevelsPro_Detail b WITH(NOLOCK) on a.ProUkey=b.ProUkey
+inner join AcceptableQualityLevelsPro_DefectCategory c WITH(NOLOCK) on b.AQLDefectCategoryUkey=c.Ukey
+where  Junk = 0
+AND BrandID = @BrandID AND Category = ''
+";
+            return ExecuteList<AcceptableQualityLevelsProList>(CommandType.Text, sqlGetData, listPar);
+        }
         public IList<AcceptableQualityLevels> GetAcceptableQualityLevelsForMeasurement()
         {
             SQLParameterCollection listPar = new SQLParameterCollection();

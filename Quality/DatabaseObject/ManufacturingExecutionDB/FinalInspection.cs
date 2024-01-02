@@ -67,6 +67,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>AcceptableQualityLevelsUkey</summary>
         [Display(Name = "AcceptableQualityLevelsUkey")]
         public long AcceptableQualityLevelsUkey { get; set; }
+        public long AcceptableQualityLevelsProUkey { get; set; }
 
         /// <summary>樣本數量</summary>
         [Display(Name = "樣本數量")]

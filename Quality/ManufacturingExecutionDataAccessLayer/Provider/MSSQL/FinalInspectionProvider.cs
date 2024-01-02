@@ -38,13 +38,15 @@ select  ID                             ,
         FactoryID                      ,
         MDivisionID                    ,
         AuditDate                      ,
-        SewingLineID                   ,
-        AcceptableQualityLevelsUkey    ,
-        SampleSize                     ,
-        AcceptQty                      ,
-        FabricApprovalDoc              ,
-        SealingSampleDoc               ,
-        MetalDetectionDoc              ,
+        SewingLineID                   
+
+        ,AcceptableQualityLevelsUkey    
+        ,AcceptableQualityLevelsProUkey    
+        ,SampleSize                     
+        ,AcceptQty                      
+        ,FabricApprovalDoc              
+        ,SealingSampleDoc               
+        ,MetalDetectionDoc              ,
         GarmentWashingDoc              ,
         CheckCloseShade                ,
         CheckHandfeel                  ,
@@ -526,6 +528,7 @@ insert into FinalInspection(id                            ,
                             AuditDate                     ,
                             SewingLineID                  ,
                             AcceptableQualityLevelsUkey   ,
+                            AcceptableQualityLevelsProUkey   ,
                             SampleSize                    ,
                             AcceptQty                     ,
                             InspectionResult              ,
@@ -549,6 +552,7 @@ insert into FinalInspection(id                            ,
                        @AuditDate                     ,
                        @SewingLineID                  ,
                        @AcceptableQualityLevelsUkey   ,
+                       @AcceptableQualityLevelsProUkey   ,
                        @SampleSize                    ,
                        @AcceptQty                     ,
                        'On-going'              ,
@@ -615,6 +619,7 @@ set     InspectionStage = @InspectionStage                         ,
         AuditDate = @AuditDate    ,
         SewingLineID = @SewingLineID                             ,
         AcceptableQualityLevelsUkey = @AcceptableQualityLevelsUkey              ,
+        AcceptableQualityLevelsProUkey = @AcceptableQualityLevelsProUkey              ,
         SampleSize = @SampleSize      ,
         AcceptQty = @AcceptQty          ,
         InspectionStep = 'Insp-Setting',
@@ -677,6 +682,7 @@ delete  FinalInspection_OrderCarton where ID = @FinalInspectionID
             objParameter.Add("@AuditDate", setting.AuditDate);
             objParameter.Add("@SewingLineID", (setting.SewingLineID == null ? string.Empty : setting.SewingLineID));
             objParameter.Add("@AcceptableQualityLevelsUkey", setting.AcceptableQualityLevelsUkey);
+            objParameter.Add("@AcceptableQualityLevelsProUkey", setting.AcceptableQualityLevelsProUkey);
             objParameter.Add("@SampleSize", setting.SampleSize);
             objParameter.Add("@AcceptQty", setting.AcceptQty);
             objParameter.Add("@UserID", userID);

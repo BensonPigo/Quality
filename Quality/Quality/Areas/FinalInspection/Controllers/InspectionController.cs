@@ -141,15 +141,15 @@ namespace Quality.Areas.FinalInspection.Controllers
             setting.Team = "A";
             setting.AuditDate = DateTime.Now.AddDays(-1);
 
-            setting.AQLPlanList_NotFinal = new List<SelectListItem>()
-            {
-                new SelectListItem(){Text="",Value=""},
-                new SelectListItem(){Text="1.0 Level I",Value="1.0 Level I"},
-                new SelectListItem(){Text="1.0 Level II",Value="1.0 Level II"},
-                new SelectListItem(){Text="1.5 Level I",Value="1.5 Level I"},
-                new SelectListItem(){Text="2.5 Level I",Value="2.5 Level I"},
-                new SelectListItem(){Text="100% Inspection",Value="100% Inspection"},
-            };
+            //setting.AQLPlanList_NotFinal = new List<SelectListItem>()
+            //{
+            //    new SelectListItem(){Text="",Value=""},
+            //    new SelectListItem(){Text="1.0 Level I",Value="1.0 Level I"},
+            //    new SelectListItem(){Text="1.0 Level II",Value="1.0 Level II"},
+            //    new SelectListItem(){Text="1.5 Level I",Value="1.5 Level I"},
+            //    new SelectListItem(){Text="2.5 Level I",Value="2.5 Level I"},
+            //    new SelectListItem(){Text="100% Inspection",Value="100% Inspection"},
+            //};
 
             //setting.SelectCarton = new List<DatabaseObject.ViewModel.FinalInspection.SelectCarton>();
             //for (int i = 1; i < 15; i++)
@@ -267,15 +267,15 @@ namespace Quality.Areas.FinalInspection.Controllers
             // 預設值
             //setting.Team = "A";
 
-            setting.AQLPlanList_NotFinal = new List<SelectListItem>()
-            {
-                new SelectListItem(){Text="",Value=""},
-                new SelectListItem(){Text="1.0 Level I",Value="1.0 Level I"},
-                new SelectListItem(){Text="1.0 Level II",Value="1.0 Level II"},
-                new SelectListItem(){Text="1.5 Level I",Value="1.5 Level I"},
-                new SelectListItem(){Text="2.5 Level I",Value="2.5 Level I"},
-                new SelectListItem(){Text="100% Inspection",Value="100% Inspection"},
-            };
+            //setting.AQLPlanList_NotFinal = new List<SelectListItem>()
+            //{
+            //    new SelectListItem(){Text="",Value=""},
+            //    new SelectListItem(){Text="1.0 Level I",Value="1.0 Level I"},
+            //    new SelectListItem(){Text="1.0 Level II",Value="1.0 Level II"},
+            //    new SelectListItem(){Text="1.5 Level I",Value="1.5 Level I"},
+            //    new SelectListItem(){Text="2.5 Level I",Value="2.5 Level I"},
+            //    new SelectListItem(){Text="100% Inspection",Value="100% Inspection"},
+            //};
 
 
             //setting.SelectCarton = new List<DatabaseObject.ViewModel.FinalInspection.SelectCarton>();
@@ -431,6 +431,59 @@ namespace Quality.Areas.FinalInspection.Controllers
             jsonObject.Add(JsonConvert.SerializeObject(RejectQty));
 
             return Json(jsonObject);
+        }
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public ActionResult AQLPro_AJAX(string AQLPlan, int TotalAvailableQty ,string BrandID)
+        {
+            Setting setting = new Setting();
+            if (TempData["FinalInspectionSetting"] != null)
+            {
+                setting = (Setting)TempData["FinalInspectionSetting"];
+            }
+            TempData["FinalInspectionSetting"] = setting;
+            //var SamplePlanQty = 0;
+            //var AcceptedQty = 0;
+            //var RejectQty = 0;
+            int? maxStart = 0;
+            //setting.AcceptableQualityLevelsPros
+            List<AcceptableQualityLevelsProList> tmp = new List<AcceptableQualityLevelsProList>();
+
+            maxStart = setting.AcceptableQualityLevelsPros.Where(o => o.BrandID == BrandID).Max(o => o.LotSize_Start);
+            if (TotalAvailableQty > maxStart)
+            {
+                tmp = setting.AcceptableQualityLevelsPros.Where(o => o.BrandID == BrandID).OrderByDescending(o => o.LotSize_Start).ToList();
+            }
+            else
+            {
+                tmp = setting.AcceptableQualityLevelsPros.Where(o => o.BrandID == BrandID && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).OrderByDescending(o => o.LotSize_Start).ToList();
+            }
+
+            int idx = 0;
+            string htmls = string.Empty;
+            foreach (var item in tmp)
+            {
+                item.RejectQty = item.AcceptedQty + 1;
+                string html = $@"
+<tr>
+    <td><label>Accepted Qty</label></td>
+    <td>
+        <input id='AcceptQty{idx}' class='form-control center-block' type='number' name='name' value='{item.AcceptedQty}' style='width:49%;'>
+    </td>
+    <td><label style='font-weight: bold'>Reject Qty</label></td>
+    <td>
+        <input id='RejectQty{idx}' class='form-control center-block' type='number' name='name' value='{item.RejectQty}' style='width:49%;'>
+    </td>
+</tr>
+
+
+";
+                htmls += html;
+                idx++;
+            }
+
+            return Content(htmls);
+            //return Json(new { AcceptableQualityLevelsProList = tmp });
         }
 
         /// <summary>
