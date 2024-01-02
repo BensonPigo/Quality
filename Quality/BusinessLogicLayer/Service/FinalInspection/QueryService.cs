@@ -50,7 +50,6 @@ namespace BusinessLogicLayer.Service.FinalInspection
         public QueryReport GetFinalInspectionReport(string finalInspectionID)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-
             QueryReport queryReport = new QueryReport();
 
             try
@@ -74,6 +73,10 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 queryReport.MeasurementUnit = _StyleProvider.GetSizeUnitByCustPONO(queryReport.FinalInspection.CustPONO, OrderID);
 
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                var tmpFinalInspection_DefectDetails = _FinalInspFromPMSProvider.GetFinalInspection_DefectDetails(queryReport.FinalInspection.ID, queryReport.FinalInspection.AcceptableQualityLevelsProUkey).ToList();
+                queryReport.FinalInspection_DefectDetails = tmpFinalInspection_DefectDetails;
+
                 List<FinalInspectionDefectItem> finalInspectionDefectItems = _FinalInspFromPMSProvider.GetFinalInspectionDefectItems(finalInspectionID).ToList();
                 if (finalInspectionDefectItems.Any(s => s.Qty > 0))
                 {

@@ -28,6 +28,7 @@
         #CheckListTable {
             font-size: 1.4em;
         }
+
         .ColTitle {
             text-align: center;
         }
@@ -39,13 +40,43 @@
     {
 
         <div style="padding:2em 3em 2em 3em;width:95%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
-            <div>
-                <h1 style="font-size: 2vh; font-weight: 900; ">
-                    How many reject Qty(pcs)
-                    @Html.TextBox("RejectQty", Model.RejectQty, new { @type = "number", @style = "width:10vw", @class = "form-control center-block" })
-                    <input id="txtSearchDefect" type="text" placeholder="Search Defect Code" style=" float: right;" name="name" value="" />
-                </h1>
-            </div>
+
+            @if (!string.IsNullOrEmpty(Model.FinalInspection.AcceptableQualityLevelsProUkey) && Model.FinalInspection_DefectDetails != null)
+            {
+                <div>
+                    <h1 style="font-size: 2vh; font-weight: 900; ">
+                        How many reject Qty(pcs)
+                        @Html.TextBox("RejectQty", Model.RejectQty, new { @type = "number", @style = "width:10vw", @class = "form-control center-block", @readonly = "readonly" })
+                        <input id="txtSearchDefect" type="text" placeholder="Search Defect Code" style=" float: right;" name="name" value="" />
+                    </h1>
+                </div>
+                <br />
+                for (int i = 0; i < Model.FinalInspection_DefectDetails.Count; i++)
+                {
+                    <label style="font-size: 1.5vh; font-weight: 900;">@Model.FinalInspection_DefectDetails[i].DefectCategoryDescription Reject Qty</label>
+                    @Html.Hidden($"addDefct.FinalInspection_DefectDetails[{i}].ProUkey", Model.FinalInspection_DefectDetails[i].ProUkey)
+                    @Html.Hidden($"addDefct.FinalInspection_DefectDetails[{i}].DefectCategoryUkey", Model.FinalInspection_DefectDetails[i].DefectCategoryUkey)
+                    @Html.Hidden($"addDefct.FinalInspection_DefectDetails[{i}].FinalInspectionID", Model.FinalInspectionID)
+
+                    @Html.TextBox($"addDefct.FinalInspection_DefectDetails[{i}].DefectQty", Model.FinalInspection_DefectDetails[i].DefectQty, new
+               {
+                   @class = "form-control center-block DefectQty",
+                   @style = "width:3vw",
+                   @type = "number",
+                   @onchange= "AutoCacuRejectQty()",
+               })
+                }
+            }
+            else
+            {
+                <div>
+                    <h1 style="font-size: 2vh; font-weight: 900; ">
+                        How many reject Qty(pcs)
+                        @Html.TextBox("RejectQty", Model.RejectQty, new { @type = "number", @style = "width:10vw", @class = "form-control center-block" })
+                        <input id="txtSearchDefect" type="text" placeholder="Search Defect Code" style=" float: right;" name="name" value="" />
+                    </h1>
+                </div>
+            }
             <table id="CheckListTable" class="cell-border" style="width:100%"></table>
         </div>
         <div style="width:100%">
@@ -347,7 +378,7 @@
 
             var rejectQty = $("#RejectQty").val();
             var model = @Html.Raw(Json.Encode(Model));
-            var sampleSize = model.SampleSize;
+            var sampleSize = model.FinalInspection.SampleSize;
 
             if (rejectQty > sampleSize)
             {
@@ -439,6 +470,22 @@
                     }
                 });
             }
+        }
+
+        function AutoCacuRejectQty() {
+            var defectQtyInputs = $(".DefectQty");
+
+            // 加總所有數值
+            var totalDefectQty = 0;
+            defectQtyInputs.each(function () {
+                var value = parseInt($(this).val());
+                if (!isNaN(value)) {
+                    totalDefectQty += value;
+                }
+            });
+
+
+            $("#RejectQty").val(totalDefectQty);
         }
     </script>
 }

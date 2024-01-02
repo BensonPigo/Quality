@@ -60,6 +60,7 @@ namespace DatabaseObject.ProductionDB
         /// <summary>可容忍檢驗失敗數量</summary>
         public int AcceptedQty { get; set; }
         public int RejectQty { get; set; }
+        public string DefectDescription { get; set; }
 
         /// <summary>
         /// 以下兩個暫時還沒用到

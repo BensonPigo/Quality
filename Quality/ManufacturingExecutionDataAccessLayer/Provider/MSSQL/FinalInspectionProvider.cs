@@ -31,7 +31,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             string sqlGetData = @"
 select  ID                             ,
-        BrandID = (select top 1 BrandID from SciProduction_Orders o with (nolock) where o.CustPONO = a.CustPONO)                       ,
+        BrandID = brand.BrandID ,--(select top 1 BrandID from SciProduction_Orders o with (nolock) where o.CustPONO = a.CustPONO)                       ,
         [CustPONO] = o.val             ,
         InspectionStage                ,
         InspectionTimes                ,
@@ -42,6 +42,7 @@ select  ID                             ,
 
         ,AcceptableQualityLevelsUkey    
         ,AcceptableQualityLevelsProUkey    
+
         ,SampleSize                     
         ,AcceptQty                      
         ,FabricApprovalDoc              
@@ -88,6 +89,12 @@ select  ID                             ,
         [FGPT] = iif(a.InspectionStage = 'Final', fgpt.Result, ''),
         [ISFD] = cast(I.ISFD as bit) 
 from FinalInspection a with (nolock)
+outer apply (
+	select TOP 1 o.BrandID
+	from FinalInspection_Order fo
+	left join Production.dbo.Orders o with (nolock) on fo.OrderID = o.ID
+	where fo.ID = a.ID
+)brand
 outer apply (
     SELECT val = Stuff((select distinct concat( ',',CustPONo) 
                        from  FinalInspection_Order fo with (nolock) 
@@ -1171,6 +1178,53 @@ INSERT INTO FinalInspection_Detail_Operation
                         }
                     }
                 }
+
+                transaction.Complete();
+                transaction.Dispose();
+            }
+        }
+
+
+        public void UpdateFinalInspectionDefectDetail(AddDefect addDefect)
+        {
+            if (addDefect.FinalInspection_DefectDetails == null)
+            {
+                return;
+            }
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                foreach (FinalInspection_DefectDetail finalInspection_DefectDetail in addDefect.FinalInspection_DefectDetails)
+                {
+                    string sqlFinalInspection_DefectDetail = string.Empty;
+                    SQLParameterCollection detailParameter = new SQLParameterCollection() {
+                            { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
+                            { "@ProUkey", finalInspection_DefectDetail.ProUkey },
+                            { "@DefectCategoryUkey", finalInspection_DefectDetail.DefectCategoryUkey },
+                            { "@DefectQty", finalInspection_DefectDetail.DefectQty }
+                        };
+
+                    sqlFinalInspection_DefectDetail = $@"
+if not exists( 
+select 1 from FinalInspection_DefectDetail
+where FinalInspectionID = @FinalInspectionID and ProUkey = @ProUkey and DefectCategoryUkey=@DefectCategoryUkey
+
+)
+begin
+    INSERT INTO dbo.FinalInspection_DefectDetail
+               (FinalInspectionID,ProUkey,DefectCategoryUkey,DefectQty)
+         VALUES
+               (@FinalInspectionID,@ProUkey,@DefectCategoryUkey,@DefectQty)
+end
+else
+begin
+    UPDATE FinalInspection_DefectDetail SET DefectQty = @DefectQty WHERE FinalInspectionID = @FinalInspectionID and ProUkey = @ProUkey AND DefectCategoryUkey=@DefectCategoryUkey
+end
+";
+
+
+                    ExecuteNonQuery(CommandType.Text, sqlFinalInspection_DefectDetail, detailParameter);
+                }
+
 
                 transaction.Complete();
                 transaction.Dispose();

@@ -107,6 +107,23 @@
         .red {
             color: red !important;
         }
+        #divSetting, #divPOInfo {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        .divSettingCell {
+            /*display: flex;*/
+            width: 12.5%;
+        }
+        .divPOInfoCell {
+            /*display: flex;*/
+            width: 16.6%;
+        }
+        .divPOInfoCell5 {
+            width: 83%;
+        }
     </style>
 }
 
@@ -116,13 +133,46 @@
             <h1 style="font-size:2em;color: #999999;">Inspection Report</h1>
             <button class="site-btn btn-blue" style="position:absolute;top:1em;right:0" onclick="ClickDownload()">Download</button>
         </div>
-        <div style="display:inline-block;border:1px solid gray;width:38%;height:15vh;padding-left:5px">
-            <div><h1 style="font-size:1.5em">PO information</h1></div>
+        <div style=" display: flex; flex-direction: row; flex-wrap: wrap; border: 1px solid gray; width: 38%; height: 20vh; padding-left: 5px;float:left;">
+            <div  style="width: 100%"><h1 style="font-size:1.5em">PO information</h1></div>
             <div>
-                @{ 
+                @{
                     string IsFD = Model.FinalInspection.ISFD ? "red" : string.Empty;
+                    string CustPONO = string.IsNullOrEmpty(Model.FinalInspection.CustPONO) ? "1" : Model.FinalInspection.CustPONO;
                 }
-                <table>
+                <div id="divPOInfo">
+                    <!--#region Row 1-->
+                    <div class="divPOInfoCell">PO#</div>
+                    <div class="divPOInfoCell @IsFD">@Model.FinalInspection.CustPONO</div>
+                    <div class="divPOInfoCell">Style</div>
+                    <div class="divPOInfoCell">@Model.StyleID</div>
+                    <div class="divPOInfoCell">Brand</div>
+                    <div class="divPOInfoCell">@Model.BrandID</div>
+                    <!--#endregion-->
+                    <!--#region Row 2-->
+                    <div class="divPOInfoCell">SP#</div>
+                    <div class="divPOInfoCell5">
+                        <input type="text" value="@Model.SP" style="width:100%" class="@IsFD" readonly />
+                    </div>
+                    <!--#endregion-->
+                    <!--#region Row 3-->
+                    <div class="divPOInfoCell">Factory</div>
+                    <div class="divPOInfoCell">@Model.FinalInspection.FactoryID</div>
+                    <div class="divPOInfoCell">Total SP# Qty</div>
+                    <div class="divPOInfoCell">@Model.TotalSPQty</div>
+                    @if (!string.IsNullOrEmpty(Model.Dest))
+                    {
+                        <div class="divPOInfoCell">Destination</div>
+                        <div class="divPOInfoCell">@Model.Dest</div>
+                    }
+                    else
+                    {
+                        <div class="divPOInfoCell"></div>
+                        <div class="divPOInfoCell"></div>
+                    }
+                    <!--#endregion-->
+                </div>
+                @*<table>
                     <tr>
                         <td>PO#</td>
                         <td class="valueColor @IsFD" style="width:20%">@Model.FinalInspection.CustPONO</td>
@@ -148,13 +198,90 @@
                             <td class="valueColor">@Model.Dest</td>
                         }
                     </tr>
-                </table>
+                </table>*@
             </div>
         </div>
-        <div style="display:inline-block;border:1px solid gray;width:58%;height:15vh;padding-left:5px">
-            <div><h1 style="font-size:1.5em">Inspection Setting</h1></div>
+        <div style="display: flex; flex-direction: row; flex-wrap: wrap; border: 1px solid gray; width: 58%; height: 20vh; padding-left: 5px;margin-left:2px; float: left;">
+            <div style="width: 100%"><h1 style="font-size:1.5em">Inspection Setting</h1></div>
             <div>
-                <table>
+                <div id="divSetting">
+                    <!--#region Row 1-->
+                    <div class="divSettingCell">Inspection Stage</div>
+                    <div class="divSettingCell">@Model.FinalInspection.InspectionStage</div>
+                    <div class="divSettingCell">Carton</div>
+                    <div class="divSettingCell">
+                        <button type="button" style="min-width:50%" onclick="open_cartonsDetail()" class="site-btn btn-blue">...</button>
+                    </div>
+                    <div class="divSettingCell">Shipmode Seq</div>
+                    <div class="divSettingCell">
+                        <button type="button" style="min-width:50%" onclick="open_ShipmodeSeqDetail()" class="site-btn btn-blue">...</button>
+                    </div>
+                    <div class="divSettingCell"></div>
+                    <div class="divSettingCell"></div>
+                    <!--#endregion-->
+                    <!--#region Row 2-->
+                    <div class="divSettingCell">Audit Date</div>
+                    <div class="divSettingCell">@Convert.ToDateTime(Model.FinalInspection.AuditDate).ToString("yyyy/MM/dd")</div>
+                    <div class="divSettingCell">Available Qty</div>
+                    <div class="divSettingCell">@Model.AvailableQty</div>
+                    <div class="divSettingCell"></div>
+                    <div class="divSettingCell"></div>
+                    <div class="divSettingCell"></div>
+                    <div class="divSettingCell"></div>
+                    <!--#endregion-->
+                    <!--#region Row 3-->
+                    <div class="divSettingCell">AQL Plan</div>
+                    <div class="divSettingCell">@Model.AQLPlan</div>
+                    <div class="divSettingCell">Sample Plan Qty</div>
+                    <div class="divSettingCell">@Model.FinalInspection.SampleSize</div>
+
+                    <!--#endregion-->
+                    <!--#region Row 4-->
+                    @if (Model.FinalInspection.AcceptableQualityLevelsProUkey == 0)
+                    {<div class="divSettingCell"></div>
+                        <div class="divSettingCell"></div>
+                        <div class="divSettingCell"></div>
+                        <div class="divSettingCell"></div>
+                        <div class="divSettingCell">Accepted</div>
+                        <div class="divSettingCell">@Model.FinalInspection.AcceptQty</div>
+                        <div class="divSettingCell">Rejected</div>
+                        <div class="divSettingCell">@(Model.FinalInspection.AcceptQty+1)</div>
+                        <div class="divSettingCell"></div>
+                        <div class="divSettingCell"></div>
+                        <div class="divSettingCell"></div>
+                        <div class="divSettingCell"></div>
+                    }
+                    else
+                    {
+                        int rowCtn = 8;
+                        foreach (var finalInspection_DefectDetail in Model.FinalInspection_DefectDetails)
+                        {
+                            <div class="divSettingCell">@finalInspection_DefectDetail.DefectCategoryDescription Accepted</div>
+                            <div class="divSettingCell">@finalInspection_DefectDetail.AcceptedQty</div>
+                            <div class="divSettingCell">@finalInspection_DefectDetail.DefectCategoryDescription Rejected</div>
+                            <div class="divSettingCell">@(finalInspection_DefectDetail.AcceptedQty + 1)</div>
+                            rowCtn--;
+                        }
+
+                    }
+                    <!--#endregion-->
+                    <!--#region Row 5-->
+                    <div class="divSettingCell">Re-Inspection</div>
+                    <div class="divSettingCell">
+
+                        @{string strReInspection = Model.FinalInspection.ReInspection ? "Y" : "N";}
+                        @strReInspection
+                    </div>
+                    <div class="divSettingCell"></div>
+                    <div class="divSettingCell"></div>
+                    <div class="divSettingCell"></div>
+                    <div class="divSettingCell"></div>
+                    <div class="divSettingCell"></div>
+                    <div class="divSettingCell"></div>
+                    <!--#endregion-->
+                </div>
+
+                @*<table>
                     <tr>
                         <td>Inspection Stage</td>
                         <td class="valueColor" style="padding-left:10px;">@Model.FinalInspection.InspectionStage</td>
@@ -189,7 +316,7 @@
                         @{string strReInspection = Model.FinalInspection.ReInspection ? "Y" : "N";}
                         <td class="valueColor">@strReInspection</td>
                     </tr>
-                </table>
+                </table>*@
             </div>
         </div>
         <div style="margin:0.5em"><h1 style="font-size:2em">Inspection Detail</h1></div>
@@ -494,7 +621,7 @@
             window.location.href = '@Url.Action(Model.GoOnInspectURL,"Inspection",new { FinalInspectionID = Model.FinalInspection.ID})';
         }
 
-        function SendMail() {            
+        function SendMail() {
             $.ajax({
                 url: "@Url.Action("SendMail")",
                 type: 'POST',

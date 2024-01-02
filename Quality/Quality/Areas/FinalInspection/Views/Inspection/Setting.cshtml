@@ -108,6 +108,7 @@
     {
         @Html.HiddenFor(o => o.FinalInspectionID)
         @Html.HiddenFor(o => o.AcceptableQualityLevelsUkey)
+        @Html.HiddenFor(o => o.AcceptableQualityLevelsProUkey)
         @Html.HiddenFor(o => o.BrandID)
         <div style="padding:2em 3em 2em 3em;display:flex;width:100%;flex-wrap:wrap;">
             <div class="col-auto" style="width:100%"><h1 style="font-size:2em">Inspection Setting</h1></div>
@@ -266,7 +267,7 @@
                         <tr>
                             <td><label>AQL Plan</label></td>
                             <td>
-                                @if (AQLPlanDisabled || Model.AQLProPlanList == null)
+                                @if (AQLPlanDisabled || Model.AQLProPlan == null)
                                 {
                                     @Html.DropDownListFor(o => o.AQLProPlan, Model.AQLProPlanList, null, new { @class = "form-control", @disabled = "@disabled" })
                                 }
@@ -295,36 +296,36 @@
                                 }
                             </td>
                         </tr>
-                        <tr>
-                            <td><label>Accepted Qty</label></td>
-                            <td>
-                                <input id="AcceptQty1" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
-                            </td>
-                            <td><label style="font-weight: bold">Reject Qty</label></td>
-                            <td>
-                                <input id="RejectQty1" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><label>Accepted Qty</label></td>
-                            <td>
-                                <input id="AcceptQty2" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
-                            </td>
-                            <td><label style="font-weight: bold">Reject Qty</label></td>
-                            <td>
-                                <input id="RejectQty2" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><label>Accepted Qty</label></td>
-                            <td>
-                                <input id="AcceptQty3" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
-                            </td>
-                            <td><label style="font-weight: bold">Reject Qty</label></td>
-                            <td>
-                                <input id="RejectQty3" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
-                            </td>
-                        </tr>
+                        @*<tr>
+                                <td><label>Accepted Qty</label></td>
+                                <td>
+                                    <input id="AcceptQty1" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
+                                </td>
+                                <td><label style="font-weight: bold">Reject Qty</label></td>
+                                <td>
+                                    <input id="RejectQty1" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>Accepted Qty</label></td>
+                                <td>
+                                    <input id="AcceptQty2" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
+                                </td>
+                                <td><label style="font-weight: bold">Reject Qty</label></td>
+                                <td>
+                                    <input id="RejectQty2" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>Accepted Qty</label></td>
+                                <td>
+                                    <input id="AcceptQty3" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
+                                </td>
+                                <td><label style="font-weight: bold">Reject Qty</label></td>
+                                <td>
+                                    <input id="RejectQty3" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
+                                </td>
+                            </tr>*@
                     }
                 </table>
             </div>
@@ -840,7 +841,7 @@
                 else {
                     $("#AQLPlan").val("");
                     $("#AQLPlan").attr("disabled", true);
-                    $("#AQLProPlan").val("");
+                    //$("#AQLProPlan").val("");
                     $("#AQLProPlan").attr("disabled", true);
                 }
             });
@@ -924,9 +925,10 @@
                 if (aql != "") {
                     $.ajax({
                         url: '@Url.Action("AQLPro_AJAX")',
-                        data: { AQLPlan: aql, TotalAvailableQty: TotalAvailableQty, BrandID: $("#AQLProPlan").val()},
                         type: 'POST',
-                        dataType: "json",
+                        //dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({ AQLPlan: $("#AQLProPlan").val(), TotalAvailableQty: TotalAvailableQty, BrandID: $("#AQLProPlan").val() }),
                         async: false,
                         success: function (res) {
 
@@ -936,7 +938,10 @@
                             //$("#SampleSize").val(SamplePlanQty);
                             //$("#AcceptQty").val(AcceptedQty);
                             //$("#RejectQty").val(parseInt(AcceptedQty) +1 );
+                            $('#settingForm > div > div:nth-child(5) > table > tbody > tr:nth-child(n + 3)').remove()
                             $('#settingForm > div > div:nth-child(5) > table > tbody').append(html);
+                            $('#AcceptableQualityLevelsProUkey').val($('#ProUkey').val());
+                            
                         }
                     })
                 }
@@ -959,18 +964,24 @@
 
             //同步到AQL
 
-            if ($("#AQLPlan").val() == "100% Inspection") {
-                $("#SampleSize").val(total);
-                $("#AcceptQty").val(0);
-                $("#AcceptQty").removeAttr("max");
-                $("#AcceptQty").attr("max", total);
+            if ($("#BrandID").val() != 'MOODY') {
+                if ($("#AQLPlan").val() == "100% Inspection") {
+                    $("#SampleSize").val(total);
+                    $("#AcceptQty").val(0);
+                    $("#AcceptQty").removeAttr("max");
+                    $("#AcceptQty").attr("max", total);
+                }
+                else {
+                    // 如果不是100% Inspection，需要重新計算Sample Plan、Accepted Qry
+                    $("#AQLPlan").val('');
+                    $("#SampleSize").val(0);
+                    $("#AcceptQty").val(0);
+                }
             }
             else {
-                // 如果不是100% Inspection，需要重新計算Sample Plan、Accepted Qry
-                $("#AQLPlan").val('');
-                $("#SampleSize").val(0);
-                $("#AcceptQty").val(0);
+                $("#AQLProPlan").change();
             }
+
 
         }
 

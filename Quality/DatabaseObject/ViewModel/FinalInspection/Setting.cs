@@ -166,7 +166,6 @@ namespace DatabaseObject.ViewModel.FinalInspection
             }
 
         }
-        //public List<SelectListItem> AQLPlanList_NotFinal { get; set; }
     }
 
     public class SelectSewingTeam

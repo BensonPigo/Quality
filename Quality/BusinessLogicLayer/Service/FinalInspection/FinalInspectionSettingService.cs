@@ -53,9 +53,24 @@ namespace BusinessLogicLayer.Service
                 result.BrandID = finalInspection.BrandID;
                 result.ReInspection = finalInspection.ReInspection;
 
-                result.AcceptableQualityLevelsUkey = finalInspection.AcceptableQualityLevelsUkey.ToString();
-                result.AcceptableQualityLevelsProUkey = finalInspection.AcceptableQualityLevelsProUkey.ToString();
-                result.AQLPlan = f.GetAQLPlanDesc(finalInspection.AcceptableQualityLevelsUkey);
+
+                // AQL使用規則判斷，若有Pro則使用Pro，沒有的話則使用原規則
+                if (finalInspection.AcceptableQualityLevelsProUkey != 0)
+                {
+                    result.AcceptableQualityLevelsProUkey = finalInspection.AcceptableQualityLevelsProUkey.ToString();
+                    result.AQLProPlan = finalInspection.BrandID;
+                    var tmpAQLProPlanList = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsProListForSetting(result.BrandID, finalInspection.AcceptableQualityLevelsProUkey);
+                    result.AcceptableQualityLevelsPros = tmpAQLProPlanList.ToList();
+
+                    result.AcceptableQualityLevelsUkey = string.Empty;
+                }
+                else
+                {
+                    result.AcceptableQualityLevelsUkey = finalInspection.AcceptableQualityLevelsUkey.ToString();
+                    result.AQLPlan = f.GetAQLPlanDesc(finalInspection.AcceptableQualityLevelsUkey);
+
+                    result.AcceptableQualityLevelsProUkey = string.Empty;
+                }
 
                 result.SampleSize = finalInspection.SampleSize;
                 result.AcceptQty = finalInspection.AcceptQty;
@@ -181,7 +196,7 @@ namespace BusinessLogicLayer.Service
                 }
                 else
                 {
-                    var tmpAQLProPlanList = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsProListForSetting(BrandID);
+                    var tmpAQLProPlanList = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsProListForSetting(BrandID, 0);
                     result.AcceptableQualityLevelsPros = tmpAQLProPlanList.ToList();
                 }
             }
@@ -213,168 +228,176 @@ namespace BusinessLogicLayer.Service
                 string brandID = setting.BrandID;
 
                 #region 檢查AQLPlan 重抓Sample Plan Qty
-                if (setting.InspectionStage == "Final" ||
-                    setting.InspectionStage == "3rd Party")
+                if (string.IsNullOrEmpty(setting.AcceptableQualityLevelsProUkey))
                 {
-                    int totalAvailableQty = setting.SelectedPO.Sum(s => s.AvailableQty);
-
-                    var tmpAcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand" || o.BrandID == brandID);
-                    //setting.AcceptableQualityLevels = tmpAcceptableQualityLevels.ToList();
-
-                    // 判斷該品牌有沒有特別設定，有的話就用特別設定；沒有的話用預設
-                    if (tmpAcceptableQualityLevels.Where(o => o.BrandID != string.Empty && o.BrandID != "AllBrand").Any())
+                    if (setting.InspectionStage == "Final" ||
+                        setting.InspectionStage == "3rd Party")
                     {
-                        // 有的話就用特別設定
-                        setting.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => o.BrandID == brandID || o.BrandID == "AllBrand").OrderBy(o => o.AQLType).ToList();
-                    }
-                    else
-                    {
-                        // 沒有的話用預設
-                        setting.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand").OrderBy(o => o.AQLType).ToList();
-                    }
+                        int totalAvailableQty = setting.SelectedPO.Sum(s => s.AvailableQty);
 
-                    var AQLResult = setting.AcceptableQualityLevels.AsEnumerable();
-                    int? maxStart = 0;
+                        var tmpAcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand" || o.BrandID == brandID);
+                        //setting.AcceptableQualityLevels = tmpAcceptableQualityLevels.ToList();
 
-                    switch (setting.AQLPlan)
-                    {
-                        case "":
-                            AQLResult = new List<AcceptableQualityLevels>() {
+                        // 判斷該品牌有沒有特別設定，有的話就用特別設定；沒有的話用預設
+                        if (tmpAcceptableQualityLevels.Where(o => o.BrandID != string.Empty && o.BrandID != "AllBrand").Any())
+                        {
+                            // 有的話就用特別設定
+                            setting.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => o.BrandID == brandID || o.BrandID == "AllBrand").OrderBy(o => o.AQLType).ToList();
+                        }
+                        else
+                        {
+                            // 沒有的話用預設
+                            setting.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand").OrderBy(o => o.AQLType).ToList();
+                        }
+
+                        var AQLResult = setting.AcceptableQualityLevels.AsEnumerable();
+                        int? maxStart = 0;
+
+                        switch (setting.AQLPlan)
+                        {
+                            case "":
+                                AQLResult = new List<AcceptableQualityLevels>() {
                                 new AcceptableQualityLevels(){
                                     AcceptedQty = setting.AcceptQty,
                                     SampleSize = totalAvailableQty,
                                     Ukey = 0
                                 }
                             };
-                            break;
-                        case null:
-                            AQLResult = new List<AcceptableQualityLevels>() {
+                                break;
+                            case null:
+                                AQLResult = new List<AcceptableQualityLevels>() {
                                 new AcceptableQualityLevels(){
                                     AcceptedQty = setting.AcceptQty,
                                     SampleSize = totalAvailableQty,
                                     Ukey = 0
                                 }
                             };
-                            break;
-                        case "1.0 Level I":
-                            maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                                break;
+                            case "1.0 Level I":
+                                maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
 
-                            if (totalAvailableQty > maxStart)
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start);
-                            }
-                            else
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
-                            }
-                            break;
-                        case "1.0 Level II":
-                            maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
-                            if (totalAvailableQty > maxStart)
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2").OrderByDescending(o => o.LotSize_Start);
-                            }
-                            else
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
-                            }
-                            break;
-                        case "1.0 Level S-4":
-                            maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "S-4").Max(o => o.LotSize_Start);
-                            if (totalAvailableQty > maxStart)
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "S-4").OrderByDescending(o => o.LotSize_Start);
-                            }
-                            else
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "S-4" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
-                            }
-                            AQLResult.First().SampleSize = AQLResult.First().SampleSize == 0 ? totalAvailableQty : AQLResult.First().SampleSize;
-                            break;
-                        case "1.5 Level I":
-                            maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
-                            if (totalAvailableQty > maxStart)
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start);
-                            }
-                            else
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "1" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
-                            }
-                            break;
-                        case "1.5 Level II":
-                            maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
-                            if (totalAvailableQty > maxStart)
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "2").OrderByDescending(o => o.LotSize_Start);
-                            }
-                            else
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "2" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
-                            }
-                            break;
-                        case "2.5 Level I":
-                            maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
-                            if (totalAvailableQty > maxStart)
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start);
-                            }
-                            else
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "1" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
-                            }
-                            break;
-                        case "2.5 Level II":
-                            maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
-                            if (totalAvailableQty > maxStart)
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "2").OrderByDescending(o => o.LotSize_Start);
-                            }
-                            else
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "2" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
-                            }
-                            break;
-                        case "4.0 Level I":
-                            maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)4.0 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
-                            if (totalAvailableQty > maxStart)
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)4.0 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start);
-                            }
-                            else
-                            {
-                                AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)4.0 && o.InspectionLevels == "1" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
-                            }
-                            break;
-                        case "100% Inspection":
-                            AQLResult = new List<AcceptableQualityLevels>() {
+                                if (totalAvailableQty > maxStart)
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start);
+                                }
+                                else
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
+                                }
+                                break;
+                            case "1.0 Level II":
+                                maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
+                                if (totalAvailableQty > maxStart)
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2").OrderByDescending(o => o.LotSize_Start);
+                                }
+                                else
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
+                                }
+                                break;
+                            case "1.0 Level S-4":
+                                maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "S-4").Max(o => o.LotSize_Start);
+                                if (totalAvailableQty > maxStart)
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "S-4").OrderByDescending(o => o.LotSize_Start);
+                                }
+                                else
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "S-4" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
+                                }
+                                AQLResult.First().SampleSize = AQLResult.First().SampleSize == 0 ? totalAvailableQty : AQLResult.First().SampleSize;
+                                break;
+                            case "1.5 Level I":
+                                maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                                if (totalAvailableQty > maxStart)
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start);
+                                }
+                                else
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "1" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
+                                }
+                                break;
+                            case "1.5 Level II":
+                                maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
+                                if (totalAvailableQty > maxStart)
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "2").OrderByDescending(o => o.LotSize_Start);
+                                }
+                                else
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)1.5 && o.InspectionLevels == "2" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
+                                }
+                                break;
+                            case "2.5 Level I":
+                                maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                                if (totalAvailableQty > maxStart)
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start);
+                                }
+                                else
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "1" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
+                                }
+                                break;
+                            case "2.5 Level II":
+                                maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
+                                if (totalAvailableQty > maxStart)
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "2").OrderByDescending(o => o.LotSize_Start);
+                                }
+                                else
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "2" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
+                                }
+                                break;
+                            case "4.0 Level I":
+                                maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)4.0 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
+                                if (totalAvailableQty > maxStart)
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)4.0 && o.InspectionLevels == "1").OrderByDescending(o => o.LotSize_Start);
+                                }
+                                else
+                                {
+                                    AQLResult = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)4.0 && o.InspectionLevels == "1" && o.LotSize_Start <= totalAvailableQty && totalAvailableQty <= o.LotSize_End);
+                                }
+                                break;
+                            case "100% Inspection":
+                                AQLResult = new List<AcceptableQualityLevels>() {
                                 new AcceptableQualityLevels(){
                                     AcceptedQty = setting.AcceptQty,
                                     SampleSize = totalAvailableQty,
                                     Ukey = -1
                                 }
                             };
-                            break;
-                        default:
+                                break;
+                            default:
+                                result.Result = false;
+                                result.ErrorMessage = "When Inspection Stage is [Final] or [3rd Party], AQL Plan can not empty";
+                                return result;
+                        }
+
+                        if (!AQLResult.Any())
+                        {
                             result.Result = false;
-                            result.ErrorMessage = "When Inspection Stage is [Final] or [3rd Party], AQL Plan can not empty";
+                            result.ErrorMessage = $"No matching SampleSize setting found";
                             return result;
-                    }
+                        }
 
-                    if (!AQLResult.Any())
+                        setting.SampleSize = AQLResult.First().SampleSize;
+                        setting.AcceptQty = AQLResult.First().AcceptedQty;
+                        setting.AcceptableQualityLevelsUkey = AQLResult.First().Ukey.ToString();
+                    }
+                    else
                     {
-                        result.Result = false;
-                        result.ErrorMessage = $"No matching SampleSize setting found";
-                        return result;
+                        setting.AcceptableQualityLevelsUkey = null;
                     }
-
-                    setting.SampleSize = AQLResult.First().SampleSize;
-                    setting.AcceptQty = AQLResult.First().AcceptedQty;
-                    setting.AcceptableQualityLevelsUkey = AQLResult.First().Ukey.ToString();
+                    setting.AcceptableQualityLevelsProUkey = "0";
                 }
                 else
                 {
-                    setting.AcceptableQualityLevelsUkey = null;
+                    setting.AcceptableQualityLevelsUkey = "0";
                 }
                 #endregion
 

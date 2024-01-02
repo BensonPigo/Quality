@@ -66,7 +66,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         Dictionary<string, byte[]> GetEndLineInspectionDefectImage(string InspectionID);
 
         void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID);
-
+        void UpdateFinalInspectionDefectDetail(AddDefect addDefect);
         IList<BACriteriaItem> GetBeautifulProductAuditForInspection(string finalInspectionID);
 
         void UpdateBeautifulProductAudit(BeautifulProductAudit addDefect, string UserID);

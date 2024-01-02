@@ -1,3 +1,4 @@
+using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.FinalInspection;
@@ -9,13 +10,14 @@ namespace ProductionDataAccessLayer.Interface
     public interface IFinalInspFromPMSProvider
     {
         IList<AcceptableQualityLevels> GetAcceptableQualityLevelsForSetting();
-        IList<AcceptableQualityLevelsProList> GetAcceptableQualityLevelsProListForSetting(string BrandID);
+        IList<AcceptableQualityLevelsProList> GetAcceptableQualityLevelsProListForSetting(string BrandID ,long ProUkey);
         IList<AcceptableQualityLevels> GetAcceptableQualityLevelsForMeasurement();
         IList<SelectedPO> GetSelectedPOForInspection(List<string> listOrderID);
         IList<SelectedPO> GetSelectedPOForInspection(string finalInspectionID);
         IList<SelectCarton> GetSelectedCartonForSetting(List<string> listOrderID);
         IList<SelectCarton> GetSelectedCartonForSetting(string finalInspectionID);
         IList<FinalInspectionDefectItem> GetFinalInspectionDefectItems(string finalInspectionID);
+        IList<FinalInspection_DefectDetail> GetFinalInspection_DefectDetails(string finalInspectionID, long ProUkey);
         IList<SelectSewing> GetSelectedSewingLineFromEndline(List<string> listOrderID);
         IList<SelectSewing> GetSelectedSewingLine(string FactoryID);
         IList<SelectSewingTeam> GetSelectedSewingTeam();

@@ -12,8 +12,11 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string InspectionStep { get; set; } = "";
 
         public int? SampleSize { get; set; }
+        public Setting FinalInspection { get; set; }
 
         public List<FinalInspectionDefectItem> ListFinalInspectionDefectItem { get; set; }
+
+        public List<FinalInspection_DefectDetail> FinalInspection_DefectDetails { get; set; }
 
     }
 

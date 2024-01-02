@@ -461,18 +461,33 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             int idx = 0;
             string htmls = string.Empty;
+
+            if (tmp.Any())
+            {
+                htmls = $@"
+<tr>
+    <td><label>Sample Plan Qty</label></td>
+    <td>
+        <input id=""ProUkey"" name=""ProUkey"" type=""hidden"" value=""{tmp.FirstOrDefault().ProUkey}"">
+        <input class='form-control center-block' id='SampleSize' min='0' name='SampleSize' style='width:49%;' type='number' value='{tmp.FirstOrDefault().SampleSize}' readonly />
+    </td>
+</tr>
+";
+            }
+
             foreach (var item in tmp)
             {
                 item.RejectQty = item.AcceptedQty + 1;
                 string html = $@"
+
 <tr>
-    <td><label>Accepted Qty</label></td>
+    <td><label>{item.DefectDescription} Accepted Qty</label></td>
     <td>
-        <input id='AcceptQty{idx}' class='form-control center-block' type='number' name='name' value='{item.AcceptedQty}' style='width:49%;'>
+        <input id='AcceptQty{idx}' class='form-control center-block' type='number' name='name' value='{item.AcceptedQty}' style='width:49%;' readonly />
     </td>
-    <td><label style='font-weight: bold'>Reject Qty</label></td>
+    <td><label style='font-weight: bold'>{item.DefectDescription} Reject Qty</label></td>
     <td>
-        <input id='RejectQty{idx}' class='form-control center-block' type='number' name='name' value='{item.RejectQty}' style='width:49%;'>
+        <input id='RejectQty{idx}' class='form-control center-block' type='number' name='name' value='{item.RejectQty}' style='width:49%;' readonly />
     </td>
 </tr>
 
@@ -857,6 +872,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             addDefct.FinalInspectionID = FinalInspectionID;
 
             addDefct.SampleSize = model.SampleSize;
+            addDefct.FinalInspection = model;
 
             ViewData["FinalInspectionAllStep"] = fservice.GetAllStep(FinalInspectionID, string.Empty);
             return View(addDefct);
