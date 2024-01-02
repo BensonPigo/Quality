@@ -37,6 +37,7 @@
         <table id="MyTable" style="width:100%;max-height:95%;" class="table table-striped display">
             <thead>
                 <tr>
+                    <th> </th>
                     <th>Seq</th>
                     <th>SCI Ref No.</th>
                     <th>Refno</th>
@@ -50,6 +51,7 @@
                 @foreach (var item in Model)
                 {
                     <tr>
+                        <td><input type="checkbox" name="name" value="" GroupName="@item.Seq" Refno="@item.Refno" Color="@item.Color"></td>
                         <td>
                             @item.Seq
                         </td>
@@ -72,6 +74,7 @@
     </div>
 </fieldset>
 <br />
+<input id="btnSend" type="button" value="Send" />
 <input id="btnExit" type="button" value="Exit" />
 <script>
 
@@ -88,29 +91,49 @@
                 { target: 2 },
                 { target: 3 },
                 { target: 4 },
+                { target: 5 },
             ]
         });
 
-        $('#MyTable tbody').on('click', 'tr', function (data, type, full, meta) {
+        $("#btnSend").click(function () {
 
-            // 取得整個Row
-            var RowData = table.row(this).data();
+            //取得勾選的Group Name
+            var GroupNameList = [];
+            $("input[type=checkbox]:checked").each(function () {
 
-            var AccRefNoData = {
-                Seq: RowData[0],
-                Seq1: RowData[0].split('-')[0],
-                Seq2: RowData[0].split('-')[1],
-                SCIRefno: RowData[1],
-                Refno: RowData[2],
-                Color: RowData[3]
+                var GroupName = $(this).attr("GroupName");
+                GroupNameList.push(GroupName);
+             });
+
+
+            var ArtworkRefnoObjs = [];
+            for (var i = 0; i < GroupNameList.length; i++) {
+
+                var Seq = GroupNameList[i];
+                var refno = $("input[GroupName='" + Seq + "']").attr('refno').trim();
+                var color = $("input[GroupName='" + Seq + "']").attr('color').trim();
+
+                var obj = {
+                    Refno: refno,
+                    Color: color,
+                }
+                ArtworkRefnoObjs.push(obj);
             }
 
-            // 呼叫父視窗的GetTechnician Function，把物件傳回去
-            window.opener.GetAccRefNoList(AccRefNoData, '@TargetID');
-
+            // 呼叫父視窗的GetTestFailMail Function，把值傳回去
+            window.opener.GetMulitipleArtworkRefNoList(ArtworkRefnoObjs, '@TargetID');
             window.close();
-        });
 
+            @*if (ArtworkRefnoObjs.length > 0) {
+                // 呼叫父視窗的GetTestFailMail Function，把值傳回去
+                window.opener.GetAreaCodeList(ArtworkRefnoObjs, '@TargetID');
+                window.close();
+            }
+            else {
+                alert("Please choose AreaCode.");
+            }*@
+
+        });
         $("#btnExit").click(function () {
             window.close();
         });

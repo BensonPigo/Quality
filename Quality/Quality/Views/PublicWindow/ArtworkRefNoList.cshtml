@@ -96,7 +96,7 @@
             // 取得整個Row
             var RowData = table.row(this).data();
 
-            var AccRefNoData = {
+            var ArtworkRefNoData = {
                 Seq: RowData[0],
                 Seq1: RowData[0].split('-')[0],
                 Seq2: RowData[0].split('-')[1],
@@ -106,7 +106,7 @@
             }
 
             // 呼叫父視窗的GetTechnician Function，把物件傳回去
-            window.opener.GetAccRefNoList(AccRefNoData, '@TargetID');
+            window.opener.GetArtworkRefNoList(ArtworkRefNoData, '@TargetID');
 
             window.close();
         });
