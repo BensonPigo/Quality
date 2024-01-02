@@ -1014,14 +1014,14 @@ namespace BusinessLogicLayer.Service
                 }
 
                 #region 添加圖片
-                Excel.Range cellBeforePicture = excelSheets.Cells[22, 1];
+                Excel.Range cellBeforePicture = excelSheets.Cells[22 + otherCount, 1];
                 if (fabricCrkShrkTestHeat_Main.HeatTestBeforePicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestHeat_Main.HeatTestBeforePicture, fabricCrkShrkTestHeat_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
                 }
 
-                Excel.Range cellAfterPicture = excelSheets.Cells[22, 7];
+                Excel.Range cellAfterPicture = excelSheets.Cells[22 + otherCount, 7];
                 if (fabricCrkShrkTestHeat_Main.HeatTestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestHeat_Main.HeatTestAfterPicture, fabricCrkShrkTestHeat_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
@@ -1153,14 +1153,14 @@ namespace BusinessLogicLayer.Service
                 }
 
                 #region 添加圖片
-                Excel.Range cellBeforePicture = excelSheets.Cells[22, 1];
+                Excel.Range cellBeforePicture = excelSheets.Cells[22 + otherCount, 1];
                 if (fabricCrkShrkTestIron_Main.IronTestBeforePicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestIron_Main.IronTestBeforePicture, fabricCrkShrkTestIron_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
                 }
 
-                Excel.Range cellAfterPicture = excelSheets.Cells[22, 7];
+                Excel.Range cellAfterPicture = excelSheets.Cells[22 + otherCount, 7];
                 if (fabricCrkShrkTestIron_Main.IronTestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestIron_Main.IronTestAfterPicture, fabricCrkShrkTestIron_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
@@ -1335,14 +1335,14 @@ namespace BusinessLogicLayer.Service
                 }
 
                 #region 添加圖片
-                Excel.Range cellBeforePicture = excelSheets.Cells[34, 1];
+                Excel.Range cellBeforePicture = excelSheets.Cells[34 + otherCount, 1];
                 if (fabricCrkShrkTestWash_Main.WashTestBeforePicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestWash_Main.WashTestBeforePicture, fabricCrkShrkTestWash_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 20, 323, 255);
                 }
 
-                Excel.Range cellAfterPicture = excelSheets.Cells[34, 7];
+                Excel.Range cellAfterPicture = excelSheets.Cells[34 + otherCount, 7];
                 if (fabricCrkShrkTestWash_Main.WashTestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestWash_Main.WashTestAfterPicture, fabricCrkShrkTestWash_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
