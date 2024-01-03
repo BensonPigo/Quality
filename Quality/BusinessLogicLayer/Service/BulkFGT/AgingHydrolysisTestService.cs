@@ -603,9 +603,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 worksheet.Cells[7, 6] = agingHydrolysisTest_Detail.Rows[0]["FabricColor"].ToString();
 
                 worksheet.Cells[8, 2] = agingHydrolysisTest_Detail.Rows[0]["MaterialType"].ToString();
+                worksheet.Cells[8, 6] = agingHydrolysisTest_Detail.Rows[0]["Comment"].ToString();
 
                 //worksheet.Cells[28, 5] = agingHydrolysisTest_Detail.Rows[0]["Technician"].ToString();
-                
+
                 // 圖片
                 if (agingHydrolysisTest_Detail.Rows[0]["TestBeforePicture"] != DBNull.Value)
                 {
