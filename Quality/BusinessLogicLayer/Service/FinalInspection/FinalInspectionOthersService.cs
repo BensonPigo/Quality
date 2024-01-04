@@ -57,7 +57,7 @@ namespace BusinessLogicLayer.Service
                     }
                     else
                     {
-                        others.InspectionResult = "Fail";
+                        others.InspectionResult = "Pass";
                     }
                 }
 
@@ -162,7 +162,7 @@ namespace BusinessLogicLayer.Service
                     }
                     else
                     {
-                        finalInspection.InspectionResult = "Fail";
+                        finalInspection.InspectionResult = "Pass";
                     }
                 }
 

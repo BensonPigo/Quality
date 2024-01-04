@@ -1205,7 +1205,7 @@ INSERT INTO FinalInspection_Detail_Operation
                             { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
                             { "@ProUkey", finalInspection_DefectDetail.ProUkey },
                             { "@DefectCategoryUkey", finalInspection_DefectDetail.DefectCategoryUkey },
-                            { "@DefectQty", finalInspection_DefectDetail.DefectQty }
+                            { "@Qty", finalInspection_DefectDetail.Qty }
                         };
 
                     sqlFinalInspection_DefectDetail = $@"
@@ -1216,13 +1216,13 @@ where FinalInspectionID = @FinalInspectionID and ProUkey = @ProUkey and DefectCa
 )
 begin
     INSERT INTO dbo.FinalInspection_DefectDetail
-               (FinalInspectionID,ProUkey,DefectCategoryUkey,DefectQty)
+               (FinalInspectionID,ProUkey,DefectCategoryUkey,Qty)
          VALUES
-               (@FinalInspectionID,@ProUkey,@DefectCategoryUkey,@DefectQty)
+               (@FinalInspectionID,@ProUkey,@DefectCategoryUkey,@Qty)
 end
 else
 begin
-    UPDATE FinalInspection_DefectDetail SET DefectQty = @DefectQty WHERE FinalInspectionID = @FinalInspectionID and ProUkey = @ProUkey AND DefectCategoryUkey=@DefectCategoryUkey
+    UPDATE FinalInspection_DefectDetail SET Qty = @Qty WHERE FinalInspectionID = @FinalInspectionID and ProUkey = @ProUkey AND DefectCategoryUkey=@DefectCategoryUkey
 end
 ";
 

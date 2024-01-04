@@ -12,7 +12,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         public long ProUkey { get; set; }
         public long DefectCategoryUkey { get; set; }
         public string DefectCategoryDescription { get; set; }
-        public int DefectQty { get; set; }
+        public int Qty { get; set; }
         public string DefectCategoryResult { get; set; }
         public int AcceptedQty { get; set; }
         

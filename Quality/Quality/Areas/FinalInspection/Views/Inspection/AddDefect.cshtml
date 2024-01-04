@@ -58,11 +58,12 @@
                     @Html.Hidden($"addDefct.FinalInspection_DefectDetails[{i}].DefectCategoryUkey", Model.FinalInspection_DefectDetails[i].DefectCategoryUkey)
                     @Html.Hidden($"addDefct.FinalInspection_DefectDetails[{i}].FinalInspectionID", Model.FinalInspectionID)
 
-                    @Html.TextBox($"addDefct.FinalInspection_DefectDetails[{i}].DefectQty", Model.FinalInspection_DefectDetails[i].DefectQty, new
+                    @Html.TextBox($"addDefct.FinalInspection_DefectDetails[{i}].Qty", Model.FinalInspection_DefectDetails[i].Qty, new
                {
                    @class = "form-control center-block DefectQty",
                    @style = "width:3vw",
                    @type = "number",
+                   @min="0",
                    @onchange= "AutoCacuRejectQty()",
                })
                 }

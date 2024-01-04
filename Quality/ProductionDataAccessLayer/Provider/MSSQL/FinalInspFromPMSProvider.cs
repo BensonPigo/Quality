@@ -497,13 +497,13 @@ select a.ProUkey
 	,DefectCategoryDescription = c.Description
     ,b.AcceptedQty  
 	,DefectCategoryUkey = c.Ukey
-	,defect.DefectQty
-	,DefectCategoryResult = IIF(b.AcceptedQty < defect.DefectQty,'Pass','Fail')
+	,defect.Qty
+	,DefectCategoryResult = IIF(b.AcceptedQty <= defect.Qty,'Pass','Fail')
 from SciProduction_AcceptableQualityLevelsPro a WITH(NOLOCK)
 inner join SciProduction_AcceptableQualityLevelsPro_Detail b on a.ProUkey=b.ProUkey
 inner join SciProduction_AcceptableQualityLevelsPro_DefectCategory c on b.AQLDefectCategoryUkey=c.Ukey
 OUTER APPLY(
-	select top 1 DefectQty
+	select top 1 Qty
 	from ManufacturingExecution..FinalInspection_DefectDetail d
 	where  d.DefectCategoryUkey=c.Ukey and d.ProUkey=a.ProUkey and d.FinalInspectionID = @FinalInspectionID
 )defect
