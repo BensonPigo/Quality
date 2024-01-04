@@ -70,7 +70,7 @@ select  ID                             ,
         BAQty                          ,
         CFA                            ,
         Clerk                            ,
-        ProductionStatus               ,
+        ProductionStatus =  IIF( ISNULL(ProductionStatusVal.val,0) <> 0 , ProductionStatusVal.val ,a.ProductionStatus)              ,
         InspectionResult               ,
         ShipmentStatus                 ,
         OthersRemark                   ,
@@ -131,6 +131,11 @@ outer apply (
 	left join SciProduction_Style_RRLR_Report sr with (nolock) on s.Ukey = sr.StyleUkey
 	where exists (select 1 from FinalInspection_Order fo with (nolock) where fo.ID = a.ID and fo.OrderID = o.ID)
 )I
+Outer Apply(
+	select TOP 1 Val = ClogReceivedPercentage 
+	from SciProduction_CFAInspectionRecord c with(nolock)
+	where c.ID = a.ID
+)ProductionStatusVal
 where a.ID = @ID
 ";
             IList<FinalInspection> listResult = ExecuteList<FinalInspection>(CommandType.Text, sqlGetData, objParameter);
