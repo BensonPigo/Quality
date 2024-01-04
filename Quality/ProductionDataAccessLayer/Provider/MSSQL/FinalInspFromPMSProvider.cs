@@ -334,9 +334,9 @@ select a.ProUkey
     ,b.AQLDefectCategoryUkey
     ,c.Description,b.AcceptedQty
     ,DefectDescription = c.Description
-from SciProduction_AcceptableQualityLevelsPro a WITH(NOLOCK)
-inner join SciProduction_AcceptableQualityLevelsPro_Detail b WITH(NOLOCK) on a.ProUkey=b.ProUkey
-inner join SciProduction_AcceptableQualityLevelsPro_DefectCategory c WITH(NOLOCK) on b.AQLDefectCategoryUkey=c.Ukey
+from AcceptableQualityLevelsPro a WITH(NOLOCK)
+inner join AcceptableQualityLevelsPro_Detail b WITH(NOLOCK) on a.ProUkey=b.ProUkey
+inner join AcceptableQualityLevelsPro_DefectCategory c WITH(NOLOCK) on b.AQLDefectCategoryUkey=c.Ukey
 where  Junk = 0
 AND BrandID = @BrandID AND Category = ''
 ";
