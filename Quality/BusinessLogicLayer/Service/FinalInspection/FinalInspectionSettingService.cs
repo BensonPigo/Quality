@@ -196,6 +196,7 @@ namespace BusinessLogicLayer.Service
                 }
                 else
                 {
+                    _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
                     var tmpAQLProPlanList = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsProListForSetting(BrandID, 0);
                     result.AcceptableQualityLevelsPros = tmpAQLProPlanList.ToList();
                 }
