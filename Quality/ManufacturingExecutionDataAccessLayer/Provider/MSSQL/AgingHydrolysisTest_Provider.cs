@@ -676,6 +676,7 @@ select b.BrandID
 	,d.TestBeforePicture
 	,d.TestAfterPicture
 	,Technician = ISNULL(mp.Name,pp.Name)
+	,a.Comment
 from AgingHydrolysisTest_Detail a
 inner join AgingHydrolysisTest b on b.ID = a.AgingHydrolysisTestID
 left join PMSFile.dbo.AgingHydrolysisTest_Image  d on a.ReportNo = d.ReportNo
