@@ -492,7 +492,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
 
-                // 表身處理
+                // 表身處理 單筆和多筆分開
                 if (model.DetailList.Any() && model.DetailList.Count > 1)
                 {
                     // 先處理Remark
@@ -522,6 +522,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                         allRemark.Add(detailData.Remark);
                         rowIdx++;
+                    }
+                }
+                else
+                {
+                    foreach (var detailData in model.DetailList)
+                    {
+                        worksheet.Cells[15, 1] = detailData.EvaluationItem;
+                        worksheet.Cells[15, 2] = detailData.Dyelot;
+                        worksheet.Cells[15, 3] = detailData.Roll;
+                        worksheet.Cells[15, 5] = detailData.Scale;
+                        worksheet.Cells[15, 6] = detailData.Result;
+                        worksheet.Cells[17, 2] = detailData.Remark;
                     }
                 }
 
