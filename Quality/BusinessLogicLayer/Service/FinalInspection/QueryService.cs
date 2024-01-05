@@ -193,6 +193,12 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 DataRow drReportMailInfo = _FinalInspectionProvider.GetReportMailInfo(finalInspectionID).Rows[0];
 
                 List<MailTo> mailTos = _IMailToProvider.Get(new MailTo() { ID = "401" }).ToList();
+                if (!mailTos.Any())
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = "Missing <Final Inspection To Address> setting, please inform MIS.";
+                    return baseResult;
+                }
                 string toAddress = mailTos.Select(s => s.ToAddress).FirstOrDefault();
                 string ccAddress = mailTos.Select(s => s.CcAddress).FirstOrDefault();
                 string subject = $"Inspection Report(PO#: {drReportMailInfo["CustPONO"]})-{drReportMailInfo["InspectionResult"]}";
