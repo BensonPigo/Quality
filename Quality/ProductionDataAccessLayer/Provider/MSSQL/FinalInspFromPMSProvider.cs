@@ -498,7 +498,7 @@ select a.ProUkey
     ,b.AcceptedQty  
 	,DefectCategoryUkey = c.Ukey
 	,defect.Qty
-	,DefectCategoryResult = IIF(b.AcceptedQty > defect.Qty,'Pass','Fail')
+	,DefectCategoryResult = IIF(b.AcceptedQty < defect.Qty,'Fail','Pass')
 from SciProduction_AcceptableQualityLevelsPro a WITH(NOLOCK)
 inner join SciProduction_AcceptableQualityLevelsPro_Detail b on a.ProUkey=b.ProUkey
 inner join SciProduction_AcceptableQualityLevelsPro_DefectCategory c on b.AQLDefectCategoryUkey=c.Ukey
