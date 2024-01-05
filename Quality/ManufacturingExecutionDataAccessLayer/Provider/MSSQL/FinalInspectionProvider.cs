@@ -131,10 +131,16 @@ outer apply (
 	left join SciProduction_Style_RRLR_Report sr with (nolock) on s.Ukey = sr.StyleUkey
 	where exists (select 1 from FinalInspection_Order fo with (nolock) where fo.ID = a.ID and fo.OrderID = o.ID)
 )I
-Outer Apply(
-	select TOP 1 Val = ClogReceivedPercentage 
-	from SciProduction_CFAInspectionRecord c with(nolock)
-	where c.ID = a.ID
+Outer Apply(----比照PMS QA P32：根據SP# + PackingList_Detail.OrderShipmodeSeq(運輸方式)，去撈取所有紙箱，計算Clog 收到紙箱的百分比
+    SELECT Val= CAST(ROUND( SUM(IIF( CFAReceiveDate IS NOT NULL OR ReceiveDate IS NOT NULL
+								    ,ShipQty
+								    ,0)
+						    ) * 1.0 
+						    /  SUM(ShipQty) * 100 
+    ,0) AS INT) 
+    FROM MainServer.Production.dbo.PackingList_Detail pd WITH(NOLOCK)
+    INNER JOIN ManufacturingExecution..FinalInspection_Order_QtyShip foq on pd.OrderID=foq.OrderID and pd.OrderShipmodeSeq=foq.Seq
+    WHERE foq.ID =  a.ID
 )ProductionStatusVal
 where a.ID = @ID
 ";
