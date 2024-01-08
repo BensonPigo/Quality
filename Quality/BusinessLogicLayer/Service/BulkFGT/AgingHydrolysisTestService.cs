@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using static Sci.MyUtility;
+//using static Sci.MyUtility;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace BusinessLogicLayer.Service.BulkFGT
@@ -604,8 +604,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 worksheet.Cells[8, 2] = agingHydrolysisTest_Detail.Rows[0]["MaterialType"].ToString();
 
+                string comment = agingHydrolysisTest_Detail.Rows[0]["Comment"].ToString();
+                worksheet.Cells[8, 6] = comment;
+
+                if (comment.Length > 45)
+                {
+                    int rowCTn = (comment.Length / 45) + 1;
+
+                    Microsoft.Office.Interop.Excel.Range rangeRow = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows[8, Type.Missing];
+                    rangeRow.RowHeight = 34.5 * rowCTn;
+                }
                 //worksheet.Cells[28, 5] = agingHydrolysisTest_Detail.Rows[0]["Technician"].ToString();
-                
+
                 // 圖片
                 if (agingHydrolysisTest_Detail.Rows[0]["TestBeforePicture"] != DBNull.Value)
                 {
