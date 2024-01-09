@@ -185,6 +185,7 @@
     <Compile Include="Areas\BulkFGT\BulkFGTAreaRegistration.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\AccessoryOvenWashController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\AgingHydrolysisTestController.cs" />
+    <Compile Include="Areas\BulkFGT\Controllers\BrandBulkTestController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\BulkFGTMailGroupController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\DailyMoistureController.cs" />
     <Compile Include="Areas\BulkFGT\Controllers\FabricColorFastnessController.cs" />
@@ -230,7 +231,7 @@
     <Compile Include="Areas\StyleManagement\StyleManagementAreaRegistration.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\PublicWondowController.cs" />
+    <Compile Include="Controllers\PublicWindowController.cs" />
     <Compile Include="Controllers\SendMailAttachfilesController.cs" />
     <Compile Include="Controllers\TransferFinalInspectionController.cs" />
     <Compile Include="Global.asax.cs">
@@ -469,6 +470,9 @@
     <Content Include="Areas\BulkFGT\Views\WaterAbsorbency\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\WickingHeightTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\EvaporationRateTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\BrandBulkTest\Index.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\BrandBulkTest\Detail.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\IronTest.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -874,25 +878,25 @@
     <Content Include="XLT\Measurement.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PublicWondow\BrandList.cshtml" />
-    <Content Include="Views\PublicWondow\ArticleList.cshtml" />
-    <Content Include="Views\PublicWondow\SeasonList.cshtml" />
-    <Content Include="Views\PublicWondow\SizeList.cshtml" />
-    <Content Include="Views\PublicWondow\StyleList.cshtml" />
-    <Content Include="Views\PublicWondow\TechnicianList.cshtml" />
-    <Content Include="Views\PublicWondow\SewingLineList.cshtml" />
-    <Content Include="Views\PublicWondow\Pass1List.cshtml" />
-    <Content Include="Views\PublicWondow\AppearanceList.cshtml" />
-    <Content Include="Views\PublicWondow\FtyInventoryList.cshtml" />
-    <Content Include="Views\PublicWondow\LocalSuppList.cshtml" />
-    <Content Include="Views\PublicWondow\Po_Supp_DetailList.cshtml" />
-    <Content Include="Views\PublicWondow\TPESuppList.cshtml" />
-    <Content Include="Views\PublicWondow\ColorList.cshtml" />
-    <Content Include="Views\PublicWondow\FGPTList.cshtml" />
-    <Content Include="Views\PublicWondow\PictureList.cshtml" />
+    <Content Include="Views\PublicWindow\BrandList.cshtml" />
+    <Content Include="Views\PublicWindow\ArticleList.cshtml" />
+    <Content Include="Views\PublicWindow\SeasonList.cshtml" />
+    <Content Include="Views\PublicWindow\SizeList.cshtml" />
+    <Content Include="Views\PublicWindow\StyleList.cshtml" />
+    <Content Include="Views\PublicWindow\TechnicianList.cshtml" />
+    <Content Include="Views\PublicWindow\SewingLineList.cshtml" />
+    <Content Include="Views\PublicWindow\Pass1List.cshtml" />
+    <Content Include="Views\PublicWindow\AppearanceList.cshtml" />
+    <Content Include="Views\PublicWindow\FtyInventoryList.cshtml" />
+    <Content Include="Views\PublicWindow\LocalSuppList.cshtml" />
+    <Content Include="Views\PublicWindow\Po_Supp_DetailList.cshtml" />
+    <Content Include="Views\PublicWindow\TPESuppList.cshtml" />
+    <Content Include="Views\PublicWindow\ColorList.cshtml" />
+    <Content Include="Views\PublicWindow\FGPTList.cshtml" />
+    <Content Include="Views\PublicWindow\PictureList.cshtml" />
     <Content Include="Views\Shared\ScreenShot.cshtml" />
     <Content Include="XLT\FinalInspectionReport.xlsx" />
-    <Content Include="Views\PublicWondow\TestFailMailList.cshtml" />
+    <Content Include="Views\PublicWindow\TestFailMailList.cshtml" />
     <Content Include="XLT\MockupCrocking.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -975,7 +979,7 @@
     <Content Include="XLT\PerspirationFastness_ToExcel.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PublicWondow\InspMeasurement_PictureList.cshtml" />
+    <Content Include="Views\PublicWindow\InspMeasurement_PictureList.cshtml" />
     <Content Include="XLT\AccessoryWashingFastness.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -991,9 +995,9 @@
     <Content Include="XLT\CFT Comment Report.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PublicWondow\PoidArticleList.cshtml" />
-    <Content Include="Views\PublicWondow\OperationList.cshtml" />
-    <Content Include="Views\PublicWondow\Po_Supp_Detail_RefnoList.cshtml" />
+    <Content Include="Views\PublicWindow\PoidArticleList.cshtml" />
+    <Content Include="Views\PublicWindow\OperationList.cshtml" />
+    <Content Include="Views\PublicWindow\Po_Supp_Detail_RefnoList.cshtml" />
     <Content Include="XLT\HeatTransferWash.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1006,27 +1010,27 @@
     <Content Include="XLT\PullingTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PublicWondow\FabricRefNoList.cshtml" />
-    <Content Include="Views\PublicWondow\InkTypeList.cshtml" />
+    <Content Include="Views\PublicWindow\FabricRefNoList.cshtml" />
+    <Content Include="Views\PublicWindow\InkTypeList.cshtml" />
     <Content Include="XLT\SalivaFastnessTest.xltx" />
-    <Content Include="Views\PublicWondow\RollDyelotList.cshtml" />
+    <Content Include="Views\PublicWindow\RollDyelotList.cshtml" />
     <Content Include="XLT\PhenolicYellowTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PublicWondow\AreaCodeList.cshtml" />
+    <Content Include="Views\PublicWindow\AreaCodeList.cshtml" />
     <Content Include="XLT\TPeelStrengthTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="XLT\MartindalePillingTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PublicWondow\MartindalePillingTestPictureList.cshtml" />
+    <Content Include="Views\PublicWindow\MartindalePillingTestPictureList.cshtml" />
     <Content Include="Views\Shared\ScreenShot_MartindalePillingTest.cshtml" />
-    <Content Include="Views\PublicWondow\RandomTumblePillingTestPictureList.cshtml" />
+    <Content Include="Views\PublicWindow\RandomTumblePillingTestPictureList.cshtml" />
     <Content Include="XLT\RandomTumblePillingTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PublicWondow\HeatTransferWash_RefnoList.cshtml" />
+    <Content Include="Views\PublicWindow\HeatTransferWash_RefnoList.cshtml" />
     <Content Include="XLT\StickerTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1036,14 +1040,22 @@
     <Content Include="XLT\WaterAbsorbencyTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\PublicWondow\ThreePictureList.cshtml" />
-    <Content Include="Views\PublicWondow\AccRefNoList.cshtml" />
+    <Content Include="Views\PublicWindow\ThreePictureList.cshtml" />
+    <Content Include="Views\PublicWindow\AccRefNoList.cshtml" />
     <Content Include="XLT\WickingHeightTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="XLT\EvaporationRateTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="XLT\FabricIronTest.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\PublicWindow\ArtworkRefNoList.cshtml" />
+    <Content Include="Views\PublicWindow\BrandBulkTestItemList.cshtml" />
+    <Content Include="Views\PublicWindow\MulitipleAccRefNoList.cshtml" />
+    <Content Include="Views\PublicWindow\MulitipleArtworkRefNoList.cshtml" />
+    <Content Include="Views\PublicWindow\MulitipleFabricRefNoList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

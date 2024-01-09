@@ -1,0 +1,143 @@
+﻿@using DatabaseObject.Public
+
+@{
+    Layout = null;
+    string title = ViewData["Title"] == null ? "Test Fail Mail" : ViewData["Title"].ToString();
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
+
+}
+
+@model List<Window_FabricRefNo>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+<style>
+
+    ul {
+        padding: 0;
+    }
+
+
+    .head {
+        border-top: 2px solid black;
+        text-align: center;
+        font-size: 1.2em;
+        background-color: lightgray;
+    }
+</style>
+
+<fieldset style="width:700px;height:600px;">
+    <legend>@title</legend>
+
+
+    <div style="width:100%;height:90%;overflow-y: scroll;">
+        <table id="MyTable" style="width:100%;max-height:95%;" class="table table-striped display">
+            <thead>
+                <tr>
+                    <th> </th>
+                    <th>Seq</th>
+                    <th>SCI Ref No.</th>
+                    <th>Refno</th>
+                    <th>ColorID</th>
+                    <th>SuppID</th>
+                    @*<th>ToAddress</th>*@
+                    @*<th>CcAddress</th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><input type="checkbox" name="name" value="" GroupName="@item.Seq" Refno="@item.Refno" Color="@item.Color"></td>
+                        <td>
+                            @item.Seq
+                        </td>
+                        <td>
+                            @item.SCIRefno
+                        </td>
+                        <td>
+                            @item.Refno
+                        </td>
+                        <td>
+                            @item.Color
+                        </td>
+                        <td>
+                            @item.SuppID
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</fieldset>
+<br />
+<input id="btnSend" type="button" value="Send" />
+<input id="btnExit" type="button" value="Exit" />
+<script>
+
+
+    $(function () {
+        var table = $('#MyTable').DataTable({
+            "filter": false,
+            "paging": false,
+            "order": false,
+            "info": false,
+            columns: [
+                { target: 0 },
+                { target: 1 },
+                { target: 2 },
+                { target: 3 },
+                { target: 4 },
+                { target: 5 },
+            ]
+        });
+
+        $("#btnSend").click(function () {
+
+            //取得勾選的Group Name
+            var GroupNameList = [];
+            $("input[type=checkbox]:checked").each(function () {
+
+                var GroupName = $(this).attr("GroupName");
+                GroupNameList.push(GroupName);
+             });
+
+
+            var AccRefnoObjs = [];
+            for (var i = 0; i < GroupNameList.length; i++) {
+
+                var Seq = GroupNameList[i];
+                var refno = $("input[GroupName='" + Seq + "']").attr('refno').trim();
+                var color = $("input[GroupName='" + Seq + "']").attr('color').trim();
+
+                var obj = {
+                    Refno: refno,
+                    Color: color,
+                }
+                AccRefnoObjs.push(obj);
+            }
+
+            // 呼叫父視窗的GetTestFailMail Function，把值傳回去
+            window.opener.GetMulitipleAccRefNoList(AccRefnoObjs, '@TargetID');
+            window.close();
+
+            @*if (AccRefnoObjs.length > 0) {
+                // 呼叫父視窗的GetTestFailMail Function，把值傳回去
+                window.opener.GetAreaCodeList(AccRefnoObjs, '@TargetID');
+                window.close();
+            }
+            else {
+                alert("Please choose AreaCode.");
+            }*@
+
+        });
+        $("#btnExit").click(function () {
+            window.close();
+        });
+
+    });
+
+</script>

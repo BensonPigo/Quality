@@ -408,7 +408,7 @@
 
                 var para = "?EditMode=" + EditMode + "&Title=WashTest&Table=AIR_Laboratory&BeforeColumn=WashTestBeforePicture&AfterColumn=WashTestAfterPicture&" + key1 + "&" + key2 + "&" + key3 + "&" + key4;
 
-                window.open('@Url.Action("PictureList","PublicWondow",new{Area=""})' + para, 'Picture', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+                window.open('@Url.Action("PictureList","PublicWindow",new{Area=""})' + para, 'Picture', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
             });
 
             $('#Excel').unbind('click').on('click', function () {
@@ -498,7 +498,7 @@
     function FailMail() {
         var para = "?Title=WashTest&FactoryID=@ViewBag.FactoryID&Type=BulkFGT&ExitReload=False";
 
-        window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+        window.open('@Url.Action("TestFailMailList", "PublicWindow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
     }
 
     function GetTestFailMailList(data) {
@@ -551,7 +551,7 @@
             }
 
             $.ajax({
-                url: "@Url.Action("Pass1List", "PublicWondow",new { Area=""})",
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ ID:$(this).val(), ReturnType: "JSON" }),
@@ -575,7 +575,7 @@
 
         $('.btnInspectorSelectItem').unbind('click').on('click', function () {
             var para = "?Title=Lab Tech";
-            window.open('@Url.Action("Pass1List", "PublicWondow",new{Area=""})' + para, 'Lab Tech', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Lab Tech', config = 'toolbar=no,status=no,location=no,width=950,height=650');
         });
     }
 

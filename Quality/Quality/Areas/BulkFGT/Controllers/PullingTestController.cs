@@ -151,12 +151,12 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public ActionResult GetStandard(string BrandID, string TestItem, string PullForceUnit)
+        public ActionResult GetStandard(string BrandID, string TestItem, string PullForceUnit, string StyleType)
         {
             PullingTest_Result o = new PullingTest_Result();
             try
             {
-                o = Service.GetStandard(BrandID, TestItem, PullForceUnit);
+                o = Service.GetStandard(BrandID, TestItem, PullForceUnit, StyleType);
 
             }
             catch (Exception ex)
@@ -348,7 +348,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 //刪除後重新取得ReportNo清單
                 Result = Service.GetReportNoList(Req);
-                Result.ReportNo_Query = "";
                 Result.Detail = new PullingTest_Result();
                 Result.ReportNo_Query = "";
 

@@ -1,0 +1,120 @@
+﻿@using DatabaseObject.Public
+
+@{
+    Layout = null;
+    string title = ViewData["Title"] == null ? "Test Fail Mail" : ViewData["Title"].ToString();
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
+
+}
+
+@model List<Window_FabricRefNo>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+<style>
+
+    ul {
+        padding: 0;
+    }
+
+
+    .head {
+        border-top: 2px solid black;
+        text-align: center;
+        font-size: 1.2em;
+        background-color: lightgray;
+    }
+</style>
+
+<fieldset style="width:700px;height:600px;">
+    <legend>@title</legend>
+
+
+    <div style="width:100%;height:90%;overflow-y: scroll;">
+        <table id="MyTable" style="width:100%;max-height:95%;" class="table table-striped display">
+            <thead>
+                <tr>
+                    <th>Seq</th>
+                    <th>SCI Ref No.</th>
+                    <th>Refno</th>
+                    <th>ColorID</th>
+                    <th>SuppID</th>
+                    @*<th>ToAddress</th>*@
+                    @*<th>CcAddress</th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @item.Seq
+                        </td>
+                        <td>
+                            @item.SCIRefno
+                        </td>
+                        <td>
+                            @item.Refno
+                        </td>
+                        <td>
+                            @item.Color
+                        </td>
+                        <td>
+                            @item.SuppID
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</fieldset>
+<br />
+<input id="btnExit" type="button" value="Exit" />
+<script>
+
+
+    $(function () {
+        var table = $('#MyTable').DataTable({
+            "filter": false,
+            "paging": false,
+            "order": false,
+            "info": false,
+            columns: [
+                { target: 0 },
+                { target: 1 },
+                { target: 2 },
+                { target: 3 },
+                { target: 4 },
+            ]
+        });
+
+        $('#MyTable tbody').on('click', 'tr', function (data, type, full, meta) {
+
+            // 取得整個Row
+            var RowData = table.row(this).data();
+
+            var AccRefNoData = {
+                Seq: RowData[0],
+                Seq1: RowData[0].split('-')[0],
+                Seq2: RowData[0].split('-')[1],
+                SCIRefno: RowData[1],
+                Refno: RowData[2],
+                Color: RowData[3]
+            }
+
+            // 呼叫父視窗的GetTechnician Function，把物件傳回去
+            window.opener.GetAccRefNoList(AccRefNoData, '@TargetID');
+
+            window.close();
+        });
+
+        $("#btnExit").click(function () {
+            window.close();
+        });
+
+    });
+
+</script>

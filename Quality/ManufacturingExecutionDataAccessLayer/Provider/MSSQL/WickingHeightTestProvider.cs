@@ -279,9 +279,19 @@ UPDATE WickingHeightTest
       ,FabricDescription = @FabricDescription
 WHERE ReportNo = @ReportNo
 ;
-UPDATE SciPMSFile_WickingHeightTest
-SET TestWeftPicture = @TestWeftPicture , TestWarpPicture=@TestWarpPicture
-WHERE ReportNo = @ReportNo
+if exists(select 1 from PMSFile.dbo.WickingHeightTest WHERE ReportNo = @ReportNo)
+begin
+    UPDATE PMSFile.dbo.WickingHeightTest
+    SET TestWeftPicture = @TestWeftPicture , TestWarpPicture=@TestWarpPicture
+    WHERE ReportNo = @ReportNo
+end
+else
+begin
+    INSERT INTO PMSFile.dbo.WickingHeightTest
+        ( ReportNo ,TestWarpPicture ,TestWeftPicture)
+    VALUES
+        ( @ReportNo ,@TestWarpPicture ,@TestWeftPicture)
+end
 ";
 
             return ExecuteNonQuery(CommandType.Text, mainSqlCmd.ToString(), objParameter);
@@ -365,9 +375,9 @@ DELETE FROM WickingHeightTest_Detail_Item where ReportNo = @ReportNo and Wicking
                 {
                     case CompareStateType.Add:
                         listDetailPar.Add(new SqlParameter($"@EvaluationType", detailItem.EvaluationType));
-                        listDetailPar.Add(new SqlParameter($"@WarpAverage", detailItem.WarpAverage ?? 0) { Scale = 2 });
+                        listDetailPar.Add(new SqlParameter($"@WarpAverage", detailItem.WarpAverage) { Scale = 2 });
                         listDetailPar.Add(new SqlParameter($"@WarpResult", detailItem.WarpResult ?? string.Empty));
-                        listDetailPar.Add(new SqlParameter($"@WeftAverage", detailItem.WeftAverage ?? 0) { Scale = 2 });
+                        listDetailPar.Add(new SqlParameter($"@WeftAverage", detailItem.WeftAverage) { Scale = 2 });
                         listDetailPar.Add(new SqlParameter($"@WeftResult", detailItem.WeftResult ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? string.Empty));
 
@@ -394,9 +404,9 @@ from @InsertOutput t
                     case CompareStateType.Edit:
                         listDetailPar.Add(new SqlParameter($"@Ukey", detailItem.Ukey));
                         listDetailPar.Add(new SqlParameter($"@EvaluationType", detailItem.EvaluationType));
-                        listDetailPar.Add(new SqlParameter($"@WarpAverage", detailItem.WarpAverage ?? 0) { Scale = 2 });
+                        listDetailPar.Add(new SqlParameter($"@WarpAverage", detailItem.WarpAverage) { Scale = 2 });
                         listDetailPar.Add(new SqlParameter($"@WarpResult", detailItem.WarpResult ?? string.Empty));
-                        listDetailPar.Add(new SqlParameter($"@WeftAverage", detailItem.WeftAverage ?? 0) { Scale = 2 });
+                        listDetailPar.Add(new SqlParameter($"@WeftAverage", detailItem.WeftAverage) { Scale = 2 });
                         listDetailPar.Add(new SqlParameter($"@WeftResult", detailItem.WeftResult ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? string.Empty));
 
@@ -531,9 +541,9 @@ WHERE ReportNo = @ReportNo
 select Technician = ISNULL(mp.Name,pp.Name)
 	   ,TechnicianSignture = t.Signature
 from WickingHeightTest a
-left join Pass1 mp on mp.ID = a.EditName 
-left join MainServer.Production.dbo.Pass1 pp on pp.ID = a.EditName 
-left join MainServer.Production.dbo.Technician t on t.ID = a.EditName 
+left join Pass1 mp on mp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Pass1 pp on pp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Technician t on t.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
 where a.ReportNo = @ReportNo
 ;
 

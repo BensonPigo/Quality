@@ -273,9 +273,19 @@ UPDATE WaterAbsorbencyTest
       ,FabricDescription = @FabricDescription
 WHERE ReportNo = @ReportNo
 ;
-UPDATE SciPMSFile_WaterAbsorbencyTest
-SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture, TestBeforeWashPicture=@TestBeforeWashPicture
-WHERE ReportNo = @ReportNo
+if exists(select 1 from PMSFile.dbo.WaterAbsorbencyTest WHERE ReportNo = @ReportNo)
+begin
+    UPDATE PMSFile.dbo.WaterAbsorbencyTest
+    SET TestAfterPicture = @TestAfterPicture , TestBeforePicture=@TestBeforePicture , TestBeforeWashPicture=@TestBeforeWashPicture
+    WHERE ReportNo = @ReportNo
+end
+else
+begin
+    INSERT INTO PMSFile.dbo.WaterAbsorbencyTest
+        ( ReportNo ,TestAfterPicture ,TestBeforePicture ,TestBeforeWashPicture)
+    VALUES
+        ( @ReportNo ,@TestAfterPicture ,@TestBeforePicture ,@TestBeforeWashPicture)
+end
 ";
 
             return ExecuteNonQuery(CommandType.Text, mainSqlCmd.ToString(), objParameter);
@@ -437,9 +447,9 @@ WHERE ReportNo = @ReportNo
 select Technician = ISNULL(mp.Name,pp.Name)
 	   ,TechnicianSignture = t.Signature
 from WaterAbsorbencyTest a
-left join Pass1 mp on mp.ID = a.EditName 
-left join MainServer.Production.dbo.Pass1 pp on pp.ID = a.EditName 
-left join MainServer.Production.dbo.Technician t on t.ID = a.EditName 
+left join Pass1 mp on mp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Pass1 pp on pp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Technician t on t.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
 where a.ReportNo = @ReportNo
 ;
 

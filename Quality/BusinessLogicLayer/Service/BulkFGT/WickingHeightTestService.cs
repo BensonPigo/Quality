@@ -446,10 +446,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
 
                     // 姓名
-                    worksheet.Cells[21, 3] = TechnicianName;
+                    worksheet.Cells[23, 3] = TechnicianName;
 
                     // Signture 圖片
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[22, 3];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[24, 3];
                     if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
                     {
 
@@ -466,6 +466,24 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
+
+                // TestWarpPicture 圖片
+                if (model.Main.TestWarpPicture != null && model.Main.TestWarpPicture.Length > 1)
+                {
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[21, 1];
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestWarpPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
+                }
+
+                // TestAfterPicture 圖片
+                if (model.Main.TestWeftPicture != null && model.Main.TestWeftPicture.Length > 1)
+                {
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[21, 4];
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestWeftPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
+                }
+
+
                 // 表身處理
                 if (model.DetailList.Any() && model.DetailList.Count > 1)
                 {
@@ -473,8 +491,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     int i = 0;
                     foreach(var item in model.DetaiItemlList.Where(x => x.WickingHeightTestDetailUkey == detailUkey).OrderBy(x => x.Ukey))
                     {
-                        worksheet.Cells[14, 2 + i] = string.Format("{0}cm/{1}min", item.WarpValues.ToString(), item.WarpTime.ToString());
-                        worksheet.Cells[14, 5 + i] = string.Format("{0}cm/{1}min", item.WeftValues.ToString(), item.WeftTime.ToString());
+                        worksheet.Cells[14, 2 + i] = string.Format("{0}mm/{1}min", item.WarpValues.ToString(), item.WarpTime.ToString());
+                        worksheet.Cells[14, 5 + i] = string.Format("{0}mm/{1}min", item.WeftValues.ToString(), item.WeftTime.ToString());
                         i++;
                     }
 
@@ -482,8 +500,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     i = 0;
                     foreach (var item in model.DetaiItemlList.Where(x => x.WickingHeightTestDetailUkey == detailUkey).OrderBy(x => x.Ukey))
                     {
-                        worksheet.Cells[18, 2 + i] = string.Format("{0}cm/{1}min", item.WarpValues.ToString(), item.WarpTime.ToString());
-                        worksheet.Cells[18, 5 + i] = string.Format("{0}cm/{1}min", item.WeftValues.ToString(), item.WeftTime.ToString());
+                        worksheet.Cells[18, 2 + i] = string.Format("{0}mm/{1}min", item.WarpValues.ToString(), item.WarpTime.ToString());
+                        worksheet.Cells[18, 5 + i] = string.Format("{0}mm/{1}min", item.WeftValues.ToString(), item.WeftTime.ToString());
                         i++;
                     }
                 }

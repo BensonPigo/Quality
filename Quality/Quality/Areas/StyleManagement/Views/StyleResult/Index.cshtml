@@ -346,18 +346,18 @@
             // 共用元件使用方式
             // 1. 開啟 BrandList 視窗
             // 2. 宣告Callbacl事件，命名方式：Get + 開始視窗的Action名字，以這邊為例即是 GetBrandList即可取得回傳值
-            window.open('@Url.Action("BrandList", "PublicWondow",new { Area=""})', 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("BrandList", "PublicWindow",new { Area=""})', 'Brand', config = 'toolbar=no,status=no,location=no,width=400,height=650');
         });
 
         $("#btnSeason").on('click', function () {
 
-            window.open('@Url.Action("SeasonList", "PublicWondow",new { Area=""})' + '?BrandID=' + $("#txtBrand").val(), 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
+            window.open('@Url.Action("SeasonList", "PublicWindow",new { Area=""})' + '?BrandID=' + $("#txtBrand").val(), 'Season', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
         });
 
         $("#btnStyle").on('click', function () {
 
             if ($("#txtBrand").val() != '' && $("#txtSeason").val() != '') {
-                window.open('@Url.Action("StyleList", "PublicWondow",new { Area=""})' + '?BrandID=' + $("#txtBrand").val() + '&SeasonID=' + $("#txtSeason").val(), 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
+                window.open('@Url.Action("StyleList", "PublicWindow",new { Area=""})' + '?BrandID=' + $("#txtBrand").val() + '&SeasonID=' + $("#txtSeason").val(), 'Style', config = 'toolbar=no,status=no,location=no,width=400,height=650');
             }
             else {
                 msg.WithInfo("Please key-in Brand, Season first.");
@@ -367,7 +367,7 @@
         @* Picture共用元件範例 *@
         @*$("#btnPicture").on('click', function () {
 
-            window.open('@Url.Action("TestFailMailList", "PublicWondow",new { Area=""})' + '?Title=PIC&FactoryID=ESP&Type=BulkFGT', 'Style', config = 'toolbar = no, status = no, location = no, width = 1000, height = 900' );
+            window.open('@Url.Action("TestFailMailList", "PublicWindow",new { Area=""})' + '?Title=PIC&FactoryID=ESP&Type=BulkFGT', 'Style', config = 'toolbar = no, status = no, location = no, width = 1000, height = 900' );
         });*@
 
 

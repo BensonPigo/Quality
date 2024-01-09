@@ -567,31 +567,78 @@
                                     {
                                         string rowName = $@"Row{i}";
                                         string resultColor = "blue";
-                                        <div class="DetailDataAreaItem1 colBody @rowName">
+
+                                        string st = string.Empty;
+
+                                        switch (Model.DetailList[i].EvaluationItem)
+                                        {
+                                            case "Specimen 1":
+                                                st = "border-bottom-width: 0px;";
+                                                break;
+                                            case "Specimen 2":
+                                                st =  "border-bottom-width: 0px;border-top-width: 0px;";
+                                                break;
+                                            case "Specimen 3":
+                                                st = "border-top-width: 0px;";
+                                                break;
+                                            default:
+                                                break;
+                                        }
+
+                                        <div class="DetailDataAreaItem1 colBody @rowName" style="@st">
                                             <input type="hidden" class="detailRowIdx" name="name" value="@i" />
                                             @*@Html.TextBoxFor(o => Model.DetailList[i].ReportNo, new { @class = "" })*@
                                             @Html.HiddenFor(o => Model.DetailList[i].ReportNo, new { @class = "" })
                                             @Html.HiddenFor(o => Model.DetailList[i].Ukey, new { @class = "" })
-                                            @Html.TextBoxFor(o => Model.DetailList[i].Side, new { @class = "" })
+                                            @if (Model.DetailList[i].EvaluationItem == "Specimen 2")
+                                            {
+                                                @Html.TextBoxFor(o => Model.DetailList[i].Side, new { @class = "",@style= "text-align:center;" })
+                                            }
+                                            else
+                                            {
+                                                @Html.HiddenFor(o => Model.DetailList[i].Side, new { @class = "" })
+                                            }
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
                                             @Html.TextBoxFor(o => Model.DetailList[i].EvaluationItem, new { @class = "" })
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
                                             <select id="DetailList_@Html.Raw(i)__FirstScale" name="DetailList[@i].FirstScale" class="CanEdit FirstScale" onchange="ScaleChange('@i', 'Result', '@Model.DetailList[i].Side')">
-                                                @foreach (var item in Model.Scale_Source)
+                                                @if (Model.DetailList[i].Side == "Face Side")
                                                 {
-                                                    string selected = item.Value.Equals(Model.DetailList[i].FirstScale) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                    foreach (var item in Model.FaceSideScale_Source)
+                                                    {
+                                                        string selected = item.Value.Equals(Model.DetailList[i].FirstScale) ? "selected" : "";
+                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                    }
+                                                }
+                                                @if (Model.DetailList[i].Side == "Back Side")
+                                                {
+                                                    foreach (var item in Model.BackSideScale_Source)
+                                                    {
+                                                        string selected = item.Value.Equals(Model.DetailList[i].FirstScale) ? "selected" : "";
+                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                    }
                                                 }
                                             </select>
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
                                             <select id="DetailList_@Html.Raw(i)__SecondScale" name="DetailList[@i].SecondScale" class="CanEdit SecondScale" onchange="ScaleChange('@i', 'Result', '@Model.DetailList[i].Side')">
-                                                @foreach (var item in Model.Scale_Source)
+                                                @if (Model.DetailList[i].Side == "Face Side")
                                                 {
-                                                    string selected = item.Value.Equals(Model.DetailList[i].SecondScale) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                    foreach (var item in Model.FaceSideScale_Source)
+                                                    {
+                                                        string selected = item.Value.Equals(Model.DetailList[i].SecondScale) ? "selected" : "";
+                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                    }
+                                                }
+                                                @if (Model.DetailList[i].Side == "Back Side")
+                                                {
+                                                    foreach (var item in Model.BackSideScale_Source)
+                                                    {
+                                                        string selected = item.Value.Equals(Model.DetailList[i].SecondScale) ? "selected" : "";
+                                                        <option value="@item.Value" @selected>@item.Text</option>
+                                                    }
                                                 }
                                             </select>
                                         </div>
@@ -600,7 +647,7 @@
                                                 bool IsEvenlyVal = Model.DetailList[i].IsEvenly;
                                             }
                                             @*<input id="DetailList_@{@i}__IsEvenly" name="DetailList[@i].IsEvenly" type="checkbox" class="bigSize Evenly" checked="@IsEvenlyVal">*@
-                                            @Html.CheckBox($@"DetailList[{i}].IsEvenly", IsEvenlyVal, new { @class = "bigSize CanEdit Evenly" })
+                                            @Html.CheckBox($@"DetailList[{i}].IsEvenly", IsEvenlyVal, new { @class = "bigSize CanEdit Evenly" ,@side = Model.DetailList[i].Side, @onchange= $"ScaleChange('{i}','Result','{Model.DetailList[i].Side}')" })
                                         </div>
                                         <div class="DetailDataAreaItem1 colBody @rowName">
                                             @{ resultColor = Model.DetailList[i].Result == "Fail" ? "red" : "blue";}
@@ -636,6 +683,7 @@
     $(function () {
         EditMode = false;
 
+        $("#Main_TestStandard").change();
         IsEditModeChange();
         if (EditType == 'New') {
             EditMode = true;
@@ -668,8 +716,8 @@
                 $('.CanEdit').removeAttr("disabled");
                 $('.CanEdit').removeAttr("readonly");
 
-                if ($("#Main_TestStandard").val() != 'Fleece/Polar Fleece') {
-                    $('.DetailDataAreaItem1 input[type="checkbox"]').attr("disabled", true);
+                if (EditType == 'New') {
+                    $("#Main_TestStandard").change();
                 }
 
                 // Report No不為空，表示不是新建單，部分欄位不可異動
@@ -722,7 +770,7 @@
 
         $("#Request_BrandID").blur(function () {
             $.ajax({
-                url: "@Url.Action("BrandList", "PublicWondow", new { Area = "" })",
+                url: "@Url.Action("BrandList", "PublicWindow", new { Area = "" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
@@ -742,7 +790,7 @@
         $("#Request_SeasonID").blur(function () {
             var BrandID = $('#Request_BrandID').val();
             $.ajax({
-                url: "@Url.Action("SeasonList", "PublicWondow", new { Area = "" })",
+                url: "@Url.Action("SeasonList", "PublicWindow", new { Area = "" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
@@ -763,7 +811,7 @@
             var BrandID = $('#Request_BrandID').val();
             var SeasonID = $('#Request_SeasonID').val();
             $.ajax({
-                url: "@Url.Action("StyleList", "PublicWondow", new { Area = "" })",
+                url: "@Url.Action("StyleList", "PublicWindow", new { Area = "" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
@@ -785,7 +833,7 @@
             var SeasonID = $('#Request_SeasonID').val();
             var StyleID = $('#Request_StyleID').val();
             $.ajax({
-                url: "@Url.Action("ArticleList", "PublicWondow", new { Area = "" })",
+                url: "@Url.Action("ArticleList", "PublicWindow", new { Area = "" })",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: StyleID, Article: $(this).val(), ReturnType: "JSON" }),
@@ -805,7 +853,7 @@
 
     function OpenWindow(WindowType) {
         if (WindowType == "BrandID") {
-            window.open('@Url.Action("BrandList", "PublicWondow", new { Area = "" })', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("BrandList", "PublicWindow", new { Area = "" })', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
         if (WindowType == "SeasonID") {
 
@@ -814,7 +862,7 @@
                 return;
             }
             var para = "?BrandID=" + $('#Request_BrandID').val();
-            window.open('@Url.Action("SeasonList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("SeasonList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
         if (WindowType == "StyleID") {
 
@@ -823,7 +871,7 @@
                 return;
             }
             var para = "?BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val();
-            window.open('@Url.Action("StyleList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("StyleList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
         if (WindowType == "Article") {
 
@@ -832,7 +880,7 @@
                 return;
             }
             var para = "?TargetID=Request_Article&OrderID=&StyleUkey=0&BrandID=" + $('#Request_BrandID').val() + "&SeasonID=" + $('#Request_SeasonID').val() + "&StyleID=" + $('#Request_StyleID').val();
-            window.open('@Url.Action("ArticleList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+            window.open('@Url.Action("ArticleList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
         }
         if (WindowType == "FabricRefNo" && EditMode) {
 
@@ -841,7 +889,7 @@
                 return;
             }
             var para = "?TargetID=Main_FabricRefNo&OrderID=" + $('#Main_OrderID').val();
-            window.open('@Url.Action("FabricRefNoList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
+            window.open('@Url.Action("FabricRefNoList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
         }
         if (WindowType == "InkType" && EditMode) {
 
@@ -854,7 +902,7 @@
                 return;
             }
             var para = `?TargetID=Main_TypeOfPrint&BrandID=${$('#Main_BrandID').val()}&SeasonID=${$('#Main_SeasonID').val()}&StyleID=${$('#Main_StyleID').val()}`;
-            window.open('@Url.Action("InkTypeList", "PublicWondow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
+            window.open('@Url.Action("InkTypeList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
         }
     }
 
@@ -904,6 +952,7 @@
         $('#Edit').on('click', function () {
             EditMode = true;
             IsEditModeChange();
+            $("#Main_TestStandard").change();
         });
         $('#Save').on('click', function () {
             if (EditMode == false) {
@@ -980,7 +1029,7 @@
             para += "&" + "AfterColumn=TestAfterPicture";
             para += "&" + "PKey_1=ReportNo";
             para += "&" + "PKey_1_Val=" + $('#Main_ReportNo').val();
-            window.open('@Url.Action("RandomTumblePillingTestPictureList", "PublicWondow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1800,height=750');
+            window.open('@Url.Action("RandomTumblePillingTestPictureList", "PublicWindow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1800,height=750');
         });
 
         $('#SendtoMR').on('click', function () {
@@ -1315,6 +1364,7 @@
 
         var firstScale = $(`#DetailList_${rowIdx}__FirstScale`);
         var secondScale = $(`#DetailList_${rowIdx}__SecondScale`);
+        var isEvenly = $(`#DetailList_${rowIdx}__IsEvenly`).prop('checked');
         var allResult = true;
         var standard = '3';
         var testStander = $("#Main_TestStandard").val();
@@ -1331,8 +1381,8 @@
             if (testStander == 'French Terry') {
                 standard = '2-3';
             }
-            if (testStander == 'Normal Fabric') {
-                standard = '3';
+            if (isEvenly != true) {
+                allResult = false;
             }
         }
 
@@ -1363,14 +1413,16 @@
         $(resultColumn).change();
     }
 
-
+    function EvenlyChange(rowIdx, resultColumnName, side) {
+        ScaleChange(rowIdx, resultColumnName, side);
+    }
 
     function TestStandardChange(obj) {
         var firstScales = $(".FisrtScale");
         var secondScales = $(".SecondScale");
         var evenlys = $(".Evenly");
 
-        // 只有Test Standard 為Fleece/Polar Fleece才可以用 Evenly
+        // 只有Test Standard 為Fleece/Polar Fleece && ack Side才可以用 Evenly
         if ($(obj).val() != 'Fleece/Polar Fleece') {
 
             evenlys.each(function () {
@@ -1380,7 +1432,15 @@
         }
         else {
             evenlys.each(function () {
-                $(this).removeAttr('disabled');
+                var side = $(this).attr('side');
+
+                if (side == 'Back Side') {
+                    $(this).removeAttr('disabled');
+                }
+                else {
+                    $(this).prop('checked', false);
+                    $(this).attr('disabled', 'disabled');
+                }
             });
         }
 

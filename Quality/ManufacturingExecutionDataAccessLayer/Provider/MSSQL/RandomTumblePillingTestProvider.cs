@@ -316,9 +316,19 @@ UPDATE RandomTumblePillingTest
       ,TestStandard = @TestStandard
 WHERE ReportNo = @ReportNo
 ;
-UPDATE PMSFile.dbo.RandomTumblePillingTest
-SET TestFaceSideBeforePicture=@TestFaceSideBeforePicture ,TestFaceSideAfterPicture=@TestFaceSideAfterPicture ,TestBackSideBeforePicture=@TestBackSideBeforePicture ,TestBackSideAfterPicture=@TestBackSideAfterPicture
-WHERE ReportNo = @ReportNo
+if exists(select 1 from PMSFile.dbo.RandomTumblePillingTest WHERE ReportNo = @ReportNo)
+begin
+    UPDATE PMSFile.dbo.RandomTumblePillingTest
+    SET TestFaceSideBeforePicture = @TestFaceSideBeforePicture , TestFaceSideAfterPicture=@TestFaceSideAfterPicture ,TestBackSideBeforePicture=@TestBackSideBeforePicture ,TestBackSideAfterPicture=@TestBackSideAfterPicture
+    WHERE ReportNo = @ReportNo
+end
+else
+begin
+    INSERT INTO PMSFile.dbo.RandomTumblePillingTest
+        ( ReportNo ,TestFaceSideBeforePicture ,TestFaceSideAfterPicture ,TestBackSideBeforePicture ,TestBackSideAfterPicture)
+    VALUES
+        ( @ReportNo ,@TestFaceSideBeforePicture ,@TestFaceSideAfterPicture ,@TestBackSideBeforePicture ,@TestBackSideAfterPicture)
+end
 ";
 
             return ExecuteNonQuery(CommandType.Text, mainSqlCmd.ToString(), objParameter);
@@ -483,9 +493,9 @@ WHERE ReportNo = @ReportNo
 select Technician = ISNULL(mp.Name,pp.Name)
 	   ,TechnicianSignture = t.Signature
 from RandomTumblePillingTest a
-left join Pass1 mp on mp.ID = a.EditName 
-left join MainServer.Production.dbo.Pass1 pp on pp.ID = a.EditName 
-left join MainServer.Production.dbo.Technician t on t.ID = a.EditName 
+left join Pass1 mp on mp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Pass1 pp on pp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Technician t on t.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
 where a.ReportNo = @ReportNo
 ;
 

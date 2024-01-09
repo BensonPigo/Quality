@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using static Sci.MyUtility;
+//using static Sci.MyUtility;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace BusinessLogicLayer.Service.BulkFGT
@@ -509,6 +509,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // 取得報表資料
                 DataSet reportDataSet = _Provider.GetReport(new AgingHydrolysisTest_Request() { ReportNo = ReportNo });
 
+                DataTable ReportTechnician = _Provider.GetReportTechnician(new AgingHydrolysisTest_Request() { ReportNo = ReportNo });
+
                 // AgingHydrolysisTest_Detail
                 DataTable agingHydrolysisTest_Detail = reportDataSet.Tables[0];
 
@@ -558,6 +560,32 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Mockup_Fail_TextBox.TextFrame.Characters().Text = "V";
                 }
 
+                // Technician 欄位
+                if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
+                {
+                    string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
+
+                    // 姓名
+                    worksheet.Cells[28, 5] = TechnicianName;
+
+                    // Signture 圖片
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[30, 5];
+                    if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                    {
+
+                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
+
+                        MemoryStream ms = new MemoryStream(TestBeforePicture);
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                        string imageName = $"{Guid.NewGuid()}.jpg";
+                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                        img.Save(imgPath);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
+                    }
+                }
+
                 string reportNo = agingHydrolysisTest_Detail.Rows[0]["ReportNo"].ToString();
                 worksheet.Cells[3, 2] = agingHydrolysisTest_Detail.Rows[0]["ReportNo"].ToString();
                 worksheet.Cells[3, 6] = agingHydrolysisTest_Detail.Rows[0]["OrderID"].ToString();
@@ -576,7 +604,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 worksheet.Cells[8, 2] = agingHydrolysisTest_Detail.Rows[0]["MaterialType"].ToString();
 
-                worksheet.Cells[28, 5] = agingHydrolysisTest_Detail.Rows[0]["Technician"].ToString();
+                string comment = agingHydrolysisTest_Detail.Rows[0]["Comment"].ToString();
+                worksheet.Cells[8, 6] = comment;
+
+                if (comment.Length > 45)
+                {
+                    int rowCTn = (comment.Length / 45) + 1;
+
+                    Microsoft.Office.Interop.Excel.Range rangeRow = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows[8, Type.Missing];
+                    rangeRow.RowHeight = 34.5 * rowCTn;
+                }
+                //worksheet.Cells[28, 5] = agingHydrolysisTest_Detail.Rows[0]["Technician"].ToString();
 
                 // 圖片
                 if (agingHydrolysisTest_Detail.Rows[0]["TestBeforePicture"] != DBNull.Value)

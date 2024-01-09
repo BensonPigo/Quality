@@ -636,6 +636,24 @@ WHERE ReportNo = @ReportNo
             return true;
         }
 
+        public DataTable GetReportTechnician(AgingHydrolysisTest_Request Req)
+        {
+            SQLParameterCollection paras = new SQLParameterCollection();
+            paras.Add("@ReportNo", Req.ReportNo);
+
+            string sqlCmd = $@"
+select Technician = ISNULL(mp.Name,pp.Name)
+	   ,TechnicianSignture = t.Signature
+from AgingHydrolysisTest_Detail a
+left join Pass1 mp on mp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Pass1 pp on pp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Technician t on t.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+where a.ReportNo = @ReportNo
+;
+
+";
+            return ExecuteDataTable(CommandType.Text, sqlCmd, paras);
+        }
         public DataSet GetReport(AgingHydrolysisTest_Request Req)
         {
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -658,6 +676,7 @@ select b.BrandID
 	,d.TestBeforePicture
 	,d.TestAfterPicture
 	,Technician = ISNULL(mp.Name,pp.Name)
+	,a.Comment
 from AgingHydrolysisTest_Detail a
 inner join AgingHydrolysisTest b on b.ID = a.AgingHydrolysisTestID
 left join PMSFile.dbo.AgingHydrolysisTest_Image  d on a.ReportNo = d.ReportNo

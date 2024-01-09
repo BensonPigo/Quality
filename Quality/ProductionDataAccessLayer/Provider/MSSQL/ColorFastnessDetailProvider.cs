@@ -75,7 +75,7 @@ select cd.ID
     ,cd.ResultAcrylic
     ,cd.WoolScale
     ,cd.ResultWool
-    ,cd.ResultStain,cd.Remark
+    ,cd.Remark
     ,[LastUpdate] = case 
         when cd.EditName !='' then CONCAT(cd.EditName,'-',pEdit.Name,pEdit.ExtNo)
         when cd.AddName !='' then CONCAT(cd.AddName,'-',pAdd.Name,pAdd.ExtNo)
@@ -109,16 +109,24 @@ order by cd.id,cd.ColorFastnessGroup
             };
 
             string sqlcmd = @"
-select cd.SubmitDate
+select [ReportNo] = c.ID
+		,cd.SubmitDate
         ,o.SeasonID
         ,o.BrandID
         ,o.StyleID
         ,c.POID
-        ,cd.Roll
+		,c.Article
+		,c.Temperature
+		,c.Cycle
+		,c.CycleTime
+		,c.Detergent
+		,c.Machine
+		,c.Drying
+		,cd.SEQ1
+		,cd.SEQ2
+		,cd.Roll
         ,cd.Dyelot
-        ,SCIRefno_Color = psd.SCIRefno + ' ' + pc.SpecValue
-        ,c.Temperature
-        ,c.CycleTime
+        ,SCIRefno_Color = psd.SCIRefno + ' ' + pc.SpecValue       
         ,cd.ChangeScale
         ,cd.AcetateScale
         ,cd.CottonScale
@@ -126,18 +134,21 @@ select cd.SubmitDate
         ,cd.PolyesterScale
         ,cd.AcrylicScale
         ,cd.WoolScale
-        ,cd.ResultChange
+		,cd.ResultChange
         ,cd.ResultAcetate
         ,cd.ResultCotton
         ,cd.ResultNylon
         ,cd.ResultPolyester
         ,cd.ResultAcrylic
         ,cd.ResultWool
-        ,cd.Remark
-        ,c.Inspector
+        ,cd.Result
+		,cd.Remark
+		,cd.StainingScale	
+        ,cd.ResultStain          
+        ,Signature = (select t.Signature from Technician t where t.ID = c.Inspector and t.Junk = 0)
         ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) where pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo)
         ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) where pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo)
-        ,[ReportNo] = c.ID
+		,[Checkby] = isnull(pEdit.Name, pAdd.Name)
 from ColorFastness_Detail cd WITH(NOLOCK)
 left join ColorFastness c WITH(NOLOCK) on c.ID =  cd.ID
 left join Orders o WITH(NOLOCK) on o.ID=c.POID
@@ -342,7 +353,7 @@ values(@ID,@POID,@TestNo,@TestBeforePicture,@TestAfterPicture)
                     sources.Details,
                     oldDetailData,
                     "ID,ColorFastnessGroup,SEQ1,SEQ2",
-                    "Roll,Dyelot,Remark,SubmitDate,Result,changeScale,ResultChange,AcetateScale,ResultAcetate,CottonScale,ResultCotton,NylonScale,ResultNylon,PolyesterScale,ResultPolyester,AcrylicScale,ResultAcrylic,WoolScale,ResultWool");
+                    "Roll,Dyelot,Remark,SubmitDate,Result,changeScale,ResultChange,StainingScale,ResultStain,AcetateScale,ResultAcetate,CottonScale,ResultCotton,NylonScale,ResultNylon,PolyesterScale,ResultPolyester,AcrylicScale,ResultAcrylic,WoolScale,ResultWool");
 
             #region save Details
 
@@ -361,7 +372,8 @@ insert into ColorFastness_Detail
         ,[AddName]
         ,[AddDate]
         ,[SubmitDate]
-
+        ,[StainingScale]
+        ,[ResultStain]
         ,[AcetateScale]
         ,[ResultAcetate]
         ,[CottonScale]
@@ -390,7 +402,8 @@ values
         ,@UserID
         ,GetDate()      
         ,@SubmitDate
-
+        ,@StainingScale
+        ,@ResultStain
         ,@AcetateScale
         ,@ResultAcetate
         ,@CottonScale
@@ -430,7 +443,8 @@ set
         ,[EditName] = @UserID
         ,[EditDate] = GetDate()
         ,[SubmitDate] = @SubmitDate
-
+        ,StainingScale=@StainingScale
+        ,ResultStain=@ResultStain
         ,AcetateScale=@AcetateScale
         ,ResultAcetate=@ResultAcetate
         ,CottonScale=@CottonScale
@@ -456,13 +470,14 @@ exec UpdateInspPercent 'LabColorFastness', @POID
             foreach (var detailItem in needUpdateDetailList)
             {   
                 SQLParameterCollection listDetailPar = new SQLParameterCollection();
-                string DetailResult = (detailItem.ResultChange.EqualString("Pass") 
-                    && detailItem.ResultAcetate.EqualString("Pass") 
-                    && detailItem.ResultCotton.EqualString("Pass") 
-                    && detailItem.ResultNylon.EqualString("Pass") 
-                    && detailItem.ResultPolyester.EqualString("Pass") 
-                    && detailItem.ResultAcrylic.EqualString("Pass") 
-                    && detailItem.ResultWool.EqualString("Pass")) ? "Pass" : "Fail";
+                string DetailResult = (detailItem.ResultChange.EqualString("Fail")
+                    || detailItem.ResultStain.EqualString("Fail")
+                    || detailItem.ResultAcetate.EqualString("Fail") 
+                    || detailItem.ResultCotton.EqualString("Fail") 
+                    || detailItem.ResultNylon.EqualString("Fail") 
+                    || detailItem.ResultPolyester.EqualString("Fail") 
+                    || detailItem.ResultAcrylic.EqualString("Fail") 
+                    || detailItem.ResultWool.EqualString("Fail")) ? "Fail" : "Pass";
 
                 switch (detailItem.StateType)
                 {
@@ -479,19 +494,20 @@ exec UpdateInspPercent 'LabColorFastness', @POID
                         listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? ""));
                         listDetailPar.Add(new SqlParameter($"@UserID", UserID));
                         listDetailPar.Add($"@SubmitDate", DbType.Date, detailItem.SubmitDate);
-
-                        listDetailPar.Add(new SqlParameter($"@AcetateScale", detailItem.AcetateScale));
-                        listDetailPar.Add(new SqlParameter($"@ResultAcetate", detailItem.ResultAcetate));
-                        listDetailPar.Add(new SqlParameter($"@CottonScale", detailItem.CottonScale));
-                        listDetailPar.Add(new SqlParameter($"@ResultCotton", detailItem.ResultCotton));
-                        listDetailPar.Add(new SqlParameter($"@NylonScale", detailItem.NylonScale));
-                        listDetailPar.Add(new SqlParameter($"@ResultNylon", detailItem.ResultNylon));
-                        listDetailPar.Add(new SqlParameter($"@PolyesterScale", detailItem.PolyesterScale));
-                        listDetailPar.Add(new SqlParameter($"@ResultPolyester", detailItem.ResultPolyester));
-                        listDetailPar.Add(new SqlParameter($"@AcrylicScale", detailItem.AcrylicScale));
-                        listDetailPar.Add(new SqlParameter($"@ResultAcrylic", detailItem.ResultAcrylic));
-                        listDetailPar.Add(new SqlParameter($"@WoolScale", detailItem.WoolScale));
-                        listDetailPar.Add(new SqlParameter($"@ResultWool", detailItem.ResultWool));
+                        listDetailPar.Add(new SqlParameter($"@StainingScale", detailItem.StainingScale ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ResultStain", detailItem.ResultStain ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@AcetateScale", detailItem.AcetateScale?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ResultAcetate", detailItem.ResultAcetate ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@CottonScale", detailItem.CottonScale ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ResultCotton", detailItem.ResultCotton ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@NylonScale", detailItem.NylonScale ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ResultNylon", detailItem.ResultNylon ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@PolyesterScale", detailItem.PolyesterScale ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ResultPolyester", detailItem.ResultPolyester ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@AcrylicScale", detailItem.AcrylicScale ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ResultAcrylic", detailItem.ResultAcrylic ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@WoolScale", detailItem.WoolScale ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ResultWool", detailItem.ResultWool ?? string.Empty));
 
                         ExecuteNonQuery(CommandType.Text, insertDetail, listDetailPar);
                         break;
@@ -508,19 +524,20 @@ exec UpdateInspPercent 'LabColorFastness', @POID
                         listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? ""));
                         listDetailPar.Add(new SqlParameter($"@UserID", UserID));
                         listDetailPar.Add($"@SubmitDate", DbType.Date, detailItem.SubmitDate);
-
-                        listDetailPar.Add(new SqlParameter($"@AcetateScale", detailItem.AcetateScale));
-                        listDetailPar.Add(new SqlParameter($"@ResultAcetate", detailItem.ResultAcetate));
-                        listDetailPar.Add(new SqlParameter($"@CottonScale", detailItem.CottonScale));
-                        listDetailPar.Add(new SqlParameter($"@ResultCotton", detailItem.ResultCotton));
-                        listDetailPar.Add(new SqlParameter($"@NylonScale", detailItem.NylonScale));
-                        listDetailPar.Add(new SqlParameter($"@ResultNylon", detailItem.ResultNylon));
-                        listDetailPar.Add(new SqlParameter($"@PolyesterScale", detailItem.PolyesterScale));
-                        listDetailPar.Add(new SqlParameter($"@ResultPolyester", detailItem.ResultPolyester));
-                        listDetailPar.Add(new SqlParameter($"@AcrylicScale", detailItem.AcrylicScale));
-                        listDetailPar.Add(new SqlParameter($"@ResultAcrylic", detailItem.ResultAcrylic));
-                        listDetailPar.Add(new SqlParameter($"@WoolScale", detailItem.WoolScale));
-                        listDetailPar.Add(new SqlParameter($"@ResultWool", detailItem.ResultWool));
+                        listDetailPar.Add(new SqlParameter($"@StainingScale", detailItem.StainingScale ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ResultStain", detailItem.ResultStain ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@AcetateScale", detailItem.AcetateScale ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ResultAcetate", detailItem.ResultAcetate ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@CottonScale", detailItem.CottonScale ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ResultCotton", detailItem.ResultCotton ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@NylonScale", detailItem.NylonScale ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ResultNylon", detailItem.ResultNylon ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@PolyesterScale", detailItem.PolyesterScale ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ResultPolyester", detailItem.ResultPolyester ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@AcrylicScale", detailItem.AcrylicScale ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ResultAcrylic", detailItem.ResultAcrylic ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@WoolScale", detailItem.WoolScale ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@ResultWool", detailItem.ResultWool ?? string.Empty));
                         ExecuteNonQuery(CommandType.Text, updateDetail, listDetailPar);
                         break;
                     case DatabaseObject.Public.CompareStateType.Delete:

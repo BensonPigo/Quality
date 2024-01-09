@@ -6,12 +6,15 @@ using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Microsoft.Office.Interop.Excel;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Org.BouncyCastle.Ocsp;
 using Sci;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Web.UI.WebControls;
 
 namespace BusinessLogicLayer.Service.BulkFGT
@@ -85,14 +88,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
 
 
-        public PullingTest_Result GetStandard(string BrandID, string TestItem, string PullForceUnit)
+        public PullingTest_Result GetStandard(string BrandID, string TestItem, string PullForceUnit, string StyleType)
         {
             PullingTest_Result result = new PullingTest_Result();
 
             try
             {
                 _PullingTestProvider = new PullingTestProvider(Common.ProductionDataAccessLayer);
-                result = _PullingTestProvider.GetStandard(BrandID, TestItem, PullForceUnit);
+                result = _PullingTestProvider.GetStandard(BrandID, TestItem, PullForceUnit, StyleType);
             }
             catch (Exception ex)
             {
@@ -188,6 +191,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 System.Data.DataTable dt = _PullingTestProvider.GetData_DataTable(ReportNo);
+                Report_Result baseResult = GetPDF(ReportNo);
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
 
                 string unit = dt.Rows[0]["PullForceUnit"].ToString();
                 dt.Columns["PullForceUnit"].ColumnName = unit;
@@ -201,6 +206,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Subject = "Pulling Test - Test Fail",
                     //Body = mailBody,
                     //alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
                     IsShowAIComment = true,
                     AICommentType = "Pulling test for Snap/Button/Rivet",
                     StyleID = dt.Rows[0]["StyleID"].ToString(),
@@ -260,6 +266,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 PullingTest_Result model = _PullingTestProvider.GetData(ReportNo);
 
+                System.Data.DataTable ReportTechnician = _PullingTestProvider.GetReportTechnician(ReportNo);
+
                 string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx"; ;
                 if (this.IsTest)
                 {
@@ -288,6 +296,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 worksheet.Cells[9, 2] = model.FabricRefno;
                 worksheet.Cells[9, 4] = model.AccRefno;
                 worksheet.Cells[10, 2] = model.SnapOperator;
+                worksheet.Cells[10, 4] = model.Result;
                 worksheet.Cells[12, 1] = model.Remark;
                 worksheet.Cells[22, 4] = model.AddName;
 
@@ -308,21 +317,50 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
 
                     img.Save(imgPath);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 60, 24);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, cell.Width - 10, cell.Height - 10);
                 }
 
-                cell = worksheet.Cells[15, 1];
-                if (model.TestBeforePicture != null)
+
+                // Technician 欄位
+                if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.TestBeforePicture, model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: this.IsTest);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 240, 100);
+                    string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
+
+                    // 姓名
+                    worksheet.Cells[22, 4] = TechnicianName;
+
+                    // Signture 圖片
+                    cell = worksheet.Cells[23, 4];
+                    if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                    {
+
+                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
+
+                        MemoryStream ms = new MemoryStream(TestBeforePicture);
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                        string imageName = $"{Guid.NewGuid()}.jpg";
+                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                        img.Save(imgPath);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
+                    }
                 }
 
-                cell = worksheet.Cells[15, 3];
-                if (model.TestAfterPicture != null)
+                // TestBeforePicture 圖片
+                if (model.TestBeforePicture != null && model.TestBeforePicture.Length > 1)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.TestAfterPicture, model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: this.IsTest);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5 , cell.Top + 5, 240, 100);
+                    cell = worksheet.Cells[15, 1];
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.TestBeforePicture, model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
+                }
+
+                // TestAfterPicture 圖片
+                if (model.TestAfterPicture != null && model.TestAfterPicture.Length > 1)
+                {
+                    cell = worksheet.Cells[15, 3];
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.TestAfterPicture, model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
 
                 #region Save & Show Excel

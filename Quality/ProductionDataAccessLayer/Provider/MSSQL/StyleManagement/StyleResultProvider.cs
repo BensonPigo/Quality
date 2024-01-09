@@ -57,10 +57,9 @@ select StyleID=a.ID,StyleUkey=Cast(a.Ukey AS VARCHAR),a.BrandID,a.SeasonID ,Orde
 from Production.dbo.Style a
 inner join Production.dbo.OrderType b on a.BrandID=b.BrandID
 where a.Junk = 0 AND b.Junk =0 
-and b.Category = 'B'
+and b.Category = 'S'
 AND a.Ukey = {Req.StyleUkey}
 AND b.SerialKey = {Req.OrderTypeSerialKey}
-
 ");
             //if (!string.IsNullOrWhiteSpace(Req.StyleUkey))
             //{

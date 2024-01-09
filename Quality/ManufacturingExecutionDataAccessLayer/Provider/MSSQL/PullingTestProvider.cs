@@ -95,6 +95,7 @@ select    p.ReportNo
         ,p.Gender
         ,[AddName] = a.name
         ,[Signature] = (select t.Signature from [MainServer].Production.dbo.Technician t where t.ID = p.AddName and t.Junk = 0)
+        ,p.StyleType
 from PullingTest p WITH(NOLOCK)
 left join Production.dbo.Pass1 a WITH(NOLOCK) ON a.ID=p.AddName 
 left join Production.dbo.Pass1 e WITH(NOLOCK) ON e.ID=p.EditName
@@ -110,6 +111,24 @@ where p.ReportNo = @ReportNo
             return res.Any() ? res.FirstOrDefault() : new PullingTest_Result();
         }
 
+        public DataTable GetReportTechnician(string ReportNo)
+        {
+            SQLParameterCollection paras = new SQLParameterCollection();
+            paras.Add("@ReportNo", ReportNo);
+
+            string sqlCmd = $@"
+select Technician = ISNULL(mp.Name,pp.Name)
+	   ,TechnicianSignture = t.Signature
+from PullingTest a
+left join Pass1 mp on mp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Pass1 pp on pp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Technician t on t.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+where a.ReportNo = @ReportNo
+;
+
+";
+            return ExecuteDataTable(CommandType.Text, sqlCmd, paras);
+        }
         public PullingTest_Result CheckSP(string POID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -155,7 +174,7 @@ where BrandID = @BrandID
             return res.Any() ? res.FirstOrDefault() : new PullingTest_Result();
         }
 
-        public PullingTest_Result GetStandard(string BrandID, string TestItem, string PullForceUnit)
+        public PullingTest_Result GetStandard(string BrandID, string TestItem, string PullForceUnit, string StyleType)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
 
@@ -166,11 +185,13 @@ from Production.dbo.Brand_PullingTestStandarList  WITH(NOLOCK)
 where BrandID = @BrandID 
 AND TestItem = @TestItem 
 AND PullForceUnit = @PullForceUnit 
+AND StyleType = @StyleType
 ";
 
             objParameter.Add("BrandID", DbType.String, BrandID);
             objParameter.Add("TestItem", DbType.String, TestItem);
             objParameter.Add("PullForceUnit", DbType.String, PullForceUnit);
+            objParameter.Add("StyleType", DbType.String, StyleType);
             List<PullingTest_Result> res = ExecuteList<PullingTest_Result>(CommandType.Text, SbSql, objParameter).ToList();
 
             return res.Any() ? res.FirstOrDefault() : new PullingTest_Result();
@@ -201,6 +222,7 @@ AND PullForceUnit = @PullForceUnit
                 { "@Remark", DbType.String, Req.Remark ?? "" } ,
                 { "@AddName", DbType.String, Req.AddName ?? "" } ,
                 { "@Gender", DbType.String, Req.Gender ?? "" } ,
+                { "@StyleType", DbType.String, Req.StyleType ?? "" } ,
             };
 
             if (Req.TestBeforePicture != null)
@@ -246,7 +268,8 @@ INSERT INTO PullingTest
                     ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
            ,AddDate
            ,AddName
-           ,Gender)
+           ,Gender
+           ,StyleType)
 VALUES(    
             (   ---流水號處理
                 select REPLACE( @ReportNo ,'%','') + ISNULL(REPLICATE('0',4-len( CAST( CAST( RIGHT( max(ReportNo),3) as int) + 1 as varchar) ))+ CAST( CAST( RIGHT( max(ReportNo),3) as int) + 1 as varchar),'0001')
@@ -273,7 +296,8 @@ VALUES(
 
            ,GETDATE()
            ,@AddName
-           ,@Gender)
+           ,@Gender
+           ,@StyleType)
 
 INSERT INTO SciPMSFile_PullingTest
            (ReportNo
@@ -349,42 +373,40 @@ VALUES(
             modifyCol += $@"        ,Time = @Time " + Environment.NewLine;
             objParameter.Add("@Time", DbType.Int32, Req.Time);
 
-            if (!string.IsNullOrEmpty(Req.FabricRefno))
-            {
-                modifyCol += $@"        ,FabricRefno = @FabricRefno " + Environment.NewLine;
-                objParameter.Add("@FabricRefno", DbType.String, Req.FabricRefno ?? "");
-            }
+            //FabricRefno
+            modifyCol += $@"        ,FabricRefno = @FabricRefno " + Environment.NewLine;
+            objParameter.Add("@FabricRefno", DbType.String, Req.FabricRefno ?? "");
 
-            if (!string.IsNullOrEmpty(Req.AccRefno))
-            {
-                modifyCol += $@"        ,AccRefno = @AccRefno " + Environment.NewLine;
-                objParameter.Add("@AccRefno", DbType.String, Req.AccRefno ?? "");
-            }
-            if (!string.IsNullOrEmpty(Req.SnapOperator))
-            {
-                modifyCol += $@"        ,SnapOperator = @SnapOperator " + Environment.NewLine;
-                objParameter.Add("@SnapOperator", DbType.String, Req.SnapOperator ?? "");
-            }
-            if (!string.IsNullOrEmpty(Req.Remark))
-            {
-                modifyCol += $@"        ,Remark = @Remark " + Environment.NewLine;
-                objParameter.Add("@Remark", DbType.String, Req.Remark ?? "");
-            }
+            //AccRefno
+            modifyCol += $@"        ,AccRefno = @AccRefno " + Environment.NewLine;
+            objParameter.Add("@AccRefno", DbType.String, Req.AccRefno ?? "");
+
+            //SnapOperator
+            modifyCol += $@"        ,SnapOperator = @SnapOperator " + Environment.NewLine;
+            objParameter.Add("@SnapOperator", DbType.String, Req.SnapOperator ?? "");
+
+            //Remark
+            modifyCol += $@"        ,Remark = @Remark " + Environment.NewLine;
+            objParameter.Add("@Remark", DbType.String, Req.Remark ?? "");
+
             if (!string.IsNullOrEmpty(Req.EditName))
             {
                 modifyCol += $@"        ,EditName = @EditName " + Environment.NewLine;
                 objParameter.Add("@EditName", DbType.String, Req.EditName ?? "");
             }
-            if (!string.IsNullOrEmpty(Req.Gender))
-            {
-                modifyCol += $@"        ,Gender = @Gender " + Environment.NewLine;
-                objParameter.Add("@Gender", DbType.String, Req.Gender ?? "");
-            }
-            if (!string.IsNullOrEmpty(Req.Inspector))
-            {
-                modifyCol += $@"        ,Inspector = @Inspector " + Environment.NewLine;
-                objParameter.Add("@Inspector", DbType.String, Req.Inspector ?? "");
-            }
+
+            //Gender
+            modifyCol += $@"        ,Gender = @Gender " + Environment.NewLine;
+            objParameter.Add("@Gender", DbType.String, Req.Gender ?? "");
+
+            //Inspector
+            modifyCol += $@"        ,Inspector = @Inspector " + Environment.NewLine;
+            objParameter.Add("@Inspector", DbType.String, Req.Inspector ?? "");
+
+            // StyleType
+            modifyCol += $@"        ,StyleType = @StyleType " + Environment.NewLine;
+            objParameter.Add("@StyleType", DbType.String, Req.StyleType ?? "");
+
             modifyPicCol += $@"        ,TestBeforePicture = @TestBeforePicture " + Environment.NewLine;
             modifyPicCol += $@"        ,TestAfterPicture = @TestAfterPicture " + Environment.NewLine;
             if (Req.TestBeforePicture != null)

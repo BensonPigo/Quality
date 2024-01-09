@@ -662,8 +662,58 @@
                 return;
             }
 
+            // 針對輸入的value進行約分
+            var vi = 0, vd = 0, vm = 0;
+
+            if (val.toString().indexOf(' ') > -1) {
+                vi = val.substr(0, val.toString().indexOf(' '));
+            }
+            else if (val.toString().indexOf(" ") < 0 && val.toString().indexOf('/') < 0) {
+                vi = val;
+            }
+
+            if (val.toString().indexOf(" ") > -1) {
+                intVal = val.substr(0, val.toString().indexOf(' '));
+            }
+            else if (val.toString().indexOf(" ") < 0 && val.toString().indexOf('/') < 0) {
+                intVal = val;
+            }
+            if (val.toString().indexOf('/') > -1) {
+                vd = val.substr(val.toString().indexOf(' ') + 1, val.toString().indexOf('/') - 1 - val.toString().indexOf(' '));
+                vm = val.substr(val.toString().indexOf('/') + 1, val.length - 1 - val.toString().indexOf('/'));
+
+                vi = parseInt(vi);
+                vd = parseInt(vd);
+                vm = parseInt(vm);
+
+                // 分子大於分母
+                if (vd > vm && vm > 0) {
+                    vi = parseInt(vi + (vd / vm));
+                    vd = vd % vm;
+                }
+                else if (vd == vm && vm > 0) {
+                    vi = parseInt(vi + (vd / vm));
+                    vd = 0;
+                    vvm = 0;
+                }
+
+                if (vi > 0 && vd > 0 && vm > 0) {
+                    val = vi + ' ' + vd + '/' + vm;
+                }
+                else {
+                    val = vi;
+                }
+                $(this).val(val);
+            }
+            else {
+                vd = 1;
+                vm = 1;
+                vi = vi - 1;
+            }
+
+
             // 計算Diff
-            if (standard.indexOf('/') > -1) {
+            if (standard.indexOf('/') > -1 || val.toString().indexOf('/') > -1) {
                 if (standard.toString().indexOf('.') > -1) {
                     return;
                 }

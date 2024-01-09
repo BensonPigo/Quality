@@ -1,0 +1,968 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model DatabaseObject.ResultModel.FabricCrkShrkTestIron_Result
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />
+<style type="text/css">
+
+    .input-group {
+        display: flex
+    }
+
+    .input-group > input:nth-child(1) {
+        flex-grow: 2
+    }
+
+        .input-group > input:nth-child(2) {
+            flex-grow: 1
+        }
+
+    tr.row-name {
+        color: black;
+    }
+
+    .row {
+        --bs-gutter-x: 1.5rem;
+        --bs-gutter-y: 0;
+        display: flex;
+        flex-wrap: wrap;
+        width: 95vw;
+        margin-top: calc(var(--bs-gutter-y) * -1);
+        margin-right: calc(var(--bs-gutter-x)/ -2);
+        margin-left: calc(var(--bs-gutter-x)/ -2);
+    }
+
+    .button {
+        background-color: #E00000; /* Red */
+        border: none;
+        color: white;
+        padding: 6px 16px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    .row > * {
+        flex-shrink: 0;
+        width: 100%;
+        max-width: 100%;
+        padding-left: calc(var(--bs-gutter-x)/ 2);
+    }
+
+    .col-auto {
+        width: auto;
+    }
+
+        .col-auto > p {
+            padding: 0
+        }
+
+    .White {
+        color: white !important;
+    }
+
+    .Black {
+        color: black !important;
+    }
+
+    .IsEditMode {
+        color: white !important;
+        cursor: pointer;
+    }
+
+    .IsEditModeQuery {
+        color: gray !important;
+        cursor: no-drop;
+    }
+
+    #ButtonMode {
+        width: 82vw;
+    }
+
+    #myCartons_info, #myEndlineMoisture_info, #myView_info {
+        color: white
+    }
+
+    .table_div tr td:nth-child(2n+1) {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+
+    .DataTable {
+        width: 82vw;
+        font-size: 1rem;
+        font-weight: bold;
+        border: solid 1px black;
+        background-color: white;
+    }
+
+    .DataTable > tbody img {
+        cursor: pointer;
+    }
+
+    .DataTable > tbody > tr:nth-of-type(odd) {
+        background-color: #ffffff;
+    }
+
+    .DataTable > tbody > tr:nth-of-type(even) {
+        background-color: #F0F2F2;
+    }
+
+    .DataTable > tbody > tr > td {
+        border: solid 1px gray;
+        padding: 0.5em;
+        vertical-align: middle;
+    }
+    .width6vw {
+        width: 6vw;
+    }
+
+    .width8vw {
+        width: 8vw;
+    }
+
+    .width9vw {
+        width: 9vw;
+    }
+</style>
+@using (Html.BeginForm("IronTestSave", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { id = "DetailForm" }))
+{
+    <div class="main-content">
+        <header class="page-header">
+            <h3>
+                <span>Fabric Crocking & Shrinkage Test</span>
+            </h3>
+            <div class="breadcrumb">
+                <div>Home</div>
+                <div>Fabric Crocking & Shrinkage Test</div>
+                <div class="current">IronTest</div>
+            </div>
+        </header>
+        <div class="main-area">
+            <div class="content-scroll">
+                <div class="inner-scroll">
+                    <div>
+                        @*按鈕*@
+                        <div>
+                            <table id="ButtonMode">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <h4 id="Exit" style="margin-right: 1em;">
+                                                <a href="@Url.Action("IndexBack", ViewContext.RouteData.GetRequiredString("Controller"), new { POID = Model.Iron_Main.POID })">
+                                                    <img src="~/Image/Icon/Exit.png" width="30" />
+                                                    Exit
+                                                </a>
+                                            </h4>
+                                        </td>
+
+                                        <td>
+                                            <h4 id="Edit" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/Edit.png" width="30" />
+                                                Edit
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="Save" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/Save.png" width="30" />
+                                                Save
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="Encode" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/Lock.png" width="30" />
+                                                Encode
+                                            </h4>
+                                        </td>
+
+                                        <td>
+                                            <h4 id="Amend" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/Unlock.png" width="30" />
+                                                Amend
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="Excel" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/XLS.png" width="40" />
+                                                Excel
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="SendMail" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/SendMail.png" width="30" />
+                                                Send to MR
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 id="Picture" style="margin-right: 1em;">
+                                                <img src="~/Image/Icon/Camera.png" width="30" />
+                                                Picture
+                                            </h4>
+                                        </td>
+                                        <td style="width: 20%;">
+                                        </td>
+                                        <td align="right">
+                                            <h4 id="New" style=" margin-right: 1em;">
+                                                <img src="~/Image/Icon/New.png" width="30" />
+                                                New Item
+                                            </h4>
+                                        </td>
+</tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div>
+                        @*主-明細*@
+                        <div style="margin-top: 1em;">
+                            <table class="DataTable MainTable">
+                                <tbody>
+                                    @if (Model != null)
+                                    {
+                                        @Html.HiddenFor(o => o.ID)
+                                        @Html.HiddenFor(o => o.Iron_Main.IronTestBeforePicture)
+                                        @Html.HiddenFor(o => o.Iron_Main.IronTestAfterPicture)
+                                    }
+
+                                    <tr>
+                                        <td style="width: 10vw;"><h5>SP#</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DisplayFor(o => o.Iron_Main.POID)
+                                        </td>
+                                        <td style="width: 10vw;"><h5>SEQ#</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DisplayFor(o => o.Iron_Main.SEQ)
+                                        </td>
+                                        <td style="width: 10vw;"><h5>Color</h5></td>
+                                        <td style="width: 20vw;">
+                                            @Html.DisplayFor(o => o.Iron_Main.ColorID)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Arrive Qty</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Iron_Main.ArriveQty)
+                                        </td>
+                                        <td><h5>Arrive W/H Date</h5></td>
+                                        <td>
+                                            @Html.ValueFor(o => o.Iron_Main.WhseArrival, "{0:yyyy/MM/dd}")
+                                        </td>
+                                        <td><h5>WK#</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Iron_Main.ExportID)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Supp</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Iron_Main.Supp)
+                                        </td>
+                                        <td><h5>Result</h5></td>
+                                        <td>
+                                            @{
+                                                string styleColor = "";
+                                                if (Model.Iron_Main.Iron == "Pass")
+                                                {
+                                                    styleColor = "blue";
+                                                }
+                                                else
+                                                {
+                                                    styleColor = "red";
+                                                }
+                                            }
+                                            <font class="@styleColor">@Html.DisplayFor(o => o.Iron_Main.Iron)</font>
+                                        </td>
+                                        <td><h5>Last Inspeciton Date</h5></td>
+                                        <td>
+                                            @Html.ValueFor(o => o.Iron_Main.IronDate, "{0:yyyy/MM/dd}")
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Style#</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Iron_Main.StyleID)
+                                        </td>
+                                        <td><h5>SCI Refno</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Iron_Main.SCIRefno)
+                                        </td>
+                                        <td><h5>Iron Inspector</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Iron_Main.Name)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Brand</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Iron_Main.BrandID)
+                                        </td>
+                                        <td><h5>Brand Refno</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Iron_Main.Refno)
+                                        </td>
+                                        <td><h5>N/A</h5></td>
+                                        <td>
+                                            @Html.CheckBox("Iron_Main.NonIron", Convert.ToBoolean(Model.Iron_Main.NonIron), new { @disabled = "disabled" })
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Description</h5></td>
+                                        <td colspan="5">
+                                            @Html.DisplayFor(o => o.Iron_Main.DescDetail)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>Remark</h5></td>
+                                        <td colspan="5">
+                                            @Html.TextBoxFor(o => o.Iron_Main.IronRemark, new { @style = "width:100%", @disabled = "disabled" })
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1em; overflow:auto">
+                        <table cellspacing="100" id="Iron_Detail" class="DataTable DetailTable table table-striped display;">
+                            <thead>
+                                <tr class="row-name" id="row-name">
+                                    <th style="width:5vw">Roll#</th>
+                                    <th style="width:5vw">Dyelot</th>
+                                    <th style="width:5vw">Original Horizontal</th>
+                                    <th style="width:5vw"> Original Vertical</th>
+                                    <th style="width:5vw">Result</th>
+                                    <th style="width:5vw">Horizontal 1</th>
+                                    <th style="width:5vw">Horizontal 2</th>
+                                    <th style="width:5vw">Horizontal 3</th>
+                                    <th style="width:5vw">Horizontal Average</th>
+
+                                    <th style="width:5vw">Horizontal Shrinkage Rate</th>
+                                    <th style="width:5vw">Vertical 1</th>
+                                    <th style="width:5vw">Vertical 2</th>
+                                    <th style="width:5vw">Vertical 3</th>
+                                    <th style="width:5vw">Vertical Average</th>
+                                    <th style="width:5vw">Vertical Shrinkage Rate</th>
+                                    <th style="width:5vw">Test Date</th>
+                                    <th style="width:5vw">Lab Tech</th>
+                                    <th style="width:5vw">Name</th>
+                                    <th style="width:5vw">Remark</th>
+                                    <th style="width:5vw">Last update</th>
+                                    <th style="width:5vw"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Iron_Detail.Count; i++)
+                                {
+                                    <tr idx="@i" class="row-content" style="vertical-align: middle; text-align: center;">
+                                        <td>
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].Roll, new { @class = "inputRollSelectItem width6vw" })
+                                                <input type="button" class="site-btn btn-blue btnRollSelectItem" style="margin:0;border:0;" value="..." />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].Dyelot, new { @class = "inputRollSelectItem width8vw" })
+                                                <input type="button" class="site-btn btn-blue btnRollSelectItem" style="margin:0;border:0;" value="..." />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].HorizontalOriginal, new { @class = "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].VerticalOriginal, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
+                                        </td>
+                                        <td>
+                                            @{
+                                                if (Model.Iron_Detail[i].Result == "Pass")
+                                                {
+                                                    styleColor = "blue width6vw";
+                                                }
+                                                else
+                                                {
+                                                    styleColor = "red width6vw";
+                                                }
+                                            }
+                                            <select id="Iron_Detail_@{@i}_Result" name="Iron_Detail[@i].Result" disabled="disabled" class="@styleColor" onchange="changeResultColor(this)">
+                                                @foreach (var item in (List<SelectListItem>)ViewBag.ResultList)
+                                                {
+                                                    string selected = item.Text.Equals(Model.Iron_Detail[i].Result) ? "selected" : "";
+                                                    <option value="@item.Value" @selected>@item.Text</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].HorizontalTest1, new { @class= "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].HorizontalTest2, new { @class = "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].HorizontalTest3, new { @class = "HorizontalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].HorizontalAverage, new { @type = "number", @step = "0.01", @readonly="readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].HorizontalRate, new { @type = "number", @step = "0.01", @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].VerticalTest1, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].VerticalTest2, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].VerticalTest3, new { @class = "VerticalTest", @type = "number", @step = "0.01", @min = "0", @max = "100", @onchange = "value=QtyCheck(value)" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].VerticalAverage, new { @type = "number", @step = "0.01", @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].VerticalRate, new { @type = "number", @step = "0.01", @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].Inspdate, "{0:yyyy/MM/dd}", new { @class = "date-picker width9vw" })
+                                        </td>
+                                        <td>
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].Inspector, new { @class = "inputInspectorSelectItem" })
+                                                <input id="btnDetailInspectorSelectItem" type="button" class="site-btn btn-blue btnInspectorSelectItem" style="margin:0;border:0;" value="..." />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].Name, new { @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].Remark)
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Detail[i].LastUpdate, new { @readonly = "readonly" })
+                                        </td>
+                                        <td>
+                                            <img class='detailDelete' src="~/Image/Icon/Delete.png" style="min-width:30px">
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+         </div>
+    </div>
+}
+<script type="text/javascript">
+    var msg;
+    var EditMode;
+    var True = true;
+    var False = false;
+    var poid = '@Model.Iron_Main.POID';
+    var seq1 = '@Model.Iron_Main.SEQ'.split(' ')[0];
+    var seq2 = '@Model.Iron_Main.SEQ'.split(' ')[1];
+
+    $(function () {
+        msg = new MessagerAlert();
+        EditMode = false;
+        @Html.Raw(Model.ErrorMessage);
+        IsEditModeChange();
+    });
+
+    function IsEditModeChange() {
+        EditModeButtionBind();
+        $('#Picture').addClass("IsEditMode");
+        // 按編輯為控制disabled，如果是編輯模式下不給使用者操作，請在元件身上加上readonly
+        if (EditMode) {
+
+            $("#Edit, #Encode, #Amend, #Excel ,#SendMail").removeClass("IsEditMode");
+            $('#Encode, #Amend, #Excel ,#SendMail').unbind('click');
+
+            $('#Save, #New').addClass("IsEditMode");
+            $(".DataTable:not(.DetailTable) textarea").removeAttr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select, #Iron_Main_IronRemark").removeAttr("disabled", "disabled");
+            $(".detailDelete").show();
+            DetailButtonBind();
+        }
+        else {
+            $('#Save, #New').unbind('click').removeClass("IsEditMode");
+            $(".DataTable:not(.DetailTable) textarea").attr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select, #Iron_Main_IronRemark").attr("disabled", "disabled");
+            $(".detailDelete").hide();
+            $('#Excel ,#SendMail').addClass("IsEditMode");
+
+            if (@Model.Iron_Main.IronEncode == false) {
+                $("#Edit, #Encode").addClass("IsEditMode");
+                $("#Amend").unbind('click');
+            }
+
+            if (@Model.Iron_Main.IronEncode == true) {
+                $("#Amend").addClass("IsEditMode");
+                $("#Edit, #Encode").unbind('click');
+            }
+        }
+    }
+
+    function EditModeButtionBind() {
+        $('#Edit').on('click', function () {
+            if ('@Model.ID' != '') {
+                EditMode = true;
+                IsEditModeChange();
+            }
+        });
+
+        $('#Save').on('click', function (e) {
+            var detail = [];
+            var ErrMsg = "";
+
+            $('.DetailTable > tbody > tr').each(function (index, data) {
+                var idx = $(this).closest('tr').attr('idx');
+                var roll = $('Iron_Detail__' + idx + '__Roll').val();
+                var dyelot = $('#Iron_Detail_' + idx + '__Dyelot').val();
+                var inspector = $('#Iron_Detail_' + idx + '__Inspector').val();
+                var restult = $('#Iron_Detail_' + idx + '__Result').val();
+
+                if (roll == "" || dyelot == "") {
+                    ErrMsg += "Roll and Dyelot cannot be empty";
+                    return false;
+                }
+
+                var checkValue = [];
+                checkValue.push($('#Iron_Detail_' + idx + '__HorizontalOriginal').val());
+                checkValue.push($('#Iron_Detail_' + idx + '__VerticalOriginal').val());
+
+                checkValue.push($('#Iron_Detail_' + idx + '__HorizontalTest1').val());
+                checkValue.push($('#Iron_Detail_' + idx + '__HorizontalTest2').val());
+                checkValue.push($('#Iron_Detail_' + idx + '__HorizontalTest3').val());
+                checkValue.push($('#Iron_Detail_' + idx + '__VerticalTest1').val());
+                checkValue.push($('#Iron_Detail_' + idx + '__VerticalTest2').val());
+                checkValue.push($('#Iron_Detail_' + idx + '__VerticalTest3').val());
+
+                if (checkValue.includes("") || checkValue.includes(null)) {
+                    ErrMsg += "Horizontal and Vertical cannot be empty.";
+                    return false;
+                }
+
+                if (inspector == "") {
+                    ErrMsg += "Lab Tech cannot be empty";
+                    return false;
+                }
+
+                if (restult == "") {
+                    ErrMsg += "Result cannot be empty";
+                    return false;
+                }
+            });
+
+            if (ErrMsg != "") {
+                msg.WithError(ErrMsg);
+                return;
+            }
+
+            // 重新調整index 順序。
+            $('.DetailTable > tbody > tr').each(function (index, data) {
+                var idx = $(this).closest('tr').attr('idx');
+                if (idx != index) {
+                    $.each($(this).find("input[id^='Iron_Detail']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+
+                    $.each($(this).find("select[id^='Iron_Detail']"), function () {
+                        var tableName = $(this).attr('name').substr(0, $(this).attr('name').indexOf("["));
+                        var rollName = $(this).attr('name').substr($(this).attr('name').indexOf("]") + 2, $(this).attr('name').length - $(this).attr('name').indexOf("]"));
+                        $(this).attr("id", tableName + "_" + index.toString() + "__" + rollName);
+                        $(this).attr("name", tableName + "[" + index.toString() + "]." + rollName);
+                    });
+                }
+            });
+
+            document.getElementById("DetailForm").submit();
+        });
+
+        $('#Picture').on('click', function () {
+            var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
+            para += "&" + "Table=FIR_Laboratory";
+            para += "&" + "TargetBeforeColumn=Iron_Main_IronTestBeforePicture";
+            para += "&" + "TargetAfterColumn=Iron_Main_IronTestAfterPicture";
+            para += "&" + "BeforeColumn=IronTestBeforePicture";
+            para += "&" + "AfterColumn=IronTestAfterPicture";
+            para += "&" + "PKey_1=ID";
+            para += "&" + "PKey_1_Val=" + $('#ID').val();
+            window.open('@Url.Action("PictureList", "PublicWindow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
+        });
+
+        $('#New').on('click', function () {
+            AddDetailRow();
+        });
+
+        $('#Excel').unbind('click').on('click', function () {
+            ToReport();
+        });
+
+        $('#SendMail').unbind('click').on('click', function () {
+
+            $.ajax({
+                url: "@Url.Action("IronSendMail", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({
+                    ID: $('#ID').val()
+                }),
+                async: false,
+                success: function (data) {
+                    if (data.Result) {
+                        var para = "?To=";
+                        para += "&CC=" + '@ViewBag.UserMail';
+                        para += "&Subject=" + "Fabric Iron Test – Seq:" + '@Model.Iron_Main.SEQ';
+                        para += "&Body=" + "Attachment is Fabric Iron Test– Seq:" + '@Model.Iron_Main.SEQ' + " detail data";
+                        para += "&file=" + data.FileName;
+                        @*para += "&IsShowAIComment=true";
+                        para += "&Type=Fabric Crocking & Shrinkage Test";
+                        para += "&OrderID=" + '@Model.Iron_Main.POID';*@
+                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
+                    }
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        if (@Model.Iron_Main.IronEncode == false) {
+            $('#Encode').on('click', function (e) {
+                var detail = [];
+                var ErrMsg = "";
+
+                // 表身是否至少有一列資料
+                var rowCount = $('.DetailTable tbody tr').length;
+                if (rowCount == 0) {
+                    msg.WithError('Please test one Roll least.');
+                    return;
+                }
+
+                $.ajax({
+                    url: "@Url.Action("Encode_Iron", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ ID: $('#ID').val() }),
+                    async: false,
+                    success: function (data) {
+                        if (data.Result) {
+                            if (data.testResult == "Fail") {
+                                FailMail();
+                            }
+                            else {
+                                msg.WithSuccesCheck("Success", function () {
+                                    location.reload();
+                                });
+                            }
+                        }
+                        else {
+                            msg.WithError(data.ErrorMessage);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+        }
+
+        if (@Model.Iron_Main.IronEncode  == true) {
+            $('#Amend').on('click', function (e) {
+                $.ajax({
+                    url: "@Url.Action("Amend_Iron", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ ID: $('#ID').val() }),
+                    async: false,
+                    success: function (data) {
+                        if (data.Result) {
+                            msg.WithSuccesCheck("Success", function () {
+                                location.reload();
+                            });
+                        }
+                        else {
+                            msg.WithError(data.ErrorMessage);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+        }
+    }
+
+    function ToReport() {
+        $.ajax({
+            url: "@Url.Action("Report_Iron", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ID: $('#ID').val() }),
+            async: false,
+            success: function (data) {
+                if (data.Result) {
+                    window.location.href = data.reportPath;
+                }
+                else {
+                    msg.WithError(data.ErrorMessage);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function FailMail() {
+        var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
+        window.open('@Url.Action("TestFailMailList", "PublicWindow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+        var poid = '@Model.Iron_Main.POID';
+
+        $.ajax({
+            url: "@Url.Action("FailMail_Iron", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ID: $('#ID').val(), TO: to, CC: cc, OrderID: poid }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSuccesCheck("Success", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithWarningCheck(data.resultMsg, function () {
+                        location.reload();
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
+    }
+
+    function AddDetailRow() {
+        var lastNO;
+        if ($('.DetailTable > tbody > tr').length > 0) {
+            lastNO = parseInt($('.DetailTable > tbody > tr:last-child').attr('idx')) + 1;
+        }
+        else {
+            lastNO = 0;
+        }
+
+        var brandid = '@Model.Iron_Main.BrandID';
+
+        $.ajax({
+            url: "@Url.Action("AddIronDetailRow", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ lastNO: lastNO, BrandID: brandid }),
+            async: false,
+            success: function (data) {
+                $('.DetailTable > thead > tr').show();
+                $('.DetailTable > tbody').append(data);
+
+                DetailButtonBind();
+                $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function changeResultColor(obj) {
+        var result = $(obj).val();
+        if (result == "Pass") {
+            $(obj).removeClass('red').addClass('blue');
+        }
+        else {
+            $(obj).removeClass('blue').addClass('red');
+        }
+    }
+
+    function DetailButtonBind() {
+        // 卸掉重新綁定
+        $('.inputRollSelectItem').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+            var checkValue = $("#Iron_Detail_" + targetID + "__Roll").val();
+
+            if (checkValue == "") {
+                $("#Iron_Detail_" + targetID + "__Dyelot").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("FtyInventoryList", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ POID: poid, Seq1: seq1, Seq2: seq2, Roll: checkValue, ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Iron_Detail_" + targetID + "__Roll").val('');
+                        $("#Iron_Detail_" + targetID + "__Dyelot").val('');
+                        msg.WithError('Roll# Not Found');
+                    }
+                    else {
+                        $("#Iron_Detail_" + targetID + "__Roll").val(data[0].Roll);
+                        $("#Iron_Detail_" + targetID + "__Dyelot").val(data[0].Dyelot);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnRollSelectItem').unbind('click').on('click', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+            var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq2=" + seq2 + "&TargetID=" + targetID;
+            window.open('@Url.Action("FtyInventoryList", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+
+        $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#Iron_Detail_" + targetID + "__Name").val('');
+                $("#Iron_Detail_" + targetID + "__Remark").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Iron_Detail_" + targetID + "__Inspector").val('');
+                        $("#Iron_Detail_" + targetID + "__Name").val('');
+                        msg.WithError('Lab Tech Not Found');
+                    }
+                    else {
+                        $("#Iron_Detail_" + targetID + "__Inspector").val(data[0].ID);
+                        $("#Iron_Detail_" + targetID + "__Name").val(data[0].Name + ' Ext.' + data[0].ExtNo);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnInspectorSelectItem').unbind('click').on('click', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+
+        $('.detailDelete').unbind('click').on('click', function () {
+            var t = $(this).closest('tr');
+
+            msg.WithConfirm('Do you want to delete the data ?',
+                function () {
+                    t.remove();
+                    msg.WithSuccess("Delete Success");
+                }, null);
+        });
+
+        $('.HorizontalTest').unbind('blur').on('blur', function () {
+            var idx = $(this).closest('tr').attr('idx');
+            var value1 = parseFloat($('#Iron_Detail_' + idx + '__HorizontalTest1').val());
+            var value2 = parseFloat($('#Iron_Detail_' + idx + '__HorizontalTest2').val());
+            var value3 = parseFloat($('#Iron_Detail_' + idx + '__HorizontalTest3').val());
+            var original = parseFloat($('#Iron_Detail_' + idx + '__HorizontalOriginal').val());
+
+            // 四折五入到第二位
+            // ( HorizontalTest1 + HorizontalTest2  + HorizontalTest3 ) / 3
+            var avg = Round(accDiv(accAdd(accAdd(value1, value2), value3), 3));
+            $('#Iron_Detail_' + idx + '__HorizontalAverage').val(avg);
+
+            if (original == 0) {
+                $('#Iron_Detail_' + idx + '__HorizontalRate').val(0);
+                return;
+            }
+            // (HorizontalAverage - HorizontalOriginal) / HorizontalOriginal * 100
+            var rate = Round(accMul(accDiv(accSubtr(avg, original), original), 100));
+            $('#Iron_Detail_' + idx + '__HorizontalRate').val(rate > 100 ? 100 : rate);
+        });
+
+        $('.VerticalTest').unbind('blur').on('blur', function () {
+            var idx = $(this).closest('tr').attr('idx');
+            var value1 = parseFloat($('#Iron_Detail_' + idx + '__VerticalTest1').val());
+            var value2 = parseFloat($('#Iron_Detail_' + idx + '__VerticalTest2').val());
+            var value3 = parseFloat($('#Iron_Detail_' + idx + '__VerticalTest3').val());
+            var original = parseFloat($('#Iron_Detail_' + idx + '__VerticalOriginal').val());
+
+            // 四折五入到第二位
+            // ( VerticalTest1 + VerticalTest2 + VerticalTest3 ) / 3
+            var avg = Round(accDiv(accAdd(accAdd(value1, value2), value3), 3));
+            $('#Iron_Detail_' + idx + '__VerticalAverage').val(avg);
+
+            if (original == 0) {
+                $('#Iron_Detail_' + idx + '__VerticalRate').val(0);
+                return;
+            }
+
+            // (VerticalAverage - VerticalOriginal) / VerticalOriginal * 100
+            var rate = Round(accMul(accDiv(accSubtr(avg, original), original), 100));
+            $('#Iron_Detail_' + idx + '__VerticalRate').val(rate > 100 ? 100 : rate);
+        });
+    }
+
+    function GetFtyInventory(data, targetID) {
+        $("#Iron_Detail_" + targetID + "__Roll").val(data.Roll);
+        $("#Iron_Detail_" + targetID + "__Dyelot").val(data.Dyelot);
+    }
+
+    function GetPass1(data, targetID) {
+        $("#Iron_Detail_" + targetID + "__Inspector").val(data.ID);
+        $("#Iron_Detail_" + targetID + "__Name").val(data.Name + ' Ext.' + data.ExtNo);
+    }
+
+    function GetPicture(data) {
+        $('#Iron_Main_IronTestBeforePicture').val(data.BeforePicture.replace("data:image/png;base64,", ""));
+        $('#Iron_Main_IronTestAfterPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
+    }
+
+    function QtyCheck(value) {
+        if (parseFloat(value) >= 100) {
+            return 100;
+        }
+        else if (parseFloat(value) < 0) {
+            return 0;
+        }
+
+        return Number.parseFloat(value).toFixed(2);
+    }
+</script>

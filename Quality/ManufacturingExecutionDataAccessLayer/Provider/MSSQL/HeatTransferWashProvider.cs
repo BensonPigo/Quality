@@ -580,5 +580,24 @@ AND pgl.Annotation <> ''
 
             return dt == null || dt.Rows.Count == 0 ? new List<string>() : dt.AsEnumerable().Select(o => o["Annotation"].ToString()).ToList<string>();
         }
+
+        public DataTable GetReportTechnician(HeatTransferWash_Request Req)
+        {
+            SQLParameterCollection paras = new SQLParameterCollection();
+            paras.Add("@ReportNo", Req.ReportNo);
+
+            string sqlCmd = $@"
+select Technician = ISNULL(mp.Name,pp.Name)
+	   ,TechnicianSignture = t.Signature
+from HeatTransferWash a
+left join Pass1 mp on mp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Pass1 pp on pp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Technician t on t.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+where a.ReportNo = @ReportNo
+;
+
+";
+            return ExecuteDataTable(CommandType.Text, sqlCmd, paras);
+        }
     }
 }

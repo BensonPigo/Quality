@@ -304,9 +304,19 @@ UPDATE MartindalePillingTest
       ,TestStandard = @TestStandard
 WHERE ReportNo = @ReportNo
 ;
-UPDATE PMSFile.dbo.MartindalePillingTest
-SET TestBeforePicture=@TestBeforePicture ,Test500AfterPicture=@Test500AfterPicture ,Test2000AfterPicture=@Test2000AfterPicture
-WHERE ReportNo = @ReportNo
+if exists(select 1 from PMSFile.dbo.MartindalePillingTest WHERE ReportNo = @ReportNo)
+begin
+    UPDATE PMSFile.dbo.MartindalePillingTest
+    SET TestBeforePicture = @TestBeforePicture , Test500AfterPicture=@Test500AfterPicture , Test2000AfterPicture=@Test2000AfterPicture
+    WHERE ReportNo = @ReportNo
+end
+else
+begin
+    INSERT INTO PMSFile.dbo.MartindalePillingTest
+        ( ReportNo ,TestBeforePicture ,Test500AfterPicture ,Test2000AfterPicture)
+    VALUES
+        ( @ReportNo ,@TestAfterPicture ,@Test500AfterPicture ,@Test2000AfterPicture)
+end
 ";
 
             return ExecuteNonQuery(CommandType.Text, mainSqlCmd.ToString(), objParameter);
@@ -466,9 +476,9 @@ WHERE ReportNo = @ReportNo
 select Technician = ISNULL(mp.Name,pp.Name)
 	   ,TechnicianSignture = t.Signature
 from MartindalePillingTest a
-left join Pass1 mp on mp.ID = a.EditName 
-left join MainServer.Production.dbo.Pass1 pp on pp.ID = a.EditName 
-left join MainServer.Production.dbo.Technician t on t.ID = a.EditName 
+left join Pass1 mp on mp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Pass1 pp on pp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join MainServer.Production.dbo.Technician t on t.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
 where a.ReportNo = @ReportNo
 ;
 
