@@ -44,7 +44,8 @@
                         return;
                     }
                     agreeFunction();
-                });
+                })
+                .catch(swal.noop);
         },
         normalConfirm: function (content, agreeFunction, cancelFunction, note) {
             swal({
