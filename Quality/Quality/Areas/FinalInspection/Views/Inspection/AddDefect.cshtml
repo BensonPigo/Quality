@@ -213,14 +213,14 @@
                 if (event.keyCode != 13) {
                     return;
                 }
-                var defectCode = $(this).val();
+                var defectCode = $(this).val().toUpperCase();
                 var foundGroup = [];
                 if (defectCode != '') {
                     var domIdx = 0;
                     adata.some(function (group1) {
                         var isFoundit = false;
                         group1[6].some(function (group2) {
-                            var isExists = group2[1].includes(defectCode);
+                            var isExists = group2[1].toUpperCase().includes(defectCode);
                             if (isExists) {
                                 isFoundit = true;
                                 domIdx = group2[4];
