@@ -145,7 +145,7 @@ namespace BusinessLogicLayer.Service
                     return result;
                 }
 
-                bool isMoistureExists = _FinalInspectionProvider.CheckMoistureExists(moistureResult.FinalInspectionID, moistureResult.Article, moistureResult.FinalInspection_OrderCartonUkey);
+                bool isMoistureExists = true; // _FinalInspectionProvider.CheckMoistureExists(moistureResult.FinalInspectionID, moistureResult.Article, moistureResult.FinalInspection_OrderCartonUkey);
 
                 // ISP20230647 拔掉按下Next Back的存檔
                 //if (!isMoistureExists &&

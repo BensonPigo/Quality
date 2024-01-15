@@ -31,6 +31,7 @@ select   UserID = p.ID
 		,[Name] = IIF(isnull(pp1.Name,'') = '', mp1.name,pp1.name) 
 		,p.Position
         ,p.Pivot88UserName
+        ,p.Junk
 from Quality_Pass1 p WITH(NOLOCK)
 left join ManufacturingExecution.dbo.Pass1 mp1 WITH(NOLOCK) ON p.ID= mp1.ID
 left join MainServer.Production.dbo.Pass1 pp1 WITH(NOLOCK) on p.ID = pp1.id
@@ -52,6 +53,7 @@ select TOp 1 UserID = p.ID
 		,[Email] = IIF(isnull(pp1.Email,'')='', mp1.Email, pp1.Email)
 		,p.Position
         ,p.Pivot88UserName
+        ,p.Junk
 from Quality_Pass1 p WITH(NOLOCK)
 left join ManufacturingExecution.dbo.Pass1 mp1 WITH(NOLOCK) ON p.ID= mp1.ID
 left join MainServer.Production.dbo.Pass1 pp1 WITH(NOLOCK) on p.ID = pp1.id
@@ -90,12 +92,14 @@ order by m.ModuleSeq, m.FunctionSeq
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
 
-            paras.Add("Pivot88UserName", Req.Pivot88UserName ?? string.Empty);
+            paras.Add("@Pivot88UserName", Req.Pivot88UserName ?? string.Empty);
+            paras.Add("@Junk", Req.Junk);
 
             SbSql.Append($@"
 UPDATE Quality_Pass1
 SET Position='{Req.Position}'
     ,Pivot88UserName = @Pivot88UserName
+    ,Junk = @Junk
 WHERE Id='{Req.UserID}'
 ;
 ");

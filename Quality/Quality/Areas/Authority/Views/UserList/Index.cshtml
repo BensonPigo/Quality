@@ -97,6 +97,7 @@
                                 <th>Name</th>
                                 <th>Position</th>
                                 <th>Pivot88 UserName</th>
+                                <th>Junk</th>
                                 <th>   </th>
                             </tr>
                         </thead>
@@ -116,6 +117,9 @@
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Pivot88UserName)
                                     </td>
+                                    <td style="text-align:center;">
+                                        @Html.DisplayFor(modelItem => item.Junk)
+                                    </td>
                                     <td>
                                         <img onclick="Edit_Pic_Click('@item.UserID')" style="width:1.2vw;cursor:pointer;" src="~/Image/Icon/Edit.png" />
                                     </td>
@@ -128,6 +132,7 @@
                                 <th>Name</th>
                                 <th>Position</th>
                                 <th>Pivot88 UserName</th>
+                                <th>Junk</th>
                                 <th>   </th>
                             </tr>
                         </tfoot>
@@ -140,7 +145,7 @@
 
 <!--Detail彈跳視窗-->
 <div class="detail-dialog to-edit-detail" title="Detail">
-    <div class="detail-dialog-content dialog-content-w-icon" style="height:75vh">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:77vh">
         <form class="page-display-form nr-form" style="width:80%;padding:0;">
             <div class="form-item" style="height: 100%;">
                 <table style="border: 1px solid gray;font-size: 1vw;width: 100%;height: 10vh;text-align: center;background-color: transparent;color: white;">
@@ -191,7 +196,20 @@
                             <label>Pivot88 UserName </label>
                         </td>
                         <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
-                            <input tpye="text" id="Pivot88UserName" readonly value="" style="background-color:lightgray;"/>
+                            <input tpye="text" id="Pivot88UserName" readonly value="" style="background-color:lightgray;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Junk</label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                            <input type="checkbox" id="Junk" disabled style="font-size: 2vh;"/>
+                        </td>
+                        <td style="width:10vw;border: 1px solid gray;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label></label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
                         </td>
                     </tr>
                 </table>
@@ -353,6 +371,7 @@
             $(".input_Head").show();
 
             $("#Position").removeAttr("disabled");
+            $("#Junk").removeAttr("disabled");
             $("#Pivot88UserName").removeAttr("readonly");
             $("#Pivot88UserName").css("background-color", "white");
         }
@@ -360,6 +379,7 @@
             $(".detail_Head").show();
             $(".input_Head").hide();
             $("#Position").attr("disabled", "disabled");
+            $("#Junk").attr("disabled", "disabled");
             $("#Pivot88UserName").attr("readonly", "readonly");
             $("#Pivot88UserName").css("background-color", "lightgray");
         }
@@ -406,6 +426,14 @@
                     $("#Email").text(res.Email);
                     $("#Position").val(res.Position);
                     $("#Pivot88UserName").val(res.Pivot88UserName);
+
+                    if (res.Junk == true) {
+                        $("#Junk").prop('checked', true);
+                    }
+                    else {
+                        $("#Junk").prop('checked', false);
+                    }
+
                     InputToggle();
 
                     InitDetailDataTable(res);
@@ -809,6 +837,7 @@
             Email: $("#Email").text(),
             Position: $("#Position").val(),
             Pivot88UserName: $("#Pivot88UserName").val(),
+            Junk: $("#Junk").prop('checked'),
             DataList: DataList
         };
 

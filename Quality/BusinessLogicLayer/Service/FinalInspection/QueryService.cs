@@ -50,7 +50,6 @@ namespace BusinessLogicLayer.Service.FinalInspection
         public QueryReport GetFinalInspectionReport(string finalInspectionID)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-
             QueryReport queryReport = new QueryReport();
 
             try
@@ -74,6 +73,10 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 queryReport.MeasurementUnit = _StyleProvider.GetSizeUnitByCustPONO(queryReport.FinalInspection.CustPONO, OrderID);
 
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                var tmpFinalInspection_DefectDetails = _FinalInspFromPMSProvider.GetFinalInspection_DefectDetails(queryReport.FinalInspection.ID, queryReport.FinalInspection.AcceptableQualityLevelsProUkey).ToList();
+                queryReport.FinalInspection_DefectDetails = tmpFinalInspection_DefectDetails;
+
                 List<FinalInspectionDefectItem> finalInspectionDefectItems = _FinalInspFromPMSProvider.GetFinalInspectionDefectItems(finalInspectionID).ToList();
                 if (finalInspectionDefectItems.Any(s => s.Qty > 0))
                 {
@@ -112,6 +115,15 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 foreach (MeasurementViewItem measurementViewItem in queryReport.ListMeasurementViewItem)
                 {
                     System.Data.DataTable dtMeasurementData = _FinalInspectionProvider.GetMeasurement(finalInspectionID, measurementViewItem.Article, measurementViewItem.Size, measurementViewItem.ProductType);
+
+                    for (int i = dtMeasurementData.Columns.Count - 1; i >= 0; i--)
+                    {
+                        DataColumn column = dtMeasurementData.Columns[i];
+                        if (column.ColumnName.StartsWith("FinalInspection_MeasurementUkey", StringComparison.OrdinalIgnoreCase))
+                        {
+                            dtMeasurementData.Columns.Remove(column);
+                        }
+                    }
                     measurementViewItem.MeasurementDataByJson = JsonConvert.SerializeObject(dtMeasurementData);
                 }
             }
@@ -181,6 +193,12 @@ namespace BusinessLogicLayer.Service.FinalInspection
                 DataRow drReportMailInfo = _FinalInspectionProvider.GetReportMailInfo(finalInspectionID).Rows[0];
 
                 List<MailTo> mailTos = _IMailToProvider.Get(new MailTo() { ID = "401" }).ToList();
+                if (!mailTos.Any())
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = "Missing <Final Inspection To Address> setting, please inform MIS.";
+                    return baseResult;
+                }
                 string toAddress = mailTos.Select(s => s.ToAddress).FirstOrDefault();
                 string ccAddress = mailTos.Select(s => s.CcAddress).FirstOrDefault();
                 string subject = $"Inspection Report(PO#: {drReportMailInfo["CustPONO"]})-{drReportMailInfo["InspectionResult"]}";

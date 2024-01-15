@@ -14,5 +14,6 @@ namespace DatabaseObject.ResultModel
         public string Email { get; set; }
         public string Position { get; set; }
         public string Pivot88UserName { get; set; }
+        public bool Junk { get; set; }
     }
 }

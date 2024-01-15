@@ -12,8 +12,11 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string InspectionStep { get; set; } = "";
 
         public int? SampleSize { get; set; }
+        public Setting FinalInspection { get; set; }
 
         public List<FinalInspectionDefectItem> ListFinalInspectionDefectItem { get; set; }
+
+        public List<FinalInspection_DefectDetail> FinalInspection_DefectDetails { get; set; }
 
     }
 
@@ -31,7 +34,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string OperatorText { get; set; }
         public string Operator { get; set; }
         public string AreaCode { get; set; }
-
+        public string Remark { get; set; }        
         public int Qty { get; set; }
         public bool HasImage { get; set; }
 

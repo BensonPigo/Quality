@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Transactions;
 
@@ -30,20 +31,23 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             string sqlGetData = @"
 select  ID                             ,
-        BrandID = (select top 1 BrandID from SciProduction_Orders o with (nolock) where o.CustPONO = a.CustPONO)                       ,
+        BrandID = brand.BrandID ,--(select top 1 BrandID from SciProduction_Orders o with (nolock) where o.CustPONO = a.CustPONO)                       ,
         [CustPONO] = o.val             ,
         InspectionStage                ,
         InspectionTimes                ,
         FactoryID                      ,
         MDivisionID                    ,
         AuditDate                      ,
-        SewingLineID                   ,
-        AcceptableQualityLevelsUkey    ,
-        SampleSize                     ,
-        AcceptQty                      ,
-        FabricApprovalDoc              ,
-        SealingSampleDoc               ,
-        MetalDetectionDoc              ,
+        SewingLineID                   
+
+        ,AcceptableQualityLevelsUkey    
+        ,AcceptableQualityLevelsProUkey    
+
+        ,SampleSize                     
+        ,AcceptQty                      
+        ,FabricApprovalDoc              
+        ,SealingSampleDoc               
+        ,MetalDetectionDoc              ,
         GarmentWashingDoc              ,
         CheckCloseShade                ,
         CheckHandfeel                  ,
@@ -58,14 +62,15 @@ select  ID                             ,
         Check8FlagLabel                ,
         CheckAdditionalLabel           ,
         CheckShippingMark              ,
-        CheckPolytagMarketing          ,
+        CheckPolytagMarking          ,
         CheckColorSizeQty              ,
         CheckHangtag                   ,
         PassQty                        ,
         RejectQty      ,
         BAQty                          ,
         CFA                            ,
-        ProductionStatus               ,
+        Clerk                            ,
+        ProductionStatus =  IIF( ISNULL(ProductionStatusVal.val,0) <> 0 , ProductionStatusVal.val ,a.ProductionStatus)              ,
         InspectionResult               ,
         ShipmentStatus                 ,
         OthersRemark                   ,
@@ -77,12 +82,19 @@ select  ID                             ,
         AddDate                        ,
         EditName                       ,
         EditDate                       ,
+        ReInspection                       ,
         HasOtherImage = Cast(IIF(exists(select 1 from SciPMSFile_FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit),
         CheckFGPT                      ,
         [FGWT] = iif(a.InspectionStage = 'Final', ISNULL(g.WashResult, 'Lacking Test') , ''),
         [FGPT] = iif(a.InspectionStage = 'Final', fgpt.Result, ''),
         [ISFD] = cast(I.ISFD as bit) 
 from FinalInspection a with (nolock)
+outer apply (
+	select TOP 1 o.BrandID
+	from FinalInspection_Order fo
+	left join Production.dbo.Orders o with (nolock) on fo.OrderID = o.ID
+	where fo.ID = a.ID
+)brand
 outer apply (
     SELECT val = Stuff((select distinct concat( ',',CustPONo) 
                        from  FinalInspection_Order fo with (nolock) 
@@ -119,6 +131,17 @@ outer apply (
 	left join SciProduction_Style_RRLR_Report sr with (nolock) on s.Ukey = sr.StyleUkey
 	where exists (select 1 from FinalInspection_Order fo with (nolock) where fo.ID = a.ID and fo.OrderID = o.ID)
 )I
+Outer Apply(----比照PMS QA P32：根據SP# + PackingList_Detail.OrderShipmodeSeq(運輸方式)，去撈取所有紙箱，計算Clog 收到紙箱的百分比
+    SELECT Val= CAST(ROUND( SUM(IIF( CFAReceiveDate IS NOT NULL OR ReceiveDate IS NOT NULL
+								    ,ShipQty
+								    ,0)
+						    ) * 1.0 
+						    /  SUM(ShipQty) * 100 
+    ,0) AS INT) 
+    FROM MainServer.Production.dbo.PackingList_Detail pd WITH(NOLOCK)
+    INNER JOIN ManufacturingExecution..FinalInspection_Order_QtyShip foq on pd.OrderID=foq.OrderID and pd.OrderShipmodeSeq=foq.Seq
+    WHERE foq.ID =  a.ID
+)ProductionStatusVal
 where a.ID = @ID
 ";
             IList<FinalInspection> listResult = ExecuteList<FinalInspection>(CommandType.Text, sqlGetData, objParameter);
@@ -523,6 +546,7 @@ insert into FinalInspection(id                            ,
                             AuditDate                     ,
                             SewingLineID                  ,
                             AcceptableQualityLevelsUkey   ,
+                            AcceptableQualityLevelsProUkey   ,
                             SampleSize                    ,
                             AcceptQty                     ,
                             InspectionResult              ,
@@ -532,6 +556,7 @@ insert into FinalInspection(id                            ,
                             Team                          ,
                             AddName                       ,
                             AddDate                       ,
+                            ReInspection                   ,
                             MeasurementAQLUkey,
                             MeasurementSampleSize,
                             MeasurementAcceptQty
@@ -545,6 +570,7 @@ insert into FinalInspection(id                            ,
                        @AuditDate                     ,
                        @SewingLineID                  ,
                        @AcceptableQualityLevelsUkey   ,
+                       @AcceptableQualityLevelsProUkey   ,
                        @SampleSize                    ,
                        @AcceptQty                     ,
                        'On-going'              ,
@@ -554,23 +580,39 @@ insert into FinalInspection(id                            ,
                        @Team                          ,
                        @UserID                       ,
                        GetDate()                     ,
+                       @ReInspection                   ,
                     ISNULL( (----用現用的AQL範圍，去找Measurement專用的AQL，所以要限定Category=Measurement
-                        select TOP 1 b.Ukey
-                        from MainServer.Production.dbo.AcceptableQualityLevels a
-                        LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
-                        where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                        select TOP 1 t.Ukey
+                        from SciProduction_AcceptableQualityLevels t
+                        where t.BrandID = (select TOP 1 BrandID from SciProduction_Orders where CustPONO= @CustPONO)
+	                    and t.Category='Measurement' 
+	                    and EXISTS(
+		                    select 1 from SciProduction_AcceptableQualityLevels s 
+		                    where s.LotSize_Start=s.LotSize_Start AND t.LotSize_End=s.LotSize_End
+		                    and s.Ukey = @AcceptableQualityLevelsUkey
+	                    )
                     ),0) ,
                     ISNULL( (
-                        select TOP 1 b.SampleSize
-                        from MainServer.Production.dbo.AcceptableQualityLevels a
-                        LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
-                        where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                        select TOP 1 t.SampleSize
+                        from SciProduction_AcceptableQualityLevels t
+                        where t.BrandID = (select TOP 1 BrandID from SciProduction_Orders where CustPONO= @CustPONO)
+	                    and t.Category='Measurement' 
+	                    and EXISTS(
+		                    select 1 from SciProduction_AcceptableQualityLevels s 
+		                    where s.LotSize_Start=s.LotSize_Start AND t.LotSize_End=s.LotSize_End
+		                    and s.Ukey = @AcceptableQualityLevelsUkey
+	                    )
                     ),0) ,
                     ISNULL( (
-                        select TOP 1 b.AcceptedQty
-                        from MainServer.Production.dbo.AcceptableQualityLevels a
-                        LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
-                        where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                        select TOP 1 t.AcceptedQty
+                        from SciProduction_AcceptableQualityLevels t
+                        where t.BrandID = (select TOP 1 BrandID from SciProduction_Orders where CustPONO= @CustPONO)
+	                    and t.Category='Measurement' 
+	                    and EXISTS(
+		                    select 1 from SciProduction_AcceptableQualityLevels s 
+		                    where s.LotSize_Start=s.LotSize_Start AND t.LotSize_End=s.LotSize_End
+		                    and s.Ukey = @AcceptableQualityLevelsUkey
+	                    )
                     ),0) 
                 )
 ;
@@ -595,31 +637,48 @@ set     InspectionStage = @InspectionStage                         ,
         AuditDate = @AuditDate    ,
         SewingLineID = @SewingLineID                             ,
         AcceptableQualityLevelsUkey = @AcceptableQualityLevelsUkey              ,
+        AcceptableQualityLevelsProUkey = @AcceptableQualityLevelsProUkey              ,
         SampleSize = @SampleSize      ,
         AcceptQty = @AcceptQty          ,
         InspectionStep = 'Insp-Setting',
         Shift = @Shift          ,
         Team = @Team,
+        ReInspection = @ReInspection,                  
         EditName = @UserID                  ,
         EditDate= getdate(),
 
         MeasurementAQLUkey = ISNULL( (----用現用的AQL範圍，去找Measurement專用的AQL，所以要限定Category=Measurement
-                                select TOP 1 b.Ukey
-                                from MainServer.Production.dbo.AcceptableQualityLevels a
-                                LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
-                                where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                                select TOP 1 t.Ukey
+                                from SciProduction_AcceptableQualityLevels t
+                                where t.BrandID = (select TOP 1 BrandID from SciProduction_Orders where CustPONO= @CustPONO)
+	                            and t.Category='Measurement' 
+	                            and EXISTS(
+		                            select 1 from SciProduction_AcceptableQualityLevels s 
+		                            where s.LotSize_Start=s.LotSize_Start AND t.LotSize_End=s.LotSize_End
+		                            and s.Ukey = @AcceptableQualityLevelsUkey
+	                            )
                             ) ,0)             ,
         MeasurementSampleSize = ISNULL( (
-                                select TOP 1 b.SampleSize
-                                from MainServer.Production.dbo.AcceptableQualityLevels a
-                                LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
-                                where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                                select TOP 1 t.SampleSize
+                                from SciProduction_AcceptableQualityLevels t
+                                where t.BrandID = (select TOP 1 BrandID from SciProduction_Orders where CustPONO= @CustPONO)
+	                            and t.Category='Measurement' 
+	                            and EXISTS(
+		                            select 1 from SciProduction_AcceptableQualityLevels s 
+		                            where s.LotSize_Start=s.LotSize_Start AND t.LotSize_End=s.LotSize_End
+		                            and s.Ukey = @AcceptableQualityLevelsUkey
+	                            )
                             ) ,0)             ,
         MeasurementAcceptQty = ISNULL( (
-                                select TOP 1 b.AcceptedQty
-                                from MainServer.Production.dbo.AcceptableQualityLevels a
-                                LEFT join MainServer.Production.dbo.AcceptableQualityLevels b on a.BrandID=b.BrandID and b.Category='Measurement' and a.LotSize_Start = b.LotSize_Start and a.LotSize_End=b.LotSize_End
-                                where a.BrandID='LLL' and a.Category='' AND a.Ukey = @AcceptableQualityLevelsUkey
+                                select TOP 1 t.AcceptedQty
+                                from SciProduction_AcceptableQualityLevels t
+                                where t.BrandID = (select TOP 1 BrandID from SciProduction_Orders where CustPONO= @CustPONO)
+	                            and t.Category='Measurement' 
+	                            and EXISTS(
+		                            select 1 from SciProduction_AcceptableQualityLevels s 
+		                            where s.LotSize_Start=s.LotSize_Start AND t.LotSize_End=s.LotSize_End
+		                            and s.Ukey = @AcceptableQualityLevelsUkey
+	                            )
                             ) ,0)
 
 where   ID = @FinalInspectionID
@@ -641,11 +700,13 @@ delete  FinalInspection_OrderCarton where ID = @FinalInspectionID
             objParameter.Add("@AuditDate", setting.AuditDate);
             objParameter.Add("@SewingLineID", (setting.SewingLineID == null ? string.Empty : setting.SewingLineID));
             objParameter.Add("@AcceptableQualityLevelsUkey", setting.AcceptableQualityLevelsUkey);
+            objParameter.Add("@AcceptableQualityLevelsProUkey", setting.AcceptableQualityLevelsProUkey);
             objParameter.Add("@SampleSize", setting.SampleSize);
             objParameter.Add("@AcceptQty", setting.AcceptQty);
             objParameter.Add("@UserID", userID);
             objParameter.Add("@Team", setting.Team);
             objParameter.Add("@Shift", setting.Shift);
+            objParameter.Add("@ReInspection", setting.ReInspection);
 
             foreach (SelectedPO selectedPOItem in setting.SelectedPO)
             {
@@ -763,6 +824,7 @@ update FinalInspection
  set    ProductionStatus = @ProductionStatus  ,
         OthersRemark= @OthersRemark    ,
         CFA= @CFA   ,
+        Clerk= @Clerk   ,
         InspectionResult= @InspectionResult   ,
         InspectionStep = 'Submit' ,
         ShipmentStatus= @ShipmentStatus   ,
@@ -778,6 +840,7 @@ where   ID = @FinalInspectionID
             objParameter.Add("@ProductionStatus", finalInspection.ProductionStatus);
             objParameter.Add("@OthersRemark", finalInspection.OthersRemark);
             objParameter.Add("@CFA", finalInspection.CFA);
+            objParameter.Add("@Clerk", finalInspection.Clerk);
 
             ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
         }
@@ -858,7 +921,7 @@ WHERE FinalInspectionID = @FinalInspectionID
             objParameter.Add("@IsTSize", CheckList.IsTSize);
             objParameter.Add("@IsCCLayout", CheckList.IsCCLayout);
             objParameter.Add("@IsShippingMark", CheckList.IsShippingMark);
-            objParameter.Add("@IsPolytagMarketing", CheckList.IsPolytagMarketing);
+            objParameter.Add("@IsPolytagMarking", CheckList.IsPolytagMarking);
             objParameter.Add("@IsColorSizeQty", CheckList.IsColorSizeQty);
             objParameter.Add("@IsHangtag", CheckList.IsHangtag);
             objParameter.Add("@IsJokerTag", CheckList.IsJokerTag);
@@ -905,7 +968,7 @@ UPDATE dbo.FinalInspectionCheckList
       ,IsTSize = @IsTSize
       ,IsCCLayout = @IsCCLayout
       ,IsShippingMark = @IsShippingMark
-      ,IsPolytagMarketing = @IsPolytagMarketing
+      ,IsPolytagMarking = @IsPolytagMarking
       ,IsColorSizeQty = @IsColorSizeQty
       ,IsHangtag = @IsHangtag
       ,IsJokerTag = @IsJokerTag
@@ -1040,6 +1103,7 @@ where   ID = @FinalInspectionID
                             { "@GarmentDefectTypeID", DbType.String, defectItem.DefectType },
                             { "@GarmentDefectCodeID", DbType.String, defectItem.DefectCode },
                             { "@AreaCode", DbType.String, defectItem.AreaCode ?? string.Empty},
+                            { "@Remark", DbType.String, defectItem.Remark ?? string.Empty},
                             { "@Ukey", DbType.Int64, defectItem.Ukey },
                             { "@Qty", DbType.Int32, defectItem.Qty }
                         };
@@ -1052,9 +1116,9 @@ where   ID = @FinalInspectionID
                         sqlUpdateFinalInspectionDetail = @"
     DECLARE @FinalInspection_DetailKey table (Ukey bigint)
 
-    insert into FinalInspection_Detail(ID, GarmentDefectTypeID, GarmentDefectCodeID ,AreaCode, Qty)
+    insert into FinalInspection_Detail(ID, GarmentDefectTypeID, GarmentDefectCodeID ,AreaCode ,Remark ,Qty)
                 OUTPUT INSERTED.Ukey into @FinalInspection_DetailKey
-                values(@FinalInspectionID, @GarmentDefectTypeID, @GarmentDefectCodeID ,@AreaCode, @Qty)
+                values(@FinalInspectionID, @GarmentDefectTypeID, @GarmentDefectCodeID ,@AreaCode ,@Remark ,@Qty)
 
     select  Ukey from @FinalInspection_DetailKey
 ";
@@ -1067,7 +1131,7 @@ where   ID = @FinalInspectionID
     if (@Qty > 0)
     begin
         update  FinalInspection_Detail
-            set Qty = @Qty
+            set Qty = @Qty ,AreaCode = @AreaCode ,Remark = @Remark 
             where   Ukey = @Ukey
     end
     else
@@ -1125,6 +1189,53 @@ INSERT INTO FinalInspection_Detail_Operation
                         }
                     }
                 }
+
+                transaction.Complete();
+                transaction.Dispose();
+            }
+        }
+
+
+        public void UpdateFinalInspectionDefectDetail(AddDefect addDefect)
+        {
+            if (addDefect.FinalInspection_DefectDetails == null)
+            {
+                return;
+            }
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                foreach (FinalInspection_DefectDetail finalInspection_DefectDetail in addDefect.FinalInspection_DefectDetails)
+                {
+                    string sqlFinalInspection_DefectDetail = string.Empty;
+                    SQLParameterCollection detailParameter = new SQLParameterCollection() {
+                            { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
+                            { "@ProUkey", finalInspection_DefectDetail.ProUkey },
+                            { "@DefectCategoryUkey", finalInspection_DefectDetail.DefectCategoryUkey },
+                            { "@Qty", finalInspection_DefectDetail.Qty }
+                        };
+
+                    sqlFinalInspection_DefectDetail = $@"
+if not exists( 
+select 1 from FinalInspection_DefectDetail
+where FinalInspectionID = @FinalInspectionID and ProUkey = @ProUkey and DefectCategoryUkey=@DefectCategoryUkey
+
+)
+begin
+    INSERT INTO dbo.FinalInspection_DefectDetail
+               (FinalInspectionID,ProUkey,DefectCategoryUkey,Qty)
+         VALUES
+               (@FinalInspectionID,@ProUkey,@DefectCategoryUkey,@Qty)
+end
+else
+begin
+    UPDATE FinalInspection_DefectDetail SET Qty = @Qty WHERE FinalInspectionID = @FinalInspectionID and ProUkey = @ProUkey AND DefectCategoryUkey=@DefectCategoryUkey
+end
+";
+
+
+                    ExecuteNonQuery(CommandType.Text, sqlFinalInspection_DefectDetail, detailParameter);
+                }
+
 
                 transaction.Complete();
                 transaction.Dispose();
@@ -1562,16 +1673,18 @@ END
             return ctn > 0;
         }
 
-        public void UpdateMeasurement(DatabaseObject.ViewModel.FinalInspection.ServiceMeasurement measurement, string userID)
+        public void InsertMeasurement(DatabaseObject.ViewModel.FinalInspection.ServiceMeasurement measurement, string userID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
             DataTable dtDateTime = ExecuteDataTableByServiceConn(CommandType.Text, "select [DateTime] = getdate()", objParameter);
+
 
             using (TransactionScope transactionScope = new TransactionScope())
             {
                 foreach (MeasurementItem measurementItem in measurement.ListMeasurementItem)
                 {
                     objParameter = new SQLParameterCollection();
+                    objParameter.Add($@"@SizeUnit", measurement.SizeUnit);
                     objParameter.Add("@ID", measurement.FinalInspectionID);
                     objParameter.Add("@Article", measurement.SelectedArticle);
                     objParameter.Add("@SizeCode", measurement.SelectedSize);
@@ -1582,7 +1695,19 @@ END
                     objParameter.Add("@AddName", userID);
                     objParameter.Add("@AddDate", dtDateTime.Rows[0]["DateTime"]);
 
-                    string sqlInsertMeasurement = @"
+                    bool isFractional = false;
+                    if (measurementItem.ResultSizeSpec != null && measurementItem.ResultSizeSpec.Contains("/"))
+                    {
+                        isFractional = true;
+                    }
+
+                    string ins = "@SizeSpec";
+                    if (isFractional)
+                    {
+                        ins = "(SELECT dbo.getFractional(@SizeSpec))";
+                    }
+
+                    string sqlInsertMeasurement = $@"
 insert into FinalInspection_Measurement(
 ID
 ,Article
@@ -1601,7 +1726,7 @@ values
 ,@SizeCode
 ,@Location
 ,@Code
-,@SizeSpec
+,{ins}
 ,@MeasurementUkey
 ,@AddName
 ,@AddDate
@@ -1610,6 +1735,60 @@ values
                     ExecuteNonQuery(CommandType.Text, sqlInsertMeasurement, objParameter);
                 }
 
+                transactionScope.Complete();
+            }
+        }
+
+        public void DeleteMeasurement(DatabaseObject.ViewModel.FinalInspection.ServiceMeasurement measurement, DateTime AddDate)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@ID", measurement.FinalInspectionID);
+            objParameter.Add("@AddDate", AddDate);
+
+
+            using (TransactionScope transactionScope = new TransactionScope())
+            {
+                string sql = @"delete from FinalInspection_Measurement where ID = @ID and CONVERT(varchar, AddDate,120) = @AddDate";
+                ExecuteNonQuery(CommandType.Text, sql, objParameter);
+                transactionScope.Complete();
+            }
+        }
+        public void UpdateMeasurement(ServiceMeasurement model, string userID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add($@"@SizeUnit", model.SizeUnit);
+
+            using (TransactionScope transactionScope = new TransactionScope())
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                int idx = 0;
+                foreach (var measuremen in model.ListMeasurementItem)
+                {
+                    objParameter.Add($@"@Ukey{idx}", measuremen.FinalInspection_MeasurementUkey);
+                    objParameter.Add($@"@SizeSpec{idx}", measuremen.ResultSizeSpec);
+
+                    bool isFractional = false;
+                    if (measuremen.ResultSizeSpec != null && measuremen.ResultSizeSpec.Contains("/"))
+                    {
+                        isFractional = true;
+                    }
+
+                    string ins = $@"@SizeSpec{idx}";
+                    if (isFractional)
+                    {
+                        ins = $@"(SELECT dbo.getFractional(@SizeSpec{idx}))";
+                    }
+
+                    string sql = $@"
+UPDATE FinalInspection_Measurement 
+SET EditDate=GETDATE()
+,EditName = '{userID}'
+,SizeSpec = {ins}
+where Ukey = @Ukey{idx}";
+                    stringBuilder.Append(sql);
+                    idx++;
+                }
+                ExecuteNonQuery(CommandType.Text, stringBuilder.ToString(), objParameter);
                 transactionScope.Complete();
             }
         }
@@ -1626,6 +1805,7 @@ select  distinct    Article,
                     [MeasurementDataByJson] = ''
 from    FinalInspection_Measurement with (nolock)
 where   ID = @finalInspectionID
+Order BY Article,SizeCode,Location
 
 ";
             return ExecuteList<MeasurementViewItem>(CommandType.Text, sqlGetEndlineMoisture, objParameter);
@@ -1664,7 +1844,7 @@ where   Ukey IN (
     ----因為CustPONO會有空值的情況，所以不可以使用CustPONO去取Style，改成直接抓SP#
 )
 
-select  SizeSpec,        MeasurementUkey,        AddDate
+select  SizeSpec,        MeasurementUkey,        AddDate    ,FinalInspection_MeasurementUkey = Ukey
 into    #tmp_Inspection_Measurement
 from    FinalInspection_Measurement WITH(NOLOCK)
 where   ID = @finalInspectionID and
@@ -1684,6 +1864,7 @@ select m.Ukey
 	,[diff]= max(dbo.calculateSizeSpec(m.SizeSpec,im.SizeSpec, ss.SizeUnit))
 	,im.AddDate
 	,[HeadSizeCode] = FORMAT(im.AddDate,'yyyy/MM/dd HH:mm:ss')
+	,im.FinalInspection_MeasurementUkey
 into #tmp 
 from Measurement m with(nolock)
 INNER JOIN #Style_Size ss WITH(NOLOCK) ON m.StyleUkey = ss.StyleUkey 
@@ -1694,7 +1875,7 @@ AND (m.SizeSpec NOT LIKE '%!%' AND m.SizeSpec NOT LIKE '%@%' AND m.SizeSpec NOT 
 AND m.SizeSpec NOT LIKE '%$%'  AND m.SizeSpec NOT LIKE '%^%'  AND m.SizeSpec NOT LIKE '%&%' 
 AND m.SizeSpec NOT LIKE '%*%' AND m.SizeSpec NOT LIKE '%=%' AND m.SizeSpec NOT LIKE '%-%' 
 AND m.SizeSpec NOT LIKE '%(%' AND m.SizeSpec NOT LIKE '%)%')
-group by m.Ukey,iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN),m.Tol1,m.Tol2,m.Code,m.SizeCode,m.SizeSpec,im.SizeSpec,im.AddDate
+group by m.Ukey,iif(isnull(b.DescEN,'') = '',m.Description,b.DescEN),m.Tol1,m.Tol2,m.Code,m.SizeCode,m.SizeSpec,im.SizeSpec,im.AddDate,im.FinalInspection_MeasurementUkey
 
 drop table #tmp_Inspection_Measurement
 
@@ -1712,6 +1893,7 @@ While @@FETCH_STATUS = 0
 Begin
 	
 	set @sql = @sql + '
+		,Max(case when HeadSizeCode ='''+@HeadSizeCode+''' and SizeCode ='''+@mSizeCode+''' then FinalInspection_MeasurementUkey end) as FinalInspection_MeasurementUkey'+@r_id+'
 		,Max(case when SizeCode ='''+@mSizeCode+''' then MeasurementSizeSpec end) as ['+@mSizeCode+'_aa]
 		,Max(case when HeadSizeCode ='''+@HeadSizeCode+''' and SizeCode ='''+@mSizeCode+''' then InspectionMeasurementSizeSpec end) as ['+@HeadSizeCode+']
 		,Max(case when HeadSizeCode ='''+@HeadSizeCode+''' and SizeCode ='''+@mSizeCode+''' then diff end) as diff'+@r_id+''
@@ -1990,6 +2172,7 @@ select  [FinalInspectionID] = f.ID,
 		[IsTransferToPivot88] = iif(f.IsExportToP88 = 1, 'Y', 'N'),
         [SampleSize] = cast(f.SampleSize as varchar),
         [SubmitDate] = format(f.SubmitDate, 'yyyy/MM/dd')   
+        ,f.ReInspection
 from FinalInspection f with (nolock)
 inner join FinalInspection_Order fo with (nolock) on fo.ID = f.ID
 inner join #tmpOrders o on fo.OrderID = o.ID
@@ -2049,6 +2232,7 @@ select top 200 [FinalInspectionID] = f.ID,
 		[IsTransferToPivot88] = iif(f.IsExportToP88 = 1, 'Y', 'N'),
         [SampleSize] = cast(f.SampleSize as varchar),
         [SubmitDate] = format(f.SubmitDate, 'yyyy/MM/dd')  
+        ,f.ReInspection
 from FinalInspection f with (nolock)
 inner join #default fo with (nolock) on fo.ID = f.ID
 inner join Production.dbo.Orders o with(nolock) on o.ID = fo.OrderID
@@ -2365,7 +2549,7 @@ SELECT IsCloseShade      ,IsHandfeel      ,IsAppearance      ,IsPrintEmbDecorati
       ,IsEmbellishmentEMB      ,IsFiberContent      ,IsCareInstructions      ,IsDecorativeLabel      ,IsAdicomLabel      ,IsCountryofOrigion      ,IsSizeKey
       ,Is8FlagLabel      ,IsAdditionalLabel      ,IsIdLabel      ,IsMainLabel      ,IsSizeLabel      ,IsCareContentLabel      ,IsBrandLabel      ,IsBlueSignLabel
       ,IsLotLabel      ,IsSecurityLabel      ,IsSpecialLabel      ,IsVIDLabel      ,IsCNC      ,IsWovenlabel      ,IsTSize      ,IsCCLayout      ,IsShippingMark
-      ,IsPolytagMarketing      ,IsColorSizeQty      ,IsHangtag      ,IsJokerTag      ,IsWWMT      ,IsChinaCIT      ,IsPolybagSticker      ,IsUCCSticker
+      ,IsPolytagMarking      ,IsColorSizeQty      ,IsHangtag      ,IsJokerTag      ,IsWWMT      ,IsChinaCIT      ,IsPolybagSticker      ,IsUCCSticker
       ,IsPESheetMicropak      ,IsAdditionalHantage      ,IsUPCStickierHantage      ,IsGS1128Label
 FROM FinalInspectionCheckList with (nolock) where FinalInspectionID = @ID 
 

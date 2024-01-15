@@ -120,7 +120,7 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public BaseResult UpdateMeasurement(ServiceMeasurement measurement, string userID)
+        public BaseResult InsertMeasurement(ServiceMeasurement measurement, string userID)
         {
             BaseResult result = new BaseResult();
 
@@ -144,7 +144,7 @@ namespace BusinessLogicLayer.Service
 
                 measurement.ListMeasurementItem = needUpdMeasurement.ToList();
 
-                _FinalInspectionProvider.UpdateMeasurement(measurement, userID);
+                _FinalInspectionProvider.InsertMeasurement(measurement, userID);
 
             }
             catch (Exception ex)
@@ -156,6 +156,44 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public BaseResult DeleteMeasurement(ServiceMeasurement measurement, DateTime AddDate)
+        {
+            BaseResult result = new BaseResult();
+
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                _FinalInspectionProvider.DeleteMeasurement(measurement, AddDate);
+
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+            return result;
+        }
+        public BaseResult UpdateMeasurement(ServiceMeasurement model, string userID)
+        {
+            BaseResult result = new BaseResult();
+
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                _FinalInspectionProvider.UpdateMeasurement(model, userID);
+
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+            return result;
+        }
         public BaseResult Single_UpdateMeasurement(ServiceMeasurement Head, MeasurementItem Body, string userID)
         {
             BaseResult result = new BaseResult();
@@ -177,7 +215,7 @@ namespace BusinessLogicLayer.Service
 
                 Head.ListMeasurementItem = new List<MeasurementItem>() { Body };
 
-                _FinalInspectionProvider.UpdateMeasurement(Head, userID);
+                _FinalInspectionProvider.InsertMeasurement(Head, userID);
 
             }
             catch (Exception ex)

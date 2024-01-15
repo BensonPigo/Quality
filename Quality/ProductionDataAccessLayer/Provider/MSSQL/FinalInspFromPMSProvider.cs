@@ -12,6 +12,7 @@ using DatabaseObject.ViewModel.FinalInspection;
 using System.Linq;
 using ToolKit;
 using System.Web.Mvc;
+using DatabaseObject.ManufacturingExecutionDB;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -271,7 +272,7 @@ UNION
 
 select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
 from AcceptableQualityLevels
-where  Junk = 0 and  AQLType in (1.5) and InspectionLevels IN ('1')  and AcceptedQty is not null 
+where  Junk = 0 and  AQLType in (1.5) and InspectionLevels IN ('1','2')  and AcceptedQty is not null 
 AND BrandID='LLL' AND Category = ''
 
 UNION
@@ -296,6 +297,14 @@ where Junk = 0 and AQLType in (1) and InspectionLevels IN ('S-4')
 and AcceptedQty is not null 
 AND BrandID='REI' AND Category = ''
 UNION 
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
+where Junk = 0 and AQLType in (1.5) and InspectionLevels IN ('1') 
+and AcceptedQty is not null 
+AND BrandID='Kolon' AND Category = ''
+UNION 
+
 select BrandID='AllBrand',AQLType=100,InspectionLevels='100% Inspection'
 ,LotSize_Start=0,LotSize_End=0,SampleSize=0,AcceptedQty=0,Ukey=0
 
@@ -309,6 +318,35 @@ drop table #AllData
             return ExecuteList<AcceptableQualityLevels>(CommandType.Text, sqlGetData, listPar);
         }
 
+        public IList<AcceptableQualityLevelsProList> GetAcceptableQualityLevelsProListForSetting(string BrandID ,long Ukey)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@BrandID", BrandID);
+
+            string sqlGetData = $@"
+select a.ProUkey
+    ,a.BrandID
+    ,a.InspectionLevels
+    ,a.AQLType
+    ,a.LotSize_Start
+    ,a.LotSize_End
+    ,a.SampleSize
+    ,b.AQLDefectCategoryUkey
+    ,c.Description,b.AcceptedQty
+    ,DefectDescription = c.Description
+from AcceptableQualityLevelsPro a WITH(NOLOCK)
+inner join AcceptableQualityLevelsPro_Detail b WITH(NOLOCK) on a.ProUkey=b.ProUkey
+inner join AcceptableQualityLevelsPro_DefectCategory c WITH(NOLOCK) on b.AQLDefectCategoryUkey=c.Ukey
+where  Junk = 0
+AND BrandID = @BrandID AND Category = ''
+";
+            if (Ukey > 0)
+            {
+                listPar.Add("@Ukey", Ukey);
+                sqlGetData += "AND a.ProUkey = @Ukey";
+            }
+            return ExecuteList<AcceptableQualityLevelsProList>(CommandType.Text, sqlGetData, listPar);
+        }
         public IList<AcceptableQualityLevels> GetAcceptableQualityLevelsForMeasurement()
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
@@ -387,6 +425,7 @@ select  GarmentDefectTypeID,
         Qty,
         Ukey,
         AreaCode,
+        Remark,
 		Operation = Operation.Operation,
 		Operator = Operation.Operator,
 		OperatorText = Operation.OperatorText
@@ -424,14 +463,15 @@ select  [Ukey] = isnull(fd.Ukey, -1),
         Operation = ISNULL( fd.Operation ,''),
         Operator = ISNULL( fd.Operator ,''),
         OperatorText = ISNULL( fd.OperatorText ,''),
-        AreaCode = ISNULL( fd.AreaCode ,''),
+        Remark = ISNULL( fd.Remark ,''),
 		[RowIndex]=ROW_NUMBER() OVER(ORDER BY gdt.id,gdc.id) -1
 		,HasImage = Cast(
 			IIF(EXISTS(
 				select 1 from SciPMSFile_FinalInspection_DetailImage img 
 				where img.FinalInspection_DetailUkey = isnull(fd.Ukey, -1)
 			),1,0)		
-		as bit)
+		as bit),
+        AreaCode = ISNULL( fd.AreaCode ,'')
     from [MainServer].Production.dbo.GarmentDefectType gdt with (nolock)
     inner join [MainServer].Production.dbo.GarmentDefectCode gdc with (nolock) on gdt.id=gdc.GarmentDefectTypeID
     left join   #FinalInspection_Detail fd on fd.GarmentDefectTypeID = gdt.ID and fd.GarmentDefectCodeID = gdc.ID
@@ -444,6 +484,33 @@ select  [Ukey] = isnull(fd.Ukey, -1),
             return ExecuteList<FinalInspectionDefectItem>(CommandType.Text, sqlGetData, listPar);
         }
 
+        public IList<FinalInspection_DefectDetail> GetFinalInspection_DefectDetails(string finalInspectionID,long ProUkey)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+
+            listPar.Add("@FinalInspectionID", finalInspectionID);
+            listPar.Add("@ProUkey", ProUkey);
+
+            string sqlGetData = $@"
+select a.ProUkey
+	,a.BrandID
+	,DefectCategoryDescription = c.Description
+    ,b.AcceptedQty  
+	,DefectCategoryUkey = c.Ukey
+	,defect.Qty
+	,DefectCategoryResult = IIF(defect.Qty <= b.AcceptedQty ,'Pass','Fail')
+from SciProduction_AcceptableQualityLevelsPro a WITH(NOLOCK)
+inner join SciProduction_AcceptableQualityLevelsPro_Detail b on a.ProUkey=b.ProUkey
+inner join SciProduction_AcceptableQualityLevelsPro_DefectCategory c on b.AQLDefectCategoryUkey=c.Ukey
+OUTER APPLY(
+	select top 1 Qty
+	from ManufacturingExecution..FinalInspection_DefectDetail d
+	where  d.DefectCategoryUkey=c.Ukey and d.ProUkey=a.ProUkey and d.FinalInspectionID = @FinalInspectionID
+)defect
+where a.ProUkey = @ProUkey
+";
+            return ExecuteList<FinalInspection_DefectDetail>(CommandType.Text, sqlGetData, listPar);
+        }
         public List<string> GetArticleList(string finalInspectionID)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();

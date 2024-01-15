@@ -548,11 +548,11 @@ namespace BusinessLogicLayer.Service
                 },
                 new {
                     title = "polybag",
-                    value = drCheckList.Field<bool>("IsPolytagMarketing") ? "Confirm" : "N/A",
+                    value = drCheckList.Field<bool>("IsPolytagMarking") ? "Confirm" : "N/A",
                     type = "check-list",
                     subsection = "validation_and_checklist",
                     checkListSubsection = "packaging",
-                    status = drCheckList.Field<bool>("IsPolytagMarketing") ? "pass" : "na",
+                    status = drCheckList.Field<bool>("IsPolytagMarking") ? "pass" : "na",
                     comment = "",
                 },
                 new {
