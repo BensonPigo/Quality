@@ -2,6 +2,7 @@ using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.FinalInspection;
+using System;
 using System.Collections.Generic;
 using System.Data;
 
@@ -65,7 +66,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         Dictionary<string, byte[]> GetEndLineInspectionDefectImage(string InspectionID);
 
         void UpdateFinalInspectionDetail(AddDefect addDefect, string UserID);
-
+        void UpdateFinalInspectionDefectDetail(AddDefect addDefect);
         IList<BACriteriaItem> GetBeautifulProductAuditForInspection(string finalInspectionID);
 
         void UpdateBeautifulProductAudit(BeautifulProductAudit addDefect, string UserID);
@@ -99,7 +100,8 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         void DeleteMoisture(long ukey);
 
-        void UpdateMeasurement(DatabaseObject.ViewModel.FinalInspection.ServiceMeasurement measurement, string userID);
+        void InsertMeasurement(DatabaseObject.ViewModel.FinalInspection.ServiceMeasurement measurement, string userID);
+        void DeleteMeasurement(DatabaseObject.ViewModel.FinalInspection.ServiceMeasurement measurement, DateTime AddDate);
 
         IList<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID);
         DataTable GetMeasurement(string finalInspectionID, string article, string size, string productType);
@@ -156,5 +158,6 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         List<FinalInspectionBasicGeneral> GetAllGeneral();
         List<FinalInspectionBasicCheckList> GetAllCheckList();
         int GetAvailableQty(string FinalInspectionID);
+        void UpdateMeasurement(ServiceMeasurement model, string userID);
     }
 }

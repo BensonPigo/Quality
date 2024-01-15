@@ -166,8 +166,16 @@
 
 
 <div class="detail-dialog to-edit-detail" title="View">
-    <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
-        <table style="width: 100%; margin-top: 2vh; ">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh;display:block;">
+        <div id="divButton" style="display:flex;">
+            <div>
+                <button id="btnViewEditSave" class="btn btn-blue" style="height: 3vh;">Edit</button>
+            </div>
+            <div>
+                <button id="btnViewCancel" class="btn" style="height: 3vh;">Cancel</button>
+            </div>
+        </div>
+        <table style="width: 100%; ">
             <tbody>
                 <tr>
                     <td align="right">
@@ -213,6 +221,7 @@
 
     var msg = new MessagerAlert();
     var OpenViewObj;
+    var EditMode = false;
 
     $(".detail-dialog").dialog({
         autoOpen: false,
@@ -239,16 +248,25 @@
     });
 
     $(".to-edit-detail").dialog({
-        width: "70%",
+        width: "90%"
 
     });
 
     $(".to-edit-detail").on("dialogclose", function (event, ui) {
         EditMode = false;
+
+        $("#btnViewEditSave").text('Edit');
+        $("#btnViewEditSave").removeClass('btn-red');
+        $("#btnViewEditSave").addClass('btn-blue');
+        $(".clsMeasurementDel").show();
+        $("#ViewListArticle").removeAttr("disabled");
+        $("#ViewListSize").removeAttr("disabled");
+        $("#ViewListProductType").removeAttr("disabled");
     });
 
 
     function open_View() {
+        ShowLoading();
         $.ajax({
             url: "@Url.Action("OpenView", new { Area = "FinalInspection" })",
             type: 'POST',
@@ -288,12 +306,12 @@
 
                 OpenViewObj = data;
                 ReloadViewData(data, currentArticle, currentSize, currentProductType);
+                NonLoading();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
             }
         });
-
         $(".to-edit-detail").dialog("open");
     }
 
@@ -316,6 +334,103 @@
 
 
         $("#Save").click(Save);
+
+        $("#dropSize").on("change", function () {
+
+            ReloadData();
+
+        });
+
+        $("#dropArticle").change(function () {
+
+            var article = $(this).val();
+
+            $.ajax({
+                url: "@Url.Action("GetNewSizeByArticle", "Inspection" )",
+                data: { Article: article },
+                type: 'POST',
+                dataType: "json",
+                async: false,
+                success: function (datas) {
+
+                    var sizeOption = "";
+                    var sizeArrList = [];
+
+                    $.each(datas, function (index, obj) {
+                        sizeArrList.push(obj.Value);
+                    });
+
+
+                    $.each(sizeArrList, function (index, value) {
+                        sizeOption += "<option value=" + value + " >" + value + "</option>";
+                    });
+
+                    $("#dropSize").html(sizeOption);
+
+                    ReloadData();
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#btnViewEditSave").click(function () {
+
+            if ($("#ViewListArticle").val() == null) {
+                return;
+            }
+
+            if ($("#btnViewEditSave").text() == 'Edit') {
+                EditMode = true;
+                $("#btnViewEditSave").text('Save');
+                $("#btnViewEditSave").removeClass('btn-blue');
+                $("#btnViewEditSave").addClass('btn-red');
+                $(".clsMeasurementDel").hide();
+                $("#ViewListArticle").attr("disabled", "disabled");
+                $("#ViewListSize").attr("disabled", "disabled");
+                $("#ViewListProductType").attr("disabled", "disabled");
+
+                $(".MeasurementValue").removeAttr("readonly");
+            }
+            else if ($("#btnViewEditSave").text() == 'Save') {
+
+                MeasurementEdit();
+
+                EditMode = false;
+                $("#btnViewEditSave").text('Edit');
+                $("#btnViewEditSave").removeClass('btn-red');
+                $("#btnViewEditSave").addClass('btn-blue');
+                $(".clsMeasurementDel").show();
+                $("#ViewListArticle").removeAttr("disabled");
+                $("#ViewListSize").removeAttr("disabled");
+                $("#ViewListProductType").removeAttr("disabled");
+            }
+        });
+
+        $("#btnViewCancel").click(function () {
+
+            if (EditMode == true) {
+                msg.WithConfirm('Are you sure you want to cancel the edit?',
+                    function () {
+                        EditMode = false;
+                        $("#btnViewEditSave").text('Edit');
+                        $("#btnViewEditSave").removeClass('btn-red');
+                        $("#btnViewEditSave").addClass('btn-blue');
+                        $(".clsMeasurementDel").show();
+                        $("#ViewListArticle").removeAttr("disabled");
+                        $("#ViewListSize").removeAttr("disabled");
+                        $("#ViewListProductType").removeAttr("disabled");
+
+                        ShowLoading();
+                        open_View();
+                        NonLoading();
+                    }, null);
+
+            }
+        });
+
+        ReloadData();
     });
 
 
@@ -351,6 +466,7 @@
             FinalInspectionID: '@Model.FinalInspectionID',
             SelectedArticle: $("#dropArticle").val(),
             SelectedSize: $("#dropSize").val(),
+            SizeUnit: $("#SizeUnit").val(),
             SelectedProductType: $("#dropProductType").val(),
             ListMeasurementItem: bodyList
         };
@@ -517,51 +633,188 @@
     }
 
 
-    $(document).ready(function () {
-        $("#dropSize").on("change", function () {
+    function MeasurementDel(MeasurementDate) {
+        if (EditMode == false) {
+            msg.WithConfirm('Do you want to delete the data ?',
+                function () {
+                    // AJAX 刪除動作
 
-            ReloadData();
+                    $.ajax({
+                        url: "@Url.Action("MeasurementDelete", new { Area = "FinalInspection" })",
+                        type: 'POST',
+                        data: jQuery.param({ FinalInspectionID: "@Model.FinalInspectionID", AddDate: MeasurementDate }),
+                        async: true,
+                        success: function (response) {
 
-        });
+                            if (response.Result != undefined) {
+                                if (response.Result) {
 
-        $("#dropArticle").change(function () {
+                                    msg.WithSuccesCheck("Success!", function () {
+                                        open_View();
+                                    });
+                                }
+                                else {
+                                    msg.WithErrorCheck(response.ErrorMessage, function () {
+                                        return false;
+                                    });
+                                }
+                            }
+                            else {
 
-            var article = $(this).val();
-
-            $.ajax({
-                url: "@Url.Action("GetNewSizeByArticle", "Inspection" )",
-                data: { Article: article },
-                type: 'POST',
-                dataType: "json",
-                async: false,
-                success: function (datas) {
-
-                    var sizeOption = "";
-                    var sizeArrList = [];
-
-                    $.each(datas, function (index, obj) {
-                        sizeArrList.push(obj.Value);
+                                // response.Result = undefined，代表什麼都沒輸入就按下Save
+                                return true;
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
+                        }
                     });
+                }, null);
 
+        }
+    }
 
-                    $.each(sizeArrList, function (index, value) {
-                        sizeOption += "<option value=" + value + " >" + value + "</option>";
-                    });
+    function MeasurementEdit() {
+        var dataList = $(".MeasurementValue");
+        var paraList = [];
 
-                    $("#dropSize").html(sizeOption);
+        for (const data of dataList) {
+            var d = {
+                FinalInspection_MeasurementUkey: parseInt($(data).attr('FinalInspection_MeasurementUkey')),
+                ResultSizeSpec: $(data).val(),
+            };
+            paraList.push(d);
+        }
 
-                    ReloadData();
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
+        var head =
+        {
+            SizeUnit: $("#SizeUnit").val(),
+            ListMeasurementItem: paraList
+        };
+
+        $.ajax({
+            url: "@Url.Action("MeasurementUpdate", new { Area = "FinalInspection" })",
+            type: 'POST',
+            data: jQuery.param({ model: head }),
+            async: true,
+            success: function (response) {
+
+                if (response.Result != undefined) {
+                    if (response.Result) {
+
+                        msg.WithSuccesCheck("Success!", function () {
+                            open_View();
+                        });
+                    }
+                    else {
+                        msg.WithErrorCheck(response.ErrorMessage, function () {
+                            return false;
+                        });
+                    }
                 }
-            });
+                else {
+
+                    // response.Result = undefined，代表什麼都沒輸入就按下Save
+                    return true;
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
         });
+    }
 
-        ReloadData();
-    });
+    // View視窗裡面的數值處理，必須與.MeasurementTable>tbody>tr>td>input[idx='ResultSizeSpec'] 同步
+    function MeasurementValueCheck(obj, unit) {
 
+        var val = $(obj).val();
 
+        if (val == "" || val <= 0) {
+            $(obj).val("");
+            return;
+        }
+
+        var isFractional = false;
+        if (val.toString().indexOf('/') > -1 && val.toString().indexOf(".") > -1) {
+            // 同時存在小數和分數符號
+            $(obj).val("");
+            return;
+        }
+        else if (val.toString().indexOf('/') > -1) {
+            // 只有分數符號
+            isFractional = true;
+        }
+        else if (val.toString().indexOf(".") > -1) {
+            // 只有小數符號
+            isFractional = false;
+        }
+
+        // 針對輸入的value進行約分
+        var vi = 0, vd = 0, vm = 0;
+
+        if (isFractional) {
+            // 是分數，檢查有沒有多餘符號
+            if (containsInvalidCharacters1(val)) {
+                val = 0;
+            }
+            else {
+                vi = val.substr(0, val.toString().indexOf(' '));
+            }
+        }
+        else {
+            // 是小數，檢查有沒有多餘符號
+            if (containsInvalidCharacters2(val)) {
+                val = 0;
+            }
+            vi = val;
+        }
+
+        if (val == "" || val <= 0) {
+            $(obj).val(val);
+            return;
+        }
+        if (vi == '') {
+            vi = 0;
+        }
+
+        if (val.toString().indexOf('/') > -1) {
+            vd = val.substr(val.toString().indexOf(' ') + 1, val.toString().indexOf('/') - 1 - val.toString().indexOf(' '));
+            vm = val.substr(val.toString().indexOf('/') + 1, val.length - 1 - val.toString().indexOf('/'));
+
+            vi = parseInt(vi);
+            vd = parseInt(vd);
+            vm = parseInt(vm);
+
+            // 分子大於分母
+            if (vd > vm && vm > 0) {
+                vi = parseInt(vi + (vd / vm));
+                vd = vd % vm;
+            }
+            else if (vd == vm && vm > 0) {
+                vi = parseInt(vi + (vd / vm));
+                vd = 0;
+                vvm = 0;
+            }
+
+            if (vi > 0 && vd > 0 && vm > 0) {
+                val = vi + ' ' + vd + '/' + vm;
+            }
+            else if (vd > 0 && vm > 0) {
+                val = vd + '/' + vm;
+            }
+            else {
+                val = vi;
+            }
+            $(obj).val(val);
+        }
+        else {
+            vd = 1;
+            vm = 1;
+            vi = vi - 1;
+        }
+    }
+
+    var listMeasurementItem = @Html.Raw(Json.Encode(Model.ListMeasurementItem));
 
     function ReloadData() {
 
@@ -590,10 +843,9 @@
         }
 
 
-        var items = @Html.Raw(Json.Encode(Model.ListMeasurementItem));
         var KeyIdx = 0;
         var relsizeUnit = SizeUnit;
-        $.each(items, function (index, value) {
+        $.each(listMeasurementItem, function (index, value) {
             const rules = /^.*[A-Za-z]+.*$/;
             var bol = rules.test(value.SizeSpec);
             if (bol) {
@@ -610,7 +862,7 @@
             }
         });
 
-        $.each(items, function (index, value) {
+        $.each(listMeasurementItem, function (index, value) {
             if (value.Size == dropSize.value) {
 
                 var readonly = "";
@@ -646,6 +898,7 @@
         $('.MeasurementTable>thead').html(thead);
         $('.MeasurementTable>tbody').html(tbody);
 
+        // Measurement大表的數值處理，必須與function MeasurementValueCheck同步
         $(".MeasurementTable>tbody>tr>td>input[idx='ResultSizeSpec']").on('change', function () {
             var unit = document.getElementById("SizeUnit").value;
             const rules = /^(((([0-9]{1,3}[ ])|(^))\d{1,2}[/]\d{1,2})|([0-9]{1,3}))$/;
@@ -655,6 +908,7 @@
             var tolh = $(this).parent().parent().children().find("p[idx='Tol+']").html();
             var toll = $(this).parent().parent().children().find("p[idx='Tol-']").html();
 
+
             if (val == "" || val <= 0) {
                 $(this).val("");
                 $(this).parent().parent().children().find("p[class='Diff']").html('');
@@ -662,22 +916,52 @@
                 return;
             }
 
+            var isFractional = false;
+            if (val.toString().indexOf('/') > -1 && val.toString().indexOf(".") > -1) {
+                // 同時存在小數和分數符號
+                $(this).val("");
+                $(this).parent().parent().children().find("p[class='Diff']").html('');
+                $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
+                return;
+            }
+            else if (val.toString().indexOf('/') > -1) {
+                // 只有分數符號
+                isFractional = true;
+            }
+            else if (val.toString().indexOf(".") > -1) {
+                // 只有小數符號
+                isFractional = false;
+            }
+
             // 針對輸入的value進行約分
             var vi = 0, vd = 0, vm = 0;
 
-            if (val.toString().indexOf(' ') > -1) {
-                vi = val.substr(0, val.toString().indexOf(' '));
+            if (isFractional) {
+                // 是分數，檢查有沒有多餘符號
+                if (containsInvalidCharacters1(val)) {
+                    val = 0;
+                }
+                else {
+                    vi = val.substr(0, val.toString().indexOf(' '));
+                }
             }
-            else if (val.toString().indexOf(" ") < 0 && val.toString().indexOf('/') < 0) {
+            else {
+                // 是小數，檢查有沒有多餘符號
+                if (containsInvalidCharacters2(val)) {
+                    val = 0;
+                }
                 vi = val;
             }
 
-            if (val.toString().indexOf(" ") > -1) {
-                intVal = val.substr(0, val.toString().indexOf(' '));
+            if (val == "" || val <= 0) {
+                $(this).val(val);
+                return;
             }
-            else if (val.toString().indexOf(" ") < 0 && val.toString().indexOf('/') < 0) {
-                intVal = val;
+
+            if (vi == '') {
+                vi = 0;
             }
+
             if (val.toString().indexOf('/') > -1) {
                 vd = val.substr(val.toString().indexOf(' ') + 1, val.toString().indexOf('/') - 1 - val.toString().indexOf(' '));
                 vm = val.substr(val.toString().indexOf('/') + 1, val.length - 1 - val.toString().indexOf('/'));
@@ -700,6 +984,9 @@
                 if (vi > 0 && vd > 0 && vm > 0) {
                     val = vi + ' ' + vd + '/' + vm;
                 }
+                else if (vd > 0 && vm > 0) {
+                    val = vd + '/' + vm;
+                }
                 else {
                     val = vi;
                 }
@@ -709,6 +996,11 @@
                 vd = 1;
                 vm = 1;
                 vi = vi - 1;
+                var val = parseFloat(parseFloat(val).toFixed(4));
+                if (Number.isInteger(val)) {
+                    val = parseInt(val);
+                }
+                $(this).val(val);
             }
 
 
@@ -765,25 +1057,52 @@
                 if ($(currentCol).val() != '') {
                     oldValue = parseFloat($(currentCol).val());
                 }
-                var newValue = oldValue + 1;
+                var newValue = oldValue + 0.0625;
+                newValue = newValue.toFixed(4);
                 $(currentCol).val(newValue).change();
             }
             if (tpye == "text") {
                 var newValue = 0;
                 if ($(currentCol).val() != '') {
 
-                    //有分數，例如：1 1/2，把整數位獨立出來+1
-                    if ($(currentCol).val().split(' ').length == 2) {
+                    // 有可能同一個Measurement表裡面會同時包含小數和分數，因此tpye == "text"不一定都是分數，還要再把小數拉出來額外運算
+                    if ($(currentCol).val().indexOf('.') > -1) {
+                        oldValue = parseFloat($(currentCol).val());
+                        var newValue = oldValue + 0.0625;
+                        newValue = newValue.toFixed(4);
+                        $(currentCol).val(newValue).change();
+                    }
+                    //有分數，例如：1 1/2，把分子獨立出來+1
+                    else if ($(currentCol).val().split(' ').length == 2) {
                         var interg = $(currentCol).val().split(' ')[0];
-                        var float = $(currentCol).val().split(' ')[1];
-                        var tmp = parseInt(interg) + 1;
-                        newValue = tmp + ` ${float}`;
 
+                        var float = $(currentCol).val().split(' ')[1];
+                        var numerator = float.split('/')[0];
+                        var denominator = float.split('/')[1];
+
+                        //var tmp = parseInt(numerator) + 1;
+                        var tmp = CacuFraction(float, '1/16', 'addition');
+                        //newValue = tmp + ` ${float}`;
+                        newValue = interg + ` ${tmp}`;
                     }
                     else {
-                        // 其餘直接轉成整數
-                        oldValue = parseFloat($(currentCol).val());
-                        newValue = oldValue + 1;
+
+                        // 是否為純分數
+                        if ($(currentCol).val().split('/').length == 2) {
+
+                            var tmp = CacuFraction($(currentCol).val(), '1/16', 'addition');
+                            if (tmp == '0/1') {
+                                newValue = 0;
+                            }
+                            else {
+                                newValue = tmp;
+                            }
+                        }
+                        else {
+
+                            var tmp = CacuFraction($(currentCol).val() + '/1', '1/16', 'addition');
+                            newValue = tmp;
+                        }
                     }
 
                 }
@@ -812,7 +1131,8 @@
                 if ($(currentCol).val() != '') {
                     oldValue = parseFloat($(currentCol).val());
                 }
-                var newValue = oldValue - 1;
+                var newValue = oldValue - 0.0625;
+                newValue = newValue.toFixed(4);
                 $(currentCol).val(newValue).change();
             }
             if (tpye == "text") {
@@ -820,25 +1140,60 @@
                 var newValue = 0;
                 if ($(currentCol).val() != '') {
 
+                    // 有可能同一個Measurement表裡面會同時包含小數和分數，因此tpye == "text"不一定都是分數，還要再把小數拉出來額外運算
+                    if ($(currentCol).val().indexOf('.') > -1) {
+                        oldValue = parseFloat($(currentCol).val());
+                        var newValue = oldValue - 0.0625;
+                        newValue = newValue.toFixed(4);
+                        $(currentCol).val(newValue).change();
+                    }
                     //有分數，例如：1 1/2，把整數位獨立出來-1
-                    if ($(currentCol).val().split(' ').length == 2) {
+                    else if ($(currentCol).val().split(' ').length == 2) {
                         var interg = $(currentCol).val().split(' ')[0];
                         var float = $(currentCol).val().split(' ')[1];
-                        var tmp = parseInt(interg) - 1;
 
-                        // 若整數位<=1，新值直接歸0
-                        if (interg <= 1) {
+                        var tmp = CacuFraction(float, '1/16', 'subtraction');
+                        //var tmp = parseInt(interg) - 1;
+
+                        // 整數、分數都是0
+                        if (parseInt(interg) == 0 && tmp == '0/1') {
                             newValue = 0;
                         }
+                        // 整數=0，分數!=0
+                        else if (parseInt(interg) == 0 && tmp != '0/1') {
+                            //newValue = 0;
+                            newValue = tmp;
+                        }
+                        // 整數!=0，分數=0
+                        else if (parseInt(interg) != 0 && tmp == '0/1') {
+                            //newValue = 0;
+                            newValue = parseInt(interg);
+                        }
                         else {
-                            newValue = tmp + ` ${float}`;
+                            //newValue = tmp + ` ${float}`;
+                            newValue = interg + ` ${tmp}`;
                         }
 
                     }
                     else {
-                        // 其餘直接轉成整數
-                        oldValue = parseFloat($(currentCol).val());
-                        newValue = oldValue - 1;
+
+                        // 是否為純分數
+                        if ($(currentCol).val().split('/').length == 2) {
+
+                            var tmp = CacuFraction($(currentCol).val(), '1/16', 'subtraction');
+                            if (tmp == '0/1') {
+                                newValue = 0;
+                            }
+                            else {
+                                newValue = tmp;
+                            }
+                        }
+                        else {
+                            var tmp = CacuFraction($(currentCol).val() + '/1', '1/16', 'subtraction');
+                            newValue = tmp;
+                            // 其餘直接轉成整數
+                        }
+
                     }
 
                 }
@@ -856,6 +1211,7 @@
     function ReloadViewData(AjaxReturn, Article, Size, ProductType) {
 
         if (Article == "" || Size == "" || ProductType == "" || AjaxReturn.length <= 0) {
+            $("#Content").empty();
             return;
         }
 
@@ -881,7 +1237,7 @@
                     });
                 }
                 else {
-                    $('#Content').html(generateTable(datas, "Measurement"));
+                    $('#Content').html(generateMeasurementEditTable(datas, "Measurement"));
                     $('#Content').children("table").addClass("table-striped");
                     ChangeColor();
                 }
@@ -899,32 +1255,39 @@
             var toll;
             var val;
             $.each($(this).children(), function () {
-                var tdName = $(this).attr('idx');
+                var targetDOM = this;
+                var tdName = $(targetDOM).attr('idx');
+                var isDatetime = !isNaN(Date.parse(tdName));
+
+                if (isDatetime) {
+                    targetDOM = $(targetDOM).find('input');
+                }
 
                 if (tdName == null) {
                     return false;
                 }
 
                 if (tdName == "Tol(+)") {
-                    tolh = $(this).html();
+                    tolh = $(targetDOM).html();
                 }
 
                 if (tdName == "Tol(-)") {
-                    toll = $(this).html();
+                    toll = $(targetDOM).html();
                 }
 
                 if (isDate(tdName)) {
-                    val = $(this).html();
-                    $(this).css('background-color', 'rgb(234, 234, 113);');
+                    val = $(targetDOM).val();
+                    $(targetDOM).css('background-color', 'rgb(234, 234, 113);');
+                    $(targetDOM).parent().css('background-color', 'rgb(234, 234, 113);');
                 }
 
                 if (tdName.indexOf('_aa') > -1) {
-                    standard = $(this).html();
-                    $(this).css('background-color', 'rgb(211, 211, 211);');
+                    standard = $(targetDOM).html();
+                    $(targetDOM).css('background-color', 'rgb(211, 211, 211);');
                 }
 
                 if (tdName.indexOf('diff') > -1) {
-                    $(this).css('background-color', 'rgb(234, 234, 113);');
+                    $(targetDOM).css('background-color', 'rgb(234, 234, 113);');
 
                     if (standard == null || val == null || tolh == null || toll == null) {
                         return;
@@ -932,7 +1295,7 @@
                     else {
                         // 避免standard出現文字
                         if (parseInt(standard.toString()) >= 0) {
-                            cal(unit, standard.toString(), val.toString(), tolh.toString(), toll.toString(), $(this));
+                            cal(unit, standard.toString(), val.toString(), tolh.toString(), toll.toString(), $(targetDOM));
                         }
                     }
                 }
@@ -970,4 +1333,51 @@
         }
     }
 
+    function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+    }
+
+    function lcm(a, b) {
+        return (a * b) / gcd(a, b);
+    }
+
+    function CacuFraction(valA, valB, action) {
+        const [numA, denA] = valA.split('/').map(Number);
+        const [numB, denB] = valB.split('/').map(Number);
+
+        let resultNum, resultDen;
+
+        switch (action) {
+            case 'addition':
+                resultNum = numA * denB + numB * denA;
+                resultDen = denA * denB;
+                break;
+            case 'subtraction':
+                resultNum = numA * denB - numB * denA;
+                resultDen = denA * denB;
+                break;
+            default:
+                throw new Error('Invalid action. Use "addition" or "subtraction".');
+        }
+
+        const commonGCD = gcd(resultNum, resultDen);
+        resultNum /= commonGCD;
+        resultDen /= commonGCD;
+
+        return `${resultNum}/${resultDen}`;
+    }
+
+
+    // 檢查是否包含數字、/ 符號、空格以外的字元
+    function containsInvalidCharacters1(text) {
+        // 使用正则表达式检查是否包含数字、/ 以外的字符
+        const regex = /[^0-9\/\s]/;
+        return regex.test(text);
+    }
+
+    // 檢查是否包含數字、.符號以外的字元
+    function containsInvalidCharacters2(text) {
+        const regex = /[^0-9\.]/;
+        return regex.test(text);
+    }
 </script>

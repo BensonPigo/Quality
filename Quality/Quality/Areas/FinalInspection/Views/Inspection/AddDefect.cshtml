@@ -28,6 +28,7 @@
         #CheckListTable {
             font-size: 1.4em;
         }
+
         .ColTitle {
             text-align: center;
         }
@@ -39,13 +40,44 @@
     {
 
         <div style="padding:2em 3em 2em 3em;width:95%;float:left;position: absolute;transform: translate(-50%, 0%);left: 50%">
-            <div>
-                <h1 style="font-size: 2vh; font-weight: 900; ">
-                    How many reject Qty(pcs)
-                    @Html.TextBox("RejectQty", Model.RejectQty, new { @type = "number", @style = "width:10vw", @class = "form-control center-block" })
-                    <input id="txtSearchDefect" type="text" placeholder="Search Defect Code" style=" float: right;" name="name" value="" />
-                </h1>
-            </div>
+
+            @if (!string.IsNullOrEmpty(Model.FinalInspection.AcceptableQualityLevelsProUkey) && Model.FinalInspection_DefectDetails != null)
+            {
+                <div>
+                    <h1 style="font-size: 2vh; font-weight: 900; ">
+                        How many reject Qty(pcs)
+                        @Html.TextBox("RejectQty", Model.RejectQty, new { @type = "number", @style = "width:10vw", @class = "form-control center-block", @readonly = "readonly" })
+                        <input id="txtSearchDefect" type="text" placeholder="Search Defect Code" style=" float: right;" name="name" value="" />
+                    </h1>
+                </div>
+                <br />
+                for (int i = 0; i < Model.FinalInspection_DefectDetails.Count; i++)
+                {
+                    <label style="font-size: 1.5vh; font-weight: 900;">@Model.FinalInspection_DefectDetails[i].DefectCategoryDescription Reject Qty</label>
+                    @Html.Hidden($"addDefct.FinalInspection_DefectDetails[{i}].ProUkey", Model.FinalInspection_DefectDetails[i].ProUkey)
+                    @Html.Hidden($"addDefct.FinalInspection_DefectDetails[{i}].DefectCategoryUkey", Model.FinalInspection_DefectDetails[i].DefectCategoryUkey)
+                    @Html.Hidden($"addDefct.FinalInspection_DefectDetails[{i}].FinalInspectionID", Model.FinalInspectionID)
+
+                    @Html.TextBox($"addDefct.FinalInspection_DefectDetails[{i}].Qty", Model.FinalInspection_DefectDetails[i].Qty, new
+               {
+                   @class = "form-control center-block DefectQty",
+                   @style = "width:3vw",
+                   @type = "number",
+                   @min="0",
+                   @onchange= "AutoCacuRejectQty()",
+               })
+                }
+            }
+            else
+            {
+                <div>
+                    <h1 style="font-size: 2vh; font-weight: 900; ">
+                        How many reject Qty(pcs)
+                        @Html.TextBox("RejectQty", Model.RejectQty, new { @type = "number", @style = "width:10vw", @class = "form-control center-block" })
+                        <input id="txtSearchDefect" type="text" placeholder="Search Defect Code" style=" float: right;" name="name" value="" />
+                    </h1>
+                </div>
+            }
             <table id="CheckListTable" class="cell-border" style="width:100%"></table>
         </div>
         <div style="width:100%">
@@ -108,11 +140,12 @@
                         , items[i].Operator
                         , items[i].OperatorText
                         , items[i].AreaCode
+                        , items[i].Remark
                     ]);
                 }
             }
 
-            adata.push([null, result[keyCount], 'Operation', 'Operator', 'AreaCode', temp])
+            adata.push([null, result[keyCount], 'Operation', 'Operator', 'AreaCode', 'Remark', temp])
             keyCount++
         }
 
@@ -125,9 +158,10 @@
                 columnDefs: [
                     { targets: 0, width: "2%", orderable: false },
                     { targets: 1, width: "38%", orderable: false },
-                    { targets: 2, width: "20%", orderable: false },
-                    { targets: 3, width: "20%", orderable: false },
-                    { targets: 4, width: "15%", orderable: false },
+                    { targets: 2, width: "13%", orderable: false },
+                    { targets: 3, width: "13%", orderable: false },
+                    { targets: 4, width: "13%", orderable: false },
+                    { targets: 5, width: "13%", orderable: false },
                 ],
                 columns: [
                     {
@@ -179,32 +213,38 @@
                 if (event.keyCode != 13) {
                     return;
                 }
-                var defectCode = $(this).val();
+                var defectCode = $(this).val().toUpperCase();
                 var foundGroup = [];
                 if (defectCode != '') {
-                    adata.forEach(function (group1) {
+                    var domIdx = 0;
+                    adata.some(function (group1) {
                         var isFoundit = false;
-                        group1[5].forEach(function (group2) {
-                            var isExists = group2[1].includes(defectCode);
+                        group1[6].some(function (group2) {
+                            var isExists = group2[1].toUpperCase().includes(defectCode);
                             if (isExists) {
                                 isFoundit = true;
+                                domIdx = group2[4];
+                                return true;
                             }
                         });
 
                         if (isFoundit) {
                             foundGroup.push(group1[1].split('-')[0]);
+                            return true;
                         }
                     });
 
-                    foundGroup.forEach(function (value, index) {
+                    foundGroup.some(function (value, index) {
                         $(`#CheckListTable_${value}`).click();
+                        $(`input[name='addDefct.ListFinalInspectionDefectItem[${domIdx}].Qty`).focus();
+                        return true;
                     });
                 }
             });
         });
 
         function formatChildTable(dataList) {
-            var list = dataList[5];
+            var list = dataList[6];
             var sTr = "";
 
             $(list).each(function (index, value) {
@@ -214,6 +254,7 @@
                 var Operator = value[8];
                 var OperatorText = value[9];
                 var AreaCode = value[10];
+                var Remark = value[11];
 
                 sTr = sTr + "<tr><td style='width:30%'>" + value[1] + "</td>";
                 sTr = sTr + `<td style='vertical-align: middle'>
@@ -229,7 +270,10 @@
         <input type='hidden' style='width:100%' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operator' onchange='OperatorChange("${value[6]}",${index},this)'  readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Operator' value='${Operator}'>
     </td>
     <td>
-        <input type='text' style='width:100%' onclick="OpenAreaCode('${RowIndex}')" onchange='OperationChange("${value[6]}",${index},this)' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].AreaCode' readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].AreaCode' value='${AreaCode}'>
+        <input type='text' style='width:100%' onclick="OpenAreaCode('${RowIndex}')" onchange='AreaCodeChange("${value[6]}",${index},this)' id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].AreaCode' readonly name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].AreaCode' value='${AreaCode}'>
+    </td>
+    <td>
+        <input type='text' style='width:100%'  id='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Remark' onchange='RemarkChange("${value[6]}",${index},this)' name='addDefct.ListFinalInspectionDefectItem[${RowIndex}].Remark' value='${Remark}'>
     </td>
     </tr>`;
 
@@ -245,8 +289,12 @@
         }
 
         function OpenAreaCode(targetID) {
-            var para = `?FinalInspectionID=${$('#FinalInspectionID').val()}&TargetID=${targetID}&Title=Operation`;
+
+            var val = $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].AreaCode']`).val();
+            var para = `?FinalInspectionID=${$('#FinalInspectionID').val()}&TargetID=${targetID}&Title=Operation&oldValue=${val}`;
+
             window.open('@Url.Action("AreaCodeList", "PublicWindow",new{Area=""})' + para, 'Operation List', config = 'toolbar=no,status=no,location=no,width=800,height=750');
+
         }
 
 
@@ -290,40 +338,41 @@
                     spliter = '';
                 }
                 strAreaCode += this.AreaCode + spliter;
-                //strOperatorText += this.Text + spliter;
-                //strOperator += this.Value + spliter;
             });
 
             $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].AreaCode']`).val(strAreaCode);
-            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].OperatorText']`).val(strOperatorText);
-            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operator']`).val(strOperator);
-
-            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operation']`).change();
-            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].OperatorText']`).change();
-            //$(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].Operator']`).change();
+            $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].AreaCode']`).change();
         }
 
         // Qty改變時，把值寫回DataTable的Datasource
         function QtyChange(DefectType, index,obj) {
 
-            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[4][index][2] = $(obj).val();
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[6][index][2] = $(obj).val();
         }
 
         // Operation改變時，把值寫回DataTable的Datasource
         function OperationChange(DefectType, index, obj) {
 
-            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[4][index][7] = $(obj).val();
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[6][index][7] = $(obj).val();
         }
 
         function OperatorChange(DefectType, index, obj) {
 
-            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[4][index][8] = $(obj).val();
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[6][index][8] = $(obj).val();
         }
 
+        function AreaCodeChange(AreaCode, index, obj) {
+
+            table.row($(`#CheckListTable_${AreaCode}`).closest('tr')).data()[6][index][10] = $(obj).val();
+        }
+        function RemarkChange(DefectType, index, obj) {
+
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[6][index][11] = $(obj).val();
+        }
 
         function OperatorTextChange(DefectType, index, obj) {
 
-            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[4][index][9] = $(obj).val();
+            table.row($(`#CheckListTable_${DefectType}`).closest('tr')).data()[6][index][9] = $(obj).val();
         }
 
         function checkValue(self) {
@@ -332,7 +381,7 @@
 
             var rejectQty = $("#RejectQty").val();
             var model = @Html.Raw(Json.Encode(Model));
-            var sampleSize = model.SampleSize;
+            var sampleSize = model.FinalInspection.SampleSize;
 
             if (rejectQty > sampleSize)
             {
@@ -424,6 +473,22 @@
                     }
                 });
             }
+        }
+
+        function AutoCacuRejectQty() {
+            var defectQtyInputs = $(".DefectQty");
+
+            // 加總所有數值
+            var totalDefectQty = 0;
+            defectQtyInputs.each(function () {
+                var value = parseInt($(this).val());
+                if (!isNaN(value)) {
+                    totalDefectQty += value;
+                }
+            });
+
+
+            $("#RejectQty").val(totalDefectQty);
         }
     </script>
 }

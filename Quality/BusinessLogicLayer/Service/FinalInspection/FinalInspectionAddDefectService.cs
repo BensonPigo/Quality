@@ -48,6 +48,7 @@ namespace BusinessLogicLayer.Service
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 addDefect.ListFinalInspectionDefectItem = _FinalInspFromPMSProvider.GetFinalInspectionDefectItems(finalInspectionID).ToList();
+                addDefect.FinalInspection_DefectDetails = _FinalInspFromPMSProvider.GetFinalInspection_DefectDetails(finalInspectionID, finalInspection.AcceptableQualityLevelsProUkey).ToList();
 
             }
             catch (Exception ex)
@@ -93,6 +94,36 @@ namespace BusinessLogicLayer.Service
 
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
                 _FinalInspectionProvider.UpdateFinalInspectionDetail(addDefect, UserID);
+                _FinalInspectionProvider.UpdateFinalInspectionDefectDetail(addDefect);
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+            return result;
+        }
+
+        public BaseResult UpdateFinalInspectionDefectDetail(AddDefect addDefect)
+        {
+            BaseResult result = new BaseResult();
+
+            try
+            {
+                var needUpdateDefects = addDefect.ListFinalInspectionDefectItem.Where(s => s.Qty > 0 || s.Ukey > 0);
+
+                if (needUpdateDefects.Any())
+                {
+                    addDefect.ListFinalInspectionDefectItem = needUpdateDefects.ToList();
+                }
+                else
+                {
+                    addDefect.ListFinalInspectionDefectItem = new List<FinalInspectionDefectItem>();
+                }
+
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _FinalInspectionProvider.UpdateFinalInspectionDefectDetail(addDefect);
             }
             catch (Exception ex)
             {

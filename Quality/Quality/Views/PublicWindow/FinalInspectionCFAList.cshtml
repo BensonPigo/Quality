@@ -1,0 +1,112 @@
+﻿@using DatabaseObject.Public
+
+@{
+    Layout = null;
+    string title = ViewData["Title"] == null ? "Pass1" : ViewData["Title"].ToString();
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
+}
+
+@model List<Window_Pass1>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+<link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
+<link href="~/ThirdParty/SciCustom/css/TableStyle.css" rel="stylesheet" />
+
+<script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
+
+<style>
+
+    ul {
+        padding: 0;
+    }
+
+    li {
+        list-style-type: none;
+        border: 1px solid black;
+        padding: 2px;
+    }
+
+    td {
+        border-style: ridge;
+    }
+
+    .head {
+        border-top: 2px solid black;
+        text-align: center;
+        font-size: 1.2em;
+        background-color: lightgray;
+    }
+
+    tbody tr:hover {
+        cursor: pointer;
+    }
+</style>
+
+<fieldset style="width:900px;height:700px;">
+    <legend>@title</legend>
+    @using (Html.BeginForm("FinalInspectionCFAList", ViewContext.RouteData.GetRequiredString("Controller"), new { }, FormMethod.Post, new { @width = "100%", @height = "5%", @style = "margin-bottom:10px;" }))
+    {
+        <input type="text" name="ID" value="" />
+        @Html.Hidden("Title", title);
+        @Html.Hidden("TargetID", TargetID)
+        <input type="submit" value="Query" />
+        <input id="btnExit" type="button" value="Exit" />
+    }
+
+    <div style="width:100%;height:90%;overflow-y: scroll;">
+        <table id="MyTable" style="width:100%;max-height:100%;" class="table table-striped display">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+
+                        <td>@item.ID</td>
+                        <td>@item.Name</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</fieldset>
+
+<script>
+
+
+    $(function () {
+
+        var table = $('#MyTable').DataTable({
+            "filter": false,
+            "paging": false,
+            "info": false
+        });
+
+        $('#MyTable tbody').on('click', 'tr', function (data, type, full, meta) {
+
+            // 取得整個Row
+            var Pass1Data = table.row(this).data();
+
+            var Pass1 = {
+                ID: Pass1Data[0],
+                Name: Pass1Data[1]
+            }
+
+            // 呼叫父視窗的GetPass1 Function，把物件傳回去
+            window.opener.GetFinalInspectionCFA(Pass1, '@TargetID');
+
+            window.close();
+        });
+
+
+        $("#btnExit").click(function () {
+            window.close();
+        });
+    });
+</script>
