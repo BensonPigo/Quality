@@ -8,7 +8,7 @@ namespace BusinessLogicLayer.Service
 {
     public class PublicWindowService
     {
-        private PublicWondowProvider _Provider { get; set; }
+        private PublicWindowProvider _Provider { get; set; }
 
         public List<Window_Brand> Get_Brand(string ID, bool IsExact)
         {
@@ -16,7 +16,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_Brand(ID, IsExact).ToList();
@@ -35,7 +35,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_Brand(ID, OtherTable, OtherColumn).ToList();
@@ -54,7 +54,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_Season(BrandID, ID, IsExact).ToList();
@@ -73,7 +73,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_Style(BrandID, SeasonID, StyleID, IsExact).ToList();
@@ -93,7 +93,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_Article(OrderID, StyleUkey, StyleID, BrandID, SeasonID, Article, IsExact).ToList();
@@ -113,7 +113,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_PoidArticle(POID, StyleUkey, StyleID, BrandID, SeasonID, Article, IsExact).ToList();
@@ -133,7 +133,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_Size(OrderID, StyleUkey, BrandID, SeasonID, StyleID, Article, Size, IsExact).ToList();
@@ -153,7 +153,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_Technician(CallFunction, ID, IsExact).ToList();
@@ -173,7 +173,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_Pass1(ID, IsExact).ToList();
@@ -193,7 +193,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_FinalInspectionCFA(ID, IsExact).ToList();
@@ -213,7 +213,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_LocalSupp(SuppID, Name, IsExact).ToList();
@@ -233,7 +233,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_TPESupp(SuppID, Name, IsExact).ToList();
@@ -253,7 +253,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_Po_Supp_Detail(POID, FabricType, Seq, IsExact).ToList();
@@ -273,7 +273,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_Po_Supp_Detail_Refno(OrderID, MtlTypeID, Refno).ToList();
@@ -292,7 +292,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_HeatTransferWash_Refno(OrderID, Artwork, Refno).ToList();
@@ -312,7 +312,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_FtyInventory(POID, Seq1, Seq2, Roll, IsExact).ToList();
@@ -332,7 +332,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_Appearance(Lab).ToList();
@@ -352,7 +352,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_SewingLine(FactoryID, ID, IsExact).ToList();
@@ -372,7 +372,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_Color(BrandID, ID).ToList();
@@ -392,7 +392,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_FGPT(VersionID, Code).ToList();
@@ -412,7 +412,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 var r = _Provider.Get_Picture(Table, BeforeColumn, AfterColumn, PKey_1, PKey_2, PKey_3, PKey_4, PKey_1_Val, PKey_2_Val, PKey_3_Val, PKey_4_Val).ToList();
@@ -437,7 +437,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 var r = _Provider.Get_Picture(Table, OneColumn, TwoColumn, ThreeColumn, PKey_1, PKey_2, PKey_3, PKey_4, PKey_1_Val, PKey_2_Val, PKey_3_Val, PKey_4_Val).ToList();
@@ -461,7 +461,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 //取得登入資訊
                 var r = _Provider.Get_MartindalePillingTestPicture(ReportNo).ToList();
@@ -486,7 +486,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 //取得登入資訊
                 var r = _Provider.Get_RandomTumblePillingTestPicture(ReportNo).ToList();
@@ -510,7 +510,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 List<Window_SinglePicture> r = _Provider.Get_SinglePicture(Table, ColumnName, PKey_1, PKey_2, PKey_3, PKey_4, PKey_1_Val, PKey_2_Val, PKey_3_Val, PKey_4_Val).ToList();
@@ -536,7 +536,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_TestFailMail(FactoryID, Type, GroupNameList).ToList();
@@ -555,7 +555,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_Operation(FinalInspectionID, Operation).ToList();
@@ -574,7 +574,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_AreaCode(FinalInspectionID, AreaCode , oldValue).ToList();
@@ -593,7 +593,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_FabricRefNo(OrderID, Refno).ToList();
@@ -612,7 +612,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_AccRefNo(OrderID, Refno).ToList();
@@ -625,13 +625,32 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+        public List<Window_FabricRefNo> Get_ArtworkRefNo(string OrderID, string Refno)
+        {
+            List<Window_FabricRefNo> result = new List<Window_FabricRefNo>();
+
+            try
+            {
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_ArtworkRefNo(OrderID, Refno).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }        
         public List<Window_InkType> Get_InkType(string BrandID, string SeasonID, string StyleID)
         {
             List<Window_InkType> result = new List<Window_InkType>();
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_InkType(BrandID, SeasonID, StyleID).ToList();
@@ -650,10 +669,29 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _Provider = new PublicWondowProvider(Common.ProductionDataAccessLayer);
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
 
                 //取得登入資訊
                 result = _Provider.Get_RollDyelot(OrderID, Seq1, Seq2).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+        public List<Window_BrandBulkTestItem> Get_BrandBulkTestItem(string BrandID, string TestITem)
+        {
+            List<Window_BrandBulkTestItem> result = new List<Window_BrandBulkTestItem>();
+
+            try
+            {
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_BrandBulkTestItem(BrandID, TestITem).ToList();
 
             }
             catch (Exception ex)

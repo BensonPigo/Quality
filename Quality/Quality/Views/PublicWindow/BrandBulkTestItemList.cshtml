@@ -7,7 +7,7 @@
 
 }
 
-@model List<Window_FabricRefNo>
+@model List<Window_BrandBulkTestItem>
 
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
 <link href="~/ThirdParty/plugins/DataTables/datatables.min.css" rel="stylesheet" />
@@ -37,13 +37,11 @@
         <table id="MyTable" style="width:100%;max-height:95%;" class="table table-striped display">
             <thead>
                 <tr>
-                    <th>Seq</th>
-                    <th>SCI Ref No.</th>
-                    <th>Refno</th>
-                    <th>ColorID</th>
-                    <th>SuppID</th>
-                    @*<th>ToAddress</th>*@
-                    @*<th>CcAddress</th>*@
+                    <th>Brand</th>
+                    <th>Test  Classify</th>
+                    <th>Doc. Type</th>
+                    <th>Test Item</th>
+                    <th>Ukey</th>
                 </tr>
             </thead>
             <tbody>
@@ -51,19 +49,19 @@
                 {
                     <tr>
                         <td>
-                            @item.Seq
+                            @item.BrandID
                         </td>
                         <td>
-                            @item.SCIRefno
+                            @item.TestClassify
                         </td>
                         <td>
-                            @item.Refno
+                            @item.DocType
                         </td>
                         <td>
-                            @item.Color
+                            @item.TestItem
                         </td>
                         <td>
-                            @item.SuppID
+                            @item.Ukey
                         </td>
                     </tr>
                 }
@@ -78,7 +76,7 @@
 
     $(function () {
         var table = $('#MyTable').DataTable({
-            "filter": false,
+            "filter": true,
             "paging": false,
             "order": false,
             "info": false,
@@ -87,7 +85,7 @@
                 { target: 1 },
                 { target: 2 },
                 { target: 3 },
-                { target: 4 },
+                { target: 4, visible: false },
             ]
         });
 
@@ -96,16 +94,16 @@
             // 取得整個Row
             var RowData = table.row(this).data();
 
-            var AccRefNoData = {
-                Seq: RowData[0],
-                Seq1: RowData[0].split('-')[0],
-                Seq2: RowData[0].split('-')[1],
-                Refno: RowData[2],
-                Color: RowData[3]
+            var BrandBulkTestItemData = {
+                BrandID: RowData[0],
+                TestClassify: RowData[1],
+                DocType: RowData[2],
+                TestItem: RowData[3],
+                Ukey: RowData[4],
             }
 
             // 呼叫父視窗的GetTechnician Function，把物件傳回去
-            window.opener.GetAccRefNoList(AccRefNoData, '@TargetID');
+            window.opener.GetBrandBulkTestItemList(BrandBulkTestItemData);
 
             window.close();
         });

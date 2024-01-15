@@ -285,14 +285,16 @@
 
         function OpenOperation(targetID) {
             var para = `?FinalInspectionID=${$('#FinalInspectionID').val()}&TargetID=${targetID}&Title=Operation`;
-            window.open('@Url.Action("OperationList", "PublicWondow",new{Area=""})' + para, 'Operation List', config = 'toolbar=no,status=no,location=no,width=800,height=750');
+            window.open('@Url.Action("OperationList", "PublicWindow",new{Area=""})' + para, 'Operation List', config = 'toolbar=no,status=no,location=no,width=800,height=750');
         }
 
         function OpenAreaCode(targetID) {
+
             var val = $(`input[name='addDefct.ListFinalInspectionDefectItem[${targetID}].AreaCode']`).val();
             var para = `?FinalInspectionID=${$('#FinalInspectionID').val()}&TargetID=${targetID}&Title=Operation&oldValue=${val}`;
 
-            window.open('@Url.Action("AreaCodeList", "PublicWondow",new{Area=""})' + para, 'Operation List', config = 'toolbar=no,status=no,location=no,width=800,height=750');
+            window.open('@Url.Action("AreaCodeList", "PublicWindow",new{Area=""})' + para, 'Operation List', config = 'toolbar=no,status=no,location=no,width=800,height=750');
+
         }
 
 
