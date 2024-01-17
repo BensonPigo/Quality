@@ -37,7 +37,8 @@ namespace BusinessLogicLayer.Service
                 others.FinalInspectionID = finalInspectionID;
                 others.BrandID = finalInspection.BrandID;
                 others.Clerk = finalInspection.Clerk;
-                others.ProductionStatus = finalInspection.ProductionStatus;
+                others.ProductionStatus = (finalInspection.ProductionStatus.HasValue && finalInspection.ProductionStatus.Value == 0) || !finalInspection.ProductionStatus.HasValue ?
+                    finalInspection.ProductionStatusDefault : finalInspection.ProductionStatus;
 
                 // ISP20211205l調整，事先帶出最後結果
 
