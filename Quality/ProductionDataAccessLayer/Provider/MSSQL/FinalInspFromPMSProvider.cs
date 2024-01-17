@@ -178,7 +178,7 @@ select  [Selected] = Cast(0 as bit)
  from PackingList_Detail pld WITH(NOLOCK)
  OUTER APPLY(
 	select Val =STUFF((
-		select DISTINCT '/'+t.SizeCode
+		select '/'+t.SizeCode
 		from PackingList_Detail t WITH(NOLOCK)
 		where t.ID=pld.ID and t.OrderID=pld.OrderID and t.CTNStartNo=pld.CTNStartNo  and t.OrderShipmodeSeq=pld.OrderShipmodeSeq
 		 FOR XML PATH('')
@@ -186,7 +186,7 @@ select  [Selected] = Cast(0 as bit)
  )size
  OUTER APPLY(
 	select Val =STUFF((
-		select DISTINCT '/' + Cast( t.QtyPerCTN as varchar)
+		select concat( '/', t.QtyPerCTN)
 		from PackingList_Detail t WITH(NOLOCK)
 		where t.ID=pld.ID and t.OrderID=pld.OrderID and t.CTNStartNo=pld.CTNStartNo  and t.OrderShipmodeSeq=pld.OrderShipmodeSeq
 		 FOR XML PATH('')
@@ -238,7 +238,7 @@ left join   #FinalInspection_OrderCarton fc on  fc.OrderID = pld.OrderID and
 
  OUTER APPLY(
 	select Val =STUFF((
-		select DISTINCT '/'+t.SizeCode
+		select '/'+t.SizeCode
 		from MainServer.Production.dbo.PackingList_Detail t WITH(NOLOCK)
 		where t.ID=pld.ID and t.OrderID=pld.OrderID and t.CTNStartNo=pld.CTNStartNo  and t.OrderShipmodeSeq=pld.OrderShipmodeSeq
 		 FOR XML PATH('')
@@ -246,7 +246,7 @@ left join   #FinalInspection_OrderCarton fc on  fc.OrderID = pld.OrderID and
  )size
  OUTER APPLY(
 	select Val =STUFF((
-		select DISTINCT '/' + Cast( t.QtyPerCTN as varchar)
+		select concat( '/', t.QtyPerCTN)
 		from MainServer.Production.dbo.PackingList_Detail t WITH(NOLOCK)
 		where t.ID=pld.ID and t.OrderID=pld.OrderID and t.CTNStartNo=pld.CTNStartNo  and t.OrderShipmodeSeq=pld.OrderShipmodeSeq
 		 FOR XML PATH('')
