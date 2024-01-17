@@ -595,8 +595,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 int detailIdx = 0;
 
-                // 表身處理
-                if (model.DetailList.Any() && model.DetailList.Count > 1)
+                // 表身處理 單筆和多筆分開
+                if (model.DetailList.Any() && model.DetailList.Count >= 1)
                 {
                     foreach (var detail in model.DetailList)
                     {
@@ -629,6 +629,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         detailIdx += 5;
                     }
                 }
+
 
                 string fileName = $"StickerTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
