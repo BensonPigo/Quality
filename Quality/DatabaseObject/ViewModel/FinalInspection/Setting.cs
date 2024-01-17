@@ -212,6 +212,8 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string PackingListID { get; set; }
         public string CTNNo { get; set; }
         public int ShipQty { get; set; }
+        public string Size { get; set; }
+        public string QtyPerSize { get; set; }
     }
 
 }
