@@ -485,7 +485,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
 
                 // 表身處理
-                if (model.DetailList.Any() && model.DetailList.Count > 1)
+                if (model.DetailList.Any() && model.DetailList.Count >= 1)
                 {
                     long detailUkey = model.DetailList.Where(x => x.EvaluationType == "Before Wash").Select(x => x.Ukey).FirstOrDefault();
                     int i = 0;

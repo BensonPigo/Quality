@@ -537,7 +537,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
 
-                // 表身處理
+                // 表身處理 單筆和多筆分開
                 if (model.DetailList.Any() && model.DetailList.Count > 1)
                 {
                     int rowIdx = 0;
@@ -561,6 +561,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         rowIdx += 1;
                     }
 
+                }
+                else
+                {
+                    foreach (var detailData in model.DetailList)
+                    {
+                        worksheet.Cells[10, 2] = detailData.EvaluationItem;
+                        worksheet.Cells[10, 4] = $@"{model.Main.TestStandard} {detailData.Scale}";
+                    }
                 }
 
                 string fileName = $"MartindalePillingTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
