@@ -154,7 +154,7 @@ drop table #FinalInspection_Order
             SQLParameterCollection listPar = new SQLParameterCollection();
             string whereOrderID = listOrderID.Select(s => $"'{s}'").JoinToString(",");
             string sqlGetData = $@"
-select  [Selected] = Cast(0 as bit),
+/*select  [Selected] = Cast(0 as bit),
         pld.OrderID,
         [PackingListID] = pld.id, 
         [CTNNo] = CTNStartNo,
@@ -165,6 +165,39 @@ select  [Selected] = Cast(0 as bit),
     and CTNStartNo <> ''
     --and CTNQty = 1
  group by  OrderID,ID,CTNStartNo,OrderShipmodeSeq
+ ORDER BY CTNStartNo*/
+
+select  [Selected] = Cast(0 as bit)
+		,pld.OrderID
+		,[PackingListID] = pld.id
+		,[CTNNo] = pld.CTNStartNo
+		,[Seq] = pld.OrderShipmodeSeq
+		,Size = size.Val
+		,QtyPerSize = sizeQtyPerCTN.Val
+		,ShipQty = SUM(pld.ShipQty)
+ from PackingList_Detail pld WITH(NOLOCK)
+ OUTER APPLY(
+	select Val =STUFF((
+		select '/'+t.SizeCode
+		from PackingList_Detail t WITH(NOLOCK)
+		where t.ID=pld.ID and t.OrderID=pld.OrderID and t.CTNStartNo=pld.CTNStartNo  and t.OrderShipmodeSeq=pld.OrderShipmodeSeq
+		 FOR XML PATH('')
+	),1,1,'')
+ )size
+ OUTER APPLY(
+	select Val =STUFF((
+		select concat( '/', t.QtyPerCTN)
+		from PackingList_Detail t WITH(NOLOCK)
+		where t.ID=pld.ID and t.OrderID=pld.OrderID and t.CTNStartNo=pld.CTNStartNo  and t.OrderShipmodeSeq=pld.OrderShipmodeSeq
+		 FOR XML PATH('')
+	),1,1,'')
+ )sizeQtyPerCTN
+ where  pld.OrderID in ({whereOrderID})  
+    and CTNStartNo <> ''
+    --and CTNQty = 1
+ group by  OrderID,ID,CTNStartNo,OrderShipmodeSeq
+		,size.Val
+		,sizeQtyPerCTN.Val
  ORDER BY CTNStartNo
 ";
             return ExecuteList<SelectCarton>(CommandType.Text, sqlGetData, listPar);
@@ -195,11 +228,30 @@ select  [Selected] = cast(isnull(fc.Selected, 0) as bit),
         [PackingListID] = pld.id, 
         [CTNNo] = CTNStartNo,
         [Seq] = pld.OrderShipmodeSeq
+		,Size = size.Val
+		,QtyPerSize = sizeQtyPerCTN.Val
 from MainServer.Production.dbo.PackingList_Detail pld WITH(NOLOCK)
 left join   #FinalInspection_OrderCarton fc on  fc.OrderID = pld.OrderID and 
                                                 fc.PackinglistID = pld.ID and 
                                                 fc.CTNNo = pld.CTNStartNo and
                                                 fc.Seq = pld.OrderShipmodeSeq
+
+ OUTER APPLY(
+	select Val =STUFF((
+		select '/'+t.SizeCode
+		from MainServer.Production.dbo.PackingList_Detail t WITH(NOLOCK)
+		where t.ID=pld.ID and t.OrderID=pld.OrderID and t.CTNStartNo=pld.CTNStartNo  and t.OrderShipmodeSeq=pld.OrderShipmodeSeq
+		 FOR XML PATH('')
+	),1,1,'')
+ )size
+ OUTER APPLY(
+	select Val =STUFF((
+		select concat( '/', t.QtyPerCTN)
+		from MainServer.Production.dbo.PackingList_Detail t WITH(NOLOCK)
+		where t.ID=pld.ID and t.OrderID=pld.OrderID and t.CTNStartNo=pld.CTNStartNo  and t.OrderShipmodeSeq=pld.OrderShipmodeSeq
+		 FOR XML PATH('')
+	),1,1,'')
+ )sizeQtyPerCTN
 where   pld.OrderID in (select OrderID from #FinalInspection_Order) and
         pld.CTNQty = 1
 

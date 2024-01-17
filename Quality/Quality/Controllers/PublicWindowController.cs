@@ -377,19 +377,19 @@ namespace Quality.Controllers
             }
             return View(model);
         }
-        public ActionResult FinalInspectionCFAList(string Title, string TargetID)
+        public ActionResult FinalInspectionCFAList(string Title, string TargetID, bool FilterPivot88)
         {
-            var model = _PublicWindowService.Get_FinalInspectionCFA(string.Empty, false);
+            var model = _PublicWindowService.Get_FinalInspectionCFA(string.Empty, false, FilterPivot88);
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult FinalInspectionCFAList(string Title, string ID, string TargetID, string ReturnType = "")
+        public ActionResult FinalInspectionCFAList(string Title, string ID, string TargetID,bool FilterPivot88, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
-            var model = _PublicWindowService.Get_FinalInspectionCFA(ID, IsExact);
+            var model = _PublicWindowService.Get_FinalInspectionCFA(ID, IsExact, FilterPivot88);
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             if (ReturnType.ToUpper() == "JSON")

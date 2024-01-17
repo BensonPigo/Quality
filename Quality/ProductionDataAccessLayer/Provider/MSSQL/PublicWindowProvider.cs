@@ -413,7 +413,7 @@ Where 1=1
             return ExecuteList<Window_Pass1>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Pass1> Get_FinalInspectionCFA(string ID, bool IsExact)
+        public IList<Window_Pass1> Get_FinalInspectionCFA(string ID, bool IsExact, bool FilterPivot88)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -425,8 +425,11 @@ from ManufacturingExecution.dbo.Quality_Pass1 p WITH(NOLOCK)
 left join ManufacturingExecution.dbo.Pass1 mp1 WITH(NOLOCK) ON p.ID= mp1.ID
 left join MainServer.Production.dbo.Pass1 pp1 WITH(NOLOCK) on p.ID = pp1.id
 WHERE p.ID != 'SCIMIS' and p.Junk=0
-
 ");
+            if (FilterPivot88)
+            {
+                SbSql.Append($@" and p.Pivot88UserName <> ''");
+            }
 
             if (!string.IsNullOrEmpty(ID.Trim()))
             {

@@ -187,7 +187,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public List<Window_Pass1> Get_FinalInspectionCFA(string ID, bool IsExact)
+        public List<Window_Pass1> Get_FinalInspectionCFA(string ID, bool IsExact, bool FilterPivot88)
         {
             List<Window_Pass1> result = new List<Window_Pass1>();
 
@@ -196,7 +196,7 @@ namespace BusinessLogicLayer.Service
                 _Provider = new PublicWindowProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 //取得登入資訊
-                result = _Provider.Get_FinalInspectionCFA(ID, IsExact).ToList();
+                result = _Provider.Get_FinalInspectionCFA(ID, IsExact, FilterPivot88).ToList();
 
             }
             catch (Exception ex)

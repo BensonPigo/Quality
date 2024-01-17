@@ -1,6 +1,4 @@
 ﻿using ADOHelper.Utility;
-using BusinessLogicLayer.Helper;
-using DatabaseObject.ProductionDB;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -11,11 +9,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Mvc;
-using static Sci.MyUtility;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -419,7 +413,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
-            
+
             try
             {
                 _Provider = new SalivaFastnessTestProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -463,7 +457,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     Item_Acc_TextBox.TextFrame.Characters().Text = "V";
                 }
-                if (model.Main.ItemTested.ToUpper() == " PRINTING")
+                if (model.Main.ItemTested.ToUpper() == "PRINTING")
                 {
                     Item_Printing_TextBox.TextFrame.Characters().Text = "V";
                 }
@@ -487,6 +481,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 worksheet.Cells[11, 2] = model.Main.TypeOfPrint;
                 worksheet.Cells[11, 6] = model.Main.PrintColor;
 
+                if (model.Main.Result == "Pass")
+                {
+                    worksheet.Cells[15, 8] = "V";
+                }
+                if (model.Main.Result == "Fail")
+                {
+                    worksheet.Cells[18, 8] = "V";
+                }
 
                 // Technician 欄位
                 if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
@@ -528,15 +530,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
 
-                // 表身處理
-                if (model.DetailList.Any() && model.DetailList.Count > 1)
+                // 表身處理 單筆和多筆分開
+                if (model.DetailList.Any() && model.DetailList.Count >= 1)
                 {
-                    //// 先處理Remark
-                    //List<string> allRemark = new List<string>();
-                    //allRemark = model.DetailList.Where(o => !string.IsNullOrEmpty(o.Remark)).Select(o => o.Remark).ToList();
-
-                    //// 全部擠在一起，但是要分行
-                    //worksheet.Cells[17, 2] = string.Join(Environment.NewLine, allRemark);
 
                     // 複製欄位
                     int copyCount = model.DetailList.Count - 1;
@@ -569,7 +565,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         worksheet.Cells[19 + rowIdx, 6] = detailData.WoolResult;
 
 
-                        if (detailData.AllResult.ToUpper()=="PASS")
+                        if (detailData.AllResult.ToUpper() == "PASS")
                         {
                             worksheet.Cells[15 + rowIdx, 8] = "V";
                         }
@@ -581,6 +577,29 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         rowIdx += 6;
                     }
                 }
+                //else
+                //{
+                //    foreach (var detailData in model.DetailList)
+                //    {
+                //        worksheet.Cells[14, 4] = detailData.AcetateScale;
+                //        worksheet.Cells[14, 6] = detailData.AcetateResult;
+
+                //        worksheet.Cells[15, 4] = detailData.CottonScale;
+                //        worksheet.Cells[15, 6] = detailData.CottonResult;
+
+                //        worksheet.Cells[16, 4] = detailData.NylonScale;
+                //        worksheet.Cells[16, 6] = detailData.NylonResult;
+
+                //        worksheet.Cells[17, 4] = detailData.PolyesterScale;
+                //        worksheet.Cells[17, 6] = detailData.PolyesterResult;
+
+                //        worksheet.Cells[18, 4] = detailData.AcrylicScale;
+                //        worksheet.Cells[18, 6] = detailData.AcrylicResult;
+
+                //        worksheet.Cells[19, 4] = detailData.WoolScale;
+                //        worksheet.Cells[19, 6] = detailData.WoolResult;
+                //    }
+                //}
 
                 string fileName = $"SalivaFastnessTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);

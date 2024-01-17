@@ -15,6 +15,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string InspectionResult { get; set; }
         public string ShipmentStatus { get; set; }
         public string OthersRemark { get; set; }
+        public string BrandID { get; set; }
 
         public List<OtherImage> ListOthersImageItem { get; set; } = new List<OtherImage>();
     }

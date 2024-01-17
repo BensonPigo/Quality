@@ -35,6 +35,7 @@ namespace BusinessLogicLayer.Service
                     _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
 
                 others.FinalInspectionID = finalInspectionID;
+                others.BrandID = finalInspection.BrandID;
                 others.Clerk = finalInspection.Clerk;
                 others.ProductionStatus = (finalInspection.ProductionStatus.HasValue && finalInspection.ProductionStatus.Value == 0) || !finalInspection.ProductionStatus.HasValue ?
                     finalInspection.ProductionStatusDefault : finalInspection.ProductionStatus;
@@ -118,10 +119,17 @@ namespace BusinessLogicLayer.Service
         {
             BaseResult result = new BaseResult();
 
+            if (string.IsNullOrEmpty(others.CFA))
+            {
+                result.Result = false;
+                result.ErrorMessage = "CFA cannot be empty";
+                return result;
+            }
+
             if (others.ProductionStatus == null)
             {
                 result.Result = false;
-                result.ErrorMessage = "<Production Status> cannot be empty";
+                result.ErrorMessage = "Production Status cannot be empty";
                 return result;
             }
 
