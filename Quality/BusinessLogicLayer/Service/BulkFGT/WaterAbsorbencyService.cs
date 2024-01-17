@@ -472,7 +472,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 // 表身處理
-                if (model.DetailList.Any() && model.DetailList.Count > 1)
+                if (model.DetailList.Any() && model.DetailList.Count >= 1)
                 {
 
                     WaterAbsorbency_Detail detailData = model.DetailList.Where(x => x.EvaluationItem == "Before Wash").FirstOrDefault();
