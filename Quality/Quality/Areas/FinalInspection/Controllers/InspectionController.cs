@@ -1402,6 +1402,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             model = service.GetOthersForInspection(FinalInspectionID);
             model.Clerk = this.UserID;
+            model.CFA = this.UserID;
             ViewData["FinalInspectionAllStep"] = fservice.GetAllStep(FinalInspectionID, string.Empty);
             return View(model);
         }
