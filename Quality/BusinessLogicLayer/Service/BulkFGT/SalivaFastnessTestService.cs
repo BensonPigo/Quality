@@ -531,7 +531,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 // 表身處理 單筆和多筆分開
-                if (model.DetailList.Any() && model.DetailList.Count > 1)
+                if (model.DetailList.Any() && model.DetailList.Count >= 1)
                 {
 
                     // 複製欄位
@@ -577,29 +577,29 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         rowIdx += 6;
                     }
                 }
-                else
-                {
-                    foreach (var detailData in model.DetailList)
-                    {
-                        worksheet.Cells[14, 4] = detailData.AcetateScale;
-                        worksheet.Cells[14, 6] = detailData.AcetateResult;
+                //else
+                //{
+                //    foreach (var detailData in model.DetailList)
+                //    {
+                //        worksheet.Cells[14, 4] = detailData.AcetateScale;
+                //        worksheet.Cells[14, 6] = detailData.AcetateResult;
 
-                        worksheet.Cells[15, 4] = detailData.CottonScale;
-                        worksheet.Cells[15, 6] = detailData.CottonResult;
+                //        worksheet.Cells[15, 4] = detailData.CottonScale;
+                //        worksheet.Cells[15, 6] = detailData.CottonResult;
 
-                        worksheet.Cells[16, 4] = detailData.NylonScale;
-                        worksheet.Cells[16, 6] = detailData.NylonResult;
+                //        worksheet.Cells[16, 4] = detailData.NylonScale;
+                //        worksheet.Cells[16, 6] = detailData.NylonResult;
 
-                        worksheet.Cells[17, 4] = detailData.PolyesterScale;
-                        worksheet.Cells[17, 6] = detailData.PolyesterResult;
+                //        worksheet.Cells[17, 4] = detailData.PolyesterScale;
+                //        worksheet.Cells[17, 6] = detailData.PolyesterResult;
 
-                        worksheet.Cells[18, 4] = detailData.AcrylicScale;
-                        worksheet.Cells[18, 6] = detailData.AcrylicResult;
+                //        worksheet.Cells[18, 4] = detailData.AcrylicScale;
+                //        worksheet.Cells[18, 6] = detailData.AcrylicResult;
 
-                        worksheet.Cells[19, 4] = detailData.WoolScale;
-                        worksheet.Cells[19, 6] = detailData.WoolResult;
-                    }
-                }
+                //        worksheet.Cells[19, 4] = detailData.WoolScale;
+                //        worksheet.Cells[19, 6] = detailData.WoolResult;
+                //    }
+                //}
 
                 string fileName = $"SalivaFastnessTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
