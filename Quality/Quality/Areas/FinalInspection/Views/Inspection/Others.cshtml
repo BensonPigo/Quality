@@ -243,7 +243,13 @@
 
 
     function OpenCFAList(targetID) {
-        var para = `?FinalInspectionID=${$('#FinalInspectionID').val()}&TargetID=${targetID}&Title=CFA`;
+
+        var filterPivot88 = false;
+        if ('@Model.BrandID' == 'ADIDAS') {
+            filterPivot88 = true;
+        }
+
+        var para = `?FinalInspectionID=${$('#FinalInspectionID').val()}&TargetID=${targetID}&Title=CFA&FilterPivot88=${filterPivot88}`;
         window.open('@Url.Action("FinalInspectionCFAList", "PublicWindow",new{Area=""})' + para, 'CFA List', config = 'toolbar=no,status=no,location=no,width=800,height=750');
     }
 
