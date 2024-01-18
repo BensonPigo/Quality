@@ -50,6 +50,7 @@
         <input type="text" name="ID" value="" />
         @Html.Hidden("Title", title);
         @Html.Hidden("TargetID", TargetID)
+        @Html.Hidden("FilterPivot88", (bool)ViewData["FilterPivot88"])
         <input type="submit" value="Query" />
         <input id="btnExit" type="button" value="Exit" />
     }
