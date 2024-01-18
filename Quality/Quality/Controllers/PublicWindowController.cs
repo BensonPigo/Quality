@@ -380,6 +380,7 @@ namespace Quality.Controllers
         public ActionResult FinalInspectionCFAList(string Title, string TargetID, bool FilterPivot88)
         {
             var model = _PublicWindowService.Get_FinalInspectionCFA(string.Empty, false, FilterPivot88);
+            ViewData["FilterPivot88"] = FilterPivot88;
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
@@ -392,6 +393,7 @@ namespace Quality.Controllers
             var model = _PublicWindowService.Get_FinalInspectionCFA(ID, IsExact, FilterPivot88);
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            ViewData["FilterPivot88"] = FilterPivot88;
             if (ReturnType.ToUpper() == "JSON")
             {
                 return Json(model);
