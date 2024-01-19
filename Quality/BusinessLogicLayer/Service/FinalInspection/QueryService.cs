@@ -109,6 +109,8 @@ namespace BusinessLogicLayer.Service.FinalInspection
 
                 queryReport.ListMeasurementViewItem = _FinalInspectionProvider.GetMeasurementViewItem(finalInspectionID).ToList();
 
+                queryReport.ListFinalInspectionSignature = _FinalInspectionProvider.GetFinalInspectionSignature(finalInspectionID);
+
                 queryReport.GoOnInspectURL = this.GetCurrentAction(queryReport.FinalInspection.InspectionStep);
 
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);

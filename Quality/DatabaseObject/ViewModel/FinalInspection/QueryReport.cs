@@ -34,5 +34,6 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public List<MeasurementViewItem> ListMeasurementViewItem { get; set; }
 
         public List<SelectOrderShipSeq> ListShipModeSeq { get; set; }
+        public List<FinalInspectionSignature> ListFinalInspectionSignature{ get; set; }
     }
 }

@@ -107,34 +107,38 @@
         .red {
             color: red !important;
         }
+
         #divSetting, #divPOInfo {
             width: 100%;
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
         }
+
         .divSettingCell {
             /*display: flex;*/
             width: 12.5%;
         }
+
         .divPOInfoCell {
             /*display: flex;*/
             width: 16.6%;
         }
+
         .divPOInfoCell5 {
             width: 83%;
         }
     </style>
 }
 
-<div class="whiteBackgrond" style="height:88vh">
-    <div style="padding:1em">
-        <div>
+<div class="whiteBackgrond" style="height:88vh;overflow-y:scroll;">
+    <div style="padding: 1em; display: flex; flex-direction: row; flex-wrap: wrap;">
+        <div style="width:100%;">
             <h1 style="font-size:2em;color: #999999;">Inspection Report</h1>
             <button class="site-btn btn-blue" style="position:absolute;top:1em;right:0" onclick="ClickDownload()">Download</button>
         </div>
         <div style=" display: flex; flex-direction: row; flex-wrap: wrap; border: 1px solid gray; width: 38%; height: 20vh; padding-left: 5px;float:left;">
-            <div  style="width: 100%"><h1 style="font-size:1.5em">PO information</h1></div>
+            <div style="width: 100%"><h1 style="font-size:1.5em">PO information</h1></div>
             <div>
                 @{
                     string IsFD = Model.FinalInspection.ISFD ? "red" : string.Empty;
@@ -172,33 +176,6 @@
                     }
                     <!--#endregion-->
                 </div>
-                @*<table>
-                    <tr>
-                        <td>PO#</td>
-                        <td class="valueColor @IsFD" style="width:20%">@Model.FinalInspection.CustPONO</td>
-                        <td style="padding-left:10px;">Style</td>
-                        <td class="valueColor" style="width:20%">@Model.StyleID</td>
-                        <td>Brand</td>
-                        <td class="valueColor">@Model.BrandID</td>
-                    </tr>
-                    <tr>
-                        <td>SP#</td>
-                        <td class="valueColor" colspan="5">
-                            <input type="text" value="@Model.SP" style="width:100%" class="@IsFD" readonly />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Factory</td>
-                        <td class="valueColor">@Model.FinalInspection.FactoryID</td>
-                        <td>Total SP# Qty</td>
-                        <td class="valueColor">@Model.TotalSPQty</td>
-                        @if (!string.IsNullOrEmpty(Model.Dest))
-                        {
-                            <td>Destination</td>
-                            <td class="valueColor">@Model.Dest</td>
-                        }
-                    </tr>
-                </table>*@
             </div>
         </div>
         <div style="display: flex; flex-direction: row; flex-wrap: wrap; border: 1px solid gray; width: 58%; height: 20vh; padding-left: 5px;margin-left:2px; float: left;">
@@ -281,45 +258,9 @@
                     <!--#endregion-->
                 </div>
 
-                @*<table>
-                    <tr>
-                        <td>Inspection Stage</td>
-                        <td class="valueColor" style="padding-left:10px;">@Model.FinalInspection.InspectionStage</td>
-                        <td style="padding-left:10px;">Carton</td>
-                        <td style="width:4vw">
-                            <button type="button" style="min-width:50%" onclick="open_cartonsDetail()" class="site-btn btn-blue">...</button>
-                        </td>
-                        <td>Shipmode Seq</td>
-                        <td style="width:4vw">
-                            <button type="button" style="min-width:50%" onclick="open_ShipmodeSeqDetail()" class="site-btn btn-blue">...</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Audit Date</td>
-                        <td class="valueColor">@Convert.ToDateTime(Model.FinalInspection.AuditDate).ToString("yyyy/MM/dd")</td>
-                        <td style="padding-left:10px;">Available Qty</td>
-                        <td class="valueColor">@Model.AvailableQty</td>
-                        <td colspan="4"></td>
-                    </tr>
-                    <tr>
-                        <td>AQL Plan</td>
-                        <td class="valueColor">@Model.AQLPlan</td>
-                        <td style="padding-left:10px;">Sample Plan Qty</td>
-                        <td class="valueColor" style="padding-left:10px;">@Model.FinalInspection.SampleSize</td>
-                        <td>Accepted</td>
-                        <td class="valueColor">@Model.FinalInspection.AcceptQty</td>
-                        <td>Rejected</td>
-                        <td class="valueColor" style="padding-left:10px;">@(Model.FinalInspection.AcceptQty+1)</td>
-                    </tr>
-                    <tr>
-                        <td>Re-Inspection</td>
-                        @{string strReInspection = Model.FinalInspection.ReInspection ? "Y" : "N";}
-                        <td class="valueColor">@strReInspection</td>
-                    </tr>
-                </table>*@
             </div>
         </div>
-        <div style="margin:0.5em"><h1 style="font-size:2em">Inspection Detail</h1></div>
+        <div style="margin: 0.5em; width: 100%;"><h1 style="font-size:2em">Inspection Detail</h1></div>
         <div id="tab-Change">
             <ul class="tab-title">
                 <li link="#tab01">General</li>
@@ -354,46 +295,59 @@
                 @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab7_Layout.cshtml")
             </div>
         </div>
-        <div>
-            <table style="width:100%">
-                <tr>
-                    <td style="width:7%">CFA</td>
-                    <td class="valueColor" style="width:10%">@Model.FinalInspection.CFA</td>
-                    <td style="width:7%">Pass Qty(pcs)</td>
-                    <td class="valueColor" style="width:5%">@Model.FinalInspection.PassQty</td>
-                    <td style="width:7%">Inpection Result</td>
-                    <td class="valueColor" style="width:10%">@Model.FinalInspection.InspectionResult</td>
-                    <td style="width:7%" rowspan="2">
-                        @if (Model.FinalInspection.InspectionResult == "On-going")
-                        {
-                            <button type="button" onclick="GoOnInspect()" class="site-btn btn-red">Go On Inspect</button>
-                        }
-                    </td>
-                    <td style="width:7%" rowspan="2">
-                        @if (Model.FinalInspection.InspectionResult != "On-going")
-                        {
-                            <button type="button" onclick="SendMail()" class="site-btn btn-blue">Send Mail</button>
-                        }
-                    </td>
-                </tr>
-                <tr>
-                    <td>Submit Date</td>
-                    <td class="valueColor">
-                        @if (Model.FinalInspection.SubmitDate == null)
-                        {
-                            @:N/A
-                        }
-                        else
-                        {
-                            @Convert.ToDateTime(Model.FinalInspection.SubmitDate).ToString("yyyy/MM/dd")
-                        }
-                    </td>
-                    <td>Reject Qty(pcs)</td>
-                    <td class="valueColor">@Model.FinalInspection.RejectQty</td>
-                    <td>Shipment Status</td>
-                    <td class="valueColor">@Model.FinalInspection.ShipmentStatus</td>
-                </tr>
-            </table>
+        <div style="width: 100%; display: flex; flex-direction: row; flex-wrap: wrap;">
+            <div style="width: 10%;">CFA</div>
+            <div style="width: 10%;">@Model.FinalInspection.CFA</div>
+            <div style="width: 10%;">Inpection Result</div>
+            <div style="width: 10%;">@Model.FinalInspection.InspectionResult</div>
+            <div style="width: 10%;">QC</div>
+            <div style="width: 10%;">@</div>
+            <div style="width: 10%;">Prouduction</div>
+            <div style="width: 10%;"></div>
+            <div style="width: 10%;"></div>
+            <div style="width: 10%;">
+                @if (Model.FinalInspection.InspectionResult == "On-going")
+                {
+                    <button type="button" onclick="GoOnInspect()" class="site-btn btn-red">Go On Inspect</button>
+                }
+            </div>
+
+            <div style="width: 10%;">Pass Qty(pcs)</div>
+            <div style="width: 10%;">@Model.FinalInspection.PassQty</div>
+            <div style="width: 10%;">Reject Qty(pcs)</div>
+            <div style="width: 10%;">@Model.FinalInspection.RejectQty</div>
+            <div style="width: 10%;">QC Manager</div>
+            <div style="width: 10%;"></div>
+            <div style="width: 10%;">Prouduction Mangaer</div>
+            <div style="width: 10%;"></div>
+            <div style="width: 10%;"></div>
+            <div style="width: 10%;">
+                @if (Model.FinalInspection.InspectionResult != "On-going")
+                {
+                    <button type="button" onclick="SendMail()" class="site-btn btn-blue">Send Mail</button>
+                }
+            </div>
+
+            <div style="width: 10%;">Submit Date</div>
+            <div style="width: 10%;">
+                @if (Model.FinalInspection.SubmitDate == null)
+                {
+                    @:N/A
+                }
+                else
+                {
+                    @Convert.ToDateTime(Model.FinalInspection.SubmitDate).ToString("yyyy/MM/dd")
+                }
+            </div>
+            <div style="width: 10%;">Shipment Status</div>
+            <div style="width: 10%;">@Model.FinalInspection.ShipmentStatus</div>
+            <div style="width: 10%;"></div>
+            <div style="width: 10%;"></div>
+            <div style="width: 10%;"></div>
+            <div style="width: 10%;">TSD</div>
+            <div style="width: 10%;"></div>
+            <div style="width: 10%;"></div>
+
         </div>
     </div>
 </div>

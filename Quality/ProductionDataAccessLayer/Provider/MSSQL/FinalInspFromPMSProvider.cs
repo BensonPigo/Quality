@@ -198,7 +198,7 @@ select  [Selected] = Cast(0 as bit)
  group by  OrderID,ID,CTNStartNo,OrderShipmodeSeq
 		,size.Val
 		,sizeQtyPerCTN.Val
- ORDER BY CTNStartNo
+ORDER BY CAST(ISNULL(TRY_CONVERT(INT, CTNStartNo),0) as int)
 ";
             return ExecuteList<SelectCarton>(CommandType.Text, sqlGetData, listPar);
         }

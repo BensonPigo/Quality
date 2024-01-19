@@ -97,8 +97,16 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             FinalInspectionService fService = new FinalInspectionService();
             QueryReport model = Service.GetFinalInspectionReport(FinalInspectionID);
-            model.FinalInspection.GeneralList = fService.GetGeneralByBrand(FinalInspectionID, model.BrandID);
+            model.FinalInspection.GeneralList = fService.GetGeneralByBrand(FinalInspectionID, model.BrandID ,model.FinalInspection.InspectionStage);
             model.FinalInspection.CheckListList = fService.GetCheckListByBrand(FinalInspectionID, model.BrandID);
+            model.JobTitleLIst = new List<SelectListItem>()
+            {
+                new SelectListItem(){Text="QC",Value="QC"},
+                new SelectListItem(){Text="Prouduction",Value="Prouduction"},
+                new SelectListItem(){Text="QC Manager",Value="QC Manager"},
+                new SelectListItem(){Text="Prouduction Manager",Value="Prouduction Manager"},
+                new SelectListItem(){Text="TSD",Value="TSD"},
+            };
 
             TempData["FinalInspectionQueryModel"] = model;
             return View(model);

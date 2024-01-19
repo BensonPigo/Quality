@@ -2845,11 +2845,12 @@ where   IsExportToP88 = 0 and
             return new BaseResult { Result = true };
         }
 
-        public List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID)
+        public List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID, string InspectionStage)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
                 { "@FinalInspectionID", DbType.String, FinalInspectionID },
                 { "@BrandID", DbType.String, BrandID },
+                { "@InspectionStage", DbType.String, InspectionStage },
 
             };
 
@@ -2860,11 +2861,12 @@ inner join FinalInspection_Order fo on a.ID = fo.ID
 inner join Production..Orders b on b.ID = fo.OrderID
 inner join FinalInspectionBasicBrand_General fbg on fbg.BrandID = 'DEFAULT'
 inner join  FinalInspectionBasicGeneral fb on fbg.BasicGeneralUkey = fb.Ukey
-where fb.Junk = 0 and a.ID = @FinalInspectionID
+where fb.Junk = 0 and a.ID = @FinalInspectionID AND a.InspectionStage=@InspectionStage
 ";
             if (!string.IsNullOrEmpty(BrandID))
             {
                 cmd = $@"
+
 if exists(
     select * from FinalInspectionBasicBrand_General where BrandID =@BrandID
 )
@@ -2872,7 +2874,7 @@ begin
     select DISTINCT b.*
     from FinalInspectionBasicBrand_General a
     inner join  FinalInspectionBasicGeneral b on a.BasicGeneralUkey = b.Ukey
-    where a.BrandID = @BrandID
+    where a.BrandID = @BrandID AND a.InspectionStage=@InspectionStage
 end
 else
 begin
@@ -2880,7 +2882,7 @@ begin
     from FinalInspection a
     inner join FinalInspection_Order fo on a.ID = fo.ID
     inner join Production..Orders b on b.ID = fo.OrderID
-    inner join FinalInspectionBasicBrand_General fbg on fbg.BrandID = 'DEFAULT'
+    inner join FinalInspectionBasicBrand_General fbg on fbg.BrandID = 'DEFAULT' and fbg.InspectionStage = a.InspectionStage
     inner join  FinalInspectionBasicGeneral fb on fbg.BasicGeneralUkey = fb.Ukey
     where fb.Junk = 0 and a.ID = @FinalInspectionID
 end 
@@ -2964,6 +2966,23 @@ from FinalInspectionBasicCheckList
             var r = ExecuteList<FinalInspectionBasicCheckList>(CommandType.Text, cmd, objParameter);
 
             return r.Any() ? r.ToList() : new List<FinalInspectionBasicCheckList>();
+        }
+
+
+        public List<FinalInspectionSignature> GetFinalInspectionSignature(string finalInspectionID)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@finalInspectionID", DbType.String, finalInspectionID }
+            };
+
+            string cmd = @"
+select *
+from  FinalInspectionSignature
+where  FinalInspectionID = @finalInspectionID
+";
+            var r = ExecuteList<FinalInspectionSignature>(CommandType.Text, cmd, objParameter);
+
+            return r.Any() ? r.ToList() : new List<FinalInspectionSignature>();
         }
     }
 }
