@@ -735,22 +735,23 @@
                             //Select Carton視窗按下Next
                             var checkedList = [];
                             var totalQty = 0;
-                            var isSelectAll = $("#CTNSelectAll").prop('checked');
-                            $("#CTNSearch").val('').change();
 
-                            if (isSelectAll) {
+                            // 清空箱號選取，並觸發重新搜尋的event，把所有箱號都show出來
+                            $("#CTNSearch").val('').keyup();
 
-                                $('.CartonSelect').each(function () {
-                                    $(this).val(true);
-                                });
-                            }
-
+                            // 根據Checkbox有沒有勾選，來調整input hidden的值。這個input才有Binding Model
                             $('[id^=Carton_Select_]').each(function () {
 
+                                var idx = $(this).attr("idx");
                                 if ($(this).prop('checked')) {
-                                    //checkedList.push($(this).val());
+
                                     checkedList.push($(this).attr("ctnno"));
                                     totalQty = totalQty + parseInt($(this).attr("ShipQty"));
+
+                                    $(`#SelectCarton_${idx}__Selected`).val(true);
+                                }
+                                else {
+                                    $(`#SelectCarton_${idx}__Selected`).val(false);
                                 }
                             });
 
