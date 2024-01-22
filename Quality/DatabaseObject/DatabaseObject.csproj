@@ -71,6 +71,7 @@
     <Compile Include="ManufacturingExecutionDB\EndlineMoisture.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspectionBasicStep.cs" />
+    <Compile Include="ManufacturingExecutionDB\FinalInspectionSignature.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_DefectDetail.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Detail.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Measurement.cs" />

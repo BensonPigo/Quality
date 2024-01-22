@@ -99,7 +99,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             QueryReport model = Service.GetFinalInspectionReport(FinalInspectionID);
             model.FinalInspection.GeneralList = fService.GetGeneralByBrand(FinalInspectionID, model.BrandID ,model.FinalInspection.InspectionStage);
             model.FinalInspection.CheckListList = fService.GetCheckListByBrand(FinalInspectionID, model.BrandID);
-            model.JobTitleLIst = new List<SelectListItem>()
+            model.JobTitleList = new List<SelectListItem>()
             {
                 new SelectListItem(){Text="QC",Value="QC"},
                 new SelectListItem(){Text="Prouduction",Value="Prouduction"},
