@@ -21,6 +21,8 @@ using DatabaseObject.ResultModel;
 using Microsoft.Office.Interop.Excel;
 using Sci;
 using System.Runtime.InteropServices;
+using System.Web.Mvc;
+using ADOHelper.Utility;
 
 namespace BusinessLogicLayer.Service.FinalInspection
 {
@@ -33,7 +35,8 @@ namespace BusinessLogicLayer.Service.FinalInspection
         private static readonly string CryptoKey = ConfigurationManager.AppSettings["CryptoKey"].ToString();
         private string IsTest = ConfigurationManager.AppSettings["IsTest"];
         private string TestMailReceiver = ConfigurationManager.AppSettings["TestMailReceiver"];
-        
+        private string SignatureJobTitle = ConfigurationManager.AppSettings["FinalInspection_SignatureJobTitle"];
+
         public List<QueryFinalInspection> GetFinalinspectionQueryList_Default(QueryFinalInspection_ViewModel request)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -50,7 +53,8 @@ namespace BusinessLogicLayer.Service.FinalInspection
         public QueryReport GetFinalInspectionReport(string finalInspectionID)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-            QueryReport queryReport = new QueryReport();
+            QueryReport queryReport = new QueryReport() { JobTitleList = new List<SelectListItem>() };
+
 
             try
             {
@@ -109,7 +113,25 @@ namespace BusinessLogicLayer.Service.FinalInspection
 
                 queryReport.ListMeasurementViewItem = _FinalInspectionProvider.GetMeasurementViewItem(finalInspectionID).ToList();
 
-                queryReport.ListFinalInspectionSignature = _FinalInspectionProvider.GetFinalInspectionSignature(finalInspectionID);
+                queryReport.ListFinalInspectionSignature = _FinalInspectionProvider.GetFinalInspectionSignature(new FinalInspectionSignature()
+                {
+                    FinalInspectionID = finalInspectionID,
+                });
+
+                // Get Job Title
+                if (this.SignatureJobTitle.Any())
+                {
+                    // 下拉選單
+                    foreach (var jobTitle in this.SignatureJobTitle.Split(',').ToList())
+                    {
+                        queryReport.JobTitleList.Add(new SelectListItem() { Text = jobTitle, Value = jobTitle });
+                    }
+                    queryReport.SignatureBy_QC = queryReport.GetUserIDByJobTitle("QC");
+                    queryReport.SignatureBy_QCManager = queryReport.GetUserIDByJobTitle("QCManager");
+                    queryReport.SignatureBy_Production = queryReport.GetUserIDByJobTitle("Production");
+                    queryReport.SignatureBy_ProductionManager = queryReport.GetUserIDByJobTitle("ProductionManager");
+                    queryReport.SignatureBy_TSD = queryReport.GetUserIDByJobTitle("TSD");
+                }
 
                 queryReport.GoOnInspectURL = this.GetCurrentAction(queryReport.FinalInspection.InspectionStep);
 
@@ -136,6 +158,118 @@ namespace BusinessLogicLayer.Service.FinalInspection
             }
 
             return queryReport;
+        }
+
+        public QueryReport GetFinalInspectionSignature(FinalInspectionSignature Req)
+        {
+            QueryReport model = new QueryReport()
+            {
+                ListFinalInspectionSignature = new List<FinalInspectionSignature>()
+            };
+
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                model.ListFinalInspectionSignature = _FinalInspectionProvider.GetFinalInspectionSignature(Req);
+                model.Result = true;
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.ToString();
+            }
+            return model;
+        }
+        public QueryReport InsertFinalInspectionSignature(FinalInspectionSignature Req)
+        {
+            QueryReport model = new QueryReport()
+            {
+                ListFinalInspectionSignature = new List<FinalInspectionSignature>()
+            };
+
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                _FinalInspectionProvider.InsertFinalInspectionSignature(Req);
+                model.Result = true;
+            }
+            catch (Exception ex)
+            {
+                model.Result = false;
+                model.ErrorMessage = ex.ToString();
+            }
+            return model;
+        }
+
+        /// <summary>
+        /// 取得User清單
+        /// </summary>
+        /// <param name="UserIDs">現有勾選的UserID</param>
+        /// <returns></returns>
+        public List<FinalInspectionSignature> GetSignatureUserList(string UserIDs)
+        {
+            List<FinalInspectionSignature> rtn = new List<FinalInspectionSignature>();
+
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+                List<FinalInspectionSignature> currentUserList = UserIDs.Split(',').Select(o => new FinalInspectionSignature { UserID = o }).ToList();
+                List <FinalInspectionSignature>  allUser = _FinalInspectionProvider.GetFinalInspectionSignatureUser();
+
+                if (currentUserList.Any())
+                {
+
+                    HashSet<FinalInspectionSignature> setAll = new HashSet<FinalInspectionSignature>(allUser);
+
+                    List<FinalInspectionSignature> exisit = setAll
+                        .Where(user => currentUserList.Any(t => t.UserID == user.UserID))
+                        .Select(o => new FinalInspectionSignature()
+                        {
+                            Selected = true,
+                            UserID = o.UserID,
+                            UserName = o.UserName
+                        }).ToList();
+
+                    List<FinalInspectionSignature> notExisit = setAll.Where(user => !currentUserList.Any(t => t.UserID == user.UserID)).ToList();
+
+                    rtn.AddRange(exisit);
+                    rtn.AddRange(notExisit);
+                    rtn.OrderBy(o => o.UserID).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return rtn;
+        }
+
+        public BaseResult InsertFinalInspectionSignatureUser(string FinalInspectionID, string JobTitle, List<FinalInspectionSignature> allData)
+        {
+            BaseResult baseResult = new BaseResult();
+
+            SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ManufacturingExecutionDataAccessLayer);
+            try
+            {
+                _FinalInspectionProvider = new FinalInspectionProvider(_ISQLDataTransaction);
+                _FinalInspectionProvider.InsertFinalInspectionSignatureUser(FinalInspectionID, JobTitle, allData);
+
+                _ISQLDataTransaction.Commit();
+                baseResult.Result = true;
+            }
+            catch (Exception ex)
+            {
+                _ISQLDataTransaction.RollBack();
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.ToString();
+            }
+            finally
+            {
+                _ISQLDataTransaction.CloseConnection();
+            }
+            return baseResult;
         }
 
         private string GetCurrentAction(string InspectionStep)
@@ -177,6 +311,7 @@ namespace BusinessLogicLayer.Service.FinalInspection
 
             return ActionName;
         }
+
 
         //寄信
         public BaseResult SendMail(string finalInspectionID, string WebHost, bool isTest)

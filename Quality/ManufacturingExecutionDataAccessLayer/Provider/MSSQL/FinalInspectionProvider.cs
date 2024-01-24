@@ -2,15 +2,18 @@ using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
+using DatabaseObject.Public;
 using DatabaseObject.ViewModel.FinalInspection;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Transactions;
+using ToolKit;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -1669,7 +1672,7 @@ END
 ";
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlCheckMoistureExists, objParameter);
-            int ctn = Convert.ToInt32( ExecuteScalar(CommandType.Text, sqlCheckMoistureExists, objParameter));
+            int ctn = Convert.ToInt32(ExecuteScalar(CommandType.Text, sqlCheckMoistureExists, objParameter));
 
             return ctn > 0;
         }
@@ -2969,20 +2972,138 @@ from FinalInspectionBasicCheckList
         }
 
 
-        public List<FinalInspectionSignature> GetFinalInspectionSignature(string finalInspectionID)
+        public List<FinalInspectionSignature> GetFinalInspectionSignature(FinalInspectionSignature Req)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
-            { "@finalInspectionID", DbType.String, finalInspectionID }
+            { "@finalInspectionID", DbType.String, Req.FinalInspectionID },
+            { "@JobTitle", DbType.String, Req.JobTitle },
+            { "@UserID", DbType.String, Req.UserID }
             };
 
             string cmd = @"
-select *
-from  FinalInspectionSignature
-where  FinalInspectionID = @finalInspectionID
+select a.FinalInspectionID
+		,a.UserID
+		,UserName = p.Name
+		,a.JobTitle
+		,b.Signature
+		,b.AddName
+		,b.AddDate
+from  FinalInspectionSignature a
+INNER JOIN Pass1 p on a.UserID=p.ID
+left join PMSFile.dbo. FinalInspectionSignature b on a.FinalInspectionID = b.FinalInspectionID AND a.JobTitle = b.JobTitle AND a.UserID = b.UserID
+where  a.FinalInspectionID = @finalInspectionID
+";
+
+            if (!string.IsNullOrEmpty(Req.JobTitle))
+            {
+                cmd += " and a.JobTitle = @JobTitle";
+            }
+            if (!string.IsNullOrEmpty(Req.UserID))
+            {
+                cmd += " and a.UserID = @UserID";
+            }
+            var r = ExecuteList<FinalInspectionSignature>(CommandType.Text, cmd, objParameter);
+
+            return r.Any() ? r.ToList() : new List<FinalInspectionSignature>();
+        }
+        public bool InsertFinalInspectionSignature(FinalInspectionSignature Req)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@finalInspectionID", DbType.String, Req.FinalInspectionID },
+            { "@JobTitle", DbType.String, Req.JobTitle },
+            { "@UserID", DbType.String, Req.UserID },
+            { "@AddName", DbType.String, Req.AddName },
+            { "@Signature", Req.Signature },
+            };
+
+            string cmd = @"
+if not exists(
+    select 1 
+    from PMSFile.dbo.FinalInspectionSignature
+    where FinalInspectionID = @finalInspectionID AND JobTitle = @JobTitle AND UserID = @UserID
+)
+BEGIN
+    INSERT INTO PMSFile.dbo.FinalInspectionSignature
+               (FinalInspectionID,UserID,JobTitle,Signature,AddName,AddDate)
+    VALUES
+               (@FinalInspectionID ,@UserID ,@JobTitle ,@Signature ,@AddName ,GETDATE() )
+END
+ELSE
+BEGIN
+    UPDATE PMSFile.dbo.FinalInspectionSignature
+    SET Signature = @Signature ,AddName = @AddName  ,AddDate = GETDATE()  
+    where FinalInspectionID = @finalInspectionID AND JobTitle = @JobTitle AND UserID = @UserID
+END
+
+
+";
+
+            ExecuteNonQuery(CommandType.Text, cmd, objParameter);
+            return true;
+        }
+
+        public List<FinalInspectionSignature> GetFinalInspectionSignatureUser()
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            string cmd = @"
+select UserID= a.ID , UserName=b.Name
+from Quality_Pass1 a
+inner join Pass1 b on a.ID=b.ID
+where a.Junk=0
 ";
             var r = ExecuteList<FinalInspectionSignature>(CommandType.Text, cmd, objParameter);
 
             return r.Any() ? r.ToList() : new List<FinalInspectionSignature>();
+        }
+
+        public bool InsertFinalInspectionSignatureUser(string FinalInspectionID, string JobTitle, List<FinalInspectionSignature> allData)
+        {
+            List<FinalInspectionSignature> oldData = this.GetFinalInspectionSignature(new FinalInspectionSignature()
+            {
+                FinalInspectionID = FinalInspectionID,
+                JobTitle = JobTitle
+            }).ToList();
+
+            List<FinalInspectionSignature> needUpdateDetailList =
+                PublicClass.CompareListValue<FinalInspectionSignature>(
+                    allData,
+                    oldData,
+                    "FinalInspectionID,UserID,JobTitle",
+                    "FinalInspectionID,UserID,JobTitle");
+
+            string insertDetail = $@" ----寫入 
+INSERT INTO FinalInspectionSignature (FinalInspectionID,UserID,JobTitle)
+VALUES  (@FinalInspectionID ,@UserID ,@JobTitle)
+";
+
+            string deleteDetail = $@" ----刪除 
+DELETE FROM FinalInspectionSignature where FinalInspectionID = @FinalInspectionID AND UserID = @UserID AND JobTitle = @JobTitle
+DELETE FROM PMSFile.dbo.FinalInspectionSignature where FinalInspectionID = @FinalInspectionID AND UserID = @UserID AND JobTitle = @JobTitle
+";
+
+            foreach (var detailItem in needUpdateDetailList)
+            {
+                SQLParameterCollection listDetailPar = new SQLParameterCollection();
+
+                listDetailPar.Add(new SqlParameter($"@FinalInspectionID", detailItem.FinalInspectionID));
+                listDetailPar.Add(new SqlParameter($"@UserID", detailItem.UserID));
+                listDetailPar.Add(new SqlParameter($"@JobTitle", detailItem.JobTitle));
+                switch (detailItem.StateType)
+                {
+                    case CompareStateType.Add:
+                        ExecuteNonQuery(CommandType.Text, insertDetail, listDetailPar);
+                        break;
+                    case CompareStateType.Delete:
+                        ExecuteNonQuery(CommandType.Text, deleteDetail, listDetailPar);
+                        break;
+                    case CompareStateType.None:
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return true;
         }
     }
 }

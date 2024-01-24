@@ -1,4 +1,5 @@
 ﻿using DatabaseObject;
+using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
@@ -15,5 +16,8 @@ namespace BusinessLogicLayer.Interface
         List<QueryFinalInspection> GetFinalinspectionQueryList(QueryFinalInspection_ViewModel request);
 
         QueryReport GetFinalInspectionReport(string finalInspectionID);
+        List<FinalInspectionSignature> GetSignatureUserList(string UserIDs);
+        BaseResult InsertFinalInspectionSignatureUser(string FinalInspectionID, string JobTitle, List<FinalInspectionSignature> allData);
+        QueryReport GetFinalInspectionSignature(FinalInspectionSignature Req);
     }
 }

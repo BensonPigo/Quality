@@ -12,8 +12,10 @@ using DatabaseObject.ResultModel.EtoEFlowChart;
 using DatabaseObject.ViewModel;
 using DatabaseObject.ViewModel.FinalInspection;
 using FactoryDashBoardWeb.Helper;
+using Ict;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
+using Microsoft.Office.Core;
 using Microsoft.Office.Interop.Excel;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
@@ -30,6 +32,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Web;
+using System.Web.Http.Results;
 using System.Web.Mvc;
 using System.Web.Services.Description;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -97,22 +100,15 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             FinalInspectionService fService = new FinalInspectionService();
             QueryReport model = Service.GetFinalInspectionReport(FinalInspectionID);
-            model.FinalInspection.GeneralList = fService.GetGeneralByBrand(FinalInspectionID, model.BrandID ,model.FinalInspection.InspectionStage);
+            model.FinalInspection.GeneralList = fService.GetGeneralByBrand(FinalInspectionID, model.BrandID, model.FinalInspection.InspectionStage);
             model.FinalInspection.CheckListList = fService.GetCheckListByBrand(FinalInspectionID, model.BrandID);
-            model.JobTitleList = new List<SelectListItem>()
-            {
-                new SelectListItem(){Text="QC",Value="QC"},
-                new SelectListItem(){Text="Prouduction",Value="Prouduction"},
-                new SelectListItem(){Text="QC Manager",Value="QC Manager"},
-                new SelectListItem(){Text="Prouduction Manager",Value="Prouduction Manager"},
-                new SelectListItem(){Text="TSD",Value="TSD"},
-            };
+
 
             TempData["FinalInspectionQueryModel"] = model;
             return View(model);
         }
 
-        public ActionResult DownLoad()
+        public ActionResult DownLoad(string FinalInspectionID)
         {
             bool test = false;
             if (!test)
@@ -122,11 +118,13 @@ namespace Quality.Areas.FinalInspection.Controllers
                     return RedirectToAction("Index");
                 }
             }
-
-            QueryReport model = (QueryReport)TempData["FinalInspectionQueryModel"];
-            TempData["FinalInspectionQueryModel"] = model;
-
             FinalInspectionService fService = new FinalInspectionService();
+
+            QueryReport model = Service.GetFinalInspectionReport(FinalInspectionID);
+            model.FinalInspection.GeneralList = fService.GetGeneralByBrand(FinalInspectionID, model.BrandID, model.FinalInspection.InspectionStage);
+            model.FinalInspection.CheckListList = fService.GetCheckListByBrand(FinalInspectionID, model.BrandID);
+
+
             List<FinalInspectionBasicGeneral> AllGeneral = fService.GetAllGeneral();
             List<FinalInspectionBasicCheckList> AllCheckList = fService.GetAllCheckList();
 
@@ -178,6 +176,191 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             worksheet.Cells[45, 3] = model.FinalInspection.InspectionResult;
             worksheet.Cells[46, 3] = model.FinalInspection.ShipmentStatus;
+            #endregion
+
+            #region Signatrue
+
+            int signCtn = model.ListFinalInspectionSignature.Where(o => o.Signature != null).Count();
+
+            int lasrRowIdx = 54;
+            int bonusRowCtn = (signCtn / 3) - 2 + (signCtn % 3 > 0 ? 1 : 0);
+            if (bonusRowCtn > 1)
+            {
+                Range rngToCopy = worksheet.get_Range("A49:A51").EntireRow; // 選取要被複製的資料
+                for (int i = 0; i < bonusRowCtn; i++)
+                {
+                    Excel.Range rngToInsert = worksheet.get_Range("A55", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
+                    lasrRowIdx += 3;
+                }
+            }
+
+            Excel.PageSetup pageSetup = worksheet.PageSetup;
+            // 设置Print Area
+            pageSetup.PrintArea = $"A1:I{lasrRowIdx}";
+
+            int RowIdx = 49;
+            int ColIdx = 1;
+
+            if (model.ListFinalInspectionSignature.Any(o => o.JobTitle == "QCManager"))
+            {
+                foreach (FinalInspectionSignature signatureData in model.ListFinalInspectionSignature.Where(o => o.JobTitle == "QCManager"))
+                {
+                    if (signatureData.Signature == null)
+                    {
+                        continue;
+                    }
+
+                    worksheet.Cells[RowIdx, ColIdx] = "QC CManager： " + signatureData.UserID + " - " + signatureData.UserName;
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[RowIdx + 1, ColIdx];
+
+                    byte[] tmp = (byte[])signatureData.Signature; // 圖片的 byte[]
+
+                    MemoryStream ms = new MemoryStream(tmp);
+                    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    img.Save(imgPath);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
+                    if (ColIdx >= 7)
+                    {
+                        ColIdx = 1;
+                        RowIdx += 3;
+                    }
+                    else
+                    {
+                        ColIdx += 3;
+                    }
+                }
+
+            }
+            if (model.ListFinalInspectionSignature.Any(o => o.JobTitle == "ProductionManager"))
+            {
+                worksheet.Cells[RowIdx, ColIdx] = "Production Manager";
+
+                foreach (FinalInspectionSignature signatureData in model.ListFinalInspectionSignature.Where(o => o.JobTitle == "ProductionManager"))
+                {
+                    if (signatureData.Signature == null)
+                    {
+                        continue;
+                    }
+                    worksheet.Cells[RowIdx, ColIdx] = "Production CManager： " + signatureData.UserID + " - " + signatureData.UserName;
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[RowIdx + 1, ColIdx];
+
+                    byte[] tmp = (byte[])signatureData.Signature; // 圖片的 byte[]
+
+                    MemoryStream ms = new MemoryStream(tmp);
+                    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    img.Save(imgPath);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
+                    if (ColIdx >= 7)
+                    {
+                        ColIdx = 1;
+                        RowIdx += 3;
+                    }
+                    else
+                    {
+                        ColIdx += 3;
+                    }
+                }
+            }
+            if (model.ListFinalInspectionSignature.Any(o => o.JobTitle == "TSD"))
+            {
+                foreach (FinalInspectionSignature signatureData in model.ListFinalInspectionSignature.Where(o => o.JobTitle == "TSD"))
+                {
+                    if (signatureData.Signature == null)
+                    {
+                        continue;
+                    }
+                    worksheet.Cells[RowIdx, ColIdx] = "TSD： " + signatureData.UserID + " - " + signatureData.UserName;
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[RowIdx + 1, ColIdx];
+
+                    byte[] tmp = (byte[])signatureData.Signature; // 圖片的 byte[]
+
+                    MemoryStream ms = new MemoryStream(tmp);
+                    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    img.Save(imgPath);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
+                    if (ColIdx >= 7)
+                    {
+                        ColIdx = 1;
+                        RowIdx += 3;
+                    }
+                    else
+                    {
+                        ColIdx += 3;
+                    }
+                }
+            }
+            if (model.ListFinalInspectionSignature.Any(o => o.JobTitle == "QC"))
+            {
+                foreach (FinalInspectionSignature signatureData in model.ListFinalInspectionSignature.Where(o => o.JobTitle == "QC"))
+                {
+                    if (signatureData.Signature == null)
+                    {
+                        continue;
+                    }
+                    worksheet.Cells[RowIdx, ColIdx] = "QC： " + signatureData.UserID + " - " + signatureData.UserName;
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[RowIdx + 1, ColIdx];
+
+                    byte[] tmp = (byte[])signatureData.Signature; // 圖片的 byte[]
+
+                    MemoryStream ms = new MemoryStream(tmp);
+                    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    img.Save(imgPath);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
+                    if (ColIdx >= 7)
+                    {
+                        ColIdx = 1;
+                        RowIdx += 3;
+                    }
+                    else
+                    {
+                        ColIdx += 3;
+                    }
+                }
+            }
+            if (model.ListFinalInspectionSignature.Any(o => o.JobTitle == "Production"))
+            {
+                foreach (FinalInspectionSignature signatureData in model.ListFinalInspectionSignature.Where(o => o.JobTitle == "Production"))
+                {
+                    if (signatureData.Signature == null)
+                    {
+                        continue;
+                    }
+                    worksheet.Cells[RowIdx, ColIdx] = "Production： " + signatureData.UserID + " - " +signatureData.UserName;
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[RowIdx + 1, ColIdx];
+
+                    byte[] tmp = (byte[])signatureData.Signature; // 圖片的 byte[]
+
+                    MemoryStream ms = new MemoryStream(tmp);
+                    System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    img.Save(imgPath);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
+                    if (ColIdx >= 7)
+                    {
+                        ColIdx = 1;
+                        RowIdx += 3;
+                    }
+                    else
+                    {
+                        ColIdx += 3;
+                    }
+                }
+            }
             #endregion
 
             #region Measurement 依資料增加
@@ -306,7 +489,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 }
             }
             #endregion
-            
+
             #region Defect 依資料 依資料增加
             if (model.ListDefectItem == null || model.ListDefectItem.Count == 0)
             {
@@ -399,7 +582,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                     // 換一個Type
                     eachTypeRowIdx++;
                 }
-                
+
             }
 
             #endregion
@@ -501,6 +684,98 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             DatabaseObject.BaseResult result = Service.ClickJunk(ID);
             return Json(result);
+        }
+
+        public JsonResult GetSignatureUserList(string userIDs)
+        {
+            try
+            {
+                userIDs = userIDs == null ? string.Empty : userIDs;
+                FinalInspectionService fService = new FinalInspectionService();
+                List<FinalInspectionSignature> list = Service.GetSignatureUserList(userIDs);
+
+                return new JsonResult
+                {
+                    Data = list,
+                    MaxJsonLength = int.MaxValue,/*重點在這行*/
+                    JsonRequestBehavior = JsonRequestBehavior.AllowGet
+                };
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = false, ErrorMessage = ex.Message });
+            }
+
+        }
+
+        [HttpPost]
+        public JsonResult PostSignatureUserList(string FinalInspectionID, string JobTitle, List<FinalInspectionSignature> allData)
+        {
+            try
+            {
+                if (allData == null)
+                {
+                    allData = new List<FinalInspectionSignature>();
+                }
+                var result = Service.InsertFinalInspectionSignatureUser(FinalInspectionID, JobTitle, allData);
+
+                if (result.Result)
+                {
+                    return Json(new { Result = true, });
+                }
+                else
+                {
+                    return Json(new { Result = false, ErrorMessage = result.ErrorMessage });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = false, ErrorMessage = ex.Message });
+            }
+
+        }
+
+        [HttpPost]
+        public JsonResult GetSignature(FinalInspectionSignature Req)
+        {
+            try
+            {
+                QueryReport model = Service.GetFinalInspectionSignature(Req);
+
+                return Json(new { Result = true, Data = model.ListFinalInspectionSignature.FirstOrDefault() });
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = false, ErrorMessage = ex.Message });
+            }
+
+        }
+        [HttpPost]
+        public JsonResult InsertSignature(FinalInspectionSignature Req)
+        {
+            try
+            {
+                Req.Signature = ImageHelper.ImageCompress(Req.Signature);
+                Req.AddName = this.UserID;
+                QueryReport model = Service.InsertFinalInspectionSignature(Req);
+
+
+                if (model.Result)
+                {
+                    return Json(new { Result = true, Data = model.ListFinalInspectionSignature.FirstOrDefault() });
+                }
+                else
+                {
+                    return Json(new { Result = false, ErrorMessage = model.ErrorMessage });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { Result = false, ErrorMessage = ex.Message });
+            }
+
         }
     }
 }

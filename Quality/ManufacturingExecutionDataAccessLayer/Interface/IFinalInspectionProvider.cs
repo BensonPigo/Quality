@@ -159,6 +159,9 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         List<FinalInspectionBasicCheckList> GetAllCheckList();
         int GetAvailableQty(string FinalInspectionID);
         void UpdateMeasurement(ServiceMeasurement model, string userID);
-        List<FinalInspectionSignature> GetFinalInspectionSignature(string finalInspectionID);
+        List<FinalInspectionSignature> GetFinalInspectionSignature(FinalInspectionSignature Req);
+        List<FinalInspectionSignature> GetFinalInspectionSignatureUser();
+        bool InsertFinalInspectionSignatureUser(string FinalInspectionID, string JobTitle, List<FinalInspectionSignature> allData);
+        bool InsertFinalInspectionSignature(FinalInspectionSignature Req);
     }
 }

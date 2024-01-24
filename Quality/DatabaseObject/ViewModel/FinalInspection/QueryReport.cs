@@ -1,5 +1,6 @@
 ﻿using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.Public;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public List<SelectOrderShipSeq> ListShipModeSeq { get; set; }
         public List<FinalInspectionSignature> ListFinalInspectionSignature{ get; set; }
 
-        public string GetFinalInspectionSignatureByJobTitle(string JobTitle)
+        public string GetUserIDByJobTitle(string JobTitle)
         {
             List<string> rtn = new List<string>();
             if (this.ListFinalInspectionSignature.Any())
