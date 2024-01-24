@@ -137,6 +137,7 @@ select   b.BrandID
         ,b.OrderID
         ,b.Temperature
         ,b.Time
+        ,b.TimeUnit
         ,b.Humidity
         ,a.*
         ,c.BuyerDelivery
@@ -218,6 +219,7 @@ where 1=1
                 { "@OrderID", sources.MainData.OrderID } ,
                 { "@Temperature", DbType.Decimal, Convert.ToDecimal(sources.MainData.Temperature) },
                 { "@Time", DbType.Decimal, Convert.ToDecimal(sources.MainData.Time) },
+                { "@TimeUnit", sources.MainData.TimeUnit } ,
                 { "@Humidity", DbType.Decimal, sources.MainData.Humidity },
                 { "@AddName", UserID },
                 { "@EditName", UserID },
@@ -239,6 +241,7 @@ begin
        SET EditDate = GETDATE()
           ,Temperature = @Temperature
           ,Time = @Time
+          ,TimeUnit = @TimeUnit
           ,Humidity = @Humidity
           ,EditName = @EditName
      WHERE ID = @ID
@@ -248,10 +251,10 @@ end
 else 
 begin
     INSERT INTO dbo.AgingHydrolysisTest
-               (BrandID           ,SeasonID           ,StyleID           ,Article           ,FactoryID           
+               (BrandID           ,SeasonID           ,StyleID           ,Article           ,FactoryID         ,TimeUnit  
                 ,OrderID           ,Temperature               ,Time           ,Humidity           ,AddDate           ,AddName)
     VALUES
-               (@BrandID           ,@SeasonID           ,@StyleID           ,@Article           ,@FactoryID
+               (@BrandID           ,@SeasonID           ,@StyleID           ,@Article           ,@FactoryID         ,@TimeUnit  
                 ,@OrderID           ,@Temperature               ,@Time           ,@Humidity           ,GETDATE()           ,@AddName)
     ;
     SELECT ID = CAST( @@IDENTITY as bigint),BrandID = @BrandID ,SeasonID = @SeasonID ,StyleID = @StyleID ,Article = @Article ,MDivisionID = @MDivisionID ,OrderID=@OrderID

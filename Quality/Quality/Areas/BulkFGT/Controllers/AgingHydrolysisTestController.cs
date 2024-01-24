@@ -43,10 +43,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(model);
         }
 
-        public ActionResult IndexBack(string OrderID)
+        public ActionResult IndexBack(string BrandID, string SeasonID, string StyleID, string Article,string OrderID)
         {
             AgingHydrolysisTest_Request request = new AgingHydrolysisTest_Request()
             {
+                BrandID = BrandID,
+                SeasonID = SeasonID,
+                StyleID = StyleID,
+                Article = Article,
                 OrderID = OrderID,
             };
 

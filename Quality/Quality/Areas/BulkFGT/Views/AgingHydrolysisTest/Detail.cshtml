@@ -226,7 +226,14 @@
                     <div class="buttonArea">
                         <div class="buttonAreaItem">
                             <h4 id="Exit" class="toolBarItem" style=" margin-right: 1em;">
-                                <a href="@Url.Action("IndexBack", ViewContext.RouteData.GetRequiredString("Controller"), new { OrderID = Model.MainDetailData.OrderID })">
+                                <a href="@Url.Action("IndexBack", ViewContext.RouteData.GetRequiredString("Controller"), new 
+                                    {
+                                        BrandID = Model.MainDetailData.BrandID,
+                                        SeasonID = Model.MainDetailData.SeasonID,
+                                        StyleID = Model.MainDetailData.StyleID,
+                                        Article = Model.MainDetailData.Article,
+                                        OrderID = Model.MainDetailData.OrderID,
+                                    })">
                                     <img src="~/Image/Icon/Exit.png" width="30" />
                                     Exit
                                 </a>
@@ -380,6 +387,10 @@
 
                         <div class="MainDataAreaItem odd">
                             @Html.TextBoxFor(o => o.MainDetailData.Time, new { @class = "", @type = "number", @onchange = "value=TimeCheck(value)" })
+                            @if (!string.IsNullOrEmpty(Model.MainDetailData.TimeUnit))
+                            {
+                                @Html.TextBoxFor(o => o.MainDetailData.TimeUnit, new { @class = "", @type = "text" })
+                            }
                         </div>
 
                         <div class="MainDataAreaItem odd">
