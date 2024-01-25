@@ -20,10 +20,13 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string InspectionTimes { get; set; } = string.Empty;
 
         public string AcceptableQualityLevelsUkey { get; set; } = string.Empty;
+        public string AcceptableQualityLevelsProUkey { get; set; } = string.Empty;
         public int? SampleSize { get; set; }
         public int? AcceptQty { get; set; }
         public string AQLPlan { get; set; }
         public string AQLPlanNotFinal { get; set; }
+        public string AQLProPlan { get; set; }
+        public bool ReInspection { get; set; }
 
 
         public List<SelectSewing> SelectedSewing { get; set; }
@@ -35,6 +38,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public List<SelectCarton> SelectCarton { get; set; }
 
         public List<AcceptableQualityLevels> AcceptableQualityLevels { get; set; }
+        public List<AcceptableQualityLevelsProList> AcceptableQualityLevelsPros { get; set; }
         public List<SelectListItem> AQLPlanList
         {
             get
@@ -97,7 +101,71 @@ namespace DatabaseObject.ViewModel.FinalInspection
             }
 
         }
-        public List<SelectListItem> AQLPlanList_NotFinal { get; set; }
+        public List<SelectListItem> AQLProPlanList
+        {
+            get
+            {
+                if (this.AcceptableQualityLevelsPros != null)
+                {
+                    List<SelectListItem> rtn = new List<SelectListItem>()
+                    {
+                        //new SelectListItem()
+                        //{
+                        //    Text = string.Empty,
+                        //    Value = string.Empty,
+                        //}
+                    };
+
+                    foreach (var item in this.AcceptableQualityLevelsPros.Select(o => new { o.BrandID, o.AQLType, o.InspectionLevels }).Distinct())
+                    {
+                        string brandID = item.BrandID.ToString();
+                        string aqlType = item.AQLType.ToString();
+                        string level = string.Empty;
+                        switch (item.InspectionLevels)
+                        {
+                            case "1":
+                                level = "Level I";
+                                break;
+                            case "2":
+                                level = "Level II";
+                                break;
+                            case "3":
+                                level = "Level III";
+                                break;
+                            case "4":
+                                level = "Level IV";
+                                break;
+                            case "5":
+                                level = "Level V";
+                                break;
+                            case "S-4":
+                                level = "Level S-4";
+                                break;
+                            case "100% Inspection":
+                                aqlType = "100% Inspection";
+                                level = "";
+                                break;
+                            default:
+                                break;
+                        }
+                        rtn.Add(new SelectListItem()
+                        {
+                            //Text = string.IsNullOrEmpty(level) ? $@"{aqlType}" : $@"{aqlType} {level}",
+                            //Value = string.IsNullOrEmpty(level) ? $@"{aqlType}" : $@"{aqlType} {level}",
+                            Text = brandID,
+                            Value = brandID,
+                        });
+
+                    }
+                    return rtn;
+                }
+                else
+                {
+                    return new List<SelectListItem>();
+                }
+            }
+
+        }
     }
 
     public class SelectSewingTeam
@@ -144,6 +212,8 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string PackingListID { get; set; }
         public string CTNNo { get; set; }
         public int ShipQty { get; set; }
+        public string Size { get; set; }
+        public string QtyPerSize { get; set; }
     }
 
 }

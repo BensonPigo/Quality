@@ -27,6 +27,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [Display(Name = "訂單PO")]
         public string CustPONO { get; set; }
         public string BrandID { get; set; }
+        public bool ReInspection { get; set; }
 
         /// <summary>檢驗階段</summary>
         [Required]
@@ -66,6 +67,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>AcceptableQualityLevelsUkey</summary>
         [Display(Name = "AcceptableQualityLevelsUkey")]
         public long AcceptableQualityLevelsUkey { get; set; }
+        public long AcceptableQualityLevelsProUkey { get; set; }
 
         /// <summary>樣本數量</summary>
         [Display(Name = "樣本數量")]
@@ -143,9 +145,9 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [Display(Name = "是否收到Shipping Mark")]
         public bool CheckShippingMark { get; set; }
 
-        /// <summary>是否收到Polybag/ Marketing</summary>
-        [Display(Name = "是否收到Polybag/ Marketing")]
-        public bool CheckPolytagMarketing { get; set; }
+        /// <summary>是否收到Polybag/ Marking</summary>
+        [Display(Name = "是否收到Polybag/ Marking")]
+        public bool CheckPolytagMarking { get; set; }
 
         /// <summary>是否收到Color/ Size/ Qty</summary>
         [Display(Name = "是否收到Color/ Size/ Qty")]
@@ -171,10 +173,13 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [StringLength(10)]
         [Display(Name = "檢驗人員")]
         public string CFA { get; set; }
+        public string Clerk { get; set; }
 
         /// <summary>完成比例</summary>
         [Display(Name = "完成比例")]
         public decimal? ProductionStatus { get; set; }
+        public decimal? ProductionStatusDefault { get; set; }
+        
 
         /// <summary>Pass/ Fail/ On-going</summary>
         [StringLength(8)]
@@ -296,7 +301,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
                     result.Add("IsTSize", this.finalInspectionCheckList.IsTSize);
                     result.Add("IsCCLayout", this.finalInspectionCheckList.IsCCLayout);
                     result.Add("IsShippingMark", this.finalInspectionCheckList.IsShippingMark);
-                    result.Add("IsPolytagMarketing", this.finalInspectionCheckList.IsPolytagMarketing);
+                    result.Add("IsPolytagMarking", this.finalInspectionCheckList.IsPolytagMarking);
                     result.Add("IsColorSizeQty", this.finalInspectionCheckList.IsColorSizeQty);
                     result.Add("IsHangtag", this.finalInspectionCheckList.IsHangtag);
                     result.Add("IsJokerTag", this.finalInspectionCheckList.IsJokerTag);

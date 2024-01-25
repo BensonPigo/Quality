@@ -9,10 +9,13 @@ namespace DatabaseObject.ViewModel.FinalInspection
     {
         public string FinalInspectionID { get; set; }
         public string CFA { get; set; }
+        public string Clerk { get; set; }
         public decimal? ProductionStatus { get; set; }
+        public decimal? ProductionStatusDefault { get; set; }
         public string InspectionResult { get; set; }
         public string ShipmentStatus { get; set; }
         public string OthersRemark { get; set; }
+        public string BrandID { get; set; }
 
         public List<OtherImage> ListOthersImageItem { get; set; } = new List<OtherImage>();
     }

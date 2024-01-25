@@ -187,6 +187,26 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
+        public List<Window_Pass1> Get_FinalInspectionCFA(string ID, bool IsExact, bool FilterPivot88)
+        {
+            List<Window_Pass1> result = new List<Window_Pass1>();
+
+            try
+            {
+                _Provider = new PublicWindowProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_FinalInspectionCFA(ID, IsExact, FilterPivot88).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
         public List<Window_LocalSupp> Get_LocalSupp(string SuppID , string Name, bool IsExact)
         {
             List<Window_LocalSupp> result = new List<Window_LocalSupp>();
@@ -548,7 +568,7 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
-        public List<Window_AreaCode> Get_AreaCode(string FinalInspectionID, string AreaCode)
+        public List<Window_AreaCode> Get_AreaCode(string FinalInspectionID, string AreaCode, string oldValue)
         {
             List<Window_AreaCode> result = new List<Window_AreaCode>();
 
@@ -557,7 +577,7 @@ namespace BusinessLogicLayer.Service
                 _Provider = new PublicWindowProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 //取得登入資訊
-                result = _Provider.Get_AreaCode(FinalInspectionID, AreaCode).ToList();
+                result = _Provider.Get_AreaCode(FinalInspectionID, AreaCode , oldValue).ToList();
 
             }
             catch (Exception ex)

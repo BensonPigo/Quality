@@ -112,7 +112,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         public bool IsTSize { get; set; }
         public bool IsCCLayout { get; set; }
         public bool IsShippingMark { get; set; }
-        public bool IsPolytagMarketing { get; set; }
+        public bool IsPolytagMarking { get; set; }
         public bool IsColorSizeQty { get; set; }
         public bool IsHangtag { get; set; }
         public bool IsJokerTag { get; set; }

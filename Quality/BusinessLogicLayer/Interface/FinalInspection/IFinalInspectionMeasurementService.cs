@@ -8,7 +8,7 @@ namespace BusinessLogicLayer.Interface
     {
         ServiceMeasurement GetMeasurementForInspection(string finalInspectionID, string userID);
 
-        BaseResult UpdateMeasurement(ServiceMeasurement measurement, string userID);
+        BaseResult InsertMeasurement(ServiceMeasurement measurement, string userID);
 
         List<MeasurementViewItem> GetMeasurementViewItem(string finalInspectionID);
     }

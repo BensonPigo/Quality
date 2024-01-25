@@ -23,6 +23,8 @@ namespace DatabaseObject.ViewModel.FinalInspection
 
         public List<FinalInspectionDefectItem> ListDefectItem { get; set; }
 
+        public List<FinalInspection_DefectDetail> FinalInspection_DefectDetails { get; set; }
+
         public List<BACriteriaItem> ListBACriteriaItem { get; set; }
 
         public List<ViewMoistureResult> ListViewMoistureResult { get; set; }

@@ -7,6 +7,7 @@ using BusinessLogicLayer.Interface;
 using BusinessLogicLayer.Service.FinalInspection;
 using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
+using DatabaseObject.ResultModel.EtoEFlowChart;
 using DatabaseObject.ViewModel.FinalInspection;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -34,11 +35,33 @@ namespace BusinessLogicLayer.Service
                     _FinalInspectionProvider.GetFinalInspection(finalInspectionID);
 
                 others.FinalInspectionID = finalInspectionID;
-                others.CFA = finalInspection.CFA;
-                others.ProductionStatus = finalInspection.ProductionStatus;
+                others.BrandID = finalInspection.BrandID;
+                others.Clerk = finalInspection.Clerk;
+                others.ProductionStatus = (finalInspection.ProductionStatus.HasValue && finalInspection.ProductionStatus.Value == 0) || !finalInspection.ProductionStatus.HasValue ?
+                    finalInspection.ProductionStatusDefault : finalInspection.ProductionStatus;
 
                 // ISP20211205l調整，事先帶出最後結果
-                others.InspectionResult = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "Fail" : "Pass";
+
+                // AQL分成兩種判斷方式：一種是單純看 AcceptQty與RejectQty 的比較數量；一種是 某些Defect 種類的數量不能超過 (ISP20231298)
+                if (finalInspection.AcceptableQualityLevelsProUkey == 0)
+                {
+                    // 單純看 AcceptQty與RejectQty 的比較數量
+                    others.InspectionResult = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "Fail" : "Pass";
+                }
+                else
+                {
+                    // Defect 種類的數量不能超過
+                    _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
+                    var FinalInspection_Details = _FinalInspFromPMSProvider.GetFinalInspection_DefectDetails(finalInspection.ID, finalInspection.AcceptableQualityLevelsProUkey).ToList();
+                    if (FinalInspection_Details.Any(o => o.DefectCategoryResult == "Fail"))
+                    {
+                        others.InspectionResult = "Fail";
+                    }
+                    else
+                    {
+                        others.InspectionResult = "Pass";
+                    }
+                }
 
 
                 others.ShipmentStatus = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "On Hold" : "Ship";
@@ -96,10 +119,17 @@ namespace BusinessLogicLayer.Service
         {
             BaseResult result = new BaseResult();
 
+            if (string.IsNullOrEmpty(others.CFA))
+            {
+                result.Result = false;
+                result.ErrorMessage = "CFA cannot be empty";
+                return result;
+            }
+
             if (others.ProductionStatus == null)
             {
                 result.Result = false;
-                result.ErrorMessage = "<Production Status> cannot be empty";
+                result.ErrorMessage = "Production Status cannot be empty";
                 return result;
             }
 
@@ -120,9 +150,30 @@ namespace BusinessLogicLayer.Service
                 }
 
                 finalInspection.OthersRemark = others.OthersRemark;
-                finalInspection.CFA = UserID;
+                finalInspection.CFA = others.CFA;
+                finalInspection.Clerk = UserID;
                 finalInspection.ShipmentStatus = others.ShipmentStatus;
-                finalInspection.InspectionResult = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "Fail" : "Pass";
+
+                // AQL分成兩種判斷方式：一種是單純看 AcceptQty與RejectQty 的比較數量；一種是 某些Defect 種類的數量不能超過 (ISP20231298)
+                if (finalInspection.AcceptableQualityLevelsProUkey == 0)
+                {
+                    // 單純看 AcceptQty與RejectQty 的比較數量
+                    finalInspection.InspectionResult = finalInspection.AcceptQty < finalInspection.RejectQty && finalInspection.RejectQty > 0 ? "Fail" : "Pass";
+                }
+                else
+                {
+                    // Defect 種類的數量不能超過
+                    _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
+                    var FinalInspection_Details = _FinalInspFromPMSProvider.GetFinalInspection_DefectDetails(finalInspection.ID, finalInspection.AcceptableQualityLevelsProUkey).ToList();
+                    if (FinalInspection_Details.Any(o=>o.DefectCategoryResult == "Fail"))
+                    {
+                        finalInspection.InspectionResult = "Fail";
+                    }
+                    else
+                    {
+                        finalInspection.InspectionResult = "Pass";
+                    }
+                }
 
                 _FinalInspectionProvider.SubmitFinalInspection(finalInspection, UserID);
                 List<OtherImage> imgList = others.ListOthersImageItem != null && others.ListOthersImageItem.Any() ? others.ListOthersImageItem : new List<OtherImage>();

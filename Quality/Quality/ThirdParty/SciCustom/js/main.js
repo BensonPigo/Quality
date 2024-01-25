@@ -502,6 +502,120 @@ function generateTable(jArray, type) {
     return table;
 }
 
+function generateMeasurementEditTable(jArray, type) {
+    let tbody = document.createElement('tbody');
+    let thead = document.createElement('thead');
+    let table = document.createElement('table');
+    table.setAttribute("ID", "MeasurementView"); 
+    // 將所有資料列的資料轉成tbody
+    jArray.forEach(row => {
+        let tr = document.createElement('tr');
+        let FinalInspection_MeasurementUkey = 0;
+        let readonlyData = listMeasurementItem.filter(item => item.CanEdit === false);
+
+        let canEdit = true;
+
+        Object.keys(row).forEach(tdName => {
+
+            if (tdName.includes('FinalInspection_MeasurementUkey')) {
+                FinalInspection_MeasurementUkey = row[tdName];
+            }
+            else {
+                let td = document.createElement('td');
+                let content = row[tdName];
+                td.setAttribute("idx", tdName);
+
+                if (tdName == 'Code') {
+                    var size = document.getElementById('ViewListSize').value.split(',')[1];
+                    var chkData = readonlyData.filter(item => item.Code === content && item.Size === size);
+                    if (chkData.length > 0) {
+                        canEdit = false;
+                    }
+                }
+
+                // 判斷是否日期
+                if (!isNaN(Date.parse(tdName)) && tdName.includes('/') && canEdit) {
+                    let input = document.createElement('input');
+                    var unit = document.getElementById('ViewSizeUnit').value;
+                    if (unit == 'CM') {
+                        input.setAttribute("type", 'number');
+                    }
+                    else {
+                        input.setAttribute("type", 'text');
+                    }
+
+                    if (FinalInspection_MeasurementUkey == null) {
+                        FinalInspection_MeasurementUkey = 0;
+                    }
+                    input.setAttribute("class", "MeasurementValue"); 
+                    input.setAttribute("onchange", "MeasurementValueCheck(this,'" + unit + "')");
+                    input.setAttribute("FinalInspection_MeasurementUkey", FinalInspection_MeasurementUkey);
+                    input.setAttribute("readonly", 'readonly');
+                    input.setAttribute("style", "width:100%;background-color:rgb(234, 234, 113);");
+                    input.setAttribute("value", content);
+                    td.appendChild(input);
+                    canEdit = true;
+                }
+                else {
+                    td.textContent = content;
+                }
+
+                tr.appendChild(td);
+            }
+        });
+        tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+
+    // 將所有資料列的欄位轉成thead
+    let headerTr = document.createElement('tr')
+
+    Object.keys(jArray[0]).forEach(header => {
+
+        // <th> 排除FinalInspection_MeasurementUkey
+        if (!header.includes('FinalInspection_MeasurementUkey')) {
+            let th = document.createElement('th')
+            var newheader = header;
+            if (header.toString().indexOf("_aa") > -1) {
+                newheader = header.replace(header.substr(header.toString().indexOf("_aa"), header.length - header.toString().indexOf("_aa")), "");
+            }
+
+            if (header.toString().indexOf("diff") > -1) {
+                var index = header.replace("diff", "");
+                newheader = header.replace(index, "");
+            }
+
+            if (!isNaN(Date.parse(newheader)) && newheader.includes('/')) {
+                let icon = document.createElement('img');
+                icon.setAttribute("style", "background: url('/Image/Icon/Delete.png')no-repeat center / 80% 80%;height: 1.5rem;width: 1.5rem;cursor:pointer;");
+                icon.setAttribute("addDate", newheader);
+                icon.setAttribute("class", "clsMeasurementDel");
+                icon.setAttribute("onclick", 'MeasurementDel("' + newheader + '")');
+
+
+                let sp = document.createElement('span');
+                sp.textContent = newheader;
+
+
+                th.appendChild(icon);
+                th.appendChild(sp);
+            }
+            else {
+                th.textContent = newheader
+            }
+
+
+            headerTr.appendChild(th)
+        }
+    });
+
+    // 新增thead到table上
+    thead.appendChild(headerTr);
+    table.appendChild(thead);
+
+    return table;
+}
+
 function Round(num) {
     return accDiv(Math.round(accMul(accAdd(num, Number.EPSILON), 100)), 100);
 }

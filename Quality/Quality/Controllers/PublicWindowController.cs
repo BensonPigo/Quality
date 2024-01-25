@@ -377,6 +377,29 @@ namespace Quality.Controllers
             }
             return View(model);
         }
+        public ActionResult FinalInspectionCFAList(string Title, string TargetID, bool FilterPivot88)
+        {
+            var model = _PublicWindowService.Get_FinalInspectionCFA(string.Empty, false, FilterPivot88);
+            ViewData["FilterPivot88"] = FilterPivot88;
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult FinalInspectionCFAList(string Title, string ID, string TargetID,bool FilterPivot88, string ReturnType = "")
+        {
+            bool IsExact = ReturnType.ToUpper() == "JSON";
+            var model = _PublicWindowService.Get_FinalInspectionCFA(ID, IsExact, FilterPivot88);
+            ViewData["Title"] = Title;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            ViewData["FilterPivot88"] = FilterPivot88;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
+            return View(model);
+        }
 
         public ActionResult SewingLineList(string FactoryID, string TargetID)
         {
@@ -571,9 +594,9 @@ namespace Quality.Controllers
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
-        public ActionResult AreaCodeList(string Title, string FinalInspectionID, string TargetID)
+        public ActionResult AreaCodeList(string Title, string FinalInspectionID, string TargetID, string oldValue)
         {
-            var model = _PublicWindowService.Get_AreaCode(FinalInspectionID, string.Empty);
+            var model = _PublicWindowService.Get_AreaCode(FinalInspectionID, string.Empty , oldValue);
 
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
@@ -581,9 +604,9 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult AreaCodeList(string Title, string FinalInspectionID, string AreaCode, string TargetID)
+        public ActionResult AreaCodeList(string Title, string FinalInspectionID, string AreaCode, string TargetID, string oldValue)
         {
-            var model = _PublicWindowService.Get_AreaCode(FinalInspectionID, AreaCode);
+            var model = _PublicWindowService.Get_AreaCode(FinalInspectionID, AreaCode, oldValue);
 
             ViewData["Title"] = Title;
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;

@@ -79,8 +79,7 @@
             <tr>
                 <td class="ColumnStype ColunTD"><label class="Font">CFA</label></td>
                 <td class="ValueTD">
-                    <div class="textFont"> @Html.DisplayFor(o => o.CFA)   </div>
-                    @Html.HiddenFor(o => o.CFA)
+                    @Html.TextBoxFor(o => o.CFA, new {  @class = "form-control",  @readonly = "readonly" })
                 </td>
 
                 <td class="ColumnStype ColunTD"><label class="Font">Inspection Result</label></td>
@@ -102,13 +101,15 @@
                     @Html.HiddenFor(o => o.InspectionResult)
                 </td>
             </tr>
-
             <tr>
-                <td class="ColumnStype"><label class="Font">Production Status</label></td>
-                <td>
-                    @Html.TextBoxFor(o => o.ProductionStatus, new { @class = "form-control center-block", @type = "number", @step = "0.01", @placeholder = "0.00", @max = "100", @oninput = "if(parseInt(value) > 100)value=100" })
-                    <label class="Font">%</label>
+                <td class="ColumnStype ColunTD"><label class="Font">Clerk</label></td>
+                <td class="ValueTD">
+                    <div class="textFont">
+                        @Html.DisplayFor(o => o.Clerk)   
+                    </div>
+                    @Html.HiddenFor(o => o.Clerk)
                 </td>
+
                 <td class="ColumnStype"><label class="Font">Shipment Status</label></td>
                 <td>
                     @if (Model != null)
@@ -127,6 +128,16 @@
                     @Html.HiddenFor(o => o.ShipmentStatus)
 
                 </td>
+            </tr>
+
+            <tr>
+                <td class="ColumnStype"><label class="Font">Production Status</label></td>
+                <td>
+                    @Html.TextBoxFor(o => o.ProductionStatus, new { @class = "form-control center-block", @type = "number", @step = "0.01", @placeholder = "0.00", @max = "100", @oninput = "if(parseInt(value) > 100)value=100" })
+                    <label class="Font">%</label>
+                </td>
+                <td></td>
+                <td></td>
             </tr>
 
             <tr>
@@ -212,6 +223,10 @@
         $('#RemarkQuickClose').on('click', function () {
             RemarkQuickClose();
         });
+
+        $('#CFA').on('click', function () {
+            OpenCFAList('CFA');
+        });
     });
 
     function checkValue(self) {
@@ -227,8 +242,28 @@
     }
 
 
+    function OpenCFAList(targetID) {
+
+        var filterPivot88 = false;
+        if ('@Model.BrandID' == 'ADIDAS') {
+            filterPivot88 = true;
+        }
+
+        var para = `?FinalInspectionID=${$('#FinalInspectionID').val()}&TargetID=${targetID}&Title=CFA&FilterPivot88=${filterPivot88}`;
+        window.open('@Url.Action("FinalInspectionCFAList", "PublicWindow",new{Area=""})' + para, 'CFA List', config = 'toolbar=no,status=no,location=no,width=800,height=750');
+    }
+
+
     function ScreenShot() {
         window.open('@Url.Action("OthersTakePicture")?FinalInspectionID=@Model.FinalInspectionID', "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+    }
+
+
+    function GetFinalInspectionCFA(Pass1, targetID) {
+
+        var userID = Pass1.ID;
+
+        $(`#${targetID}`).val(userID);
     }
 
 
