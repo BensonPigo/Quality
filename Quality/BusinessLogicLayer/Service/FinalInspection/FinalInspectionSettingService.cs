@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BusinessLogicLayer.Interface;
-using DatabaseObject;
+﻿using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
-using DatabaseObject.ResultModel.EtoEFlowChart;
 using DatabaseObject.ViewModel.FinalInspection;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using ToolKit;
 
 namespace BusinessLogicLayer.Service
@@ -109,7 +107,7 @@ namespace BusinessLogicLayer.Service
 
 
                 // 判斷該品牌有沒有特別設定，有的話就用特別設定；沒有的話用預設
-                if (tmpAcceptableQualityLevels.Where(o=>o.BrandID != string.Empty && o.BrandID != "AllBrand").Any())
+                if (tmpAcceptableQualityLevels.Where(o => o.BrandID != string.Empty && o.BrandID != "AllBrand").Any())
                 {
                     // 有的話就用特別設定
                     result.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => o.BrandID == finalInspection.BrandID || o.BrandID == "AllBrand").OrderBy(o => o.AQLType).ToList();
@@ -117,7 +115,7 @@ namespace BusinessLogicLayer.Service
                 else
                 {
                     // 沒有的話用預設
-                    result.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand").OrderBy(o=>o.AQLType).ToList();
+                    result.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand").OrderBy(o => o.AQLType).ToList();
                 }
 
 
@@ -150,7 +148,7 @@ namespace BusinessLogicLayer.Service
 
                 foreach (var item in result.SelectedSewing)
                 {
-                    if (endlineSewing.Where(o=>o.SewingLine == item.SewingLine).Any())
+                    if (endlineSewing.Where(o => o.SewingLine == item.SewingLine).Any())
                     {
                         item.Selected = true;
                     }

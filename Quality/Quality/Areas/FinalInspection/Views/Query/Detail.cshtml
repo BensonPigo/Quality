@@ -130,6 +130,10 @@
         .divPOInfoCell5 {
             width: 83%;
         }
+
+        dialog {
+            z-index: 9998;
+        }
     </style>
 }
 
@@ -453,7 +457,7 @@
     <div style="width:100%;display:flex;flex-direction:row;">
         <div style="width:20%">
             <h3 class="h3" id="headJobTitle"></h3>
-            <input type="hidden"  id="headJobTitleVal"/>
+            <input type="hidden" id="headJobTitleVal" />
         </div>
         <div style="width:10%">
             <select id="SignatureUserList" onchange="SignatureUserListChange()" style="height: 100%; margin: 0;"></select>
@@ -478,6 +482,13 @@
 
 </dialog>
 
+<dialog id="diaSignatureMsg" class="swal2-show" style="padding: 20px; background: rgb(46, 46, 46); ">
+
+    <h2><span id="txtSignatureMsg" style="color:#d6d6d6;Font-Size:inherit">Success!!<span></span></span></h2>
+    <br />
+    <button id="btnSignatureMsgOK" onclick="CloseSignatureMsgDialog()" style="background-color: rgb(48, 133, 214); border-left-color: rgb(48, 133, 214); border-right-color: rgb(48, 133, 214); color: #d6d6d6;">OK</button>
+
+</dialog>
 
 @section FinalInspection_script
 {
@@ -829,6 +840,20 @@
             clearSignature();
         }
 
+        function OpenSignatureMsgDialog(msg) {
+            $("#txtSignatureMsg").text(msg);
+            let infoModal = document.querySelector(`#diaSignatureMsg`);
+            infoModal.showModal();
+        }
+
+        function CloseSignatureMsgDialog() {
+
+            $("#txtSignatureMsg").text('');
+            let infoModal = document.querySelector(`#diaSignatureMsg`);
+            infoModal.close();
+        }
+
+
         function SetSignatureUserList(jobTitle) {
 
             let userIDs = $("#SignatureBy_" + jobTitle).val().split(',');
@@ -907,12 +932,13 @@
                 async: false,
                 success: function (data) {
 
-                    CloseSignatureDialog();
+                    //CloseSignatureDialog();
                     if (data.Result) {
-                        msg.WithSuccess("Success!!");
+                        //msg.WithSuccess("Success!!");
+                        OpenSignatureMsgDialog("Success!!");
                     }
                     else {
-                        msg.WithError(data.ErrorMessage);
+                        OpenSignatureMsgDialog(data.ErrorMessage);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {

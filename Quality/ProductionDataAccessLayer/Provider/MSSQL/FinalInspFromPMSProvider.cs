@@ -230,6 +230,7 @@ select  [Selected] = cast(isnull(fc.Selected, 0) as bit),
         [Seq] = pld.OrderShipmodeSeq
 		,Size = size.Val
 		,QtyPerSize = sizeQtyPerCTN.Val
+		,ShipQty = SUM(pld.ShipQty)
 from MainServer.Production.dbo.PackingList_Detail pld WITH(NOLOCK)
 left join   #FinalInspection_OrderCarton fc on  fc.OrderID = pld.OrderID and 
                                                 fc.PackinglistID = pld.ID and 
@@ -254,6 +255,14 @@ left join   #FinalInspection_OrderCarton fc on  fc.OrderID = pld.OrderID and
  )sizeQtyPerCTN
 where   pld.OrderID in (select OrderID from #FinalInspection_Order) and
         pld.CTNQty = 1
+		
+ group by  pld.OrderID,ID,CTNStartNo,OrderShipmodeSeq
+		,size.Val
+		,sizeQtyPerCTN.Val
+		,fc.Selected
+ORDER BY CAST(ISNULL(TRY_CONVERT(INT, CTNStartNo),0) as int)
+
+DROP TABLE #FinalInspection_OrderCarton,#FinalInspection_Order
 
 ";
             return ExecuteList<SelectCarton>(CommandType.Text, sqlGetData, listPar);

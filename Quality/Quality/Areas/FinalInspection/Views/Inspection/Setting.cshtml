@@ -866,9 +866,10 @@
             // AQLPlan選單變化事件
             $("#AQLPlan").change(function () {
                 var aql = $(this).val()
-                var TotalAvailableQty = $("#totalAvailableQty").text();
+                var TotalAvailableQty = parseInt($("#totalAvailableQty").text());
 
-                if (TotalAvailableQty == 0 && $("#FinalInspectionID").val() != '') {
+                //if (TotalAvailableQty == 0 && $("#FinalInspectionID").val() != '') {
+                if (TotalAvailableQty == 0) {
                     msg.WithError("Total Available Qty cann't be 0.");
                     $(this).val('');
                     return;
@@ -929,7 +930,8 @@
                 var aql = $(this).val()
                 var TotalAvailableQty = $("#totalAvailableQty").text();
 
-                if (TotalAvailableQty == 0 && $("#FinalInspectionID").val() != '') {
+                //if (TotalAvailableQty == 0 && $("#FinalInspectionID").val() != '') {
+                if (TotalAvailableQty == 0) {
                     msg.WithError("Total Available Qty cann't be 0.");
                     $(this).val('');
                     return;
@@ -967,9 +969,9 @@
 
             $("#InspectionStage").change();
 
-            $("#AQLPlan").change();
+            //$("#AQLPlan").change();
 
-            $("#AQLProPlan").change();
+            //$("#AQLProPlan").change();
         });
 
         // Selected PO異動Available Qty時。自動加總到下方的「Total Available Qty」、右方的「AQL Plan」
