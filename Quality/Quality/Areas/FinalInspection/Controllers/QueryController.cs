@@ -104,7 +104,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             model.FinalInspection.CheckListList = fService.GetCheckListByBrand(FinalInspectionID, model.BrandID);
 
 
-            TempData["FinalInspectionQueryModel"] = model;
             return View(model);
         }
 
@@ -113,10 +112,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             bool test = false;
             if (!test)
             {
-                if (TempData["FinalInspectionQueryModel"] == null)
-                {
-                    return RedirectToAction("Index");
-                }
             }
             FinalInspectionService fService = new FinalInspectionService();
 
@@ -184,7 +179,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             int lasrRowIdx = 54;
             int bonusRowCtn = (signCtn / 3) - 2 + (signCtn % 3 > 0 ? 1 : 0);
-            if (bonusRowCtn > 1)
+            if (bonusRowCtn > 0)
             {
                 Range rngToCopy = worksheet.get_Range("A49:A51").EntireRow; // 選取要被複製的資料
                 for (int i = 0; i < bonusRowCtn; i++)
@@ -666,15 +661,13 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
 
         [HttpPost]
-        public ActionResult SendMail()
+        public ActionResult SendMail(string FinalInspectionID)
         {
             bool test = IsTest.ToLower() == "true";
 
-            QueryReport model = (QueryReport)TempData["FinalInspectionQueryModel"];
-            TempData["FinalInspectionQueryModel"] = model;
             string WebHost = Request.Url.Scheme + @"://" + Request.Url.Authority + "/";
 
-            var result = Service.SendMail(model.FinalInspection.ID, WebHost, test);
+            var result = Service.SendMail(FinalInspectionID, WebHost, test);
 
             return Json(result);
         }

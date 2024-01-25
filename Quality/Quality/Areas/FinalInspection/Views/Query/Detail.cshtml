@@ -708,8 +708,9 @@
         }
 
         function SendMail() {
+            var url = '@Url.Action("SendMail")?FinalInspectionID='+'@Model.FinalInspection.ID';
             $.ajax({
-                url: "@Url.Action("SendMail")",
+                url: url,
                 type: 'POST',
                 dataType: "json",
                 async: false,
