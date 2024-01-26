@@ -700,8 +700,8 @@ delete  FinalInspection_OrderCarton where ID = @FinalInspectionID
             objParameter.Add("@MDivisionid", MDivisionid);
             objParameter.Add("@AuditDate", setting.AuditDate);
             objParameter.Add("@SewingLineID", (setting.SewingLineID == null ? string.Empty : setting.SewingLineID));
-            objParameter.Add("@AcceptableQualityLevelsUkey", setting.AcceptableQualityLevelsUkey);
-            objParameter.Add("@AcceptableQualityLevelsProUkey", setting.AcceptableQualityLevelsProUkey);
+            objParameter.Add("@AcceptableQualityLevelsUkey", setting.AcceptableQualityLevelsUkey ?? "0");
+            objParameter.Add("@AcceptableQualityLevelsProUkey", setting.AcceptableQualityLevelsProUkey ?? "0");
             objParameter.Add("@SampleSize", setting.SampleSize);
             objParameter.Add("@AcceptQty", setting.AcceptQty);
             objParameter.Add("@UserID", userID);
