@@ -202,7 +202,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             string html = "";
             html += "<tr idx='" + i + "'>";
-            html += "<td><a idx='" + ID + "' idv = '" + lastNO.ToString() + "'></a></td>";
+            html += "<td><a class='detailA' NewNo='true' idx='" + ID + "' idv = '" + lastNO.ToString() + "'></a></td>";
             html += "<td><input id='garmentTest_Details_" + i + "__OrderID' name='garmentTest_Details[" + i + "].OrderID' class='Detail_OrderID' type='text'></td>";
             html += "<td><select id='garmentTest_Details_" + i + "__SizeCode' name='garmentTest_Details[" + i + "].SizeCode' class='Detail_SizeCode'><option value=''></option>";
             //foreach(string val in sizecodes)
