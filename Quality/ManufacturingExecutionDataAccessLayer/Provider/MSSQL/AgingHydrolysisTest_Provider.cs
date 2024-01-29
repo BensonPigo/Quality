@@ -219,7 +219,7 @@ where 1=1
                 { "@OrderID", sources.MainData.OrderID } ,
                 { "@Temperature", DbType.Decimal, Convert.ToDecimal(sources.MainData.Temperature) },
                 { "@Time", DbType.Decimal, Convert.ToDecimal(sources.MainData.Time) },
-                { "@TimeUnit", sources.MainData.TimeUnit } ,
+                { "@TimeUnit", sources.MainData.TimeUnit ?? ""} ,
                 { "@Humidity", DbType.Decimal, sources.MainData.Humidity },
                 { "@AddName", UserID },
                 { "@EditName", UserID },
