@@ -79,6 +79,7 @@ namespace BusinessLogicLayer.Service
 
                 string region = Common.Region.Replace("PH1", "PHI");
 
+                // Call API驗證AD Aaccount
                 BaseResult adResult = _ADAuthAPICheck.ADAuthByRegion(region, AdAccount);
                 if (!adResult.Result)
                 {
