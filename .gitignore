@@ -38,3 +38,12 @@ Quality/Quality/TMP/
 /AutoRemoveBackgroundProcess/AutoRemoveBackgroundProcess/bin
 /ImageCompress/ImageCompress/bin
 /ImageCompress/ImageCompress/obj
+/Quality/ADOHelper/.vs
+/Quality/BusinessLogicLayer/.vs
+/Quality/BusinessLogicLayerTests1/.vs
+/Quality/DatabaseObject/.vs
+/Quality/Library/.vs
+/Quality/ManufacturingExecutionDataAccessLayer/.vs
+/Quality/ProductionDataAccessLayer/.vs
+/Quality/Quality/.vs
+/Quality/ToolKit/.vs

@@ -391,8 +391,8 @@
                         </div>
 
                         <div class="MainDataAreaItem odd">
-                            @Html.TextBoxFor(o => o.MainData.Time, new { @class = "CanEdit", @type = "number", @onchange = "value=TimeCheck(value)" })
-
+                            @Html.TextBoxFor(o => o.MainData.Time, new { @class = "CanEdit", @type = "number" ,@style="width:70%", @onchange = "value=TimeCheck(value)" })
+                            @Html.DropDownListFor(o => o.MainData.TimeUnit, Model.TimeUnit_Source, new { @class = "CanEdit", })
                         </div>
                         <div class="MainDataAreaItem odd">
                             <h4 class="colTitle">Humidity</h4>
