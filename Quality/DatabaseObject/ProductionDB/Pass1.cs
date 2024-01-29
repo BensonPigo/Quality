@@ -117,6 +117,7 @@ namespace DatabaseObject.ProductionDB
         [StringLength(100)]
         [Display(Name = "")]
         public string Remark { get; set; }
+        public string ADAccount { get; set; }
 
     }
 }
