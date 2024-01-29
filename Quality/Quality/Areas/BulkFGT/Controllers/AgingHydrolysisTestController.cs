@@ -84,6 +84,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             AgingHydrolysisTest_ViewModel model = _service.GetDefaultModel();
 
             model.MainData.EditType = "New";
+            model.MainData.TimeUnit = "Hour";
 
             return View("Index", model);
         }

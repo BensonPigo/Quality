@@ -37,7 +37,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return new AgingHydrolysisTest_ViewModel()
             {
                 Request = new AgingHydrolysisTest_Request(),
-                MainData = new AgingHydrolysisTest_Main(),
+                MainData = new AgingHydrolysisTest_Main()
+                {
+                },
                 OrderID_Source = new List<System.Web.Mvc.SelectListItem>(),
                 Article_Source = new List<System.Web.Mvc.SelectListItem>(),
                 TimeUnit_Source = new List<System.Web.Mvc.SelectListItem>()
