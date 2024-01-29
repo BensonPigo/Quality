@@ -17,6 +17,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
         public List<SelectListItem> OrderID_Source { get; set; }
         public List<SelectListItem> Article_Source { get; set; }
+        public List<SelectListItem> TimeUnit_Source { get; set; }
 
         public List<SelectListItem> MaterialType_Source = new List<SelectListItem>()
         {
@@ -47,6 +48,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         
         public decimal Temperature { get; set; }
         public decimal Time { get; set; }
+        public string TimeUnit { get; set; }
         public decimal Humidity { get; set; }
 
         public string AddName { get; set; }
@@ -162,6 +164,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string OrderID { get; set; }
         public decimal Temperature { get; set; }
         public decimal Time { get; set; }
+        public string TimeUnit { get; set; }
         public decimal Humidity { get; set; }
     }
     public class AgingHydrolysisTest_Detail_ViewModel : BaseResult

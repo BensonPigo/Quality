@@ -37,9 +37,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return new AgingHydrolysisTest_ViewModel()
             {
                 Request = new AgingHydrolysisTest_Request(),
-                MainData = new AgingHydrolysisTest_Main(),
+                MainData = new AgingHydrolysisTest_Main()
+                {
+                },
                 OrderID_Source = new List<System.Web.Mvc.SelectListItem>(),
                 Article_Source = new List<System.Web.Mvc.SelectListItem>(),
+                TimeUnit_Source = new List<System.Web.Mvc.SelectListItem>()
+                {
+                    new SelectListItem(){Text = "",Value=""},
+                    new SelectListItem(){Text = "Hour",Value="Hour"},
+                    new SelectListItem(){Text = "Day",Value="Day"}
+                },
                 MainList = new List<AgingHydrolysisTest_Main>(),
                 DetailList = new List<AgingHydrolysisTest_Detail>(),
             };
@@ -164,7 +172,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     SeasonID = Req.SeasonID,
                     StyleID = Req.StyleID,
                     Article = Req.Article,
-                    OrderID = Req.OrderID,
+                    //OrderID = Req.OrderID,
                     AgingHydrolysisTestID = Req.AgingHydrolysisTestID,
                 });
 
@@ -182,7 +190,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     model.OrderID_Source = new SetListItem().ItemListBinding(tmpList.Select(o => o.OrderID).Distinct().ToList());
 
                     // 若"有"傳入OrderID，則可以直接找出表頭表身明細
-                    if (!string.IsNullOrEmpty(Req.OrderID))
+                    if (!string.IsNullOrEmpty(Req.OrderID) && tmpList.Any(o => o.OrderID == Req.OrderID))
                     {
                         // 取得表頭資料
                         model.MainData = tmpList.Where(o => o.OrderID == Req.OrderID).FirstOrDefault();
