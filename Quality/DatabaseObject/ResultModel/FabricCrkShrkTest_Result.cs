@@ -88,6 +88,8 @@ namespace DatabaseObject.ResultModel
         public decimal ArriveQty { get; set; }
         public DateTime? WhseArrival { get; set; }
         public string ExportID { get; set; }
+        public string ReceivingID { get; set; }
+        
         public string Supp { get; set; }
         public string Crocking { get; set; }
         public DateTime? CrockingDate { get; set; }
@@ -178,6 +180,7 @@ namespace DatabaseObject.ResultModel
         public decimal ArriveQty { get; set; }
         public DateTime? WhseArrival { get; set; }
         public string ExportID { get; set; }
+        public string ReceivingID { get; set; }
         public string Supp { get; set; }
         public string Iron { get; set; }
         public DateTime? IronDate { get; set; }
@@ -202,6 +205,7 @@ namespace DatabaseObject.ResultModel
         public decimal ArriveQty { get; set; }
         public DateTime? WhseArrival { get; set; }
         public string ExportID { get; set; }
+        public string ReceivingID { get; set; }
         public string Supp { get; set; }
         public string Heat { get; set; }
         public DateTime? HeatDate { get; set; }
@@ -284,6 +288,7 @@ namespace DatabaseObject.ResultModel
         public decimal ArriveQty { get; set; }
         public DateTime? WhseArrival { get; set; }
         public string ExportID { get; set; }
+        public string ReceivingID { get; set; }
         public string Supp { get; set; }
         public string Wash { get; set; }
         public DateTime? WashDate { get; set; }

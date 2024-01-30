@@ -705,6 +705,56 @@ Where 1=1
             return ExecuteList<Window_FtyInventory>(CommandType.Text, SbSql.ToString(), paras);
         }
 
+        public IList<Window_FtyInventory> Get_AllReceivingDetail(string POID, string Seq1, string Seq2, string Roll, string ReceivingID, bool IsExact)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            //台北
+            SbSql.Append($@"
+Select DISTINCT Roll, Dyelot
+from dbo.View_AllReceivingDetail WITH(NOLOCK)--工廠
+Where 1=1
+");
+            if (!string.IsNullOrEmpty(Seq1))
+            {
+                SbSql.Append($@"AND Seq1 = @Seq1 ");
+
+                paras.Add("@Seq1", DbType.String, Seq1);
+            }
+
+            if (!string.IsNullOrEmpty(Seq2))
+            {
+                SbSql.Append($@"AND Seq2 = @Seq2 ");
+
+                paras.Add("@Seq2", DbType.String, Seq2);
+            }
+
+            if (!string.IsNullOrEmpty(POID))
+            {
+                SbSql.Append($@"AND POID = @POID ");
+
+                paras.Add("@POID", DbType.String, POID);
+            }
+
+            if (!string.IsNullOrEmpty(Roll))
+            {
+                SbSql.Append($@"AND Roll = @Roll ");
+
+                paras.Add("@Roll", DbType.String, Roll);
+            }
+
+            if (!string.IsNullOrEmpty(ReceivingID))
+            {
+                SbSql.Append($@"AND ID = @ReceivingID ");
+
+                paras.Add("@ReceivingID", DbType.String, ReceivingID);
+            }
+
+            // IsExact沒有用到
+
+            return ExecuteList<Window_FtyInventory>(CommandType.Text, SbSql.ToString(), paras);
+        }
         public IList<Window_Appearance> Get_Appearance(string Lab)
         {
             StringBuilder SbSql = new StringBuilder();
