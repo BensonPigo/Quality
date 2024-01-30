@@ -5,6 +5,7 @@ using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Org.BouncyCastle.Ocsp;
 using ProductionDataAccessLayer.Provider.MSSQL.BukkFGT;
 using Sci;
 using System;
@@ -189,12 +190,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
                 DataTable dt = _AccessoryOvenWashProvider.GetData_OvenDataTable(Req);
                 BaseResult baseResult = OvenTestExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName);
-                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName)
+                    : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
-                    Subject = "Accessory Oven Test - Test Fail",
+                    // 測試名稱/SP號/款號/料號/顏色/測試結果/寄信年月日時分秒
+                    Subject = $"Accessory Oven Test/{Req.POID}/{dt.Rows[0]["Style"]}/{dt.Rows[0]["Refno"]}/{dt.Rows[0]["Color"]}/{dt.Rows[0]["Oven Result"]}/{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -325,8 +328,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #region Save & Show Excel
 
-                string pdfFileName = $"AccessoryOvenTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
-                FileName = $"AccessoryOvenTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string pdfFileName = $"AccessoryOvenTest{DateTime.Now.ToString("yyyyMMddmmss")}.pdf";
+                FileName = $"AccessoryOvenTest{DateTime.Now.ToString("yyyyMMddmmss")}.xlsx";
 
                 string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
                 string excelPath = Path.Combine(baseFilePath, "TMP", FileName);
@@ -470,7 +473,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
-                    Subject = "Accessory Wash Test - Test Fail",
+                    Subject = $"Accessory Wash Test/{Req.POID}/{dt.Rows[0]["Style"]}/{dt.Rows[0]["Refno"]}/{dt.Rows[0]["Color"]}/{dt.Rows[0]["Wash Result"]}/{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -604,8 +607,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #region Save & Show Excel
 
-                string pdfFileName = $"AccessoryWashTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
-                FileName = $"AccessoryWashTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string pdfFileName = $"AccessoryWashTest{DateTime.Now.ToString("yyyyMMddmmss")}.pdf";
+                FileName = $"AccessoryWashTest{DateTime.Now.ToString("yyyyMMddmmss")}.xlsx";
 
                 string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
                 string excelPath = Path.Combine(baseFilePath, "TMP", FileName);
@@ -759,7 +762,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
-                    Subject = "Accessory Washing Fastness Test - Test Fail",
+                    Subject = $"Accessory Washing Fastness Test/{Req.POID}/{dt.Rows[0]["Style"]}/{dt.Rows[0]["Refno"]}/{dt.Rows[0]["Color"]}/{dt.Rows[0]["Washing Fastness Result"]}/{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -954,8 +957,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #region Save & Show Excel
 
-                string pdfFileName = $"Accessory Washing Fastness{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
-                FileName = $"Accessory Washing Fastness{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string pdfFileName = $"Accessory Washing Fastness{DateTime.Now.ToString("yyyyMMddmmss")}.pdf";
+                FileName = $"Accessory Washing Fastness{DateTime.Now.ToString("yyyyMMddmmss")}.xlsx";
 
                 string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
                 string excelPath = Path.Combine(baseFilePath, "TMP", FileName);

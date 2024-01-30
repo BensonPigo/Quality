@@ -1,8 +1,12 @@
-﻿using DatabaseObject.RequestModel;
+﻿using ADOHelper.Utility;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
+using DatabaseObject.ViewModel.BulkFGT;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;

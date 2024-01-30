@@ -10,6 +10,7 @@ using Library;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Ocsp;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
 using System;
@@ -712,16 +713,26 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
         public SendMail_Result FailSendMail(string ReportNo, string TO, string CC)
         {
-            AgingHydrolysisTest_ViewModel main = this.GetMainPage(new AgingHydrolysisTest_Request()
+            _Provider = new AgingHydrolysisTest_Provider(Common.ManufacturingExecutionDataAccessLayer);
+
+            var detail = this.GetDetailPage(new AgingHydrolysisTest_Request() { ReportNo = ReportNo });
+            AgingHydrolysisTest_Main MainData = _Provider.GetMainList(new AgingHydrolysisTest_Request()
             {
-                ReportNo = ReportNo
-            });
+                AgingHydrolysisTestID = detail.MainDetailData.AgingHydrolysisTestID,
+            }).FirstOrDefault();
+
             AgingHydrolysisTest_Detail_ViewModel report = this.GetReport(ReportNo, false);
             string mailBody = "";
             string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName) ;
             SendMail_Request sendMail_Request = new SendMail_Request
             {
-                Subject = "Accelerated Aging by Hydrolysis – Test Fail",
+                Subject = $"Accelerated Aging by Hydrolysis Test/{MainData.OrderID}/" +
+                $"{MainData.StyleID}/" +
+                $"{detail.MainDetailData.FabricRefNo}/" +
+                $"{detail.MainDetailData.FabricColor}/" +
+                $"{detail.MainDetailData.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+
                 To = TO,
                 CC = CC,
                 Body = mailBody,
@@ -729,9 +740,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 FileonServer = new List<string> { FileName },
                 IsShowAIComment = true,
                 AICommentType = "Accelerated Aging by Hydrolysis",
-                StyleID = main.MainData.StyleID,
-                SeasonID = main.MainData.SeasonID,
-                BrandID = main.MainData.BrandID,
+                StyleID = MainData.StyleID,
+                SeasonID = MainData.SeasonID,
+                BrandID = MainData.BrandID,
             };
 
             _MailService = new MailToolsService();

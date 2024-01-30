@@ -3,6 +3,7 @@ using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -24,6 +25,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
     public class DailyMoistureService
     {
         public DailyMoistureProvider _Provider;
+        private MailToolsService _MailService;
         private IOrdersProvider _OrdersProvider;
 
         public DailyMoisture_ViewModel GetDailyMoisture(DailyMoisture_Request Req)
@@ -374,6 +376,44 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
 
             return result;
+        }
+
+
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new DailyMoistureProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            DailyMoisture_ViewModel model = this.GetDailyMoisture(new DailyMoisture_Request() { ReportNo = ReportNo });
+
+            BaseResult report = this.ToReport(ReportNo, false,out string TempFileName);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", TempFileName);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Daily Moisture Test/{model.Main.OrderID}/" +
+                $"{model.Main.StyleID}/" +
+                $"{model.Main.Line}/" +
+                $"{model.Main.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+                AICommentType = "Accelerated Aging by Hydrolysis",
+                StyleID = model.Main.StyleID,
+                SeasonID = model.Main.SeasonID,
+                BrandID = model.Main.BrandID,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

@@ -302,20 +302,5 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(result);
         }
 
-        public JsonResult SendMailToMR(string ReportNo)
-        {
-            this.CheckSession();
-            AgingHydrolysisTest_Detail_ViewModel result = _service.GetReport(ReportNo, false);
-
-            if (!result.Result)
-            {
-                result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
-                return Json(new { result.Result, ErrMsg = result.ErrorMessage });
-            }
-
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
-
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, FileName = result.TempFileName });
-        }
     }
 }

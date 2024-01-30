@@ -20,12 +20,15 @@ using DataTable = System.Data.DataTable;
 using System.Web.Mvc;
 using System.Windows.Media.Animation;
 using System.Web.WebPages;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
     public class EvaporationRateTestService
     {
         private EvaporationRateTestProvider _Provider;
+        private MailToolsService _MailService;
         public EvaporationRateTest_ViewModel GetDefaultModel(bool IsNew = false)
         {
             EvaporationRateTest_ViewModel model = new EvaporationRateTest_ViewModel()
@@ -1147,6 +1150,38 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
         }
 
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new EvaporationRateTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            EvaporationRateTest_ViewModel model = this.GetData(new EvaporationRateTest_Request() { ReportNo = ReportNo });
+
+            EvaporationRateTest_ViewModel report = this.GetReport(ReportNo, false);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Evaporation Rate Test/{model.Main.OrderID}/" +
+                $"{model.Main.StyleID}/" +
+                $"{model.Main.FabricRefNo}/" +
+                $"{model.Main.FabricColor}/" +
+                $"{model.Main.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
+        }
     }
 
 }
