@@ -263,13 +263,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { result.Result, result.ErrorMessage, ovenTestResult });  
         }
 
-        [HttpPost]
-        [SessionAuthorizeAttribute]
-        public JsonResult FailMail(string ID, string No, string TO, string CC)
-        {
-            SendMail_Result result = _FabricOvenTestService.SendFailResultMail(TO, CC, ID, No, false);
-            return Json(result);
-        }
+        //[HttpPost]
+        //[SessionAuthorizeAttribute]
+        //public JsonResult FailMail(string ID, string No, string TO, string CC)
+        //{
+        //    SendMail_Result result = _FabricOvenTestService.SendFailResultMail(TO, CC, ID, No, false);
+        //    return Json(result);
+        //}
 
         [HttpPost]
         [SessionAuthorizeAttribute]
@@ -301,22 +301,25 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendMail(string ID, string No)
+        public JsonResult SendMail(string ID, string No, string TO, string CC)
         {
-            this.CheckSession();
+            SendMail_Result result = _FabricOvenTestService.SendMail(TO, CC, ID, No, false);
+            return Json(result);
 
-            BaseResult result = null;
-            string FileName = string.Empty;
+            //this.CheckSession();
 
-            result = _FabricOvenTestService.ToPdfFabricOvenTestDetail(ID, No, out FileName, false);
+            //BaseResult result = null;
+            //string FileName = string.Empty;
 
-            if (!result.Result)
-            {
-                result.ErrorMessage = result.ErrorMessage.ToString();
-            }
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            //result = _FabricOvenTestService.ToPdfFabricOvenTestDetail(ID, No, out FileName, false);
 
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
+            //if (!result.Result)
+            //{
+            //    result.ErrorMessage = result.ErrorMessage.ToString();
+            //}
+            //string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+
+            //return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
         }
     }
 }

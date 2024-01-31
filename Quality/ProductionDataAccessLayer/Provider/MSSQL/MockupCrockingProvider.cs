@@ -407,7 +407,7 @@ SELECT {top1}
         ,MRMail = MR_ne.EMail
         ,Type
         ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_MockupCrocking mi WITH(NOLOCK) where m.ReportNo=mi.ReportNo)
-        ,TestAfterPicture = (select top 1 TestAfterPicture fromSciPMSFile_MockupCrocking mi WITH(NOLOCK) where m.ReportNo=mi.ReportNo)
+        ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_MockupCrocking mi WITH(NOLOCK) where m.ReportNo=mi.ReportNo)
         ,AddDate
         ,AddName
         ,EditDate

@@ -543,7 +543,7 @@ select
     ,g.BrandID
     ,g.SeasonID
     ,g.Article
-    ,g.OrderID
+    ,gd.OrderID
     ,[SpecialMark] = SpecialMark.Value
     ,gd.No
     ,gd.SizeCode

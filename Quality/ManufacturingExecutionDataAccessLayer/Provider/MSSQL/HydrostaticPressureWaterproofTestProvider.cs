@@ -216,10 +216,20 @@ VALUES
            ,@AddName)
 ;
 
-INSERT INTO PMSFile.dbo.HydrostaticPressureWaterproofTest
-    ( ReportNo ,TestBeforePicture ,TestAfterPicture)
-VALUES
-    ( @ReportNo ,@TestBeforePicture ,@TestAfterPicture)
+IF NOT EXISTS ( select 1 from PMSFile.dbo.HydrostaticPressureWaterproofTest where ReportNo = @ReportNo)
+begin
+    INSERT INTO PMSFile.dbo.HydrostaticPressureWaterproofTest
+        ( ReportNo ,TestBeforePicture ,TestAfterPicture)
+    VALUES
+        ( @ReportNo ,@TestBeforePicture ,@TestAfterPicture)
+end
+else
+begin
+    UPDATE PMSFile.dbo.HydrostaticPressureWaterproofTest
+    SET TestBeforePicture = NULL, TestAfterPicture = NULL
+    where ReportNo = @ReportNo
+
+end
 ");
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
@@ -423,7 +433,6 @@ WHERE ReportNo = @ReportNo
 UPDATE HydrostaticPressureWaterproofTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New'
-    , Result = ''
     , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ;

@@ -22,6 +22,8 @@ using Library;
 using System.Windows.Forms;
 using Ict;
 using System.Net.Mail;
+using System.Security.Cryptography;
+using System.Web.Razor.Editor;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -619,7 +621,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     To = ToAddress,
                     CC = CCAddress,
-                    Subject = "Garment Test – Test Fail",
+                    //Subject = "Garment Test – Test Fail",
+                    Subject = $"Garment Test/{dtContent.Rows[0]["OrderID"]}/" +
+                    $"{dtContent.Rows[0]["StyleID"]}/" +
+                    $"{dtContent.Rows[0]["Article"]}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = strHtml,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },

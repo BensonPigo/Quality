@@ -449,7 +449,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
+        public SendMail_Result SendMail(MockupFailMail_Request mail_Request)
         {
             _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
             System.Data.DataTable dt = _MockupCrockingProvider.GetMockupCrockingFailMailContentData(mail_Request.ReportNo);
@@ -459,7 +459,10 @@ namespace BusinessLogicLayer.Service
             string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
             SendMail_Request sendMail_Request = new SendMail_Request
             {
-                Subject = "Mockup Crocking – Test Fail",
+                Subject = $"Mockup Crocking /{model.POID}/" +
+                $"{model.StyleID}/" +
+                $"{model.Article}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = mail_Request.To,
                 CC = mail_Request.CC,
                 //Body = mailBody,

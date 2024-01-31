@@ -886,7 +886,12 @@ namespace BusinessLogicLayer.Service
                 {
                     To = toAddress,
                     CC = ccAddress,
-                    Subject = "Fabric Crocking Test - Test Fail",
+                    Subject = $"Fabric Crocking Test/{OrderID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Refno"]}/" +
+                        $"{dtResult.Rows[0]["Color"]}/" +
+                        $"{dtResult.Rows[0]["Crocking Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -1866,7 +1871,12 @@ namespace BusinessLogicLayer.Service
                 {
                     To = toAddress,
                     CC = ccAddress,
-                    Subject = "Fabric Heat Test - Test Fail",
+                    Subject = $"Fabric Heat Test/{OrderID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Refno"]}/" +
+                        $"{dtResult.Rows[0]["Color"]}/" +
+                        $"{dtResult.Rows[0]["Heat Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -1907,7 +1917,12 @@ namespace BusinessLogicLayer.Service
                 {
                     To = toAddress,
                     CC = ccAddress,
-                    Subject = "Fabric Iron Test - Test Fail",
+                    Subject = $"Fabric Iron Test/{OrderID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Refno"]}/" +
+                        $"{dtResult.Rows[0]["Color"]}/" +
+                        $"{dtResult.Rows[0]["Iron Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -1949,7 +1964,12 @@ namespace BusinessLogicLayer.Service
                 {
                     To = toAddress,
                     CC = ccAddress,
-                    Subject = "Fabric Wash Test - Test Fail",
+                    Subject = $"Fabric Wash Test/{OrderID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Refno"]}/" +
+                        $"{dtResult.Rows[0]["Color"]}/" +
+                        $"{dtResult.Rows[0]["Wash Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },

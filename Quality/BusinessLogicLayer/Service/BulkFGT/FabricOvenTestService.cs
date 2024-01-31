@@ -287,7 +287,7 @@ namespace BusinessLogicLayer.Service
             return baseResult;
         }
 
-        public SendMail_Result SendFailResultMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest)
+        public SendMail_Result SendMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -300,7 +300,11 @@ namespace BusinessLogicLayer.Service
                 {
                     To = toAddress,
                     CC = ccAddress,
-                    Subject = "Fabric Oven Test - Test Fail",
+                    //Subject = "Fabric Oven Test - Test Fail",
+                    Subject = $"Fabric Oven Test/{poID}/" +
+                    $"{dtResult.Rows[0]["Style"]}/" +
+                    $"{dtResult.Rows[0]["Article"]}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },

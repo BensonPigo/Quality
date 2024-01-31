@@ -1107,11 +1107,11 @@
         });
 
         $('.DetailDrySelect').click(function () {
-            /*             
+            /*
             (1) 是KINT的時候，才可以選Rib
             (2) 是KINT且LineDry的時候，才可以選Wool
             (3) 是WOVEN的時候，才可以選Elastane
-             */ 
+             */
             var selectedDry = $("#Detail_DrySelect:checked").val();
             var mtlType = $("#Detail_MtlTypeID").val();
             if (mtlType == 'KNIT' && selectedDry == 'LineDry') {

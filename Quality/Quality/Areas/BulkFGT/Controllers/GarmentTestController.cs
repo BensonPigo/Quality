@@ -162,14 +162,19 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendMail(string ID, string No)
+        public JsonResult SendMail(string ID, string No, string TO, string CC)
         {
             GarmentTest_ViewModel result = _GarmentTest_Service.SendMail(ID, No, this.UserID);
             GarmentTest_Detail_ViewModel detail = _GarmentTest_Service.Get_Detail(ID, No);
             result.Sender = detail.Sender;
             result.SendDate = detail.SendDate.HasValue ? detail.SendDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
 
-            return Json(result);
+            List<Quality_MailGroup> mailGroups = new List<Quality_MailGroup>() {
+                new Quality_MailGroup() { ToAddress = TO, CcAddress = CC, }
+            };
+            GarmentTest_Result result2 = _GarmentTest_Service.SentMail(ID, No, mailGroups);
+
+            return Json(result2);
         }
 
         [HttpPost]
