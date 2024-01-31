@@ -481,7 +481,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         [HttpPost]
         public JsonResult FailMail(string ID, string No, string TO, string CC)
         {
-            SendMail_Result result = _PerspirationFastnessService.SendFailResultMail(TO, CC, ID, No, false);
+            SendMail_Result result = _PerspirationFastnessService.SendMail(TO, CC, ID, No, false);
             return Json(result);
         }
         [HttpPost]

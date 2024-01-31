@@ -278,13 +278,13 @@ namespace BusinessLogicLayer.Service
                 }
 
                 // ISP20230792
-                if ((mockupWash.HTPlate.HasValue && mockupWash.HTPlate.Value > 0)
-                    || (mockupWash.HTFlim.HasValue && mockupWash.HTFlim.Value > 0)
-                    || (mockupWash.HTTime.HasValue && mockupWash.HTTime.Value > 0)
-                    || (mockupWash.HTPressure.HasValue && mockupWash.HTPressure.Value > 0)
+                if ((mockupWash.HTPlate > 0)
+                    || (mockupWash.HTFlim > 0)
+                    || (mockupWash.HTTime > 0)
+                    || (mockupWash.HTPressure > 0)
                     || !string.IsNullOrEmpty(mockupWash.HTPellOff) 
-                    || (mockupWash.HT2ndPressnoreverse.HasValue && mockupWash.HT2ndPressnoreverse.Value > 0)
-                    || (mockupWash.HT2ndPressreversed.HasValue && mockupWash.HT2ndPressreversed.Value > 0)
+                    || (mockupWash.HT2ndPressnoreverse > 0)
+                    || (mockupWash.HT2ndPressreversed > 0)
                     || !string.IsNullOrEmpty(mockupWash.HTCoolingTime))
                 {
                     int aRow = 11 + haveHTrow + mockupWash_Detail.Count - 1;
@@ -292,13 +292,13 @@ namespace BusinessLogicLayer.Service
                     Range rngToInsert = worksheet.get_Range($"A{aRow}", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
 
-                    worksheet.Cells[aRow + 1, 3] = mockupWash.HTPlate.HasValue ? mockupWash.HTPlate.Value : 0;
-                    worksheet.Cells[aRow + 2, 3] = mockupWash.HTFlim.HasValue ? mockupWash.HTFlim.Value : 0;
-                    worksheet.Cells[aRow + 3, 3] = mockupWash.HTTime.HasValue ? mockupWash.HTTime.Value : 0;
-                    worksheet.Cells[aRow + 4, 3] = mockupWash.HTPressure.HasValue ? mockupWash.HTPressure.Value : 0;
+                    worksheet.Cells[aRow + 1, 3] = mockupWash.HTPlate;
+                    worksheet.Cells[aRow + 2, 3] = mockupWash.HTFlim;
+                    worksheet.Cells[aRow + 3, 3] = mockupWash.HTTime;
+                    worksheet.Cells[aRow + 4, 3] = mockupWash.HTPressure;
                     worksheet.Cells[aRow + 1, 8] = mockupWash.HTPellOff;
-                    worksheet.Cells[aRow + 2, 8] = mockupWash.HT2ndPressnoreverse.HasValue ? mockupWash.HT2ndPressnoreverse.Value : 0;
-                    worksheet.Cells[aRow + 3, 8] = mockupWash.HT2ndPressreversed.HasValue ? mockupWash.HT2ndPressreversed.Value : 0;
+                    worksheet.Cells[aRow + 2, 8] = mockupWash.HT2ndPressnoreverse;
+                    worksheet.Cells[aRow + 3, 8] = mockupWash.HT2ndPressreversed;
                     worksheet.Cells[aRow + 4, 8] = mockupWash.HTCoolingTime;
                 }
 
@@ -538,7 +538,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
+        public SendMail_Result SendMail(MockupFailMail_Request mail_Request)
         {
             _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
             System.Data.DataTable dt = _MockupWashProvider.GetMockupWashFailMailContentData(mail_Request.ReportNo);
@@ -547,7 +547,10 @@ namespace BusinessLogicLayer.Service
             string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
             SendMail_Request sendMail_Request = new SendMail_Request
             {
-                Subject = "Mockup Wash – Test Fail",
+                Subject = $"Mockup Wash /{model.POID}/" +
+                $"{model.StyleID}/" +
+                $"{model.Article}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = mail_Request.To,
                 CC = mail_Request.CC,
                 //Body = mailBody,

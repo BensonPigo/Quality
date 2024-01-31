@@ -396,7 +396,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return baseResult;
         }
 
-        public SendMail_Result SendFailResultMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest)
+        public SendMail_Result SendMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -412,6 +412,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     To = toAddress,
                     CC = ccAddress,
                     Subject = "Perspiration Fastness Test - Test Fail",
+                    
+                //Subject = $"Perspiration Fastness Test/{dtResult.Rows[0]["SP#"]}/" +
+                //        $"{dtResult.Rows[0]["SP#"]}/" +
+                //        $"{model.Article}/" +
+                //        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },

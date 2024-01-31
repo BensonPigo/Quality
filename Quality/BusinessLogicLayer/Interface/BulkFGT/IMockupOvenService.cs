@@ -32,6 +32,6 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         Report_Result GetPDF(MockupOven_ViewModel MockupOven);
 
-        SendMail_Result FailSendMail(MockupFailMail_Request mail_Request);
+        SendMail_Result SendMail(MockupFailMail_Request mail_Request);
     }
 }
