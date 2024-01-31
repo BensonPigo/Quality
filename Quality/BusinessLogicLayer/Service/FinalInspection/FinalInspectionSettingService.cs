@@ -228,7 +228,9 @@ namespace BusinessLogicLayer.Service
                 #region 檢查AQLPlan 重抓Sample Plan Qty
                 if (string.IsNullOrEmpty(setting.AcceptableQualityLevelsProUkey))
                 {
-                    if (setting.InspectionStage == "Final" ||
+                    if (setting.InspectionStage == "Inline" ||
+                        setting.InspectionStage == "Stagger" ||
+                        setting.InspectionStage == "Final" ||
                         setting.InspectionStage == "3rd Party")
                     {
                         int totalAvailableQty = setting.SelectedPO.Sum(s => s.AvailableQty);
