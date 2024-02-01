@@ -86,8 +86,8 @@ select	[SubmitDate] = od.SubmitDate,
         [ResultStain] = od.ResultStain,
         [Remark] = od.Remark,
         [LastUpdate] = Concat(od.EditName, '-', pass1EditName.Name, ' ', pass1EditName.Extno),
-        [Temperature] = cast(od.Temperature as varchar),
-        [Time] = cast(od.Time as varchar)
+        [Temperature] = od.Temperature,
+        [Time] = od.Time
 from Oven_Detail od with (nolock)
 inner join Oven o with (nolock) on o.ID = od.ID
 left join PO_Supp_Detail psd with (nolock) on o.POID = psd.ID and od.SEQ1 = psd.SEQ1 and od.SEQ2 = psd.SEQ2
@@ -581,8 +581,8 @@ select	[SubmitDate] = od.SubmitDate,
         [ResultStain] = od.ResultStain,
         [Remark] = od.Remark,
         [LastUpdate] = Concat(od.EditName, '-', pass1EditName.Name, ' ', pass1EditName.Extno),
-        [Temperature] = cast(od.Temperature as varchar),
-        [Time] = cast(od.Time as varchar),
+        [Temperature] = od.Temperature,
+        [Time] = od.Time,
         [Supplier] = ps.SuppID+'-'+s.AbbEN
 		,o.ReportNo
 from Oven_Detail od with (nolock)

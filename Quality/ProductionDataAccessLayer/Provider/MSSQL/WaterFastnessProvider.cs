@@ -718,8 +718,8 @@ select	[SubmitDate] = od.SubmitDate,
 
         [Remark] = od.Remark,
         [LastUpdate] = Concat(od.EditName, '-', pass1EditName.Name, ' ', pass1EditName.Extno),
-        [Temperature] = cast(o.Temperature as varchar),
-        [Time] = cast(o.Time as varchar),
+        [Temperature] = o.Temperature,
+        [Time] = o.Time,
         [Supplier] = ps.SuppID+'-'+s.AbbEN
 from WaterFastness_Detail od with (nolock)
 inner join WaterFastness o with (nolock) on o.ID = od.ID
