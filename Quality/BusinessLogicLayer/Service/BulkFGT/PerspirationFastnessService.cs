@@ -411,12 +411,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     To = toAddress,
                     CC = ccAddress,
-                    Subject = "Perspiration Fastness Test - Test Fail",
-                    
-                //Subject = $"Perspiration Fastness Test/{dtResult.Rows[0]["SP#"]}/" +
-                //        $"{dtResult.Rows[0]["SP#"]}/" +
-                //        $"{model.Article}/" +
-                //        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                    //Subject = "Perspiration Fastness Test - Test Fail",
+
+                    Subject = $"Perspiration Fastness Test/{dtResult.Rows[0]["SP#"]}/" +
+                        $"{dtResult.Rows[0]["SP#"]}/" +
+                        $"{dtResult.Rows[0]["Article"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
