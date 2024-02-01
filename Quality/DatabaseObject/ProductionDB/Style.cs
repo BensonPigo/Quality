@@ -12,7 +12,7 @@ namespace DatabaseObject.ProductionDB
         /// <summary>唯一值</summary>
         [Required]
         [Display(Name = "唯一值")]
-        public Int64 Ukey { get; set; }
+        public long Ukey { get; set; }
         /// <summary>品牌</summary>
         [Required]
         [StringLength(8)]
@@ -212,14 +212,14 @@ namespace DatabaseObject.ProductionDB
         public DateTime? EditDate { get; set; }
         /// <summary></summary>
         [StringLength(8)]
-        [Display(Name = "")]
+        
         public string SizeUnit { get; set; }
         /// <summary></summary>
         [StringLength(20)]
-        [Display(Name = "")]
+        
         public string ModularParent { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public decimal CPUAdjusted { get; set; }
         /// <summary>目前階段</summary>
         [StringLength(10)]
@@ -231,34 +231,34 @@ namespace DatabaseObject.ProductionDB
         public string Gender { get; set; }
         /// <summary></summary>
         [StringLength(10)]
-        [Display(Name = "")]
+        
         public string ThreadEditname { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? ThreadEditdate { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool ThickFabric { get; set; }
         /// <summary></summary>
         [StringLength(5)]
-        [Display(Name = "")]
+        
         public string DyeingID { get; set; }
         /// <summary></summary>
         [StringLength(10)]
-        [Display(Name = "")]
+        
         public string TPEEditName { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? TPEEditDate { get; set; }
         /// <summary></summary>
-        public int? Pressing1 { get; set; }
+        public int Pressing1 { get; set; }
         /// <summary></summary>
-        public int? Pressing2 { get; set; }
+        public int Pressing2 { get; set; }
         /// <summary></summary>
-        public int? Folding1 { get; set; }
+        public int Folding1 { get; set; }
         /// <summary></summary>
-        public int? Folding2 { get; set; }
+        public int Folding2 { get; set; }
         /// <summary>Approce/Reject</summary>
         [StringLength(1)]
         [Display(Name = "Approce/Reject")]
@@ -268,27 +268,27 @@ namespace DatabaseObject.ProductionDB
         /// <summary></summary>
         public bool ThickFabricBulk { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public bool HangerPack { get; set; }
         /// <summary></summary>
         [StringLength(1)]
-        [Display(Name = "")]
+        
         public string Construction { get; set; }
         /// <summary></summary>
         [StringLength(5)]
-        [Display(Name = "")]
+        
         public string CDCodeNew { get; set; }
         /// <summary></summary>
         [StringLength(50)]
-        [Display(Name = "")]
+        
         public string FitType { get; set; }
         /// <summary></summary>
         [StringLength(50)]
-        [Display(Name = "")]
+        
         public string GearLine { get; set; }
         /// <summary></summary>
         [StringLength(5)]
-        [Display(Name = "")]
+        
         public string ThreadVersion { get; set; }
 
     }

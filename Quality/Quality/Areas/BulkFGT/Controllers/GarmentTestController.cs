@@ -352,7 +352,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             if (newItem.TestUnit.ToLower() == "pass/fail")
             {
-                newItem.Criteria = null;
+                newItem.Criteria = 0;
             }
 
             GarmentTest_ViewModel Detail_Result = _GarmentTest_Service.Import_FGPT_Item(newItem);

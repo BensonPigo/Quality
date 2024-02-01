@@ -6,7 +6,7 @@ namespace DatabaseObject.ProductionDB
     public class Adidas_FGWT
     {
         [Required]
-        public int? Seq { get; set; }
+        public int Seq { get; set; }
 
         [Required]
         [StringLength(15)]

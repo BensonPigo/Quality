@@ -87,7 +87,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public List<Window_Article> Get_Article(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
+        public List<Window_Article> Get_Article(string OrderID, long StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
         {
             List<Window_Article> result = new List<Window_Article>();
 
@@ -107,7 +107,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public List<Window_Article> Get_PoidArticle(string POID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
+        public List<Window_Article> Get_PoidArticle(string POID, long StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
         {
             List<Window_Article> result = new List<Window_Article>();
 
@@ -127,7 +127,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public List<Window_Size> Get_Size(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, bool IsExact)
+        public List<Window_Size> Get_Size(string OrderID, long StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, bool IsExact)
         {
             List<Window_Size> result = new List<Window_Size>();
 

@@ -8,7 +8,7 @@ namespace ProductionDataAccessLayer.Interface
     {
         IList<Style> Get(Style Item);
 
-        IList<Style> GetSizeUnit(Int64 ukey);
+        IList<Style> GetSizeUnit(long ukey);
 
         string GetSizeUnitByCustPONO(string CustPONO, string OrderID);
 

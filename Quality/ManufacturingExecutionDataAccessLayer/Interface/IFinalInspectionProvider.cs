@@ -96,7 +96,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         IList<EndlineMoisture> GetEndlineMoistureDefault();
         void UpdateMoisture(MoistureResult moistureResult);
 
-        bool CheckMoistureExists(string finalInspectionID, string article, long? finalInspection_OrderCartonUkey);
+        bool CheckMoistureExists(string finalInspectionID, string article, long finalInspection_OrderCartonUkey);
 
         void DeleteMoisture(long ukey);
 

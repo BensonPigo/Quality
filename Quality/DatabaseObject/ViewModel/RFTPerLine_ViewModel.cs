@@ -24,7 +24,7 @@ namespace DatabaseObject.ViewModel
 
         public string Line { get; set; }
 
-        public decimal? RFT { get; set; }
+        public decimal RFT { get; set; }
     }    
 
     public class DailyRFT
@@ -35,7 +35,7 @@ namespace DatabaseObject.ViewModel
 
         public string Line { get; set; }
 
-        public decimal? RFT { get; set; }
+        public decimal RFT { get; set; }
     }
 
     public class RFTPerLine_Request

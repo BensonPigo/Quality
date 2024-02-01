@@ -25,9 +25,9 @@ namespace DatabaseObject.ProductionDB
         public string SewingCell { get; set; }
         /// <summary>預設車縫人數</summary>
         [Display(Name = "預設車縫人數")]
-        public int? Sewer { get; set; }
+        public int Sewer { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public bool Junk { get; set; }
         /// <summary>新增人員</summary>
         [StringLength(10)]
@@ -49,7 +49,7 @@ namespace DatabaseObject.ProductionDB
         /// <summary>���m�ɶ�(����)</summary>
         [Required]
         [Display(Name = "���m�ɶ�(����)")]
-        public int? IdleTime { get; set; }
+        public int IdleTime { get; set; }
         /// <summary>���P����ܥu��ܦ�Group�U��Line</summary>
         [StringLength(50)]
         [Display(Name = "���P����ܥu��ܦ�Group�U��Line")]

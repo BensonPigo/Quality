@@ -89,7 +89,7 @@ Where 1 = 1
             if (Item.StyleUkey != null)
             {
                 SbSql.Append("And sb.StyleUkey = @StyleUkey" + Environment.NewLine);
-                objParameter.Add("@StyleUkey", DbType.Int64, Item.StyleUkey);
+                objParameter.Add("@StyleUkey",  Item.StyleUkey);
             }
 
             if (!string.IsNullOrEmpty(Item.BrandID) && !string.IsNullOrEmpty(Item.SeasonID) && !string.IsNullOrEmpty(Item.StyleID))

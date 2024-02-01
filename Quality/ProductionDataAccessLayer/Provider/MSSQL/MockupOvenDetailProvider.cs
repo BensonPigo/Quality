@@ -110,7 +110,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.Remark != null) { SbSql.Append(",Remark=@Remark" + Environment.NewLine); objParameter.Add("@Remark", DbType.String, Item.Remark ?? ""); }
             SbSql.Append("WHERE 1 = 1" + Environment.NewLine);
             SbSql.Append("And Ukey = @Ukey" + Environment.NewLine);
-            objParameter.Add("@Ukey", DbType.Int64, Item.Ukey);
+            objParameter.Add("@Ukey",  Item.Ukey);
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
@@ -123,7 +123,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (string.IsNullOrEmpty(Item.ReportNo))
             {
                 SbSql.Append("Where Ukey = @Ukey" + Environment.NewLine);
-                objParameter.Add("@Ukey", DbType.Int64, Item.Ukey);
+                objParameter.Add("@Ukey",  Item.Ukey);
             }
             else
             {

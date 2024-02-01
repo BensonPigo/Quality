@@ -7,7 +7,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>MenuID</summary>
         [Required]
         [Display(Name = "MenuID")]
-        public Int64 ID { get; set; }
+        public long ID { get; set; }
 
         /// <summary>模組名稱</summary>
         [Required]
@@ -18,7 +18,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>模組順序</summary>
         [Required]
         [Display(Name = "模組順序")]
-        public int? ModuleSeq { get; set; }
+        public int ModuleSeq { get; set; }
 
         /// <summary>功能名稱</summary>
         [Required]
@@ -29,7 +29,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>功能順序</summary>
         [Required]
         [Display(Name = "功能順序")]
-        public int? FunctionSeq { get; set; }
+        public int FunctionSeq { get; set; }
 
         /// <summary>移除</summary>
         [Required]

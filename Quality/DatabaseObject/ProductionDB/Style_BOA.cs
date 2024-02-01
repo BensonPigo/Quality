@@ -88,7 +88,7 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "最後修改時間")]
         public DateTime? EditDate { get; set; }
 
-        [Display(Name = "")]
+        
         public string FabricPanelCode { get; set; }
 
     }

@@ -285,9 +285,9 @@ order by AQLType , InspectionLevels
             para.Add("@InspectionStage", Req.InspectionStage ?? string.Empty);
             para.Add("@InspectionTimes", Req.InspectionTimes ?? string.Empty);
             para.Add("@QCInCharge", Req.QCInCharge);
-            para.Add("@AcceptableQualityLevelsUkey", DbType.Int64, Req.AcceptableQualityLevelsUkey);
-            para.Add("@SampleSize", Req.SampleSize ?? 0);
-            para.Add("@AcceptQty", Req.AcceptQty ?? 0);
+            para.Add("@AcceptableQualityLevelsUkey",  Req.AcceptableQualityLevelsUkey);
+            para.Add("@SampleSize", Req.SampleSize);
+            para.Add("@AcceptQty", Req.AcceptQty);
             para.Add("@AddName", Req.AddName ?? string.Empty);
             para.Add("@EditName", Req.EditName ?? string.Empty);
 

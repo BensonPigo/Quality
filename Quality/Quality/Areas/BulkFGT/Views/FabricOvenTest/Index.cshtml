@@ -180,6 +180,7 @@
                                 </td>
                                 <td style="width: 10vw;"><h5>Brand</h5></td>
                                 <td style="width: 20vw;">
+                                    @Html.HiddenFor(o => o.Main.BrandID)
                                     @Html.DisplayFor(o => o.Main.BrandID, "", "")
                                 </td>
                             </tr>
@@ -270,7 +271,7 @@
 
                                         @if (Model.Details[i].TestNo != "")
                                         {
-                                            aHref = Url.Action("Detail", "FabricOvenTest", new { POID = Model.Main.POID, TestNo = Model.Details[i].TestNo,  EditMode = false});
+                                            aHref = Url.Action("Detail", "FabricOvenTest", new { POID = Model.Main.POID, BrandID = Model.Main.BrandID, TestNo = Model.Details[i].TestNo,  EditMode = false});
                                         }
 
                                         <a href="@aHref" idx="@Model.Main.POID ," idv="@Model.Details[i].TestNo" class="TestNo">
@@ -418,7 +419,7 @@
             if ($('#Main_POID').val() == "") {
                 return;
             }
-            location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() + '&TestNo=&EditMode=True';
+            location.href = '@Url.Action("Detail")?POID=' + document.getElementById("Main_POID").value.trim() +'&BrandID=' + document.getElementById("Main_BrandID").value.trim() + '&TestNo=&EditMode=True';
         });
     }
 

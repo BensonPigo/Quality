@@ -990,7 +990,7 @@ WHERE FinalInspectionID = @FinalInspectionID
         public IList<ImageRemark> GetFinalInspectionDetail(long FinalInspection_DetailUkey)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
-            { "@FinalInspection_DetailUkey", DbType.Int64, FinalInspection_DetailUkey }
+            { "@FinalInspection_DetailUkey", FinalInspection_DetailUkey }
             };
 
             string sqlGetData = @"
@@ -1105,7 +1105,7 @@ where   ID = @FinalInspectionID
                             { "@GarmentDefectCodeID", DbType.String, defectItem.DefectCode },
                             { "@AreaCode", DbType.String, defectItem.AreaCode ?? string.Empty},
                             { "@Remark", DbType.String, defectItem.Remark ?? string.Empty},
-                            { "@Ukey", DbType.Int64, defectItem.Ukey },
+                            { "@Ukey",  defectItem.Ukey },
                             { "@Qty", DbType.Int32, defectItem.Qty }
                         };
 
@@ -1157,7 +1157,7 @@ insert into SciPMSFile_FinalInspection_DetailImage(ID, FinalInspection_DetailUke
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
-                            { "@FinalInspection_DetailUkey", DbType.Int64, defectItem.Ukey },
+                            { "@FinalInspection_DetailUkey",  defectItem.Ukey },
                             { "@Image", DetailImage.Image == null ? System.Data.SqlTypes.SqlBinary.Null : DetailImage.Image},
                             { "@Remark",DbType.String, DetailImage.Remark ?? "" },
                         };
@@ -1180,7 +1180,7 @@ INSERT INTO FinalInspection_Detail_Operation
            ,@Operator)
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
-                            { "@FinalInspection_DetailUkey", DbType.Int64, defectItem.Ukey },
+                            { "@FinalInspection_DetailUkey",  defectItem.Ukey },
                             { "@Operation",DbType.String, strOperation},
                             { "@Operator",DbType.String, strOperator},
                         };
@@ -1298,7 +1298,7 @@ where   ID = @FinalInspectionID
                     SQLParameterCollection detailParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, beautifulProductAudit.FinalInspectionID },
                             { "@BACriteria", DbType.String, criteriaItem.BACriteria },
-                            { "@Ukey", DbType.Int64, criteriaItem.Ukey },
+                            { "@Ukey", criteriaItem.Ukey },
                             { "@Qty", DbType.Int32, criteriaItem.Qty }
                         };
 
@@ -1348,7 +1348,7 @@ insert into SciPMSFile_FinalInspection_NonBACriteriaImage(ID, FinalInspection_No
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, beautifulProductAudit.FinalInspectionID },
-                            { "@FinalInspection_NonBACriteriaUkey", DbType.Int64, criteriaItem.Ukey },
+                            { "@FinalInspection_NonBACriteriaUkey",  criteriaItem.Ukey },
                             { "@Remark", DbType.String, baDetail.Remark ?? ""},
                             { "@Image", baDetail.Image}
                         };
@@ -1365,7 +1365,7 @@ insert into SciPMSFile_FinalInspection_NonBACriteriaImage(ID, FinalInspection_No
         public IList<ImageRemark> GetBA_DetailImage(long FinalInspection_NonBACriteriaUkey)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
-            { "@FinalInspection_NonBACriteriaUkey", DbType.Int64, FinalInspection_NonBACriteriaUkey }
+            { "@FinalInspection_NonBACriteriaUkey",  FinalInspection_NonBACriteriaUkey }
             };
 
             string sqlGetData = @"
@@ -1625,7 +1625,7 @@ values
             ExecuteNonQuery(CommandType.Text, sqlDeleteMoisture, objParameter);
         }
 
-        public bool CheckMoistureExists(string finalInspectionID, string article, long? finalInspection_OrderCartonUkey)
+        public bool CheckMoistureExists(string finalInspectionID, string article, long finalInspection_OrderCartonUkey)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
             string where = string.Empty;
@@ -1637,7 +1637,7 @@ values
                 objParameter.Add("@article", article);
             }
 
-            if (finalInspection_OrderCartonUkey != null)
+            if (finalInspection_OrderCartonUkey > 0)
             {
                 where += " and FinalInspection_OrderCartonUkey = @finalInspection_OrderCartonUkey";
                 objParameter.Add("@finalInspection_OrderCartonUkey", finalInspection_OrderCartonUkey);

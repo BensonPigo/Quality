@@ -391,10 +391,10 @@ select t.ReportNo, [WickingHeightTestDetailUkey] = t.Ukey, @EvaluationItem{i}, @
 from @InsertOutput t
 ";
                             listDetailPar.Add(new SqlParameter($"@EvaluationItem{i}", item.EvaluationItem));
-                            listDetailPar.Add(new SqlParameter($"@WarpValues{i}", item.WarpValues ?? 0) { Scale = 2 });
-                            listDetailPar.Add(new SqlParameter($"@WarpTime{i}", item.WarpTime ?? 0));
-                            listDetailPar.Add(new SqlParameter($"@WeftValues{i}", item.WeftValues ?? 0) { Scale = 2 });
-                            listDetailPar.Add(new SqlParameter($"@WeftTime{i}", item.WeftTime ?? 0));
+                            listDetailPar.Add(new SqlParameter($"@WarpValues{i}", item.WarpValues) { Scale = 2 });
+                            listDetailPar.Add(new SqlParameter($"@WarpTime{i}", item.WarpTime));
+                            listDetailPar.Add(new SqlParameter($"@WeftValues{i}", item.WeftValues) { Scale = 2 });
+                            listDetailPar.Add(new SqlParameter($"@WeftTime{i}", item.WeftTime));
                             i++;
                         }                       
 
@@ -430,10 +430,10 @@ AND WickingHeightTestDetailUkey = @WickingHeightTestDetailUkey{i}
                             listDetailPar.Add(new SqlParameter($"@WickingHeightTestDetailUkey{i}", detailItem.Ukey));
                             listDetailPar.Add(new SqlParameter($"@Ukey{i}", item.Ukey));
                             listDetailPar.Add(new SqlParameter($"@EvaluationItem{i}", item.EvaluationItem));
-                            listDetailPar.Add(new SqlParameter($"@WarpValues{i}", item.WarpValues ?? 0) { Scale = 2 });
-                            listDetailPar.Add(new SqlParameter($"@WarpTime{i}", item.WarpTime ?? 0));
-                            listDetailPar.Add(new SqlParameter($"@WeftValues{i}", item.WeftValues ?? 0) { Scale = 2 });
-                            listDetailPar.Add(new SqlParameter($"@WeftTime{i}", item.WeftTime ?? 0));
+                            listDetailPar.Add(new SqlParameter($"@WarpValues{i}", item.WarpValues) { Scale = 2 });
+                            listDetailPar.Add(new SqlParameter($"@WarpTime{i}", item.WarpTime));
+                            listDetailPar.Add(new SqlParameter($"@WeftValues{i}", item.WeftValues) { Scale = 2 });
+                            listDetailPar.Add(new SqlParameter($"@WeftTime{i}", item.WeftTime));
                             i++;
                         }
                         
@@ -473,10 +473,10 @@ AND Ukey = @Ukey
                 listDetailPar.Add(new SqlParameter($"@ReportNo", sources.Main.ReportNo));
                 listDetailPar.Add(new SqlParameter($"@Ukey", item.Ukey));
                 listDetailPar.Add(new SqlParameter($"@EvaluationItem", item.EvaluationItem));
-                listDetailPar.Add(new SqlParameter($"@WarpValues", item.WarpValues ?? 0) { Scale = 2 });
-                listDetailPar.Add(new SqlParameter($"@WarpTime", item.WarpTime ?? 0));
-                listDetailPar.Add(new SqlParameter($"@WeftValues", item.WeftValues ?? 0) { Scale = 2 });
-                listDetailPar.Add(new SqlParameter($"@WeftTime", item.WeftTime ?? 0));
+                listDetailPar.Add(new SqlParameter($"@WarpValues", item.WarpValues) { Scale = 2 });
+                listDetailPar.Add(new SqlParameter($"@WarpTime", item.WarpTime));
+                listDetailPar.Add(new SqlParameter($"@WeftValues", item.WeftValues) { Scale = 2 });
+                listDetailPar.Add(new SqlParameter($"@WeftTime", item.WeftTime));
                 listDetailPar.Add(new SqlParameter($"@UserID", UserID));      
 
                 ExecuteNonQuery(CommandType.Text, updateDetail, listDetailPar);

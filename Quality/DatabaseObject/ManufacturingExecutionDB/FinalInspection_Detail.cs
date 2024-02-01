@@ -40,7 +40,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>瑕疵數量</summary>
         [Required]
         [Display(Name = "瑕疵數量")]
-        public int? Qty { get; set; }
+        public int Qty { get; set; }
 
     }
 }

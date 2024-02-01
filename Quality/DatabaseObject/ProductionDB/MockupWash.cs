@@ -69,25 +69,25 @@ namespace DatabaseObject.ProductionDB
         public string TestingMethod { get; set; }
 
         [Display(Name = "HTPlate")]
-        public int? HTPlate { get; set; }
+        public int HTPlate { get; set; }
 
         [Display(Name = "HTFlim")]
-        public int? HTFlim { get; set; }
+        public int HTFlim { get; set; }
 
         [Display(Name = "HTTime")]
-        public int? HTTime { get; set; }
+        public int HTTime { get; set; }
 
         [Display(Name = "HTPressure")]
-        public decimal? HTPressure { get; set; }
+        public decimal HTPressure { get; set; }
 
         [Display(Name = "HTPellOff")]
         public string HTPellOff { get; set; }
 
         [Display(Name = "HT2ndPressnoreverse")]
-        public int? HT2ndPressnoreverse { get; set; }
+        public int HT2ndPressnoreverse { get; set; }
 
         [Display(Name = "HT2ndPressreversed")]
-        public int? HT2ndPressreversed { get; set; }
+        public int HT2ndPressreversed { get; set; }
 
         [Display(Name = "HTCoolingTime")]
         public string HTCoolingTime { get; set; }

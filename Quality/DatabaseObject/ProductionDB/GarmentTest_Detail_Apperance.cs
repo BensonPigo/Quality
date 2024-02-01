@@ -12,47 +12,70 @@ namespace DatabaseObject.ProductionDB
     /// ===  ==========  ====  ==========  ==========
     /// 01.  2021/08/23   1.00    Admin        Create
     /// </history>
+
     public class GarmentTest_Detail_Apperance
     {
-        /// <summary></summary>
-        [Display(Name = "")]
-        public Int64? ID { get; set; }
+        public long ID { get; set; }
 
-        /// <summary></summary>
-        [Display(Name = "")]
-        public int? No { get; set; }
+        public int No { get; set; }
 
-        /// <summary></summary>
-        [Display(Name = "")]
-        public string Type { get; set; }
+        private string _Type;
 
-        /// <summary></summary>
-        [Display(Name = "")]
-        public string Wash1 { get; set; }
+        public string Type
+        {
+            get => _Type ?? string.Empty;
+            set => _Type = value;
+        }
 
-        /// <summary></summary>
-        [Display(Name = "")]
-        public string Wash2 { get; set; }
+        private string _Wash1;
 
-        /// <summary></summary>
-        [Display(Name = "")]
-        public string Wash3 { get; set; }
+        public string Wash1
+        {
+            get => _Wash1 ?? string.Empty;
+            set => _Wash1 = value;
+        }
 
-        /// <summary></summary>
-        [Display(Name = "")]
-        public string Comment { get; set; }
+        private string _Wash2;
 
-        /// <summary></summary>
-        [Display(Name = "")]
-        public int? Seq { get; set; }
+        public string Wash2
+        {
+            get => _Wash2 ?? string.Empty;
+            set => _Wash2 = value;
+        }
 
-        /// <summary></summary>
-        [Display(Name = "")]
-        public string Wash4 { get; set; }
+        private string _Wash3;
 
-        /// <summary></summary>
-        [Display(Name = "")]
-        public string Wash5 { get; set; }
+        public string Wash3
+        {
+            get => _Wash3 ?? string.Empty;
+            set => _Wash3 = value;
+        }
 
+        private string _Comment;
+
+        public string Comment
+        {
+            get => _Comment ?? string.Empty;
+            set => _Comment = value;
+        }
+
+        public int Seq { get; set; }
+
+        private string _Wash4;
+
+        public string Wash4
+        {
+            get => _Wash4 ?? string.Empty;
+            set => _Wash4 = value;
+        }
+
+        private string _Wash5;
+
+        public string Wash5
+        {
+            get => _Wash5 ?? string.Empty;
+            set => _Wash5 = value;
+        }
     }
+
 }
