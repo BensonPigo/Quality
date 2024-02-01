@@ -325,6 +325,25 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+        public List<Window_FtyInventory> Get_AllReceivingDetail(string POID, string Seq1, string Seq2, string Roll, string ReceivingID, bool IsExact)
+        {
+            List<Window_FtyInventory> result = new List<Window_FtyInventory>();
+
+            try
+            {
+                _Provider = new PublicWindowProvider(Common.ProductionDataAccessLayer);
+
+                //取得登入資訊
+                result = _Provider.Get_AllReceivingDetail(POID, Seq1, Seq2, Roll, ReceivingID, IsExact).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
 
         public List<Window_Appearance> Get_Appearance(string Lab)
         {
