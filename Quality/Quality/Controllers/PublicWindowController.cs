@@ -355,6 +355,33 @@ namespace Quality.Controllers
             return View(model);
         }
 
+        public ActionResult AllReceivingDetailList(string Title, string POID, string Seq1, string Seq2, string ReceivingID, string TargetID)
+        {
+            var model = _PublicWindowService.Get_AllReceivingDetail(POID, Seq1, Seq2, string.Empty, ReceivingID, false);
+            ViewData["Title"] = Title;
+            ViewData["POID"] = POID;
+            ViewData["Seq1"] = Seq1;
+            ViewData["Seq2"] = Seq2;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult AllReceivingDetailList(string Title, string POID, string Seq1, string Seq2, string Roll, string ReceivingID, string TargetID, string ReturnType = "")
+        {
+            bool IsExact = ReturnType.ToUpper() == "JSON";
+            var model = _PublicWindowService.Get_AllReceivingDetail(POID, Seq1, Seq2, Roll, ReceivingID, IsExact);
+            ViewData["Title"] = Title;
+            ViewData["POID"] = POID;
+            ViewData["Seq1"] = Seq1;
+            ViewData["Seq2"] = Seq2;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
+            return View(model);
+        }
 
         public ActionResult Pass1List(string Title, string TargetID)
         {
