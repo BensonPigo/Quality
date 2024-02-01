@@ -401,7 +401,7 @@ delete BulkMoistureTest_Detail where Ukey = @Ukey
                         ExecuteNonQuery(CommandType.Text, insert, listDetailPar);
                         break;
                     case DatabaseObject.Public.CompareStateType.Edit:
-                        listDetailPar.Add("@Ukey", DbType.Int64, detailItem.Ukey);
+                        listDetailPar.Add("@Ukey",  detailItem.Ukey);
                         ExecuteNonQuery(CommandType.Text, update, listDetailPar);
                         break;
                     case DatabaseObject.Public.CompareStateType.Delete:

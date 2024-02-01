@@ -125,7 +125,7 @@ WHERE Junk=0
                 { "@BrandID", DbType.String, Req.BrandID } ,
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 select COUNT(1)
@@ -493,11 +493,11 @@ AND b.StyleID = @StyleID
                 int Ukey = 0;
                 if (int.TryParse(styleResult_Request.StyleUkey, out Ukey))
                 {
-                    listPar.Add("@StyleUkey", DbType.Int64, Ukey);
+                    listPar.Add("@StyleUkey",  Ukey);
                 }
                 else
                 {
-                    listPar.Add("@StyleUkey", DbType.Int64, 0);
+                    listPar.Add("@StyleUkey",  0);
                 }
             }
             else
@@ -578,11 +578,11 @@ where 1=1
                 int Ukey = 0;
                 if (int.TryParse(styleResult_Request.StyleUkey, out Ukey))
                 {
-                    listPar.Add("@StyleUkey", DbType.Int64, Ukey);
+                    listPar.Add("@StyleUkey",  Ukey);
                 }
                 else
                 {
-                    listPar.Add("@StyleUkey", DbType.Int64, 0);
+                    listPar.Add("@StyleUkey",  0);
                 }
             }
             else

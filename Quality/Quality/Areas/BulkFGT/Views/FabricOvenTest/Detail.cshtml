@@ -427,7 +427,7 @@
                                                 <select id="Details_@{@i}__Temperature" name="Details[@{@i}].Temperature">
                                                     @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
                                                     {
-                                                        string selected = item.Text.Equals(Model.Details[i].Temperature) ? "selected" : "";
+                                                        string selected = item.Text.Equals(Model.Details[i].Temperature.ToString()) ? "selected" : "";
                                                         <option value="@item.Value" @selected>@item.Text</option>
                                                     }
                                                 </select>
@@ -441,7 +441,7 @@
                                             <select id="Details_@{@i}__Time" name="Details[@{@i}].Time">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.TimeList)
                                                 {
-                                                    string selected = item.Text.Equals(Model.Details[i].Time) ? "selected" : "";
+                                                    string selected = item.Text.Equals(Model.Details[i].Time.ToString()) ? "selected" : "";
                                                     <option value="@item.Value" @selected>@item.Text</option>
                                                 }
                                             </select>

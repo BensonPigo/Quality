@@ -7,7 +7,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>ID</summary>
         [Required]
         [Display(Name = "ID")]
-        public Int64 ID { get; set; }
+        public long ID { get; set; }
         /// <summary>訂單號碼</summary>
         [Required]
         [StringLength(13)]
@@ -41,7 +41,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>款式</summary>
         [Required]
         [Display(Name = "款式")]
-        public Int64 StyleUkey { get; set; }
+        public long StyleUkey { get; set; }
 
         /// <summary>款式名稱</summary>
         [Required]

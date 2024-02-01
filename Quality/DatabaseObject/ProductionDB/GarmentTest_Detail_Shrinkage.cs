@@ -2,47 +2,90 @@ using System;
 using System.ComponentModel.DataAnnotations;
 namespace DatabaseObject.ProductionDB
 {
-    public class GarmentTest_Detail_Shrinkage
+    public class GarmentTest_Detail_Shrinkage2
     {
         /// <summary></summary>
-        [Display(Name = "")]
-        public Int64? ID { get; set; }
+
+        public long ID { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
-        public int? No { get; set; }
+
+        public int No { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+
         public string Location { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+
         public string Type { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
-        public decimal? BeforeWash { get; set; }
+
+        public decimal BeforeWash { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
-        public decimal? SizeSpec { get; set; }
+
+        public decimal SizeSpec { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
-        public decimal? AfterWash1 { get; set; }
+
+        public decimal AfterWash1 { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
-        public decimal? Shrinkage1 { get; set; }
+
+        public decimal Shrinkage1 { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
-        public decimal? AfterWash2 { get; set; }
+
+        public decimal AfterWash2 { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
-        public decimal? Shrinkage2 { get; set; }
+
+        public decimal Shrinkage2 { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
-        public decimal? AfterWash3 { get; set; }
+
+        public decimal AfterWash3 { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
-        public decimal? Shrinkage3 { get; set; }
+
+        public decimal Shrinkage3 { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
-        public decimal? Seq { get; set; }
+
+        public decimal Seq { get; set; }
 
     }
+    public class GarmentTest_Detail_Shrinkage
+    {
+        public long ID { get; set; }
+
+        public int No { get; set; }
+
+        private string _Location;
+
+        public string Location
+        {
+            get => _Location ?? string.Empty;
+            set => _Location = value;
+        }
+
+        private string _Type;
+
+        public string Type
+        {
+            get => _Type ?? string.Empty;
+            set => _Type = value;
+        }
+
+        public decimal BeforeWash { get; set; }
+
+        public decimal SizeSpec { get; set; }
+
+        public decimal AfterWash1 { get; set; }
+
+        public decimal Shrinkage1 { get; set; }
+
+        public decimal AfterWash2 { get; set; }
+
+
+        public decimal Shrinkage2 { get; set; }
+
+
+        public decimal AfterWash3 { get; set; }
+
+
+        public decimal Shrinkage3 { get; set; }
+        public decimal Seq { get; set; }
+    }
+
 }

@@ -18,14 +18,14 @@ namespace DatabaseObject.ProductionDB
         [StringLength(10)]
         public string AddName { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? AddDate { get; set; }
         /// <summary></summary>
         [StringLength(10)]
-        [Display(Name = "")]
+        
         public string EditName { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? EditDate { get; set; }
 
     }

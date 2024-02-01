@@ -33,7 +33,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
 
         /// <summary>本次可檢驗的數量</summary>
         [Display(Name = "本次可檢驗的數量")]
-        public int? AvailableQty { get; set; }
+        public int AvailableQty { get; set; }
 
     }
 }

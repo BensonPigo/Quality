@@ -17,8 +17,8 @@ namespace DatabaseObject.ViewModel
         public string GarmentTest_Detail_Inspector { get; set; }
         public string GarmentTest_Detail_AddName { get; set; }
         public string GarmentTest_Detail_EditName { get; set; }
-        public Int64? ID { get; set; }
-        public int? No { get; set; }
+        public long ID { get; set; }
+        public int No { get; set; }
         public string Remark { get; set; }
         public DateTime? SubmitDate { get; set; }
         public string SizeCode { get; set; }
@@ -37,9 +37,9 @@ namespace DatabaseObject.ViewModel
         public string EditName { get; set; }
         public DateTime? EditDate { get; set; }
         public string OldUkey { get; set; }
-        public int? ArrivedQty { get; set; }
+        public int ArrivedQty { get; set; }
         public bool? LineDry { get; set; }
-        public int? Temperature { get; set; }
+        public int Temperature { get; set; }
         public bool? TumbleDry { get; set; }
         public string Machine { get; set; }
         public bool? HandWash { get; set; }

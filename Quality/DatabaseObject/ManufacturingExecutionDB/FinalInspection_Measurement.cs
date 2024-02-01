@@ -62,11 +62,11 @@ namespace DatabaseObject.ManufacturingExecutionDB
 
         /// <summary></summary>
         [StringLength(10)]
-        [Display(Name = "")]
+        
         public string AddName { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? AddDate { get; set; }
 
     }

@@ -138,7 +138,7 @@ where junk = 0
             return ExecuteList<Window_Style>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Article> Get_Article(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
+        public IList<Window_Article> Get_Article(string OrderID, long StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -166,7 +166,7 @@ where 1=1
                 if (StyleUkey >0)
                 {
                     SbSql.Append("AND StyleUkey = @StyleUkey ");
-                    paras.Add("@StyleUkey ", DbType.Int64, StyleUkey);
+                    paras.Add("@StyleUkey ",  StyleUkey);
                 }
                 if (!string.IsNullOrEmpty(StyleID) && !string.IsNullOrEmpty(BrandID) && !string.IsNullOrEmpty(SeasonID))
                 {
@@ -206,7 +206,7 @@ AND StyleUkey in (
             return ExecuteList<Window_Article>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Article> Get_PoidArticle(string POID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
+        public IList<Window_Article> Get_PoidArticle(string POID, long StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -235,7 +235,7 @@ where 1=1
                 if (StyleUkey > 0)
                 {
                     SbSql.Append("AND StyleUkey = @StyleUkey ");
-                    paras.Add("@StyleUkey ", DbType.Int64, StyleUkey);
+                    paras.Add("@StyleUkey ",  StyleUkey);
                 }
                 if (!string.IsNullOrEmpty(StyleID) && !string.IsNullOrEmpty(BrandID) && !string.IsNullOrEmpty(SeasonID))
                 {
@@ -275,7 +275,7 @@ AND StyleUkey in (
             return ExecuteList<Window_Article>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Size> Get_Size(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, bool IsExact)
+        public IList<Window_Size> Get_Size(string OrderID, long StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();

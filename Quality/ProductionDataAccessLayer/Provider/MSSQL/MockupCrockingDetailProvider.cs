@@ -96,7 +96,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (string.IsNullOrEmpty(Item.ReportNo))
             {
                 SbSql.Append("Where Ukey = @Ukey" + Environment.NewLine);
-                objParameter.Add("@Ukey", DbType.Int64, Item.Ukey);
+                objParameter.Add("@Ukey",  Item.Ukey);
             }
             else
             {

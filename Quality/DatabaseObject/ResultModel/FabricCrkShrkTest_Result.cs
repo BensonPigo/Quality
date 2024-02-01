@@ -49,7 +49,15 @@ namespace DatabaseObject.ResultModel
         public bool? NonCrocking { get; set; }
         public string Crocking { get; set; }
         public DateTime? CrockingDate { get; set; }
-        public string CrockingRemark { get; set; }
+        //public string CrockingRemark { get; set; }
+
+        private string _CrockingRemark;
+
+        public string CrockingRemark
+        {
+            get => _CrockingRemark ?? string.Empty;
+            set => _CrockingRemark = value;
+        }
         public bool? NonHeat { get; set; }
         public string Heat { get; set; }
         public DateTime? HeatDate { get; set; }
@@ -100,7 +108,13 @@ namespace DatabaseObject.ResultModel
         public string Refno { get; set; }
         public bool? NonCrocking { get; set; }
         public string DescDetail { get; set; }
-        public string CrockingRemark { get; set; }
+
+        private string _CrockingRemark;
+        public string CrockingRemark
+        {
+            get => _CrockingRemark ?? string.Empty;
+            set => _CrockingRemark = value;
+        }
         public bool CrockingEncdoe { get; set; }
         public byte[] CrockingTestBeforePicture { get; set; }
         public byte[] CrockingTestAfterPicture { get; set; }
@@ -150,7 +164,12 @@ namespace DatabaseObject.ResultModel
         public DateTime? Inspdate { get; set; }
         public string Inspector { get; set; }
         public string Name { get; set; }
-        public string Remark { get; set; }
+        private string _Remark;
+        public string Remark
+        {
+            get => _Remark ?? string.Empty;
+            set => _Remark = value;
+        }
         public string LastUpdate { get; set; }
     }
 
@@ -191,7 +210,12 @@ namespace DatabaseObject.ResultModel
         public string Refno { get; set; }
         public bool? NonIron { get; set; }
         public string DescDetail { get; set; }
-        public string IronRemark { get; set; }
+        private string _IronRemark;
+        public string IronRemark
+        {
+            get => _IronRemark ?? string.Empty;
+            set => _IronRemark = value;
+        }
         public bool IronEncode { get; set; }
         public byte[] IronTestBeforePicture { get; set; }
         public byte[] IronTestAfterPicture { get; set; }
@@ -216,7 +240,12 @@ namespace DatabaseObject.ResultModel
         public string Refno { get; set; }
         public bool? NonHeat { get; set; }
         public string DescDetail { get; set; }
-        public string HeatRemark { get; set; }
+        private string _HeatRemark;
+        public string HeatRemark
+        {
+            get => _HeatRemark ?? string.Empty;
+            set => _HeatRemark = value;
+        }
         public bool HeatEncode { get; set; }
         public byte[] HeatTestBeforePicture { get; set; }
         public byte[] HeatTestAfterPicture { get; set; }
@@ -300,7 +329,12 @@ namespace DatabaseObject.ResultModel
         public bool? NonWash { get; set; }
         public string SkewnessOptionID { get; set; }
         public string DescDetail { get; set; }
-        public string WashRemark { get; set; }
+        private string _WashRemark;
+        public string WashRemark
+        {
+            get => _WashRemark ?? string.Empty;
+            set => _WashRemark = value;
+        }
         public bool WashEncode { get; set; }
         public byte[] WashTestBeforePicture { get; set; }
         public byte[] WashTestAfterPicture { get; set; }

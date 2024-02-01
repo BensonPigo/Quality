@@ -290,7 +290,7 @@
                                             <select id="Main_Temperature" name="Main.Temperature" class="HeaderSelect">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
                                                 {
-                                                    string selected = item.Text.Equals(Model.Main.Temperature) ? "selected" : "";
+                                                    string selected = item.Text.Equals(Model.Main.Temperature.ToString()) ? "selected" : "";
                                                     <option value="@item.Value" @selected>@item.Text</option>
                                                 }
                                             </select>
@@ -305,7 +305,7 @@
                                         <select id="Main_Time" name="Main.Time" class="HeaderSelect">
                                             @foreach (var item in (List<SelectListItem>)ViewBag.TimeList)
                                             {
-                                                string selected = item.Text.Equals(Model.Main.Time) ? "selected" : "";
+                                                string selected = item.Text.Equals(Model.Main.Time.ToString()) ? "selected" : "";
                                                 <option value="@item.Value" @selected>@item.Text</option>
                                             }
                                         </select>
@@ -607,26 +607,6 @@
                                         <td>
                                             @Html.DisplayFor(o => Model.Details[i].LastUpdate, "", "")
                                         </td>
-                                        @*<td>
-                                                <select id="Details_@{@i}__Temperature" name="Details[@{@i}].Temperature">
-                                                    @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
-                                                    {
-                                                        string selected = item.Text.Equals(Model.Details[i].Temperature) ? "selected" : "";
-                                                        <option value="@item.Value" @selected>@item.Text</option>
-                                                    }
-                                                </select>
-                                            </td>
-                                        *@
-                                        @*<td>
-                                                <select id="Details_@{@i}__Time" name="Details[@{@i}].Time">
-                                                    @foreach (var item in (List<SelectListItem>)ViewBag.TimeList)
-                                                    {
-                                                        string selected = item.Text.Equals(Model.Details[i].Time) ? "selected" : "";
-                                                        <option value="@item.Value" @selected>@item.Text</option>
-                                                    }
-                                                </select>
-                                            </td>
-                                        *@
                                         <td>
                                             <div style="width:5vw;">
                                                 <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" />

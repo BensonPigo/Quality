@@ -3,12 +3,12 @@ using System;
 using System.ComponentModel.DataAnnotations;
 namespace DatabaseObject.ProductionDB
 {
-    public class MockupCrocking_Detail : CompareBase
+    public class MockupCrocking_Detail2 : CompareBase
     {
         [Display(Name = "測試單號")]
         public string ReportNo { get; set; }
 
-        public Int64 Ukey { get; set; }
+        public long Ukey { get; set; }
 
         public string Design { get; set; }
 
@@ -40,4 +40,62 @@ namespace DatabaseObject.ProductionDB
         public DateTime? EditDate { get; set; }
 
     }
+    public class MockupCrocking_Detail : CompareBase
+    {
+        public string ReportNo { get; set; }
+
+        public long Ukey { get; set; }
+
+        public string Design { get; set; }
+
+        private string _ArtworkColor;
+
+        public string ArtworkColor
+        {
+            get => _ArtworkColor ?? string.Empty;
+            set => _ArtworkColor = value;
+        }
+
+        private string _FabricRefNo;
+
+        public string FabricRefNo
+        {
+            get => _FabricRefNo ?? string.Empty;
+            set => _FabricRefNo = value;
+        }
+
+        private string _FabricColor;
+
+        public string FabricColor
+        {
+            get => _FabricColor ?? string.Empty;
+            set => _FabricColor = value;
+        }
+
+        private string _DryScale;
+
+        public string DryScale
+        {
+            get => _DryScale ?? string.Empty;
+            set => _DryScale = value;
+        }
+
+        private string _WetScale;
+
+        public string WetScale
+        {
+            get => _WetScale ?? string.Empty;
+            set => _WetScale = value;
+        }
+
+        public string Result { get; set; }
+
+        public string Remark { get; set; }
+
+        public string EditName { get; set; }
+
+        public DateTime? EditDate { get; set; }
+
+    }
+
 }

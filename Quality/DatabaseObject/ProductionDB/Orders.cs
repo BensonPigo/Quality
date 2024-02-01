@@ -78,7 +78,7 @@ namespace DatabaseObject.ProductionDB
         public decimal CPU { get; set; }
         /// <summary>訂單數量</summary>
         [Display(Name = "訂單數量")]
-        public int? Qty { get; set; }
+        public int Qty { get; set; }
         /// <summary>款式單位</summary>
         [StringLength(8)]
         [Display(Name = "款式單位")]
@@ -268,7 +268,7 @@ namespace DatabaseObject.ProductionDB
         public string CtnType { get; set; }
         /// <summary>免費數量</summary>
         [Display(Name = "免費數量")]
-        public int? FOCQty { get; set; }
+        public int FOCQty { get; set; }
         /// <summary>SMNotice Approved</summary>
         [Display(Name = "SMNotice Approved")]
         public DateTime? SMnorderApv { get; set; }
@@ -314,14 +314,14 @@ namespace DatabaseObject.ProductionDB
         public string OutstandingReason { get; set; }
         /// <summary>款式的唯一值</summary>
         [Display(Name = "款式的唯一值")]
-        public Int64 StyleUkey { get; set; }
+        public long StyleUkey { get; set; }
         /// <summary>採購單號</summary>
         [StringLength(13)]
         [Display(Name = "採購單號")]
         public string POID { get; set; }
         /// <summary></summary>
         [StringLength(13)]
-        [Display(Name = "")]
+        
         public string OrderComboID { get; set; }
         /// <summary>是否為非格子布或非Repeat或非Body Mapping</summary>
         [Display(Name = "是否為非格子布或非Repeat或非Body Mapping")]
@@ -331,7 +331,7 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "拆單的原訂單單號")]
         public string SplitOrderId { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? FtyKPI { get; set; }
         /// <summary>新增人員</summary>
         [StringLength(10)]
@@ -369,13 +369,13 @@ namespace DatabaseObject.ProductionDB
         public DateTime? GMTClose { get; set; }
         /// <summary>訂單總箱數</summary>
         [Display(Name = "訂單總箱數")]
-        public int? TotalCTN { get; set; }
+        public int TotalCTN { get; set; }
         /// <summary>cLog 已收到箱數</summary>
         [Display(Name = "cLog 已收到箱數")]
-        public int? ClogCTN { get; set; }
+        public int ClogCTN { get; set; }
         /// <summary>工廠已完成箱數</summary>
         [Display(Name = "工廠已完成箱數")]
-        public int? FtyCTN { get; set; }
+        public int FtyCTN { get; set; }
         /// <summary>大貨出貨結清</summary>
         [Display(Name = "大貨出貨結清")]
         public bool PulloutComplete { get; set; }
@@ -384,7 +384,7 @@ namespace DatabaseObject.ProductionDB
         public DateTime? ReadyDate { get; set; }
         /// <summary>Pullout箱數</summary>
         [Display(Name = "Pullout箱數")]
-        public int? PulloutCTNQty { get; set; }
+        public int PulloutCTNQty { get; set; }
         /// <summary>Shipment(Pull out)完成</summary>
         [Display(Name = "Shipment(Pull out)完成")]
         public bool Finished { get; set; }
@@ -472,22 +472,22 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "最後收箱日期")]
         public DateTime? ClogLastReceiveDate { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public decimal CPUFactor { get; set; }
         /// <summary></summary>
         [StringLength(8)]
-        [Display(Name = "")]
+        
         public string SizeUnit { get; set; }
         /// <summary></summary>
         [StringLength(13)]
-        [Display(Name = "")]
+        
         public string CuttingSP { get; set; }
         /// <summary>是否為MixMarker </summary>
         [Display(Name = "是否為MixMarker ")]
-        public int? IsMixMarker { get; set; }
+        public int IsMixMarker { get; set; }
         /// <summary></summary>
         [StringLength(1)]
-        [Display(Name = "")]
+        
         public string EachConsSource { get; set; }
         /// <summary>Each Cons. KPI Date (PMS only)</summary>
         [Display(Name = "Each Cons. KPI Date (PMS only)")]
@@ -506,72 +506,72 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "Global Foundation Range")]
         public bool GFR { get; set; }
         /// <summary></summary>
-        public int? CfaCTN { get; set; }
+        public int CfaCTN { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
-        public int? DRYCTN { get; set; }
+        
+        public int DRYCTN { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
-        public int? PackErrCTN { get; set; }
+        
+        public int PackErrCTN { get; set; }
         /// <summary></summary>
         [StringLength(1)]
-        [Display(Name = "")]
+        
         public string ForecastSampleGroup { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public decimal DyeingLoss { get; set; }
         /// <summary></summary>
         [StringLength(1)]
-        [Display(Name = "")]
+        
         public string SubconInType { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? LastProductionDate { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? EstPODD { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public bool AirFreightByBrand { get; set; }
         /// <summary></summary>
         [StringLength(13)]
-        [Display(Name = "")]
+        
         public string AllowanceComboID { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? ChangeMemoDate { get; set; }
         /// <summary></summary>
         [StringLength(20)]
-        [Display(Name = "")]
+        
         public string BuyBack { get; set; }
         /// <summary></summary>
         [StringLength(13)]
-        [Display(Name = "")]
+        
         public string BuyBackOrderID { get; set; }
         /// <summary></summary>
         [StringLength(1)]
         public string ForecastCategory { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public bool OnSiteSample { get; set; }
         /// <summary>PulloutComplete 最後的更新時間</summary>
         [Display(Name = "PulloutComplete 最後的更新時間")]
         public DateTime? PulloutCmplDate { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public bool NeedProduction { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool IsBuyBack { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public bool KeepPanels { get; set; }
         /// <summary></summary>
         [Required]
         [StringLength(20)]
-        [Display(Name = "")]
+        
         public string BuyBackReason { get; set; }
         /// <summary></summary>
         [Required]
@@ -581,11 +581,11 @@ namespace DatabaseObject.ProductionDB
         public bool IsBuyBackCrossSizeCode { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? KpiEachConsCheck { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool NonRevenue { get; set; }
         /// <summary>Nike - Mercury - CAB</summary>
         [Required]
@@ -608,26 +608,26 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "Nike - Mercury - AFS_STOCK_CATEGORY")]
         public string AFS_STOCK_CATEGORY { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? CMPLTDATE { get; set; }
         /// <summary></summary>
         [StringLength(4)]
-        [Display(Name = "")]
+        
         public string DelayCode { get; set; }
         /// <summary></summary>
         [StringLength(100)]
-        [Display(Name = "")]
+        
         public string DelayDesc { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public bool HangerPack { get; set; }
         /// <summary></summary>
         [StringLength(5)]
-        [Display(Name = "")]
+        
         public string CDCodeNew { get; set; }
         /// <summary></summary>
         [StringLength(8)]
-        [Display(Name = "")]
+        
         public string SizeUnitWeight { get; set; }
 
         public bool Checked { get; set; }

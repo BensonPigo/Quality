@@ -31,11 +31,11 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/08/05  1.00    Admin        Create
         /// </history>
-        public IList<RFT_Inspection_Measurement_ViewModel> Get( Int64 StyleUkey, string SizeCode, string UserID)
+        public IList<RFT_Inspection_Measurement_ViewModel> Get( long StyleUkey, string SizeCode, string UserID)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
-                { "@StyleUkey", DbType.Int64, StyleUkey } ,
+                { "@StyleUkey",  StyleUkey } ,
                 { "@SizeCode", DbType.String, SizeCode } ,
                 { "@UserID", DbType.String, UserID } ,
             };

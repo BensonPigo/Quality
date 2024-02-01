@@ -16,7 +16,7 @@ namespace DatabaseObject.ProductionDB
     {
         /// <summary>ID</summary>
         [Display(Name = "ID")]
-        public Int64? ID { get; set; }
+        public long ID { get; set; }
 
         /// <summary>首次訂單號碼</summary>
         [Display(Name = "首次訂單號碼")]
@@ -87,7 +87,7 @@ namespace DatabaseObject.ProductionDB
         public DateTime? EditDate { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string OldUkey { get; set; }
 
         /// <summary>Adidas-PHX-AP0450 SeamBrakage 最後一次檢驗的結果</summary>
