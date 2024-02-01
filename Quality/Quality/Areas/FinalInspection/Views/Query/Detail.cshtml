@@ -685,10 +685,10 @@
             // Ukey = -1代表還沒有這筆Detail紀錄
             if (DetailUkey == -1) {
                 //msg.WithInfo("No Picture");
-                window.open('@Url.Action("DefectPicture", "Inspection")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+                window.open('@Url.Action("DefectPicture", "Inspection")?RowIndex=' + RowIndex, "Picture",  'toolbar=no,status=no,location=no,width=700,height=600');
             }
             else {
-                window.open('@Url.Action("DefectPicture", "Inspection")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+                window.open('@Url.Action("DefectPicture", "Inspection")?DetailUkey=' + DetailUkey, "Picture",  'toolbar=no,status=no,location=no,width=700,height=900');
             }
         }
 
@@ -696,15 +696,15 @@
 
             // Ukey = -1代表還沒有這筆Detail紀錄
             if (DetailUkey == -1) {
-                window.open('@Url.Action("BAPicture", "Inspection")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+                window.open('@Url.Action("BAPicture", "Inspection")?RowIndex=' + RowIndex, "Picture",  'toolbar=no,status=no,location=no,width=700,height=600');
             }
             else {
-                window.open('@Url.Action("BAPicture", "Inspection")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+                window.open('@Url.Action("BAPicture", "Inspection")?DetailUkey=' + DetailUkey, "Picture",  'toolbar=no,status=no,location=no,width=700,height=600');
             }
         }
 
         function OpenOthersPicture() {
-            window.open('@Url.Action("OthersPicture", "Inspection")?callFrom=Query&FinalInspectionID=@Model.FinalInspection.ID', "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            window.open('@Url.Action("OthersPicture", "Inspection")?callFrom=Query&FinalInspectionID=@Model.FinalInspection.ID', "Picture",  'toolbar=no,status=no,location=no,width=700,height=600');
         }
 
         function ClickDownload() {

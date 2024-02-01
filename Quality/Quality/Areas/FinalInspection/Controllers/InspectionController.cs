@@ -734,7 +734,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             if (result)
             {
                 FinalInspectionService fservice = new FinalInspectionService();
-                MeasurementRemainingAmount = service.GetMeasurementRemainingAmount(model.FinalInspectionID);
+                MeasurementRemainingAmount = service.GetMeasurementAmount(model.FinalInspectionID);
             }
             else
             {
@@ -815,8 +815,8 @@ namespace Quality.Areas.FinalInspection.Controllers
                 if (setting.InspectionStage == "Inline" && setting.BrandID == "NIKE")
                 {
                     FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
-                    int MeasurementRemainingAmount = service.GetMeasurementRemainingAmount(model.FinalInspectionID);
-                    if (setting.SampleSize - MeasurementRemainingAmount < 5)
+                    int MeasurementAmount = service.GetMeasurementAmount(model.FinalInspectionID);
+                    if (MeasurementAmount < 5)
                     {
                         TempData["MeasurementMsg"] = $@"Must Be Inspection 5 Measurment!!";
                         return RedirectToAction("Measurement", new { FinalInspectionID = model.FinalInspectionID });

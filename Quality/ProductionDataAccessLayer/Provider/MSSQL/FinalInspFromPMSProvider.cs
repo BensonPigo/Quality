@@ -681,7 +681,7 @@ where OrderId in (select OrderID from #FinalInspection_Order)
                 return dtResult.AsEnumerable().Select(s => s["Location"].ToString()).ToList();
             }
         }
-        public int GetMeasurementRemainingAmount(string finalInspectionID)
+        public int GetMeasurementAmount(string finalInspectionID)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
 
@@ -701,7 +701,8 @@ DECLARE @MeasurementCount as int=(
 		where   ID = @finalInspectionID
 	) a
 )
-SELECT RemainingAmount = @SampleSize - @MeasurementCount
+--SELECT RemainingAmount = @SampleSize - @MeasurementCount
+SELECT RemainingAmount =  @MeasurementCount
 ";
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetMoistureArticleList, listPar);
