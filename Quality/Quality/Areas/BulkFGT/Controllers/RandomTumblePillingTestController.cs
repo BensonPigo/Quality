@@ -237,7 +237,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
-        public JsonResult SendMailToMR(string ReportNo)
+        public JsonResult SendMail(string ReportNo)
         {
             this.CheckSession();
             RandomTumblePillingTest_ViewModel result = _Service.GetReport(ReportNo, true);

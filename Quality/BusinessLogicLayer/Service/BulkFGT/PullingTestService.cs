@@ -183,7 +183,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
 
 
-        public SendMail_Result FailSendMail(string ReportNo, string ToAddress, string CcAddress)
+        public SendMail_Result SendMail(string ReportNo, string ToAddress, string CcAddress)
         {
 
             SendMail_Result result = new SendMail_Result();
@@ -195,15 +195,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
 
                 string unit = dt.Rows[0]["PullForceUnit"].ToString();
-                dt.Columns["PullForceUnit"].ColumnName = unit;
-                dt.Rows[0][unit] = dt.Rows[0]["PullForce"].ToString();
-                dt.Columns.Remove("PullForce");
+                if (!string.IsNullOrEmpty(unit))
+                {
+                    dt.Columns["PullForceUnit"].ColumnName = unit;
+                    dt.Rows[0][unit] = dt.Rows[0]["PullForce"].ToString();
+                    dt.Columns.Remove("PullForce");
+                }
 
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = ToAddress,
                     CC = CcAddress,
-                    Subject = "Pulling Test - Test Fail",
+                    //Subject = "Pulling Test - Test Fail",
+                    Subject = $"Pulling Test/{dt.Rows[0]["POID"]}/" +
+                        $"{dt.Rows[0]["StyleID"]}/" +
+                        $"{dt.Rows[0]["Article"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },

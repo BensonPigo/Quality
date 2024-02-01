@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.Service.BulkFGT;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Microsoft.Office.Interop.Excel;
 using Quality.Controllers;
@@ -237,7 +238,16 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             }, this.UserID);
 
-            return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+            PhenolicYellowTest_ViewModel model = _Service.GetData(new PhenolicYellowTest_Request() { ReportNo = ReportNo });
+
+            if (model.Main.Result == "Fail")
+            {
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage, Action = "FailMail()" });
+            }
+            else
+            {
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage, Action = "" });
+            }
         }
 
         [HttpPost]
@@ -293,20 +303,40 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
-        public JsonResult SendMail(string ReportNo)
+        //public JsonResult SendMail(string ReportNo)
+        //{
+        //    this.CheckSession();
+        //    PhenolicYellowTest_ViewModel result = _Service.GetReport(ReportNo, false);
+
+        //    if (!result.Result)
+        //    {
+        //        result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
+        //        return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+        //    }
+
+        //    string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
+
+        //    return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, FileName = result.TempFileName });
+        //}
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult SendMail(string ReportNo, string TO, string CC)
         {
-            this.CheckSession();
-            PhenolicYellowTest_ViewModel result = _Service.GetReport(ReportNo, false);
+            SendMail_Result result = _Service.SendMail(ReportNo, TO, CC);
+            return Json(result);
+            //this.CheckSession();
 
-            if (!result.Result)
-            {
-                result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
-                return Json(new { result.Result, ErrMsg = result.ErrorMessage });
-            }
+            //BaseResult result = null;
+            //string FileName = string.Empty;
 
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
+            //result = _PerspirationFastnessService.ToReport(ID, out FileName, true, false);
+            //if (!result.Result)
+            //{
+            //    result.ErrorMessage = result.ErrorMessage.ToString();
+            //}
+            //string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
 
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, FileName = result.TempFileName });
+            //return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
         }
     }
 }
