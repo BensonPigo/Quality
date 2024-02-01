@@ -29,7 +29,7 @@ namespace DatabaseObject.RequestModel
         public DateTime? DateSubmit { get; set; }
 
         /// <inheritdoc/>
-        public decimal? NumArriveQty { get; set; }
+        public decimal NumArriveQty { get; set; }
 
         /// <inheritdoc/>
         public string TxtSize { get; set; }
@@ -59,46 +59,46 @@ namespace DatabaseObject.RequestModel
         public string NumTwisTingBottom { get; set; }
 
         /// <inheritdoc/>
-        public decimal? NumBottomS1 { get; set; }
+        public decimal NumBottomS1 { get; set; }
 
         /// <inheritdoc/>
-        public decimal? NumBottomL { get; set; }
+        public decimal NumBottomL { get; set; }
 
         /// <inheritdoc/>
         public string NumTwisTingOuter { get; set; }
 
         /// <inheritdoc/>
-        public decimal? NumOuterS1 { get; set; }
+        public decimal NumOuterS1 { get; set; }
 
         /// <inheritdoc/>
-        public decimal? NumOuterS2 { get; set; }
+        public decimal NumOuterS2 { get; set; }
 
         /// <inheritdoc/>
-        public decimal? NumOuterL { get; set; }
+        public decimal NumOuterL { get; set; }
 
         /// <inheritdoc/>
         public string NumTwisTingInner { get; set; }
 
         /// <inheritdoc/>
-        public decimal? NumInnerS1 { get; set; }
+        public decimal NumInnerS1 { get; set; }
 
         /// <inheritdoc/>
-        public decimal? NumInnerS2 { get; set; }
+        public decimal NumInnerS2 { get; set; }
 
         /// <inheritdoc/>
-        public decimal? NumInnerL { get; set; }
+        public decimal NumInnerL { get; set; }
 
         /// <inheritdoc/>
         public string NumTwisTingTop { get; set; }
 
         /// <inheritdoc/>
-        public decimal? NumTopS1 { get; set; }
+        public decimal NumTopS1 { get; set; }
 
         /// <inheritdoc/>
-        public decimal? NumTopS2 { get; set; }
+        public decimal NumTopS2 { get; set; }
 
         /// <inheritdoc/>
-        public decimal? NumTopL { get; set; }
+        public decimal NumTopL { get; set; }
 
         /// <inheritdoc/>
         public string TxtLotoFactory { get; set; }

@@ -356,7 +356,7 @@ DELETE FROM WaterAbsorbencyTest_Detail where ReportNo = @ReportNo AND Ukey = @Uk
                     case CompareStateType.Add:
                         listDetailPar.Add(new SqlParameter($"@EvaluationItem", detailItem.EvaluationItem));
                         listDetailPar.Add(new SqlParameter($"@NoOfDrops", detailItem.NoOfDrops ?? string.Empty));
-                        listDetailPar.Add(new SqlParameter($"@Values", detailItem.Values ?? 0));
+                        listDetailPar.Add(new SqlParameter($"@Values", detailItem.Values));
                         listDetailPar.Add(new SqlParameter($"@Result", detailItem.Result ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? string.Empty));
                         ExecuteNonQuery(CommandType.Text, insertDetail, listDetailPar);
@@ -366,7 +366,7 @@ DELETE FROM WaterAbsorbencyTest_Detail where ReportNo = @ReportNo AND Ukey = @Uk
                         listDetailPar.Add(new SqlParameter($"@Ukey", detailItem.Ukey));
                         listDetailPar.Add(new SqlParameter($"@EvaluationItem", detailItem.EvaluationItem));
                         listDetailPar.Add(new SqlParameter($"@NoOfDrops", detailItem.NoOfDrops ?? string.Empty));
-                        listDetailPar.Add(new SqlParameter($"@Values", detailItem.Values ?? 0));
+                        listDetailPar.Add(new SqlParameter($"@Values", detailItem.Values));
                         listDetailPar.Add(new SqlParameter($"@Result", detailItem.Result ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@Remark", detailItem.Remark ?? string.Empty));
                         ExecuteNonQuery(CommandType.Text, updateDetail, listDetailPar);

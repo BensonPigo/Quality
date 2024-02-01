@@ -19,7 +19,7 @@ namespace DatabaseObject.ProductionDB
         public string ExtNo { get; set; }
         /// <summary></summary>
         [StringLength(80)]
-        [Display(Name = "")]
+        
         public string EMail { get; set; }
 
     }

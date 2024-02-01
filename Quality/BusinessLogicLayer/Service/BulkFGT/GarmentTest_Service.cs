@@ -1070,7 +1070,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         worksheet.Cells[7, 4] = MyUtility.Convert.GetString(all_Data.Main.Article);
                         worksheet.Cells[6, 8] = StyleName;
                         worksheet.Cells[6, 11] = string.IsNullOrEmpty(CriticalName) ? string.Empty : "Y";
-                        worksheet.Cells[8, 8] = MyUtility.Convert.GetDecimal(data.NumArriveQty.Value);
+                        worksheet.Cells[8, 8] = MyUtility.Convert.GetDecimal(data.NumArriveQty);
 
                         string sendDate = Convert.ToDateTime(orders.BuyerDelivery).ToShortDateString();
                         worksheet.Cells[8, 4] = sendDate;

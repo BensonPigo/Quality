@@ -470,7 +470,7 @@ INSERT INTO GarmentTest_Detail_FGPT
                         objParameterFGPT.Add(new SqlParameter($"@Type{idx}", fGPT.Type));
                         objParameterFGPT.Add(new SqlParameter($"@TestDetail{idx}", fGPT.TestDetail));
                         objParameterFGPT.Add(new SqlParameter($"@TestUnit{idx}", fGPT.TestUnit));
-                        objParameterFGPT.Add(new SqlParameter($"@Criteria{idx}", fGPT.Criteria ?? 0));
+                        objParameterFGPT.Add(new SqlParameter($"@Criteria{idx}", fGPT.Criteria));
                         objParameterFGPT.Add(new SqlParameter($"@TestName{idx}", fGPT.TestName));
                         idx++;
                     }
@@ -623,7 +623,7 @@ Delete {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTes
 
                 SQLParameterCollection objParameter = new SQLParameterCollection
                 {
-                    { "@ID", DbType.Int64, newItem.ID } ,
+                    { "@ID",  newItem.ID } ,
                     { "@No", DbType.Int32, newItem.No } ,
                     { "@Location", DbType.String, newItem.Location } ,
                     { "@Type", DbType.String, newItem.Type } ,
@@ -661,7 +661,7 @@ VALUES
 
                 SQLParameterCollection objParameter = new SQLParameterCollection
                 {
-                    { "@ID", DbType.Int64, newItem.ID } ,
+                    { "@ID",  newItem.ID } ,
                     { "@No", DbType.Int32, newItem.No } ,
                     { "@Location", DbType.String, newItem.Location } ,
                     { "@Type", DbType.String, newItem.Type } ,

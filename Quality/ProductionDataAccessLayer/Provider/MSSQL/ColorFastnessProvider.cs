@@ -211,7 +211,7 @@ where POID=@PoID
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
                 { "@PoID", PoID } ,
-                { "@Remark", Remark } ,
+                { "@Remark", Remark ?? string.Empty } ,
             };
 
             string sqlcmd = @"

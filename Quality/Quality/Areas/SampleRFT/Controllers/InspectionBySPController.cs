@@ -160,7 +160,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             var AcceptedQty = 0;
             var RejectQty = 0;
             long AcceptableQualityLevelsUkey = 0;
-            int? maxStart = 0;
+            int maxStart = 0;
             AcceptableQualityLevels tmp = new AcceptableQualityLevels();
             switch (AQLPlan)
             {
@@ -175,8 +175,8 @@ namespace Quality.Areas.SampleRFT.Controllers
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= OrderQty && OrderQty <= o.LotSize_End).FirstOrDefault();
                     }
 
-                    SamplePlanQty = tmp.SampleSize.Value;
-                    AcceptedQty = tmp.AcceptedQty.Value;
+                    SamplePlanQty = tmp.SampleSize;
+                    AcceptedQty = tmp.AcceptedQty;
                     AcceptableQualityLevelsUkey = tmp.Ukey;
                     break;
                 case "1.5 Level":
@@ -190,8 +190,8 @@ namespace Quality.Areas.SampleRFT.Controllers
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1" && o.LotSize_Start <= OrderQty && OrderQty <= o.LotSize_End).FirstOrDefault();
                     }
 
-                    SamplePlanQty = tmp.SampleSize.Value;
-                    AcceptedQty = tmp.AcceptedQty.Value;
+                    SamplePlanQty = tmp.SampleSize;
+                    AcceptedQty = tmp.AcceptedQty;
                     AcceptableQualityLevelsUkey = tmp.Ukey;
                     break;
                 case "2.5 Level":
@@ -205,8 +205,8 @@ namespace Quality.Areas.SampleRFT.Controllers
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1" && o.LotSize_Start <= OrderQty && OrderQty <= o.LotSize_End).FirstOrDefault();
                     }
 
-                    SamplePlanQty = tmp.SampleSize.Value;
-                    AcceptedQty = tmp.AcceptedQty.Value;
+                    SamplePlanQty = tmp.SampleSize;
+                    AcceptedQty = tmp.AcceptedQty;
                     AcceptableQualityLevelsUkey = tmp.Ukey;
                     break;
                 default:

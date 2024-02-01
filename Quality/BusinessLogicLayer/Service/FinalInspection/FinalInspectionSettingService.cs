@@ -251,7 +251,7 @@ namespace BusinessLogicLayer.Service
                         }
 
                         var AQLResult = setting.AcceptableQualityLevels.AsEnumerable();
-                        int? maxStart = 0;
+                        int maxStart = 0;
 
                         switch (setting.AQLPlan)
                         {

@@ -16,16 +16,16 @@ namespace DatabaseObject.ManufacturingExecutionDB
     {
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public long Ukey { get; set; }
         /// <summary></summary>
         [Required]
         [StringLength(13)]
-        [Display(Name = "")]
+        
         public string ID { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public byte[] Image { get; set; }
 
     }

@@ -295,10 +295,9 @@ update  Oven_Detail set Roll           =  @Roll         ,
                 foreach (FabricOvenTest_Detail_Detail detailItem in needUpdateDetailList)
                 {
                     SQLParameterCollection listDetailPar = new SQLParameterCollection();
-                    int temperature = 0;
-                    int time = 0;
-                    int.TryParse(detailItem.Temperature, out temperature);
-                    int.TryParse(detailItem.Time, out time);
+                    int temperature = detailItem.Temperature;
+                    int time = detailItem.Time;
+
                     switch (detailItem.StateType)
                     {
                         case DatabaseObject.Public.CompareStateType.Add:
@@ -469,8 +468,8 @@ getdate()        ,
                     listDetailPar.Add("@ResultChange", detailItem.ResultChange);
                     listDetailPar.Add("@ResultStain", detailItem.ResultStain);
                     listDetailPar.Add("@SubmitDate", detailItem.SubmitDate);
-                    listDetailPar.Add("@Temperature", int.Parse(detailItem.Temperature));
-                    listDetailPar.Add("@Time", int.Parse(detailItem.Time));
+                    listDetailPar.Add("@Temperature", detailItem.Temperature);
+                    listDetailPar.Add("@Time", detailItem.Time);
 
                     ExecuteNonQuery(CommandType.Text, sqlInsertOvenDetail, listDetailPar);
                 }

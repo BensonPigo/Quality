@@ -59,8 +59,8 @@ namespace DatabaseObject.ViewModel.SampleRFT
 
         #region AQL Plan
         public string AQLPlan { get; set; }
-        public int? SampleSize { get; set; }
-        public int? AcceptQty { get; set; }
+        public int SampleSize { get; set; }
+        public int AcceptQty { get; set; }
         public int RejectQty { get; set; }
         public int BAQty { get; set; }
         public long AcceptableQualityLevelsUkey { get; set; }
@@ -126,8 +126,8 @@ namespace DatabaseObject.ViewModel.SampleRFT
 
         #region AQL Plan
         public string AQLPlan { get; set; }
-        public int? SampleSize { get; set; }
-        public int? AcceptQty { get; set; }
+        public int SampleSize { get; set; }
+        public int AcceptQty { get; set; }
         public long AcceptableQualityLevelsUkey { get; set; }
         #endregion
 
@@ -274,7 +274,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
 
     public class SampleRFTInspection_Summary
     {
-        public Int64 RowIndex { get; set; }
+        public long RowIndex { get; set; }
         public long ID { get; set; } // SampleRFTInspection.ID
         public long UKey { get; set; } // SampleRFTInspection_Detail.UKey
         public string GarmentDefectTypeID { get; set; } // = Production.dbo.GarmentDefectType.ID
@@ -347,13 +347,13 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public long Ukey { get; set; } // SampleRFTInspection_NonBACriteria.Ukey
         public string BACriteria { get; set; } // SampleRFTInspection_NonBACriteria.BACriteria
         public string BACriteriaDesc { get; set; }
-        public int? Qty { get; set; }  // SampleRFTInspection_NonBACriteria.Qty
+        public int Qty { get; set; }  // SampleRFTInspection_NonBACriteria.Qty
         public bool HasImage { get; set; }
         public List<SelectListItem> Images_Source { get; set; }
         public List<BAImage> Images { get; set; } = new List<BAImage>();
         public byte[] TempImage { get; set; }
         public string TempRemark { get; set; }
-        public Int64 RowIndex { get; set; }
+        public long RowIndex { get; set; }
 
         public bool Result { get; set; }
         public string ErrMsg { get; set; }

@@ -7,7 +7,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>Quality_Menu</summary>
         [Required]
         [Display(Name = "根據條件顯示不同的功能名稱")]
-        public Int64 ID { get; set; }
+        public long ID { get; set; }
 
         /// <summary>根據條件顯示不同的功能名稱</summary>
         [Required]

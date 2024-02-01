@@ -13,7 +13,7 @@ namespace DatabaseObject.ProductionDB
     /// ===  ==========  ====  ==========  ==========
     /// 01.  2021/08/19   1.00    Admin        Create
     /// </history>
-    public class MockupCrocking
+    public class MockupCrocking2
     {
         /// <summary>測試單號</summary>
         [Display(Name = "測試單號")]
@@ -80,4 +80,141 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "編輯人員")]
         public string EditName { get; set; }
     }
+
+
+    public class MockupCrocking
+    {
+        public string ReportNo { get; set; }
+
+        private string _POID;
+
+        public string POID
+        {
+            get => _POID ?? string.Empty;
+            set => _POID = value;
+        }
+
+        private string _StyleID;
+
+        public string StyleID
+        {
+            get => _StyleID ?? string.Empty;
+            set => _StyleID = value;
+        }
+
+        private string _SeasonID;
+
+        public string SeasonID
+        {
+            get => _SeasonID ?? string.Empty;
+            set => _SeasonID = value;
+        }
+
+        private string _BrandID;
+
+        public string BrandID
+        {
+            get => _BrandID ?? string.Empty;
+            set => _BrandID = value;
+        }
+
+        private string _Article;
+
+        public string Article
+        {
+            get => _Article ?? string.Empty;
+            set => _Article = value;
+        }
+
+        private string _ArtworkTypeID;
+
+        public string ArtworkTypeID
+        {
+            get => _ArtworkTypeID ?? string.Empty;
+            set => _ArtworkTypeID = value;
+        }
+
+        private string _Remark;
+
+        public string Remark
+        {
+            get => _Remark ?? string.Empty;
+            set => _Remark = value;
+        }
+
+        private string _T1Subcon;
+
+        public string T1Subcon
+        {
+            get => _T1Subcon ?? string.Empty;
+            set => _T1Subcon = value;
+        }
+
+        public DateTime? TestDate { get; set; }
+
+
+        public DateTime? ReceivedDate { get; set; }
+
+
+        public DateTime? ReleasedDate { get; set; }
+
+        private string _Result;
+
+        public string Result
+        {
+            get => _Result ?? string.Empty;
+            set => _Result = value;
+        }
+
+        private string _Technician;
+
+        public string Technician
+        {
+            get => _Technician ?? string.Empty;
+            set => _Technician = value;
+        }
+
+        private string _MR;
+
+        public string MR
+        {
+            get => _MR ?? string.Empty;
+            set => _MR = value;
+        }
+
+        private string _Type;
+
+        public string Type
+        {
+            get => _Type ?? string.Empty;
+            set => _Type = value;
+        }
+
+        public Byte[] TestBeforePicture { get; set; }
+
+        public Byte[] TestAfterPicture { get; set; }
+
+
+        public DateTime? AddDate { get; set; }
+
+        private string _AddName;
+
+        public string AddName
+        {
+            get => _AddName ?? string.Empty;
+            set => _AddName = value;
+        }
+
+
+        public DateTime? EditDate { get; set; }
+
+        private string _EditName;
+
+        public string EditName
+        {
+            get => _EditName ?? string.Empty;
+            set => _EditName = value;
+        }
+    }
+
 }

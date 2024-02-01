@@ -56,8 +56,8 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [Result] = o.Result,
 		[Remark] = o.Remark,
 		[Status] = o.Status,
-        Temperature = Cast( o.Temperature as varchar),
-        Time = Cast(  o.Time as varchar),
+        Temperature =  o.Temperature ,
+        Time =   o.Time ,
         [TestBeforePicture] = (select top 1 TestBeforePicture from SciPMSFile_WaterFastness oi WITH(NOLOCK) where o.ID = oi.ID ),
         [TestAfterPicture] = (select top 1 TestAfterPicture from SciPMSFile_WaterFastness oi WITH(NOLOCK) where o.ID = oi.ID )
 from WaterFastness o with (nolock)
@@ -101,8 +101,8 @@ select	[SubmitDate] = od.SubmitDate,
         ,od.ResultWool,
         [Remark] = od.Remark,
         [LastUpdate] = Concat(od.EditName, '-', pass1EditName.Name, ' ', pass1EditName.Extno),
-        [Temperature] = cast(o.Temperature as varchar),
-        [Time] = cast(o.Time as varchar)
+        [Temperature] = o.Temperature ,
+        [Time] = o.Time 
 from WaterFastness_Detail od with (nolock)
 inner join WaterFastness o with (nolock) on o.ID = od.ID
 left join PO_Supp_Detail psd with (nolock) on o.POID = psd.ID and od.SEQ1 = psd.SEQ1 and od.SEQ2 = psd.SEQ2
