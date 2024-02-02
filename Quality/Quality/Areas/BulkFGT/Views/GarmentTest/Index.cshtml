@@ -410,13 +410,13 @@
 
                                             @if (string.IsNullOrEmpty(Model.garmentTest_Details[i].ReportNo))
                                             {
-                                                <a href="@aHref" class="detailA" idx="@Model.garmentTest_Details[i].ID" idv="@Model.garmentTest_Details[i].No">
+                                                <a href="@aHref" class="detailA" NewNo="false" idx="@Model.garmentTest_Details[i].ID" idv="@Model.garmentTest_Details[i].No">
                                                     <img class="" src="~/Image/Icon/View.png" width="30" />
                                                 </a>
                                             }
                                             else
                                             {
-                                                <a href="@aHref" class="detailA" idx="@Model.garmentTest_Details[i].ID" idv="@Model.garmentTest_Details[i].No">
+                                                <a href="@aHref" class="detailA" NewNo="false" idx="@Model.garmentTest_Details[i].ID" idv="@Model.garmentTest_Details[i].No">
                                                     @Html.DisplayFor(o => Model.garmentTest_Details[i].ReportNo, "", "")
                                                 </a>
                                             }
@@ -748,13 +748,31 @@
             }
 
             var t = $(this);
+
+            // 若是刪除Row，所有新No > 這筆的資料，No都要-1
+
+
             var tr = $(this).parent().parent();
             var fcol = tr.children().find("a[class='detailA']");
             var id = fcol.attr("idx");
-            var no = fcol.attr("idv");
+
+            // 找到被刪除的No
+            var delNo = parseInt(fcol.attr("idv"));
+
+
             msg.WithConfirm('Do you want to delete the data ?',
                 function ()
                 {
+                    // 找出新No > 這筆的資料
+                    var allNewNo = $("a[class='detailA'][NewNo='true']");
+                    $.each(allNewNo, function () {
+                        var no = parseInt($(this).attr("idv"));
+                        if (no > delNo) {
+                            no = no - 1;
+                            $(this).attr("idv", no);
+                        }
+                    });
+
                     t.parents().parents('tr').remove();
                     msg.WithSuccess("Delete Success");
                 }, null);

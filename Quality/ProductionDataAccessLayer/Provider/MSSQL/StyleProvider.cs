@@ -18,11 +18,11 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         #endregion
 
         #region CRUD Base
-        public IList<Style> GetSizeUnit(Int64 ukey)
+        public IList<Style> GetSizeUnit(long ukey)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection()
             {
-                 { "@ukey", DbType.Int64, ukey } ,
+                 { "@ukey",  ukey } ,
             };
 
             string sqlcmd = @"
@@ -97,7 +97,7 @@ and name LIKE '%Critical%'
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection()
             {
-                 { "@ukey", DbType.Int64, Item.Ukey } ,
+                 { "@ukey",  Item.Ukey } ,
             };
             SbSql.Append("SELECT"+ Environment.NewLine);
             SbSql.Append("         ID"+ Environment.NewLine);

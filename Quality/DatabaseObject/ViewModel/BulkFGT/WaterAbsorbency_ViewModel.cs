@@ -123,7 +123,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string ReportNo { get; set; }
         public string EvaluationItem { get; set; }
         public string NoOfDrops { get; set; }
-        public decimal? Values { get; set; }
+        public decimal Values { get; set; }
         public string Result { get; set; }
         public string Remark { get; set; }
         public string EditName { get; set; }

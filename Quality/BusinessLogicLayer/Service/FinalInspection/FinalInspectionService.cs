@@ -36,7 +36,7 @@ namespace BusinessLogicLayer.Service
                 case -1:
                     return "100% Inspection";
                 case 0:
-                    return string.Empty;
+                    return "100% Inspection";
                 default:
                     _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
                     List<AcceptableQualityLevels> acceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().ToList();

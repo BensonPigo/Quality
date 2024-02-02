@@ -25,12 +25,12 @@ namespace DatabaseObject.ProductionDB
         /// <summary>數量</summary>
         [Required]
         [Display(Name = "數量")]
-        public int? Qty { get; set; }
+        public int Qty { get; set; }
 
         /// <summary>原始數量</summary>
         [Required]
         [Display(Name = "原始數量")]
-        public int? OriQty { get; set; }
+        public int OriQty { get; set; }
 
         /// <summary>新增人員</summary>
         [StringLength(10)]

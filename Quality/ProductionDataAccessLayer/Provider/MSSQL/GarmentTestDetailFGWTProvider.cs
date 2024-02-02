@@ -103,7 +103,7 @@ order by Seq asc , Location
         {
             SQLParameterCollection objParameter = new SQLParameterCollection
             {
-                { "@ID", DbType.Int64, source.ID } ,
+                { "@ID",  source.ID } ,
                 { "@No", DbType.String, source.No } ,
             };
 
@@ -186,8 +186,8 @@ SELECT locations = STUFF(
                 }
             }
 
-            long? garmentTest_Detail_ID = source.ID;
-            long? garmentTest_Detail_No = source.No;
+            long garmentTest_Detail_ID = source.ID;
+            long garmentTest_Detail_No = source.No;
 
             StringBuilder insertCmd = new StringBuilder();
             SQLParameterCollection parameters = new SQLParameterCollection();
@@ -337,7 +337,7 @@ INSERT INTO GarmentTest_Detail_FGWT
                 objParameter.Add(new SqlParameter($"@SizeSpec{idx}", item.SizeSpec));
                 objParameter.Add(new SqlParameter($"@AfterWash{idx}", item.AfterWash));
                 objParameter.Add(new SqlParameter($"@Shrinkage{idx}", item.Shrinkage));
-                objParameter.Add(new SqlParameter($"@Scale{idx}", item.Scale));
+                objParameter.Add(new SqlParameter($"@Scale{idx}", item.Scale ?? string.Empty));
 
                 sqlcmd += $@"
                 update gf
@@ -417,7 +417,7 @@ and t.Type = 'spirality: Garment - in percentage (average) (Bottom Method B)'
             ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
 
-        private string UpdateGarmentTest_Detail_FGWTShrinkage(long? ID, long? NO)
+        private string UpdateGarmentTest_Detail_FGWTShrinkage(long ID, long NO)
         {
             SQLParameterCollection objParameter_Spirality = new SQLParameterCollection
             {

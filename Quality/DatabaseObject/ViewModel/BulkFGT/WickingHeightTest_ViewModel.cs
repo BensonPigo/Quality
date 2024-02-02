@@ -147,10 +147,10 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string EvaluationType { get; set; }
         public string ReportNo { get; set; }
         public string EvaluationItem { get; set; }
-        public decimal? WarpValues { get; set; }
-        public int? WarpTime { get; set; }
-        public decimal? WeftValues { get; set; }
-        public int? WeftTime { get; set; }
+        public decimal WarpValues { get; set; }
+        public int WarpTime { get; set; }
+        public decimal WeftValues { get; set; }
+        public int WeftTime { get; set; }
         public string EditName { get; set; }
         public DateTime? EditDate { get; set; }
         public string LastUpadate

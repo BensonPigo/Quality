@@ -973,6 +973,7 @@
         $('.inputRollSelectItem').unbind('blur').on('blur', function () {
             var targetID = $(this).closest('tr').attr('idx');
             var checkValue = $("#Crocking_Detail_" + targetID + "__Roll").val();
+            var receivingID = '@Model.Crocking_Main.ReceivingID';
 
             if (checkValue == "") {
                 $("#Crocking_Detail_" + targetID + "__Dyelot").val('');
@@ -980,10 +981,10 @@
             }
 
             $.ajax({
-                url: "@Url.Action("FtyInventoryList", "PublicWindow",new { Area=""})",
+                url: "@Url.Action("AllReceivingDetailList", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ POID: poid, Seq1: seq1, Seq2: seq2, Roll: checkValue, ReturnType: "JSON" }),
+                data: JSON.stringify({ POID: poid, Seq1: seq1, Seq2: seq2, Roll: checkValue, ReceivingID: receivingID, ReturnType: "JSON" }),
                 async: true,
                 success: function (data) {
                     if (data.length == 0) {
@@ -1004,8 +1005,9 @@
 
         $('.btnRollSelectItem').unbind('click').on('click', function () {
             var targetID = $(this).closest('tr').attr('idx');
-            var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq2=" + seq2 + "&TargetID=" + targetID;
-            window.open('@Url.Action("FtyInventoryList", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+            var receivingID = '@Model.Crocking_Main.ReceivingID';
+            var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq2=" + seq2 + "&TargetID=" + targetID + "&ReceivingID=" + receivingID;
+            window.open('@Url.Action("AllReceivingDetailList", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
         });
 
         $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
@@ -1057,7 +1059,7 @@
         });
     }
 
-    function GetFtyInventory(data, targetID) {
+    function GetAllReceivingDetail(data, targetID) {
         $("#Crocking_Detail_" + targetID + "__Roll").val(data.Roll);
         $("#Crocking_Detail_" + targetID + "__Dyelot").val(data.Dyelot);
     }

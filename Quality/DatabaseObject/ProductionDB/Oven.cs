@@ -6,7 +6,7 @@ namespace DatabaseObject.ProductionDB
     {
         /// <summary>ID</summary>
         [Display(Name = "ID")]
-        public Int64? ID { get; set; }
+        public long ID { get; set; }
 
         /// <summary>採購單號</summary>
         [Display(Name = "採購單號")]
@@ -57,12 +57,12 @@ namespace DatabaseObject.ProductionDB
         public DateTime? EditDate { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
-        public int? Temperature { get; set; }
+        
+        public int Temperature { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
-        public int? Time { get; set; }
+        
+        public int Time { get; set; }
 
         /// <summary>測試前的照片</summary>
         [Display(Name = "測試前的照片")]

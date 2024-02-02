@@ -10,9 +10,9 @@ namespace DatabaseObject.ViewModel.FinalInspection
     {
         public string FinalInspectionID { get; set; }
         public string BrandID { get; set; }
-        public decimal? FinalInspection_CTNMoistureStandard { get; set; }
-        public decimal? FinalInspection_CTNMoistureStandardBM { get; set; }
-        public decimal? FinalInspection_CTNMoistureStandardLandtek { get; set; }
+        public decimal FinalInspection_CTNMoistureStandard { get; set; }
+        public decimal FinalInspection_CTNMoistureStandardBM { get; set; }
+        public decimal FinalInspection_CTNMoistureStandardLandtek { get; set; }
         public List<string> ListArticle { get; set; }
         public List<CartonItem> ListCartonItem { get; set; }
         public List<EndlineMoisture> ListEndlineMoisture { get; set; }
@@ -32,20 +32,20 @@ namespace DatabaseObject.ViewModel.FinalInspection
     {
         public string FinalInspectionID { get; set; }
         public string Article { get; set; }
-        public long? FinalInspection_OrderCartonUkey { get; set; }
+        public long FinalInspection_OrderCartonUkey { get; set; }
         public string Instrument { get; set; }
         public string Fabrication { get; set; }
-        public decimal? GarmentTop { get; set; }
-        public decimal? GarmentMiddle { get; set; }
-        public decimal? GarmentBottom { get; set; }
-        public decimal? CTNInside { get; set; }
-        public decimal? CTNOutside { get; set; }
+        public decimal GarmentTop { get; set; }
+        public decimal GarmentMiddle { get; set; }
+        public decimal GarmentBottom { get; set; }
+        public decimal CTNInside { get; set; }
+        public decimal CTNOutside { get; set; }
         public string Action { get; set; }
         public string Result { get; set; }
         public string Remark { get; set; }
         public string AddName { get; set; }
 
-        public decimal? GarmentStandard { get; set; }
+        public decimal GarmentStandard { get; set; }
     }
 
     public class ViewMoistureResult
@@ -55,13 +55,13 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string CTNNo { get; set; }
         public string Instrument { get; set; }
         public string Fabrication { get; set; }
-        public decimal? GarmentStandard { get; set; }
-        public decimal? GarmentTop { get; set; }
-        public decimal? GarmentMiddle { get; set; }
-        public decimal? GarmentBottom { get; set; }
-        public decimal? CTNStandard { get; set; }
-        public decimal? CTNInside { get; set; }
-        public decimal? CTNOutside { get; set; }
+        public decimal GarmentStandard { get; set; }
+        public decimal GarmentTop { get; set; }
+        public decimal GarmentMiddle { get; set; }
+        public decimal GarmentBottom { get; set; }
+        public decimal CTNStandard { get; set; }
+        public decimal CTNInside { get; set; }
+        public decimal CTNOutside { get; set; }
         public string Result { get; set; }
         public string Action { get; set; }
         public string Remark { get; set; }

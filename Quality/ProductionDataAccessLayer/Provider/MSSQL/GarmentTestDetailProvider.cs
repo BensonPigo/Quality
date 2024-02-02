@@ -369,13 +369,13 @@ and ID = @ID
                 { "@Temperature", source.Temperature } ,
                 { "@TumbleDry", DbType.Boolean, source.TumbleDry } ,
                 { "@FabricationType", source.FabricationType ?? "Non"} ,
-                { "@Machine", source.Machine } ,
+                { "@Machine", source.Machine  ?? ""} ,
                 { "@HandWash",DbType.Boolean, source.HandWash } ,
-                { "@Composition", source.Composition } ,
+                { "@Composition", source.Composition ?? "" } ,
                 { "@Neck", DbType.Boolean, source.Neck } ,
                 { "@Above50NaturalFibres", DbType.Boolean, source.Above50NaturalFibres } ,
                 { "@Above50SyntheticFibres", DbType.Boolean, source.Above50SyntheticFibres } ,
-                { "@EditName", source.EditName } ,
+                { "@EditName", source.EditName ?? ""} ,
                 { $"@NonSeamBreakageTest",DbType.Boolean,  source.NonSeamBreakageTest},
             };
 

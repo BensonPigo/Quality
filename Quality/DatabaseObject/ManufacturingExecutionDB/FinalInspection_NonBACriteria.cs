@@ -34,7 +34,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>不好看數量</summary>
         [Required]
         [Display(Name = "不好看數量")]
-        public int? Qty { get; set; }
+        public int Qty { get; set; }
 
     }
 }

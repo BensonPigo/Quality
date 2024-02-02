@@ -97,7 +97,7 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult ArticleList(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string TargetID)
+        public ActionResult ArticleList(string OrderID, long StyleUkey, string StyleID, string BrandID, string SeasonID, string TargetID)
         {
             var model = _PublicWindowService.Get_Article(OrderID, StyleUkey, StyleID, BrandID, SeasonID, string.Empty, false);
             ViewData["OrderID"] = OrderID;
@@ -110,7 +110,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult ArticleList(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, string TargetID, string ReturnType = "")
+        public ActionResult ArticleList(string OrderID, long StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, string TargetID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_Article(OrderID, StyleUkey, StyleID, BrandID, SeasonID, Article, IsExact);
@@ -128,7 +128,7 @@ namespace Quality.Controllers
         }
 
 
-        public ActionResult PoidArticleList(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string TargetID)
+        public ActionResult PoidArticleList(string OrderID, long StyleUkey, string StyleID, string BrandID, string SeasonID, string TargetID)
         {
             var model = _PublicWindowService.Get_PoidArticle(OrderID, StyleUkey, StyleID, BrandID, SeasonID, string.Empty, false);
             ViewData["OrderID"] = OrderID;
@@ -141,7 +141,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult PoidArticleList(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, string TargetID, string ReturnType = "")
+        public ActionResult PoidArticleList(string OrderID, long StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, string TargetID, string ReturnType = "")
         {
             bool IsExact = ReturnType.ToUpper() == "JSON";
             var model = _PublicWindowService.Get_PoidArticle(OrderID, StyleUkey, StyleID, BrandID, SeasonID, Article, IsExact);
@@ -158,7 +158,7 @@ namespace Quality.Controllers
             return View(model);
         }
 
-        public ActionResult SizeList(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string TargetID)
+        public ActionResult SizeList(string OrderID, long StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string TargetID)
         {
             var model = _PublicWindowService.Get_Size(OrderID, StyleUkey, BrandID, SeasonID, StyleID, Article, string.Empty, false);
             ViewData["OrderID"] = OrderID;
@@ -172,7 +172,7 @@ namespace Quality.Controllers
         }
 
         [HttpPost]
-        public ActionResult SizeList(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, string TargetID, string ReturnType = "")
+        public ActionResult SizeList(string OrderID, long StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, string TargetID, string ReturnType = "")
         {
             // 若是驗證則需要精準判斷
             bool IsExact = ReturnType.ToUpper() == "JSON";
@@ -355,6 +355,33 @@ namespace Quality.Controllers
             return View(model);
         }
 
+        public ActionResult AllReceivingDetailList(string Title, string POID, string Seq1, string Seq2, string ReceivingID, string TargetID)
+        {
+            var model = _PublicWindowService.Get_AllReceivingDetail(POID, Seq1, Seq2, string.Empty, ReceivingID, false);
+            ViewData["Title"] = Title;
+            ViewData["POID"] = POID;
+            ViewData["Seq1"] = Seq1;
+            ViewData["Seq2"] = Seq2;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult AllReceivingDetailList(string Title, string POID, string Seq1, string Seq2, string Roll, string ReceivingID, string TargetID, string ReturnType = "")
+        {
+            bool IsExact = ReturnType.ToUpper() == "JSON";
+            var model = _PublicWindowService.Get_AllReceivingDetail(POID, Seq1, Seq2, Roll, ReceivingID, IsExact);
+            ViewData["Title"] = Title;
+            ViewData["POID"] = POID;
+            ViewData["Seq1"] = Seq1;
+            ViewData["Seq2"] = Seq2;
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            if (ReturnType.ToUpper() == "JSON")
+            {
+                return Json(model);
+            }
+            return View(model);
+        }
 
         public ActionResult Pass1List(string Title, string TargetID)
         {

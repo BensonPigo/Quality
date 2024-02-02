@@ -231,7 +231,7 @@
                                                 <select id="WashingTemperature" name="WashingTemperature" disabled="disabled" style="width:157px;">
                                                     @foreach (var item in Model.WashingTemperatureData)
                                                     {
-                                                        string selected = item.Text.Equals(Model.WashingTemperature.ToString()) ? "selected" : "";
+                                                        string selected = item.Text == Model.WashingTemperature.ToString() ? "selected" : "";
                                                         <option value="@item.Value" @selected>@item.Text</option>
                                                     }
                                                 </select>
