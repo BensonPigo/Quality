@@ -25,7 +25,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         bool CheckOrderID(string OrderID, string BrandID, string SeasonID, string StyleID);
 
-        GarmentTest_ViewModel SendMail(string ID, string No, string UserID);
+        GarmentTest_ViewModel UpdateMailSender(string ID, string No, string UserID);
 
         GarmentTest_ViewModel ReceiveMail(string ID, string No, string UserID);
 

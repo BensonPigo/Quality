@@ -1428,10 +1428,14 @@
             async: false,
             success: function (data) {
                 if (data.result) {
-                    msg.WithSuccess("Success");
+                    msg.WithSuccesCheck("Success", function () {
+                        $("#btnQuery").click();
+                    });
                 }
                 else {
-                    msg.WithWarning(data.resultMsg);
+                    msg.WithWarningCheck(data.resultMsg, function () {
+                        location.reload();
+                    });
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -1458,6 +1462,7 @@
             success: function (data) {
                 if (data.result) {
                     msg.WithSuccesCheck("Success", function () {
+                        $("#btnQuery").click();
                     });
                 }
                 else {

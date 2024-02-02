@@ -1,6 +1,8 @@
 ﻿using ADOHelper.Utility;
 using BusinessLogicLayer.Helper;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -23,6 +25,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
     public class RandomTumblePillingTestService
     {
         private RandomTumblePillingTestProvider _Provider;
+        private MailToolsService _MailService;
         public RandomTumblePillingTest_ViewModel GetDefaultModel(bool isNew = false)
         {
             RandomTumblePillingTest_ViewModel model = new RandomTumblePillingTest_ViewModel()
@@ -639,6 +642,38 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Marshal.ReleaseComObject(excel);
             }
             return result;
+        }
+
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new RandomTumblePillingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            RandomTumblePillingTest_ViewModel model = this.GetData(new RandomTumblePillingTest_Request() { ReportNo = ReportNo });
+
+            RandomTumblePillingTest_ViewModel report = this.GetReport(ReportNo, false);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Random Tumble Pilling Test/{model.Main.OrderID}/" +
+                $"{model.Main.StyleID}/" +
+                $"{model.Main.Article}/" +
+                $"{model.Main.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

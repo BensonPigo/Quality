@@ -17,6 +17,8 @@ using System.Web.Mvc;
 using System.Web.UI.WebControls;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -25,6 +27,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         private string UploadFileRootPath = ConfigurationManager.AppSettings["UploadFileRootPath"];
         private string UploadFilePath = $@"{ConfigurationManager.AppSettings["UploadFileRootPath"]}BulkFGT\TPeelStrengthTest\";
         private TPeelStrengthTestProvider _Provider;
+        private MailToolsService _MailService;
 
         public TPeelStrengthTest_ViewModel GetDefaultModel(bool iNew = false)
         {
@@ -679,6 +682,37 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
 
             Req.Main.MachineReport = FileName + FileExtension;
+        }
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new TPeelStrengthTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            TPeelStrengthTest_ViewModel model = this.GetData(new TPeelStrengthTest_Request() { ReportNo = ReportNo });
+
+            TPeelStrengthTest_ViewModel report = this.GetReport(ReportNo, false);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"T-Peel Strength  Test/{model.Main.OrderID}/" +
+                $"{model.Main.StyleID}/" +
+                $"{model.Main.Article}/" +
+                $"{model.Main.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

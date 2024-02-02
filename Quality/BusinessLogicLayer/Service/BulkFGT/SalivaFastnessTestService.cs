@@ -1,4 +1,6 @@
 ﻿using ADOHelper.Utility;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -16,6 +18,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
     public class SalivaFastnessTestService
     {
         private SalivaFastnessTestProvider _Provider;
+        private MailToolsService _MailService;
         public SalivaFastnessTest_ViewModel GetDefaultModel(bool iNew = false)
         {
             SalivaFastnessTest_ViewModel model = new SalivaFastnessTest_ViewModel()
@@ -646,6 +649,38 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Marshal.ReleaseComObject(excel);
             }
             return result;
+        }
+
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new SalivaFastnessTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            SalivaFastnessTest_ViewModel model = this.GetData(new SalivaFastnessTest_Request() { ReportNo = ReportNo });
+
+            SalivaFastnessTest_ViewModel report = this.GetReport(ReportNo, false);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Saliva Fastness Test/{model.Main.OrderID}/" +
+                $"{model.Main.StyleID}/" +
+                $"{model.Main.Article}/" +
+                $"{model.Main.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

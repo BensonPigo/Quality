@@ -556,6 +556,7 @@ namespace BusinessLogicLayer.Service
                 Subject = $"Mockup Oven /{model.POID}/" +
                 $"{model.StyleID}/" +
                 $"{model.Article}/" +
+                $"{model.Result}/" +
                 $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = mail_Request.To,
                 CC = mail_Request.CC,

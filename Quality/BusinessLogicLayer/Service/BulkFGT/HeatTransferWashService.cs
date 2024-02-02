@@ -21,6 +21,8 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
+using DatabaseObject.ResultModel;
+using Library;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -29,6 +31,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         public HeatTransferWashProvider _Provider;
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
+        private MailToolsService _MailService;
         public BaseResult Create(HeatTransferWash_ViewModel model, string MDivision, string userid, out string NewReportNo)
         {
             BaseResult result = new BaseResult();
@@ -419,31 +422,58 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     bodyStart++;
                 }
 
-                string excelFileName = $"Daily HT Wash Test_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-                string pdfFileName = $"Daily HT Wash Test_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                //string excelFileName = $"Daily HT Wash Test_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                //string pdfFileName = $"Daily HT Wash Test_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
 
-                string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
-                string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
+                //string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
+                //string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
+
+
+                string fileName = $"Daily HT Wash Test){DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
+
+                string filePdfName = $"Daily HT Wash Test){DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
+
+
+                Microsoft.Office.Interop.Excel.Workbook workbook = excel.ActiveWorkbook;
+                workbook.SaveAs(fullExcelFileName);
+
+                workbook.Close();
+                excel.Quit();
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(workbook);
+
 
                 if (IsPDF)
                 {
-                    Microsoft.Office.Interop.Excel.XlFixedFormatType targetType = Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF;
-                    Excel.Workbook workBook = excel.ActiveWorkbook;
-                    workBook.ExportAsFixedFormat(targetType, pdfPath);
-                    Marshal.ReleaseComObject(workBook);
-                    FinalFilenmae = pdfFileName;
+                    if (ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
+                    {
+                        FinalFilenmae = fullPdfFileName;
+                        result.Result = true;
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Convert To PDF Fail";
+                        result.Result = false;
+                    }
+                    //Microsoft.Office.Interop.Excel.XlFixedFormatType targetType = Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF;
+                    //Excel.Workbook workBook = excel.ActiveWorkbook;
+                    //workBook.ExportAsFixedFormat(targetType, pdfPath);
+                    //Marshal.ReleaseComObject(workBook);
+                    //FinalFilenmae = pdfFileName;
                 }
                 else
                 {
-                    excel.ActiveWorkbook.SaveAs(excelPath);
-                    FinalFilenmae = excelFileName;
+                    FinalFilenmae = fullExcelFileName;
+                    result.Result = true;
+                    //excel.ActiveWorkbook.SaveAs(excelPath);
+                    //FinalFilenmae = excelFileName;
                 }
 
-                excel.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(excel);
-
-                result.Result = true;
+                //excel.Quit();
+                //Marshal.ReleaseComObject(worksheet);
+                //Marshal.ReleaseComObject(excel);
             }
             catch (Exception ex)
             {
@@ -537,6 +567,40 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
 
             return result;
+        }
+
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new HeatTransferWashProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            HeatTransferWash_ViewModel model = this.GetHeatTransferWash(new HeatTransferWash_Request() { ReportNo = ReportNo });
+            string FinalFilenmae = string.Empty;
+            BaseResult report = this.ToReport(ReportNo, false ,out FinalFilenmae);
+
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FinalFilenmae);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Daily Heat Transfer Wash Test/{model.Main.OrderID}/" +
+                        $"{model.Main.StyleID}/" +
+                        $"{model.Main.Article}/" +
+                        $"{model.Main.Line}/" +
+                        $"{model.Main.Result}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

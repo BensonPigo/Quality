@@ -197,7 +197,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
                     // 測試名稱/SP號/款號/料號/顏色/測試結果/寄信年月日時分秒
-                    Subject = $"Accessory Oven Test/{Req.POID}/{dt.Rows[0]["Style"]}/{dt.Rows[0]["Refno"]}/{dt.Rows[0]["Color"]}/{dt.Rows[0]["Oven Result"]}/{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                    Subject = $"Accessory Oven Test/{Req.POID}/" +
+                    $"{dt.Rows[0]["Style"]}/" +
+                    $"{dt.Rows[0]["Refno"]}/" +
+                    $"{dt.Rows[0]["Color"]}/" +
+                    $"{dt.Rows[0]["Oven Result"]}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -473,7 +478,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
-                    Subject = $"Accessory Wash Test/{Req.POID}/{dt.Rows[0]["Style"]}/{dt.Rows[0]["Refno"]}/{dt.Rows[0]["Color"]}/{dt.Rows[0]["Wash Result"]}/{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                    Subject = $"Accessory Wash Test/{Req.POID}/" +
+                    $"{dt.Rows[0]["Style"]}/" +
+                    $"{dt.Rows[0]["Refno"]}/" +
+                    $"{dt.Rows[0]["Color"]}/" +
+                    $"{dt.Rows[0]["Wash Result"]}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -762,7 +772,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
-                    Subject = $"Accessory Washing Fastness Test/{Req.POID}/{dt.Rows[0]["Style"]}/{dt.Rows[0]["Refno"]}/{dt.Rows[0]["Color"]}/{dt.Rows[0]["Washing Fastness Result"]}/{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                    Subject = $"Accessory Washing Fastness Test/" +
+                    $"{Req.POID}/" +
+                    $"{dt.Rows[0]["Style"]}/" +
+                    $"{dt.Rows[0]["Refno"]}/" +
+                    $"{dt.Rows[0]["Color"]}/" +
+                    $"{dt.Rows[0]["Washing Fastness Result"]}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },

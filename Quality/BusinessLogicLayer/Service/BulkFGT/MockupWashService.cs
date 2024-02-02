@@ -548,9 +548,10 @@ namespace BusinessLogicLayer.Service
             SendMail_Request sendMail_Request = new SendMail_Request
             {
                 Subject = $"Mockup Wash /{model.POID}/" +
-                $"{model.StyleID}/" +
-                $"{model.Article}/" +
-                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                    $"{model.StyleID}/" +
+                    $"{model.Article}/" +
+                    $"{model.Result}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = mail_Request.To,
                 CC = mail_Request.CC,
                 //Body = mailBody,

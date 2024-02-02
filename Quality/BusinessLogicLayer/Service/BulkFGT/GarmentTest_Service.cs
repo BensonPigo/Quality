@@ -543,7 +543,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
         // Sent Mail 
         #region Sent Mail
-        public GarmentTest_ViewModel SendMail(string ID, string No, string UserID)
+        public GarmentTest_ViewModel UpdateMailSender(string ID, string No, string UserID)
         {
             GarmentTest_ViewModel result = new GarmentTest_ViewModel();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
@@ -625,6 +625,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Subject = $"Garment Test/{dtContent.Rows[0]["OrderID"]}/" +
                     $"{dtContent.Rows[0]["StyleID"]}/" +
                     $"{dtContent.Rows[0]["Article"]}/" +
+                    $"{dtContent.Rows[0]["Result"]}/" +
                     $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = strHtml,
                     //alternateView = plainView,

@@ -1,4 +1,6 @@
 ﻿using ADOHelper.Utility;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -17,6 +19,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
     public class WickingHeightTestService
     {
         private WickingHeightTestProvider _Provider;
+        private MailToolsService _MailService;
 
         public WickingHeightTest_ViewModel GetDefaultModel(bool iNew = false)
         {
@@ -552,6 +555,37 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
 
             return result;
+        }
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new WickingHeightTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            WickingHeightTest_ViewModel model = this.GetData(new WickingHeightTest_Request() { ReportNo = ReportNo });
+
+            WickingHeightTest_ViewModel report = this.GetReport(ReportNo, false);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Wicking Height Test/{model.Main.OrderID}/" +
+                    $"{model.Main.StyleID}/" +
+                    $"{model.Main.Article}/" +
+                    $"{model.Main.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

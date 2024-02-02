@@ -332,7 +332,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return baseResult;
         }
 
-        public SendMail_Result SendFailResultMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest)
+        public SendMail_Result SendMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -347,7 +347,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     To = toAddress,
                     CC = ccAddress,
-                    Subject = "Fabric Oven Test - Test Fail",
+                    Subject = $"Water Fastness Test/{poID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Article"]}/" +
+                        $"{dtResult.Rows[0]["Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },

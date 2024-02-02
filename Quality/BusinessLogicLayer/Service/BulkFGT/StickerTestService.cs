@@ -18,12 +18,15 @@ using System.Data;
 using Microsoft.Office.Interop.Excel;
 using DataTable = System.Data.DataTable;
 using System.Web.Mvc;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
     public class StickerTestService
     {
         private StickerTestProvider _Provider;
+        private MailToolsService _MailService;
         public StickerTest_ViewModel GetDefaultModel(bool IsNew = false)
         {
             StickerTest_ViewModel model = new StickerTest_ViewModel()
@@ -686,6 +689,37 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 destinationPdf.NewPage();
                 contentByte.AddTemplate(importedPage, 0, 0);
             }
+        }
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new StickerTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            StickerTest_ViewModel model = this.GetData(new StickerTest_Request() { ReportNo = ReportNo });
+
+            StickerTest_ViewModel report = this.GetReport(ReportNo, false);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Residue/Ageing Test for Sticker Test/{model.Main.OrderID}/" +
+                $"{model.Main.StyleID}/" +
+                $"{model.Main.Article}/" +
+                $"{model.Main.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

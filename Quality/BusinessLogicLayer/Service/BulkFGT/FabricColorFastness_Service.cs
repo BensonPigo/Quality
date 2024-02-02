@@ -324,7 +324,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     To = ToAddress,
                     CC = CCAddress,
-                    Subject = "Washing Fastness - Test Fail",
+                    //Subject = "Washing Fastness - Test Fail",
+                    Subject = $"Washing Fastness Test /{dtContent.Rows[0]["ID"]}/" +
+                        $"{dtContent.Rows[0]["StyleID"]}/" +
+                        $"{dtContent.Rows[0]["Article"]}/" +
+                        $"{dtContent.Rows[0]["Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = strHtml,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },

@@ -1872,12 +1872,6 @@
         });
     }
 
-    function FailMail() {
-        var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
-        window.open('@Url.Action("TestFailMailList", "PublicWindow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
-    }
-
-
     function AdjustElements(listName,indexToDelete) {
 
         // 取得所有 name 屬性以 "TimeList[" 開頭的元素
@@ -2294,6 +2288,11 @@
         $(`input[detailtype="Main${detailType}"]`).val(avg);
     }
 
+    function FailMail() {
+        var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
+        window.open('@Url.Action("TestFailMailList", "PublicWindow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
     function GetTestFailMailList(data) {
         var to = "";
         var cc = "";
@@ -2311,7 +2310,7 @@
             success: function (data) {
                 if (data.result) {
                     msg.WithSuccesCheck("Success", function () {
-                        location.reload();
+                        $("#btnQuery").click();
                     });
                 }
                 else {
@@ -2329,7 +2328,6 @@
         });
     }
 
-
     function GetSendMailer(data) {
         var to = data.To;
         var cc = data.CC;
@@ -2345,7 +2343,7 @@
             success: function (data) {
                 if (data.result) {
                     msg.WithSuccesCheck("Success", function () {
-                        location.reload();
+                        $("#btnQuery").click();
                     });
                 }
                 else {

@@ -304,6 +304,7 @@ namespace BusinessLogicLayer.Service
                     Subject = $"Fabric Oven Test/{poID}/" +
                     $"{dtResult.Rows[0]["Style"]}/" +
                     $"{dtResult.Rows[0]["Article"]}/" +
+                    $"{dtResult.Rows[0]["Result"]}/" +
                     $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,

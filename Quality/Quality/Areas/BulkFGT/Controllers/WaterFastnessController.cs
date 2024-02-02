@@ -352,9 +352,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult FailMail(string ID, string No, string TO, string CC)
+        public JsonResult SendMail(string ID, string No, string TO, string CC)
         {
-            SendMail_Result result = _WaterFastnessService.SendFailResultMail(TO, CC, ID, No, false);
+            SendMail_Result result = _WaterFastnessService.SendMail(TO, CC, ID, No, false);
             return Json(result);
         }
         [HttpPost]
@@ -387,23 +387,5 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
-        [HttpPost]
-        [SessionAuthorizeAttribute]
-        public JsonResult SendMail(string ID, string No)
-        {
-            this.CheckSession();
-
-            BaseResult result = null;
-            string FileName = string.Empty;
-
-            result = _WaterFastnessService.ToReport(ID, out FileName, true, false);
-            if (!result.Result)
-            {
-                result.ErrorMessage = result.ErrorMessage.ToString();
-            }
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
-        }
     }
 }

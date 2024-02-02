@@ -164,7 +164,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         [SessionAuthorizeAttribute]
         public JsonResult SendMail(string ID, string No, string TO, string CC)
         {
-            GarmentTest_ViewModel result = _GarmentTest_Service.SendMail(ID, No, this.UserID);
+            GarmentTest_ViewModel result = _GarmentTest_Service.UpdateMailSender(ID, No, this.UserID);
             GarmentTest_Detail_ViewModel detail = _GarmentTest_Service.Get_Detail(ID, No);
             result.Sender = detail.Sender;
             result.SendDate = detail.SendDate.HasValue ? detail.SendDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;

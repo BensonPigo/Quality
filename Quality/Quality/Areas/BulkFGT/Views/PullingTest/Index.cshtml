@@ -1149,7 +1149,7 @@
             success: function (data) {
                 if (data.result) {
                     msg.WithSuccesCheck("Success", function () {
-                        location.reload();
+                        $("#btnQuery").click();
                     });
                 }
                 else {

@@ -416,6 +416,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Subject = $"Perspiration Fastness Test/{dtResult.Rows[0]["SP#"]}/" +
                         $"{dtResult.Rows[0]["SP#"]}/" +
                         $"{dtResult.Rows[0]["Article"]}/" +
+                        $"{dtResult.Rows[0]["Result"]}/" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
