@@ -256,19 +256,21 @@ namespace BusinessLogicLayer.Service
                         switch (setting.AQLPlan)
                         {
                             case "":
+                                // 阿迪允許AQL為空，手動填SampleSize
                                 AQLResult = new List<AcceptableQualityLevels>() {
                                 new AcceptableQualityLevels(){
                                     AcceptedQty = setting.AcceptQty,
-                                    SampleSize = totalAvailableQty,
+                                    SampleSize = setting.SampleSize,
                                     Ukey = 0
                                 }
                             };
                                 break;
                             case null:
+                                // 阿迪允許AQL為空，手動填SampleSize
                                 AQLResult = new List<AcceptableQualityLevels>() {
                                 new AcceptableQualityLevels(){
                                     AcceptedQty = setting.AcceptQty,
-                                    SampleSize = totalAvailableQty,
+                                    SampleSize = setting.SampleSize,
                                     Ukey = 0
                                 }
                             };
