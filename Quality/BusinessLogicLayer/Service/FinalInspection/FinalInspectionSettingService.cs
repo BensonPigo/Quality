@@ -256,24 +256,50 @@ namespace BusinessLogicLayer.Service
                         switch (setting.AQLPlan)
                         {
                             case "":
-                                // 阿迪允許AQL為空，手動填SampleSize
-                                AQLResult = new List<AcceptableQualityLevels>() {
-                                new AcceptableQualityLevels(){
-                                    AcceptedQty = setting.AcceptQty,
-                                    SampleSize = setting.SampleSize,
-                                    Ukey = 0
+                                // 阿迪允許AQL為空，手動填SampleSize；否則都是100%檢驗
+                                if (brandID == "ADIDAS")
+                                {
+                                    AQLResult = new List<AcceptableQualityLevels>() {
+                                        new AcceptableQualityLevels(){
+                                            AcceptedQty = setting.AcceptQty,
+                                            SampleSize = setting.SampleSize,
+                                            Ukey = 0
+                                        }
+                                    };
                                 }
-                            };
+                                else
+                                {
+                                    AQLResult = new List<AcceptableQualityLevels>() {
+                                        new AcceptableQualityLevels(){
+                                            AcceptedQty = setting.AcceptQty,
+                                            SampleSize = totalAvailableQty,
+                                            Ukey = 0
+                                        }
+                                    };
+                                }
                                 break;
                             case null:
-                                // 阿迪允許AQL為空，手動填SampleSize
-                                AQLResult = new List<AcceptableQualityLevels>() {
-                                new AcceptableQualityLevels(){
-                                    AcceptedQty = setting.AcceptQty,
-                                    SampleSize = setting.SampleSize,
-                                    Ukey = 0
+                                // 阿迪允許AQL為空，手動填SampleSize；否則都是100%檢驗
+                                if (brandID == "ADIDAS")
+                                {
+                                    AQLResult = new List<AcceptableQualityLevels>() {
+                                        new AcceptableQualityLevels(){
+                                            AcceptedQty = setting.AcceptQty,
+                                            SampleSize = setting.SampleSize,
+                                            Ukey = 0
+                                        }
+                                    };
                                 }
-                            };
+                                else
+                                {
+                                    AQLResult = new List<AcceptableQualityLevels>() {
+                                        new AcceptableQualityLevels(){
+                                            AcceptedQty = setting.AcceptQty,
+                                            SampleSize = totalAvailableQty,
+                                            Ukey = 0
+                                        }
+                                    };
+                                }                        
                                 break;
                             case "1.0 Level I":
                                 maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
