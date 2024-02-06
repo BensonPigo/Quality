@@ -16,11 +16,11 @@ namespace DatabaseObject.ProductionDB
     {
         /// <summary>ID</summary>
         [Display(Name = "ID")]
-        public Int64? ID { get; set; }
+        public long ID { get; set; }
 
         /// <summary>檢驗序號</summary>
         [Display(Name = "檢驗序號")]
-        public int? No { get; set; }
+        public int No { get; set; }
 
         /// <summary>結果</summary>
         [Display(Name = "結果")]
@@ -71,68 +71,68 @@ namespace DatabaseObject.ProductionDB
         public DateTime? EditDate { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string OldUkey { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? SubmitDate { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
-        public int? ArrivedQty { get; set; }
+        
+        public int ArrivedQty { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
-        public bool? LineDry { get; set; }
+        
+        public bool LineDry { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
-        public int? Temperature { get; set; }
+        
+        public int Temperature { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
-        public bool? TumbleDry { get; set; }
+        
+        public bool TumbleDry { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string Machine { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
-        public bool? HandWash { get; set; }
+        
+        public bool HandWash { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string Composition { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
-        public bool? Neck { get; set; }
+        
+        public bool Neck { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string Status { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string SizeCode { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string LOtoFactory { get; set; } = "";
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string MtlTypeID { get; set; }
 
         /// <summary>All basic Fabrics ≥ 50% natural fibres ; 布料 50% (含) 以上是天然纖維</summary>
         [Display(Name = "All basic Fabrics ≥ 50% natural fibres ; 布料 50% (含) 以上是天然纖維")]
-        public bool? Above50NaturalFibres { get; set; }
+        public bool Above50NaturalFibres { get; set; }
 
         /// <summary>All basic Fabrics ≥ 50% synthetic fibres (ex. polyester) ; 布料 50% (含)以上是合成纖維 (e.x. 聚酯纖維)</summary>
         [Display(Name = "All basic Fabrics ≥ 50% synthetic fibres (ex. polyester) ; 布料 50% (含)以上是合成纖維 (e.x. 聚酯纖維)")]
-        public bool? Above50SyntheticFibres { get; set; }
+        public bool Above50SyntheticFibres { get; set; }
 
         /// <summary>測試的訂單號碼</summary>
         [Display(Name = "測試的訂單號碼")]

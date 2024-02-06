@@ -279,28 +279,28 @@ namespace BusinessLogicLayer.Service
                 }
 
                 // ISP20230792
-                if ((mockupOven.HTPlate.HasValue && mockupOven.HTPlate.Value > 0)
-                    || (mockupOven.HTFlim.HasValue && mockupOven.HTFlim.Value > 0)
-                    || (mockupOven.HTTime.HasValue && mockupOven.HTTime.Value > 0)
-                    || (mockupOven.HTPressure.HasValue && mockupOven.HTPressure.Value > 0)
+                if ((mockupOven.HTPlate > 0)
+                    || (mockupOven.HTFlim > 0)
+                    || (mockupOven.HTTime > 0)
+                    || (mockupOven.HTPressure > 0)
                     || !string.IsNullOrEmpty(mockupOven.HTPellOff) 
-                    || (mockupOven.HT2ndPressnoreverse.HasValue && mockupOven.HT2ndPressnoreverse.Value > 0)
-                    || (mockupOven.HT2ndPressreversed.HasValue && mockupOven.HT2ndPressreversed.Value > 0)
-                    || (mockupOven.HTCoolingTime.HasValue && mockupOven.HTCoolingTime.Value > 0))
+                    || (mockupOven.HT2ndPressnoreverse > 0)
+                    || (mockupOven.HT2ndPressreversed > 0)
+                    || (mockupOven.HTCoolingTime > 0))
                 {
                     int aRow = 11 + haveHTrow + mockupOven_Detail.Count - 1;
                     Range rngToCopy = worksheet2.get_Range($"A1:N5", Type.Missing).EntireRow;
                     Range rngToInsert = worksheet.get_Range($"A{aRow}", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
 
-                    worksheet.Cells[aRow + 1, 3] = mockupOven.HTPlate.HasValue ? mockupOven.HTPlate.Value : 0;
-                    worksheet.Cells[aRow + 2, 3] = mockupOven.HTFlim.HasValue ? mockupOven.HTFlim.Value : 0;
-                    worksheet.Cells[aRow + 3, 3] = mockupOven.HTTime.HasValue ? mockupOven.HTTime.Value : 0;
-                    worksheet.Cells[aRow + 4, 3] = mockupOven.HTPressure.HasValue ? mockupOven.HTPressure.Value : 0;
+                    worksheet.Cells[aRow + 1, 3] = mockupOven.HTPlate;
+                    worksheet.Cells[aRow + 2, 3] = mockupOven.HTFlim;
+                    worksheet.Cells[aRow + 3, 3] = mockupOven.HTTime;
+                    worksheet.Cells[aRow + 4, 3] = mockupOven.HTPressure;
                     worksheet.Cells[aRow + 1, 11] = mockupOven.HTPellOff;
-                    worksheet.Cells[aRow + 2, 11] = mockupOven.HT2ndPressnoreverse.HasValue ? mockupOven.HT2ndPressnoreverse.Value : 0;
-                    worksheet.Cells[aRow + 3, 11] = mockupOven.HT2ndPressreversed.HasValue ? mockupOven.HT2ndPressreversed.Value : 0;
-                    worksheet.Cells[aRow + 4, 11] = mockupOven.HTCoolingTime.HasValue ? mockupOven.HTCoolingTime.Value : 0;
+                    worksheet.Cells[aRow + 2, 11] = mockupOven.HT2ndPressnoreverse;
+                    worksheet.Cells[aRow + 3, 11] = mockupOven.HT2ndPressreversed;
+                    worksheet.Cells[aRow + 4, 11] = mockupOven.HTCoolingTime;
                 }
 
                 // 塞進資料

@@ -252,14 +252,14 @@ where id = @ID
                 { "@Article", sources.Main.Article } ,
                 { "@Result", sources.Main.Result } ,
                 { "@Status", sources.Main.Status } ,
-                { "@Inspector", sources.Main.Inspector } ,
+                { "@Inspector", sources.Main.Inspector ?? ""} ,
                 { "@Remark", sources.Main.Remark ?? ""} ,
                 { "@Temperature", sources.Main.Temperature } ,
                 { "@Cycle", sources.Main.Cycle } ,
                 { "@CycleTime", sources.Main.CycleTime } ,
-                { "@Detergent", sources.Main.Detergent } ,
-                { "@Machine", sources.Main.Machine } ,
-                { "@Drying", sources.Main.Drying } ,
+                { "@Detergent", sources.Main.Detergent ?? ""} ,
+                { "@Machine", sources.Main.Machine} ,
+                { "@Drying", sources.Main.Drying ?? ""} ,
                 { "@UserID", UserID } ,
             };
 
@@ -603,34 +603,6 @@ exec UpdateInspPercent 'LabColorFastness', @POID
             }
         }
 
-        public IList<ColorFastness_Detail> Get(ColorFastness_Detail Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("SELECT"+ Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,ColorFastnessGroup"+ Environment.NewLine);
-            SbSql.Append("        ,SEQ1"+ Environment.NewLine);
-            SbSql.Append("        ,SEQ2"+ Environment.NewLine);
-            SbSql.Append("        ,Roll"+ Environment.NewLine);
-            SbSql.Append("        ,Dyelot"+ Environment.NewLine);
-            SbSql.Append("        ,Result"+ Environment.NewLine);
-            SbSql.Append("        ,changeScale"+ Environment.NewLine);
-            SbSql.Append("        ,StainingScale"+ Environment.NewLine);
-            SbSql.Append("        ,Remark"+ Environment.NewLine);
-            SbSql.Append("        ,AddName"+ Environment.NewLine);
-            SbSql.Append("        ,AddDate"+ Environment.NewLine);
-            SbSql.Append("        ,EditName"+ Environment.NewLine);
-            SbSql.Append("        ,EditDate"+ Environment.NewLine);
-            SbSql.Append("        ,SubmitDate"+ Environment.NewLine);
-            SbSql.Append("        ,ResultChange"+ Environment.NewLine);
-            SbSql.Append("        ,ResultStain"+ Environment.NewLine);
-            SbSql.Append("FROM [ColorFastness_Detail]"+ Environment.NewLine);
-
-
-
-            return ExecuteList<ColorFastness_Detail>(CommandType.Text, SbSql.ToString(), objParameter);
-        }
 
         #endregion
 

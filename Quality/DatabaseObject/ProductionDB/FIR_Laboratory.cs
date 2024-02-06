@@ -6,7 +6,7 @@ namespace DatabaseObject.ProductionDB
     {
         /// <summary>id</summary>
         [Display(Name = "id")]
-        public Int64? ID { get; set; }
+        public long ID { get; set; }
 
         /// <summary>採購單號</summary>
         [Display(Name = "採購單號")]
@@ -17,7 +17,7 @@ namespace DatabaseObject.ProductionDB
         public string SEQ1 { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string SEQ2 { get; set; }
 
         /// <summary>檢驗截止日</summary>
@@ -93,19 +93,19 @@ namespace DatabaseObject.ProductionDB
         public bool WashEncode { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string SkewnessOptionID { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string CrockingInspector { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string HeatInspector { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string WashInspector { get; set; }
 
         /// <summary>摩擦測試前的照片</summary>

@@ -65,7 +65,7 @@ namespace DatabaseObject.ProductionDB
 
         /// <summary>月總產值</summary>
         [Display(Name = "月總產值")]
-        public int? CPU { get; set; }
+        public int CPU { get; set; }
 
         /// <summary>郵遞區號</summary>
         [StringLength(6)]
@@ -192,37 +192,37 @@ namespace DatabaseObject.ProductionDB
         public string FactorySort { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public bool IsSampleRoom { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public bool IsSCI { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public bool IsProduceFty { get; set; }
 
         /// <summary></summary>
         [StringLength(8)]
-        [Display(Name = "")]
+        
         public string TestDocFactoryGroup { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public bool IsOriginalFty { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? LastDownloadAPSDate { get; set; }
 
         /// <summary></summary>
         [StringLength(8)]
-        [Display(Name = "")]
+        
         public bool FtyZone { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string Foundry { get; set; }
 
         /// <summary></summary>

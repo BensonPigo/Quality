@@ -6,7 +6,7 @@ namespace DatabaseObject.ProductionDB
     {
         /// <summary>ID</summary>
         [Display(Name = "ID")]
-        public Int64 ID { get; set; }
+        public long ID { get; set; }
 
         /// <summary>捲號</summary>
         [Display(Name = "捲號")]

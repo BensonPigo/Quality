@@ -151,23 +151,23 @@ namespace Quality.Areas.FinalInspection.Controllers
             worksheet.Cells[7, 7] = model.AQLPlan;
 
             worksheet.Cells[8, 3] = model.BrandID;
-            worksheet.Cells[8, 7] = (double)(model.FinalInspection.AcceptQty.HasValue ? model.FinalInspection.AcceptQty : 0);
+            worksheet.Cells[8, 7] = (double)model.FinalInspection.AcceptQty;
 
             worksheet.Cells[9, 3] = model.TotalSPQty;
-            worksheet.Cells[9, 7] = (double)(model.FinalInspection.AcceptQty.HasValue ? model.FinalInspection.AcceptQty + 1 : 1);
+            worksheet.Cells[9, 7] = (double)model.FinalInspection.AcceptQty;
             #endregion
 
             #region Others
-            worksheet.Cells[39, 3] = model.FinalInspection.ProductionStatus.HasValue ? (double)model.FinalInspection.ProductionStatus * 0.01 : 0;
+            worksheet.Cells[39, 3] = (double)model.FinalInspection.ProductionStatus * 0.01;
             worksheet.Cells[40, 3] = model.FinalInspection.OthersRemark;
             #endregion
 
             #region Result
             worksheet.Cells[43, 3] = model.FinalInspection.CFA;
-            worksheet.Cells[43, 7] = (double)(model.FinalInspection.PassQty.HasValue ? model.FinalInspection.PassQty : 0);
+            worksheet.Cells[43, 7] = (double)model.FinalInspection.PassQty;
 
             worksheet.Cells[44, 3] = model.FinalInspection.SubmitDate.HasValue ? ((DateTime)model.FinalInspection.SubmitDate).ToString("yyyy/MM/dd") : string.Empty;
-            worksheet.Cells[44, 7] = (double)(model.FinalInspection.RejectQty.HasValue ? model.FinalInspection.RejectQty : 0);
+            worksheet.Cells[44, 7] = (double)model.FinalInspection.RejectQty;
 
             worksheet.Cells[45, 3] = model.FinalInspection.InspectionResult;
             worksheet.Cells[46, 3] = model.FinalInspection.ShipmentStatus;

@@ -6,7 +6,7 @@ namespace DatabaseObject.ProductionDB
     {
         /// <summary>ID</summary>
         [Display(Name = "ID")]
-        public Int64 ID { get; set; }
+        public long ID { get; set; }
 
         /// <summary>捲號</summary>
         [Display(Name = "捲號")]
@@ -89,11 +89,11 @@ namespace DatabaseObject.ProductionDB
         public decimal VerticalTest3 { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public decimal SkewnessTest1 { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public decimal SkewnessTest2 { get; set; }
 
         /// <summary>偏斜度測試3</summary>
@@ -105,7 +105,7 @@ namespace DatabaseObject.ProductionDB
         public decimal SkewnessTest4 { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public decimal SkewnessRate { get; set; }
 
     }

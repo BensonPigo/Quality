@@ -12,7 +12,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>MenuID</summary>
         [Required]
         [Display(Name = "MenuID")]
-        public Int64 MenuID { get; set; }
+        public long MenuID { get; set; }
         /// <summary>可否使用</summary>
         [Required]
         [Display(Name = "可否使用")]

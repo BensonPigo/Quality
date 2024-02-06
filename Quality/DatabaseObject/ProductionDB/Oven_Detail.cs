@@ -6,7 +6,7 @@ namespace DatabaseObject.ProductionDB
     {
         /// <summary>ID</summary>
         [Display(Name = "ID")]
-        public Int64? ID { get; set; }
+        public long ID { get; set; }
 
         /// <summary>分組</summary>
         [Display(Name = "分組")]
@@ -17,7 +17,7 @@ namespace DatabaseObject.ProductionDB
         public string SEQ1 { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string SEQ2 { get; set; }
 
         /// <summary>捲號</summary>
@@ -61,23 +61,23 @@ namespace DatabaseObject.ProductionDB
         public DateTime? EditDate { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string ResultChange { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public string ResultStain { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? SubmitDate { get; set; }
 
         /// <summary></summary>
-        public int? Temperature { get; set; }
+        public int Temperature { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
-        public int? Time { get; set; }
+        
+        public int Time { get; set; }
 
     }
 }

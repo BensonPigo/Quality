@@ -65,8 +65,8 @@ namespace DatabaseObject.ResultModel
         public string Result { get; set; }
         public string Remark { get; set; }
         public string Status { get; set; }
-        public string Temperature { get; set; }
-        public string Time { get; set; }
+        public int Temperature { get; set; }
+        public int Time { get; set; }
         public byte[] TestBeforePicture { get; set; }
         public byte[] TestAfterPicture { get; set; }
     }
@@ -105,8 +105,8 @@ namespace DatabaseObject.ResultModel
 
         public string Remark { get; set; }
         public string LastUpdate { get; set; }
-        public string Temperature { get; set; }
-        public string Time { get; set; }
+        public int Temperature { get; set; }
+        public int Time { get; set; }
 
         public string Seq1
         {
