@@ -344,6 +344,7 @@
                             <th>Size</th>
                             <th>Qty</th>
                             <th>SP</th>
+                            <th>Seq</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -367,6 +368,9 @@
                                 </td>
                                 <td>
                                     @Model.SelectCarton[i].OrderID-
+                                </td>
+                                <td>
+                                    @Model.SelectCarton[i].Seq
                                 </td>
                             </tr>
                         }
@@ -644,7 +648,8 @@
                     { targets: 0, width: "30%" },
                     { targets: 1, width: "30%" },
                     { targets: 2, width: "30%" },
-                    { targets: 3, visible:false },
+                    { targets: 3, visible: false },
+                    { targets: 4, visible: false },
                 ]
             });
 
@@ -1019,6 +1024,8 @@
                 msg.WithWarning("Please select ＜Shipmode Seq＞ first.");
                 return true;
             }
+            var seqVal = $(`input[orderID=${sp}][col=ShipmodeSeq]`).val();
+            var seqList = seqVal.split(',');
 
             $(".to-Carton-detail").dialog("open");
             ShowLoading();
@@ -1034,7 +1041,7 @@
                 "scrollY": "40vh",
                 "scrollCollapse": true,
                 "search": {
-                    "search": sp+'-'
+                    "search": sp + '-',
                 },
                 columnDefs: [
                     { targets: 0, width: "20%", orderable: false },
@@ -1043,6 +1050,7 @@
                     { targets: 3, width: "20%", orderable: false, },
                     { targets: 4, width: "20%", orderable: false, },
                     { targets: 5, visible: false },
+                    { targets: 6, visible: false },
                 ],
                 initComplete: function () {
                     this.api().columns().every(function () {
@@ -1105,6 +1113,20 @@
 
                             });
 
+                        }
+
+                        // 針對第六個header裡面的東西設定，只秀出選中的Seq 箱子
+                        if (this.data().length > 0 && this.index() == 6) {
+
+                            var that = this;
+                            let newArr = seqList.filter(item => item !== "")
+
+                            // 使用正規表達式進行搜尋
+                            let regex = '\\b(' + newArr.join('|') + ')\\b';
+
+                            that
+                                .search(regex, true, true)
+                                .draw();
                         }
                     });
                 }
