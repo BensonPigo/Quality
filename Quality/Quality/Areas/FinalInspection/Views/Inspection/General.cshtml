@@ -70,92 +70,42 @@
             {
                 bool IsChecked = Model.GeneralDic[item.GeneralColName];
 
+                <tr>
+                    <td class="fistTD">
+                        <div><label class="checkboxlabel" for="FabricApprovalDoc">@item.ShowText</label></div>
+                    </td>
+                    <td class="secTD">
+                        @Html.CheckBox($@"finalInspectionGeneral.{item.GeneralColName}", IsChecked, new { @class = "notSelectAll", @ID = $@"finalInspectionGeneral_{item.GeneralColName}" })
+                    </td>
+                    <td></td>
+                </tr>
 
-                if (Model.InspectionStage == "Final" && item.ItemName == "FGPT")
-                {
-                    <tr>
-                        <td class="fistTD">
-                            <div><label class="checkboxlabel" for="FabricApprovalDoc">@item.ShowText</label></div>
-                        </td>
-                        <td class="secTD">
-                            @Html.CheckBox($@"finalInspectionGeneral.{item.GeneralColName}", IsChecked, new { @class = "notSelectAll", @ID = $@"finalInspectionGeneral_{item.GeneralColName}" })
-                        </td>
-                        <td></td>
-                    </tr>
-                }
-                else if (item.ItemName != "FGPT")
-                {
-                    <tr>
-                        <td class="fistTD">
-                            <div><label class="checkboxlabel" for="FabricApprovalDoc">@item.ShowText</label></div>
-                        </td>
-                        <td class="secTD">
-                            @Html.CheckBox($@"finalInspectionGeneral.{item.GeneralColName}", IsChecked, new { @class = "notSelectAll", @ID = $@"finalInspectionGeneral_{item.GeneralColName}" })
-
-                        </td>
-                        <td></td>
-                    </tr>
-                }
-            }
-            <!--<tr>
-    <td class="fistTD">
-        <div><label class="checkboxlabel" for="FabricApprovalDoc">Fabric Approval</label></div>
-    </td>
-    <td class="secTD">-->
-            @*@Html.CheckBox("FabricApprovalDoc")*@
-            <!--@Html.CheckBoxFor(o => o.FabricApprovalDoc, new { @class = "notSelectAll" })
-        </td>
-        <td></td>
-    </tr>
-    <tr>
-        <td class="fistTD">
-            <div><label class="checkboxlabel" for="SealingSampleDoc">Sealing Sample</label></div>
-        </td>
-        <td class="secTD">-->
-            @*@Html.CheckBox("SealingSampleDoc")*@
-            <!--@Html.CheckBoxFor(o => o.SealingSampleDoc, new { @class = "notSelectAll" })
-        </td>
-        <td></td>
-    </tr>
-    <tr>
-        <td class="fistTD">
-            <div><label class="checkboxlabel" for="MetalDetectionDoc">Metal Detection</label></div>
-        </td>
-        <td class="secTD">-->
-            @*@Html.CheckBox("MetalDetectionDoc")*@
-            <!--@Html.CheckBoxFor(o => o.MetalDetectionDoc, new { @class = "notSelectAll" })
-        </td>
-        <td></td>
-    </tr>
-    <tr>
-        <td class="fistTD">
-            <div><label class="checkboxlabel" for="GarmentWashingDoc">Garment Washing Test (FGWT)</label></div>
-        </td>
-        <td class="secTD">-->
-            @*@Html.CheckBox("GarmentWashingDoc")*@
-            <!--@Html.CheckBoxFor(o => o.GarmentWashingDoc, new { @class = "notSelectAll" })
-        </td>
-        <td class="thirdTD">
-            @if (Model.InspectionStage == "Final")
-            {
-                <label class="tip">@Model.FGWT</label>
-            }
-        </td>
-    </tr>
-            @if (Model.InspectionStage == "Final")
+                @*if (Model.InspectionStage == "Final" && item.ItemName == "FGPT")
             {
                 <tr>
                     <td class="fistTD">
-                        <div><label class="checkboxlabel" for="CheckFGPT">FGPT</label></div>
+                        <div><label class="checkboxlabel" for="FabricApprovalDoc">@item.ShowText</label></div>
                     </td>
                     <td class="secTD">
-                        @Html.CheckBoxFor(o => o.CheckFGPT, new { @class = "notSelectAll" })
+                        @Html.CheckBox($@"finalInspectionGeneral.{item.GeneralColName}", IsChecked, new { @class = "notSelectAll", @ID = $@"finalInspectionGeneral_{item.GeneralColName}" })
                     </td>
-                    <td class="thirdTD">
-                        <label class="tip">@Model.FGPT</label>
-                    </td>
+                    <td></td>
                 </tr>
-            }-->
+            }
+            else if (item.ItemName != "FGPT")
+            {
+                <tr>
+                    <td class="fistTD">
+                        <div><label class="checkboxlabel" for="FabricApprovalDoc">@item.ShowText</label></div>
+                    </td>
+                    <td class="secTD">
+                        @Html.CheckBox($@"finalInspectionGeneral.{item.GeneralColName}", IsChecked, new { @class = "notSelectAll", @ID = $@"finalInspectionGeneral_{item.GeneralColName}" })
+
+                    </td>
+                    <td></td>
+                </tr>
+            }*@
+            }
         </table>
         <input type="hidden" id="goPage" name="goPage">
         <p style="font-size: 16px;font-weight:bolder; position: absolute; right: 1em;bottom:4.3em;">Inline, Stagger can skip Metal Detection.</p>

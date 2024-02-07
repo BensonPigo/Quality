@@ -595,7 +595,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             FinalInspectionService service = new FinalInspectionService();
             DatabaseObject.ManufacturingExecutionDB.FinalInspection model = service.GetFinalInspection(FinalInspectionID);
-            model.GeneralList = service.GetGeneralByBrand(FinalInspectionID, model.BrandID);
+            model.GeneralList = service.GetGeneralByBrand(FinalInspectionID, model.BrandID ,model.InspectionStage);
 
             ViewData["FinalInspectionAllStep"] = service.GetAllStep(FinalInspectionID, string.Empty);
 
@@ -730,7 +730,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             if (result)
             {
                 FinalInspectionService fservice = new FinalInspectionService();
-                MeasurementRemainingAmount = service.GetMeasurementRemainingAmount(model.FinalInspectionID);
+                MeasurementRemainingAmount = service.GetMeasurementAmount(model.FinalInspectionID);
             }
             else
             {
@@ -797,13 +797,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 fservice.UpdateStepByAction(model.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Previous);
                 return this.RedirectAction(model.FinalInspectionID);
-
-                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                //{
-                //    ID = model.FinalInspectionID,
-                //    InspectionStep = "Insp-CheckList"
-                //}, "Insp-Measurement", this.UserID);
-                //return RedirectToAction("CheckList", new { FinalInspectionID = model.FinalInspectionID });
             }
             else if (goPage == "Next")
             {
@@ -814,28 +807,21 @@ namespace Quality.Areas.FinalInspection.Controllers
                 setting = finalInspectionSettingService.GetSettingForInspection(model.FinalInspectionID);
 
                 // ISP20231140  拿掉這個'件數'的檢核條件
-                //if (setting.InspectionStage == "Final" && setting.BrandID == "LLL")
-                //{
-                //    FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
-                //    int MeasurementRemainingAmount = service.GetMeasurementRemainingAmount(model.FinalInspectionID);
-                //    if (MeasurementRemainingAmount > 0)
-                //    {
-                //        TempData["MeasurementMsg"] = $@"At least {MeasurementRemainingAmount} more pieces of clothing need to be inspected.";
-                //        return RedirectToAction("Measurement",new { FinalInspectionID = model.FinalInspectionID });
-                //    }
-                //}
+                // ISP20231201  加上'件數'的檢核條件並調整內容
+                if (setting.InspectionStage == "Inline" && setting.BrandID == "NIKE")
+                {
+                    FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
+                    int MeasurementAmount = service.GetMeasurementAmount(model.FinalInspectionID);
+                    if (MeasurementAmount < 5)
+                    {
+                        TempData["MeasurementMsg"] = $@"Must Be Inspection 5 Measurment!!";
+                        return RedirectToAction("Measurement", new { FinalInspectionID = model.FinalInspectionID });
+                    }
+                }
 
 
                 fservice.UpdateStepByAction(model.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Next);
                 return this.RedirectAction(model.FinalInspectionID);
-
-                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                //{
-                //    ID = model.FinalInspectionID,
-                //    InspectionStep = "Insp-AddDefect"
-                //}, "Insp-Measurement", this.UserID);
-
-                //return RedirectToAction("AddDefect", new { FinalInspectionID = model.FinalInspectionID });
             }
 
             return View();

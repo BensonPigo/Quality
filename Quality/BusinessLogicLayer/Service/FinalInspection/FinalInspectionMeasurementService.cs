@@ -57,7 +57,7 @@ namespace BusinessLogicLayer.Service
                                 Value = s,
                             }).ToList();
 
-                measurement.MeasurementRemainingAmount = _FinalInspFromPMSProvider.GetMeasurementRemainingAmount(finalInspectionID);
+                measurement.MeasurementRemainingAmount = _FinalInspFromPMSProvider.GetMeasurementAmount(finalInspectionID);
 
                 _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
                 measurement.SizeUnit = _StyleProvider.GetSizeUnitByCustPONO(finalInspection.CustPONO, OrderID);
@@ -85,12 +85,12 @@ namespace BusinessLogicLayer.Service
 
             return measurement;
         }
-        public int GetMeasurementRemainingAmount(string finalInspectionID)
+        public int GetMeasurementAmount(string finalInspectionID)
         {
             try
             {
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
-                int MeasurementRemainingAmount = _FinalInspFromPMSProvider.GetMeasurementRemainingAmount(finalInspectionID);
+                int MeasurementRemainingAmount = _FinalInspFromPMSProvider.GetMeasurementAmount(finalInspectionID);
                 return MeasurementRemainingAmount;
             }
             catch (Exception ex)

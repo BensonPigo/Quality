@@ -321,6 +321,7 @@
     <Content Include="Image\Icon\Sewing.png" />
     <Content Include="Image\Icon\Sewing2.png" />
     <Content Include="Image\Icon\Sewing3.png" />
+    <Content Include="Image\Icon\Signature.png" />
     <Content Include="Image\Icon\Style.png" />
     <Content Include="Image\Icon\Tick.png" />
     <Content Include="Image\Icon\Translate.png" />
@@ -544,8 +545,6 @@
     <Content Include="ThirdParty\plugins\bootstrap-fileinput\bootstrap.min.js" />
     <Content Include="ThirdParty\plugins\bootstrap-fileinput\toastr.css" />
     <Content Include="ThirdParty\plugins\bootstrap-fileinput\toastr.min.css" />
-    <Content Include="ThirdParty\plugins\bootstrap-table\bootstrap-table-1.11.1.css" />
-    <Content Include="ThirdParty\plugins\bootstrap-table\bootstrap-table-1.11.1.js" />
     <Content Include="ThirdParty\plugins\bootstrap-table\bootstrap-table-en-US.js" />
     <Content Include="ThirdParty\plugins\bootstrap-table\bootstrap-table-zh-TW.js" />
     <Content Include="ThirdParty\plugins\bootstrap-table\bootstrap-table.css" />
