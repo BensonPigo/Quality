@@ -344,6 +344,7 @@
                             <th>Size</th>
                             <th>Qty</th>
                             <th>SP</th>
+                            <th>Seq</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -351,7 +352,7 @@
                         {
                             <tr class="row-content" style="vertical-align: middle; text-align: center;">
                                 <td>
-                                    <input type="checkbox" ID="Carton_Select_[@i]" class="messageCheckbox" Idx=@i CTNNo=@Model.SelectCarton[i].CTNNo PackingListID=@Model.SelectCarton[i].PackingListID shipQty="@Model.SelectCarton[i].ShipQty" OrderID=@Model.SelectCarton[i].OrderID onclick="SelectCartonChange(this)" style="width: 1.4em;" />
+                                    <input type="checkbox" ID="Carton_Select_[@i]" class="messageCheckbox" Idx=@i CTNNo=@Model.SelectCarton[i].CTNNo PackingListID=@Model.SelectCarton[i].PackingListID shipQty="@Model.SelectCarton[i].ShipQty" OrderID=@Model.SelectCarton[i].OrderID Seq=@Model.SelectCarton[i].Seq onclick="SelectCartonChange(this)" style="width: 1.4em;" />
                                 </td>
                                 <td>
                                     @Html.DisplayFor(o => Model.SelectCarton[i].PackingListID)
@@ -367,6 +368,9 @@
                                 </td>
                                 <td>
                                     @Model.SelectCarton[i].OrderID-
+                                </td>
+                                <td>
+                                    @Model.SelectCarton[i].Seq
                                 </td>
                             </tr>
                         }
@@ -483,47 +487,66 @@
         var msg = new MessagerAlert();
 
         // 摺疊資料需先轉成array
-        var adata = [];
-        var bdata = [];
-        var SelectedPOs =[];
+        var poData = [];
+        var sewingData = [];
+        var shipModeSeqData = [];
+        var SelectedPOs = [];
+        var SelectedSeqs = [];
         var index = 0;
         var index2 = 0;
+        var index3 = 0;
         var currentStage = '';
         var Order_AvailableQty = {};
         var table;
         @foreach (var item in Model.SelectedPO)
         {
-            @:adata.push([null, '@item.OrderID', index, '@item.CustPONO', '@item.StyleID', '@item.SeasonID', '@item.BrandID', @item.Qty, '@item.Cartons',@item.AvailableQty, '@item.SeasonID', '@item.Seq', '@item.Article',@item.MetalContaminateQty]);
+            @:poData.push([null, '@item.OrderID', index, '@item.CustPONO', '@item.StyleID', '@item.SeasonID', '@item.BrandID', @item.Qty, '@item.Cartons',@item.AvailableQty, '@item.SeasonID', '@item.Seq', '@item.Article',@item.MetalContaminateQty]);
             @:index = index + 1;
         }
         @foreach (var item in Model.SelectedSewing)
         {
-            @:bdata.push([null, '@item.SewingLine', index2]);
+            @:sewingData.push([null, '@item.SewingLine', index2]);
             @:index2 = index2 + 1;
         }
 
+        @foreach (var item in Model.SelectOrderShipSeq)
+        {
+            @:shipModeSeqData.push(['@item.OrderID', '@item.Seq', @item.Qty]);
+            @:index3 = index3 + 1;
+        }
         $(function () {
 
             @Html.Raw(Model.ErrorMessage);
 
-            for (var i = 0; i < adata.length; i++) {
+            for (var i = 0; i < poData.length; i++) {
                 var obj = {
-                    OrderID: adata[i][1],
-                    Rowindex: adata[i][2],
-                    CustPONO: adata[i][3],
-                    StyleID: adata[i][4],
-                    SeasonID: adata[i][5],
-                    BrandID: adata[i][6],
-                    OrderQty: adata[i][7],
-                    Cartons: adata[i][8],
-                    AvailableQty: adata[i][9],
-                    Seq: adata[i][11],
-                    Article: adata[i][12],
-                    MetalContaminateQty: adata[i][13],
+                    OrderID: poData[i][1],
+                    Rowindex: poData[i][2],
+                    CustPONO: poData[i][3],
+                    StyleID: poData[i][4],
+                    SeasonID: poData[i][5],
+                    BrandID: poData[i][6],
+                    OrderQty: poData[i][7],
+                    Cartons: poData[i][8],
+                    AvailableQty: poData[i][9],
+                    Seq: poData[i][11],
+                    Article: poData[i][12],
+                    MetalContaminateQty: poData[i][13],
 
                 };
                 SelectedPOs.push(obj);
             }
+
+            for (var i = 0; i < shipModeSeqData.length; i++) {
+                var obj = {
+                    OrderID: shipModeSeqData[i][0],
+                    Seq: shipModeSeqData[i][1],
+                    Qty: shipModeSeqData[i][2],
+
+                };
+                SelectedSeqs.push(obj);
+            }
+
 
             $("#SewingLineID").on('click', function () {
                 //window.open('@Url.Action("SewingLineList", "PublicWindow",new { Area=""})' + '?FactoryID=@ViewBag.FactoryID', 'SewingLineList', config = 'toolbar=no,status=no,location=no,width=400,height=650' );
@@ -533,7 +556,7 @@
 
 
             table = $('#SelectedPOTable').DataTable({
-                    data: adata,
+                    data: poData,
                     autoWidth: false,
                     destroy: true,
                     columnDefs: [
@@ -607,7 +630,16 @@
                 if (Column == "AvailableQty") {
 
                     table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = $(this).find("input").val();
-                    Order_AvailableQty[orderID] = $(this).find("input").val();
+
+                    var qty = $(this).find("input").val();
+                    var allSeq = $(this).parent().parent().find("input[col='ShipmodeSeq']").val();
+                    var seqList = allSeq.split(',');
+                    $.each(seqList, function () {
+                        var seq = this;
+                        Order_AvailableQty[orderID + '-' + seq] = parseInt(qty);
+
+                    });
+
                     Cacu_AvailableQty();
                 }
                 if (Column == "ShipmodeSeq") {
@@ -644,7 +676,8 @@
                     { targets: 0, width: "30%" },
                     { targets: 1, width: "30%" },
                     { targets: 2, width: "30%" },
-                    { targets: 3, visible:false },
+                    { targets: 3, visible: false },
+                    { targets: 4, visible: false },
                 ]
             });
 
@@ -732,6 +765,7 @@
                     "1": {
                         text: 'Next',
                         click: function () {
+
                             //Select Carton視窗按下Next
                             var checkedList = [];
                             var totalQty = 0;
@@ -739,18 +773,43 @@
                             // 清空箱號選取，並觸發重新搜尋的event，把所有箱號都show出來
                             $("#CTNSearch").val('').keyup();
 
+                            // 重置
+                            if ($('[id^=Carton_Select_]').length > 0 && currentStage != 'Final') {
+                                var allKeys = Object.keys(Order_AvailableQty);
+                                var sp = $($('[id^=Carton_Select_]')[0]).attr("orderid");
+                                $.each(allKeys, function () {
+                                    var key = this;
+                                    var tOrderID = key.split('-')[0];
+                                    var tSeq = key.split('-')[1];
+                                    if (tOrderID == sp) {
+                                        Order_AvailableQty[key] = 0;
+                                    }
+                                });
+                            }
+
+
+                            
                             // 根據Checkbox有沒有勾選，來調整input hidden的值。這個input才有Binding Model
                             $('[id^=Carton_Select_]').each(function () {
 
                                 var idx = $(this).attr("idx");
+                                var selectedOrderID = $(this).attr("OrderID");
+                                var selectedSeq = $(this).attr("Seq");
+                                var shipQty = parseInt($(this).attr("ShipQty"));
+
                                 if ($(this).prop('checked')) {
 
                                     checkedList.push($(this).attr("ctnno"));
-                                    totalQty = totalQty + parseInt($(this).attr("ShipQty"));
+
+                                    if (currentStage != 'Final') {
+                                        totalQty = totalQty + shipQty;
+                                        Order_AvailableQty[selectedOrderID + '-' + selectedSeq] = totalQty;
+                                    }
 
                                     $(`#SelectCarton_${idx}__Selected`).val(true);
                                 }
                                 else {
+
                                     $(`#SelectCarton_${idx}__Selected`).val(false);
                                 }
                             });
@@ -759,6 +818,8 @@
                             document.getElementById("SelectedPO[" + index + "].Cartons").value = checkedList.join(',');
 
                             var orderID = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderId");
+                            //var seqList = document.getElementById("SelectedPO[" + index + "].Seq").value;
+                            //var seq = seqList.split(',');
 
                             //Stage != 'Final'才需要從Carton帶入數量，否則帶入OrderQty
                             if (currentStage != 'Final') {
@@ -766,12 +827,10 @@
                                 document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
 
                                 table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = totalQty;
-                                Order_AvailableQty[orderID] = totalQty;
                             }
                             else {
                                 var OrderQty = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderQty");
                                 table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = parseInt(OrderQty);
-                                Order_AvailableQty[orderID] = OrderQty;
                             }
 
                             Cacu_AvailableQty();
@@ -794,13 +853,24 @@
                         click: function () {
 
                             var checkedList = [];
+                            var checkedOrderIDList = [];
                             var totalQty = 0;
                             $('[id^=ShipmodeSeq_Select_]').each(function () {
 
+                                var seq = $(this).attr("seq");
+                                var orderID = $(this).attr("OrderID");
+                                var qty = $(this).attr("Qty");
+
                                 if ($(this).prop('checked')) {
-                                    //checkedList.push($(this).val());
-                                    totalQty = totalQty + parseInt($(this).attr("Qty"));
-                                    checkedList.push($(this).attr("seq"));
+
+                                    totalQty = totalQty + parseInt(qty);
+                                    checkedList.push(seq);
+                                    checkedOrderIDList.push(orderID);
+
+                                    Order_AvailableQty[orderID + '-' + seq] = parseInt(qty);
+                                }
+                                else {
+                                    Order_AvailableQty[orderID + '-' + seq] = 0;
                                 }
                             });
                             var index = $("#currnetSelectedShipmodeSeq").val();
@@ -811,6 +881,8 @@
                             }
 
                             document.getElementById("SelectedPO[" + index + "].Seq").value = checkedList.join(',');
+                            document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
+                            $("#totalAvailableQty").text(totalQty);
 
                             $(this).dialog("close");
                         }
@@ -1033,6 +1105,8 @@
                 msg.WithWarning("Please select ＜Shipmode Seq＞ first.");
                 return true;
             }
+            var seqVal = $(`input[orderID=${sp}][col=ShipmodeSeq]`).val();
+            var seqList = seqVal.split(',');
 
             $(".to-Carton-detail").dialog("open");
             ShowLoading();
@@ -1048,7 +1122,7 @@
                 "scrollY": "40vh",
                 "scrollCollapse": true,
                 "search": {
-                    "search": sp+'-'
+                    "search": sp + '-',
                 },
                 columnDefs: [
                     { targets: 0, width: "20%", orderable: false },
@@ -1057,6 +1131,7 @@
                     { targets: 3, width: "20%", orderable: false, },
                     { targets: 4, width: "20%", orderable: false, },
                     { targets: 5, visible: false },
+                    { targets: 6, visible: false },
                 ],
                 initComplete: function () {
                     this.api().columns().every(function () {
@@ -1120,6 +1195,20 @@
                             });
 
                         }
+
+                        // 針對第六個header裡面的東西設定，只秀出選中的Seq 箱子
+                        if (this.data().length > 0 && this.index() == 6) {
+
+                            var that = this;
+                            let newArr = seqList.filter(item => item !== "")
+
+                            // 使用正規表達式進行搜尋
+                            let regex = '\\b(' + newArr.join('|') + ')\\b';
+
+                            that
+                                .search(regex, true, true)
+                                .draw();
+                        }
                     });
                 }
             })/*.columns.adjust()*/;
@@ -1133,7 +1222,7 @@
                 $(this).prop('checked', false);
             });
 
-            $(adata).each(function (index, element) {
+            $(poData).each(function (index, element) {
                 var orderID = element[1];
                 var CustPONO = element[3];
                 if (orderID == findValue[0] && CustPONO == findValue[1]) {
@@ -1209,7 +1298,7 @@
                 $(this).prop('checked', false);
             });
 
-            $(adata).each(function (index, element) {
+            $(poData).each(function (index, element) {
                 var orderID = element[1];
                 var CustPONO = element[3];
                 if (orderID == findValue[0] && CustPONO == findValue[1]) {
@@ -1284,7 +1373,7 @@
                 $(this).prop('checked', false);
             });
 
-            //$(bdata).each(function (index, element) {
+            //$(sewingData).each(function (index, element) {
             //    var sewingline = element[1];
             //    if (sewingline == findValue[0]) {
             //        rowIndex = element[2];
@@ -1421,9 +1510,19 @@
                     var obj = this;
                     var orderID = obj.OrderID;;
                     var orderQty = obj.OrderQty;;
+                    var allKeys = Object.keys(Order_AvailableQty);
+
                     //index9是AvailableQty
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[9] = orderQty;
-                    Order_AvailableQty[orderID] = orderQty;
+
+                    $.each(allKeys, function () {
+                        var key = this;
+                        var tOrderID = key.split('-')[0];
+                        var tSeq = key.split('-')[1];
+                        if (tOrderID == orderID) {
+                            Order_AvailableQty[key] = parseInt(orderQty);;
+                        }
+                    });
 
                     ////index 11是Shipmode seq
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[11] = '';
@@ -1431,15 +1530,35 @@
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[8] = '';
                 });
 
+                $.each(SelectedSeqs, function () {
+                    var obj = this;
+                    var orderID = obj.OrderID;;
+                    var seq = obj.Seq;;
+                    var qty = obj.Qty;;
+
+                    Order_AvailableQty[orderID +'-' + seq] = qty;
+                });
+
                 // 如果[Selected PO]區塊有展開，透過以下方式Bind AvailableQty資料
                 $.each(availableQtycheck, function () {
                     var orderQty = $($(this)[0]).attr("orderQty");
                     var orderID = $($(this)[0]).attr("orderID");
+                    var allKeys = Object.keys(Order_AvailableQty);
+
                     $($(this)[0]).val(orderQty);
                     $($(this)[0]).attr("readonly", "readonly");
                     //index9是AvailableQty
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[9] = orderQty;
-                    Order_AvailableQty[orderID] = orderQty;
+
+
+                    $.each(allKeys, function () {
+                        var key = this;
+                        var tOrderID = key.split('-')[0];
+                        var tSeq = key.split('-')[1];
+                        if (tOrderID == orderID) {
+                            Order_AvailableQty[key] = 0;
+                        }
+                    });
 
                     ////index 11是Shipmode seq
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[11] = '';
@@ -1455,10 +1574,19 @@
                 $.each(SelectedPOs, function () {
                     var obj = this;
                     var orderID = obj.OrderID;
+                    var allKeys = Object.keys(Order_AvailableQty);
 
                     //index9是AvailableQty
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[9] = 0;
-                    Order_AvailableQty[orderID] = 0;
+
+                    $.each(allKeys, function () {
+                        var key = this;
+                        var tOrderID = key.split('-')[0];
+                        var tSeq = key.split('-')[1];
+                        if (tOrderID == orderID) {
+                            Order_AvailableQty[key] = 0;
+                        }
+                    });
 
                     //index 11是Shipmode seq
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[11] = '';
@@ -1466,15 +1594,33 @@
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[8] = '';
                 });
 
+                $.each(SelectedSeqs, function () {
+                    var obj = this;
+                    var orderID = obj.OrderID;;
+                    var seq = obj.Seq;;
+                    var qty = obj.Qty;;
+
+                    Order_AvailableQty[orderID + '-' + seq] = qty;
+                });
+
                 // 如果[Selected PO]區塊有展開，透過以下方式Bind AvailableQty資料
                 $.each(availableQtycheck, function () {
                     var orderID = $($(this)[0]).attr("orderID");
+                    var seq = $($(this)[0]).attr("Seq");
                     $($(this)[0]).removeAttr("readonly");
                     $($(this)[0]).val(0);
+                    var allKeys = Object.keys(Order_AvailableQty);
 
                     //index9是AvailableQty
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[9] = 0;
-                    Order_AvailableQty[orderID] = 0;
+                    $.each(allKeys, function () {
+                        var key = this;
+                        var tOrderID = key.split('-')[0];
+                        var tSeq = key.split('-')[1];
+                        if (tOrderID == orderID) {
+                            Order_AvailableQty[key] = 0;
+                        }
+                    });
 
                     //index 11是Shipmode seq
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[11] = '';
@@ -1485,18 +1631,8 @@
 
 
                 Cacu_AvailableQty();
+                //Cacu_AvailableQty(orderID, seq);
             }
-            /* ISP20211490 拔掉
-
-            $.each(availableQtycheck, function () {
-                if (currentStage == "Final") {
-                    $($(this)[0]).attr("readonly", "readonly");
-                }
-                else {
-                    $($(this)[0]).removeAttr("readonly");
-                }
-            });
-            */
         }
 
         function ClearSewing(obj) {
