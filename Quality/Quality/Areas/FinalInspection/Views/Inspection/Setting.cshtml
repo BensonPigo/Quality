@@ -630,7 +630,7 @@
                 if (Column == "AvailableQty") {
 
                     table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = $(this).find("input").val();
-                    //Order_AvailableQty[orderID] = $(this).find("input").val();
+
                     var qty = $(this).find("input").val();
                     var allSeq = $(this).parent().parent().find("input[col='ShipmodeSeq']").val();
                     var seqList = allSeq.split(',');
@@ -827,17 +827,13 @@
                                 document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
 
                                 table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = totalQty;
-
-                                //Order_AvailableQty[orderID + '-' + seq] = totalQty;
                             }
                             else {
                                 var OrderQty = document.getElementById("SelectedPO[" + index + "].AvailableQty").getAttribute("OrderQty");
                                 table.row($("#SelectPO_" + orderID).closest('tr')).data()[9] = parseInt(OrderQty);
-                                //Order_AvailableQty[orderID] = OrderQty;
                             }
 
                             Cacu_AvailableQty();
-                            //Cacu_AvailableQty(orderID, seq);
 
                             $(this).dialog("close");
                         }
@@ -1478,10 +1474,10 @@
                     var obj = this;
                     var orderID = obj.OrderID;;
                     var orderQty = obj.OrderQty;;
+                    var allKeys = Object.keys(Order_AvailableQty);
+
                     //index9是AvailableQty
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[9] = orderQty;
-                    //Order_AvailableQty[orderID] = orderQty;
-                    var allKeys = Object.keys(Order_AvailableQty);
 
                     $.each(allKeys, function () {
                         var key = this;
@@ -1511,13 +1507,22 @@
                 $.each(availableQtycheck, function () {
                     var orderQty = $($(this)[0]).attr("orderQty");
                     var orderID = $($(this)[0]).attr("orderID");
-                    var seq = $($(this)[0]).attr("Seq");
+                    var allKeys = Object.keys(Order_AvailableQty);
 
                     $($(this)[0]).val(orderQty);
                     $($(this)[0]).attr("readonly", "readonly");
                     //index9是AvailableQty
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[9] = orderQty;
-                    Order_AvailableQty[orderID + '-' + seq] = parseInt(orderQty);
+
+
+                    $.each(allKeys, function () {
+                        var key = this;
+                        var tOrderID = key.split('-')[0];
+                        var tSeq = key.split('-')[1];
+                        if (tOrderID == orderID) {
+                            Order_AvailableQty[key] = 0;
+                        }
+                    });
 
                     ////index 11是Shipmode seq
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[11] = '';
@@ -1525,7 +1530,6 @@
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[8] = '';
                 });
                 Cacu_AvailableQty();
-                //Cacu_AvailableQty(orderID, seq);
             }
             else {
                 // 如果不是Final則清空ShipModeSeq、Carton、Available Qty
@@ -1534,11 +1538,10 @@
                 $.each(SelectedPOs, function () {
                     var obj = this;
                     var orderID = obj.OrderID;
+                    var allKeys = Object.keys(Order_AvailableQty);
 
                     //index9是AvailableQty
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[9] = 0;
-                    //Order_AvailableQty[orderID] = 0;
-                    var allKeys = Object.keys(Order_AvailableQty);
 
                     $.each(allKeys, function () {
                         var key = this;
@@ -1570,12 +1573,10 @@
                     var seq = $($(this)[0]).attr("Seq");
                     $($(this)[0]).removeAttr("readonly");
                     $($(this)[0]).val(0);
-
                     var allKeys = Object.keys(Order_AvailableQty);
 
                     //index9是AvailableQty
                     table.row($(`#SelectPO_${orderID}`).closest('tr')).data()[9] = 0;
-                    //Order_AvailableQty[orderID] = 0;
                     $.each(allKeys, function () {
                         var key = this;
                         var tOrderID = key.split('-')[0];
@@ -1596,17 +1597,6 @@
                 Cacu_AvailableQty();
                 //Cacu_AvailableQty(orderID, seq);
             }
-            /* ISP20211490 拔掉
-
-            $.each(availableQtycheck, function () {
-                if (currentStage == "Final") {
-                    $($(this)[0]).attr("readonly", "readonly");
-                }
-                else {
-                    $($(this)[0]).removeAttr("readonly");
-                }
-            });
-            */
         }
 
         function ClearSewing(obj) {
