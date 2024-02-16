@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -408,7 +409,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public SalivaFastnessTest_ViewModel GetReport(string ReportNo, bool isPDF)
+        public SalivaFastnessTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             SalivaFastnessTest_ViewModel result = new SalivaFastnessTest_ViewModel();
 
@@ -603,11 +604,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 //        worksheet.Cells[19, 6] = detailData.WoolResult;
                 //    }
                 //}
+                string tmpName = $"SalivaFastnessTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
-                string fileName = $"SalivaFastnessTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"SalivaFastnessTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
 
@@ -656,15 +663,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _Provider = new SalivaFastnessTestProvider(Common.ManufacturingExecutionDataAccessLayer);
 
             SalivaFastnessTest_ViewModel model = this.GetData(new SalivaFastnessTest_Request() { ReportNo = ReportNo });
+            string name = $"Saliva Fastness Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_ " +
+                $"{model.Main.FabricColor}_ " +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-            SalivaFastnessTest_ViewModel report = this.GetReport(ReportNo, false);
+            SalivaFastnessTest_ViewModel report = this.GetReport(ReportNo, false, name);
             string mailBody = "";
             string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
             SendMail_Request sendMail_Request = new SendMail_Request
             {
                 Subject = $"Saliva Fastness Test/{model.Main.OrderID}/" +
                 $"{model.Main.StyleID}/" +
-                $"{model.Main.Article}/" +
+                $"{model.Main.FabricRefNo}/" +
+                $"{model.Main.FabricColor}/" +
                 $"{model.Main.Result}/" +
                 $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = TO,

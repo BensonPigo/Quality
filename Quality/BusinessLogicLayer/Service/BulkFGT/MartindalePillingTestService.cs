@@ -17,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using static Sci.MyUtility;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -426,7 +427,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public MartindalePillingTest_ViewModel GetReport(string ReportNo, bool isPDF)
+        public MartindalePillingTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             MartindalePillingTest_ViewModel result = new MartindalePillingTest_ViewModel();
 
@@ -574,10 +575,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
-                string fileName = $"MartindalePillingTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string tmpName = $"MartindalePillingTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"MartindalePillingTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
 
@@ -628,7 +637,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             MartindalePillingTest_ViewModel model = this.GetData(new MartindalePillingTest_Request() { ReportNo = ReportNo });
 
-            MartindalePillingTest_ViewModel report = this.GetReport(ReportNo, false);
+            string name = $"Martindale Pilling Test Evaporation Rate Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+            MartindalePillingTest_ViewModel report = this.GetReport(ReportNo, false, name);
             string mailBody = "";
             string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
             SendMail_Request sendMail_Request = new SendMail_Request

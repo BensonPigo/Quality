@@ -16,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
@@ -880,7 +881,15 @@ namespace BusinessLogicLayer.Service
             {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetCrockingFailMailContentData(ID);
-                BaseResult baseResult = Crocking_ToExcel(ID, true, out string excelFileName);
+
+                string name = $"Fabric Crocking Test_{OrderID}_" +
+                        $"{dtResult.Rows[0]["Style"]}_" +
+                        $"{dtResult.Rows[0]["Refno"]}_" +
+                        $"{dtResult.Rows[0]["Color"]}_" +
+                        $"{dtResult.Rows[0]["Crocking Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                BaseResult baseResult = Crocking_ToExcel(ID, true, out string excelFileName, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
@@ -920,7 +929,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult ToExcelFabricCrkShrkTestHeatDetail(long ID, out string excelFileName)
+        public BaseResult ToExcelFabricCrkShrkTestHeatDetail(long ID, out string excelFileName, string AssignedFineName = "")
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -1038,7 +1047,14 @@ namespace BusinessLogicLayer.Service
                 excel.Cells.EntireRow.AutoFit();       ////自動欄高
 
                 #region Save & Show Excel
-                excelFileName = $"FabricHeatTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string tmpName= $"FabricHeatTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                excelFileName = $"{tmpName}.xlsx";
                 string filepath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
                 Excel.Workbook workbook = excel.ActiveWorkbook;
@@ -1059,7 +1075,7 @@ namespace BusinessLogicLayer.Service
             return result;
 
         }
-        public BaseResult ToExcelFabricCrkShrkTestIronDetail(long ID, out string excelFileName)
+        public BaseResult ToExcelFabricCrkShrkTestIronDetail(long ID, out string excelFileName, string AssignedFineName = "")
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -1177,7 +1193,14 @@ namespace BusinessLogicLayer.Service
                 excel.Cells.EntireRow.AutoFit();       ////自動欄高
 
                 #region Save & Show Excel
-                excelFileName = $"FabricIronTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string tmpName = $"FabricIronTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                excelFileName = $"{tmpName}.xlsx";
                 string filepath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
                 Excel.Workbook workbook = excel.ActiveWorkbook;
@@ -1199,7 +1222,7 @@ namespace BusinessLogicLayer.Service
 
         }
 
-        public BaseResult ToExcelFabricCrkShrkTestWashDetail(long ID, out string excelFileName)
+        public BaseResult ToExcelFabricCrkShrkTestWashDetail(long ID, out string excelFileName, string AssignedFineName = "")
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -1355,8 +1378,16 @@ namespace BusinessLogicLayer.Service
                 }
                 #endregion
 
-                #region Save & Show Excel
-                excelFileName = $"FabricWashTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                #region Save & Show 
+                string tmpName = $"FabricWashTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                excelFileName = $"{tmpName}.xlsx";
+
                 string filepath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
                 Excel.Workbook workbook = excel.ActiveWorkbook;
@@ -1865,7 +1896,14 @@ namespace BusinessLogicLayer.Service
             {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetHeatFailMailContentData(ID);
-                BaseResult baseResult = ToExcelFabricCrkShrkTestHeatDetail(ID, out string excelFileName);
+                string name = $"Fabric Heat Test_{OrderID}_" +
+                        $"{dtResult.Rows[0]["Style"]}_" +
+                        $"{dtResult.Rows[0]["Refno"]}_" +
+                        $"{dtResult.Rows[0]["Color"]}_" +
+                        $"{dtResult.Rows[0]["Heat Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                BaseResult baseResult = ToExcelFabricCrkShrkTestHeatDetail(ID, out string excelFileName, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
@@ -1911,7 +1949,14 @@ namespace BusinessLogicLayer.Service
             {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetIronFailMailContentData(ID);
-                BaseResult baseResult = ToExcelFabricCrkShrkTestIronDetail(ID, out string excelFileName);
+                string name = $"Fabric Iron Test_{OrderID}_" +
+                        $"{dtResult.Rows[0]["Style"]}_" +
+                        $"{dtResult.Rows[0]["Refno"]}_" +
+                        $"{dtResult.Rows[0]["Color"]}_" +
+                        $"{dtResult.Rows[0]["Iron Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                BaseResult baseResult = ToExcelFabricCrkShrkTestIronDetail(ID, out string excelFileName, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
@@ -1958,7 +2003,14 @@ namespace BusinessLogicLayer.Service
             {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetWashFailMailContentData(ID);
-                BaseResult baseResult = ToExcelFabricCrkShrkTestWashDetail(ID, out string excelFileName);
+                string name = $"Fabric Wash Test_{OrderID}_" +
+                        $"{dtResult.Rows[0]["Style"]}_" +
+                        $"{dtResult.Rows[0]["Refno"]}_" +
+                        $"{dtResult.Rows[0]["Color"]}_" +
+                        $"{dtResult.Rows[0]["Wash Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                BaseResult baseResult = ToExcelFabricCrkShrkTestWashDetail(ID, out string excelFileName, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
@@ -2012,7 +2064,7 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public BaseResult Crocking_ToExcel(long ID, bool IsPDF, out string excelFileName)
+        public BaseResult Crocking_ToExcel(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "")
         {
             BaseResult result = new BaseResult();
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
@@ -2105,6 +2157,12 @@ namespace BusinessLogicLayer.Service
             #region Save & Show Excel
 
             string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+            if (!string.IsNullOrWhiteSpace(AssignedFineName))
+            {
+                fileName = AssignedFineName;
+            }
+
             string filexlsx = fileName + ".xlsx";
             string fileNamePDF = fileName + ".pdf";
 

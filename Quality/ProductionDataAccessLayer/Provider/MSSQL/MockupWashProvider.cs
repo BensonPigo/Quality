@@ -171,8 +171,19 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append(")" + Environment.NewLine);
 
             SbSql.Append($@"
-INSERT INTO SciPMSFile_MockupWash (ReportNo,TestBeforePicture,TestAfterPicture)
-VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
+IF EXISTS(
+    SELECT 1 FROM SciPMSFile_MockupWash WHERE ReportNo = @ReportNo
+)
+BEGIN
+    UPDATE SciPMSFile_MockupWash
+    SET TestBeforePicture = @TestBeforePicture , TestAfterPicture = @TestAfterPicture
+    WHERE ReportNo = @ReportNo
+END
+ELSE
+BEGIN
+    INSERT INTO SciPMSFile_MockupWash (ReportNo,TestBeforePicture,TestAfterPicture)
+    VALUES(@ReportNo,@TestBeforePicture,@TestAfterPicture)
+END
 ");
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);

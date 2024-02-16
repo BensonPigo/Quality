@@ -160,8 +160,19 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 
 
             SbSql.Append($@"
-INSERT INTO SciPMSFile_MockupOven (ReportNo,TestBeforePicture,TestAfterPicture)
-VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
+IF EXISTS(
+    SELECT 1 FROM SciPMSFile_MockupOven WHERE ReportNo = @ReportNo
+)
+BEGIN
+    UPDATE SciPMSFile_MockupOven
+    SET TestBeforePicture = @TestBeforePicture , TestAfterPicture = @TestAfterPicture
+    WHERE ReportNo = @ReportNo
+END
+ELSE
+BEGIN
+    INSERT INTO SciPMSFile_MockupOven (ReportNo,TestBeforePicture,TestAfterPicture)
+    VALUES(@ReportNo,@TestBeforePicture,@TestAfterPicture)
+END
 ");
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);

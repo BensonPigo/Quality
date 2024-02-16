@@ -323,7 +323,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             html += "<td></td>"; // LastUpdate
 
-            html += "<td><img class='detailDelete' src='/Image/Icon/Delete.png' width='30'></td>";
+            html += $@"<td><div style=""width:5vw;""><img class=""detailDelete"" src=""/Image/Icon/Delete.png"" width=""30"" /></div></td>";
             html += "</tr>";
 
             return Content(html);

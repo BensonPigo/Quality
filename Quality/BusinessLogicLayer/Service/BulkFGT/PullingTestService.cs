@@ -191,7 +191,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 System.Data.DataTable dt = _PullingTestProvider.GetData_DataTable(ReportNo);
-                Report_Result baseResult = GetPDF(ReportNo);
+                string name = $"Pulling Test_{dt.Rows[0]["POID"]}_" +
+                        $"{dt.Rows[0]["StyleID"]}_" +
+                        $"{dt.Rows[0]["Article"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                Report_Result baseResult = GetPDF(ReportNo, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
 
                 string unit = dt.Rows[0]["PullForceUnit"].ToString();
@@ -243,7 +248,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public Report_Result GetPDF(string ReportNo)
+        public Report_Result GetPDF(string ReportNo, string AssignedFineName = "")
         {
             Report_Result result = new Report_Result();
             if (string.IsNullOrEmpty(ReportNo))
@@ -373,6 +378,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 #region Save & Show Excel
 
                 string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    fileName = AssignedFineName;
+                }
+
                 string filexlsx = fileName + ".xlsx";
                 string fileNamePDF = fileName + ".pdf";
 

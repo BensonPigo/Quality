@@ -22,6 +22,7 @@ using System.Windows.Media.Animation;
 using System.Web.WebPages;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
+using System.Web.UI.WebControls;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -700,7 +701,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-        public EvaporationRateTest_ViewModel GetReport(string ReportNo, bool isPDF)
+        public EvaporationRateTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             EvaporationRateTest_ViewModel result = new EvaporationRateTest_ViewModel();
 
@@ -1091,11 +1092,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
                 #endregion
 
+                string tmpName = $"EvaporationRateTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
-                string fileName = $"EvaporationRateTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"EvaporationRateTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
                 Microsoft.Office.Interop.Excel.Workbook workbook = excel.ActiveWorkbook;
@@ -1156,17 +1163,23 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             EvaporationRateTest_ViewModel model = this.GetData(new EvaporationRateTest_Request() { ReportNo = ReportNo });
 
-            EvaporationRateTest_ViewModel report = this.GetReport(ReportNo, false);
+            string name = $"Evaporation Rate Test_{model.Main.OrderID}_" +
+                    $"{model.Main.StyleID}_" +
+                    $"{model.Main.FabricRefNo}_" +
+                    $"{model.Main.FabricColor}_" +
+                    $"{model.Main.Result}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+            EvaporationRateTest_ViewModel report = this.GetReport(ReportNo, false, name);
             string mailBody = "";
             string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
             SendMail_Request sendMail_Request = new SendMail_Request
             {
                 Subject = $"Evaporation Rate Test/{model.Main.OrderID}/" +
-                $"{model.Main.StyleID}/" +
-                $"{model.Main.FabricRefNo}/" +
-                $"{model.Main.FabricColor}/" +
-                $"{model.Main.Result}/" +
-                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                    $"{model.Main.StyleID}/" +
+                    $"{model.Main.FabricRefNo}/" +
+                    $"{model.Main.FabricColor}/" +
+                    $"{model.Main.Result}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = TO,
                 CC = CC,
                 Body = mailBody,

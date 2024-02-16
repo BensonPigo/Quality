@@ -424,7 +424,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public TPeelStrengthTest_ViewModel GetReport(string ReportNo, bool isPDF)
+        public TPeelStrengthTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             TPeelStrengthTest_ViewModel result = new TPeelStrengthTest_ViewModel();
 
@@ -546,10 +546,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
-                string fileName = $"TPeelStrengthTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string tmpName = $"TPeelStrengthTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"TPeelStrengthTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
 
@@ -688,15 +694,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _Provider = new TPeelStrengthTestProvider(Common.ManufacturingExecutionDataAccessLayer);
 
             TPeelStrengthTest_ViewModel model = this.GetData(new TPeelStrengthTest_Request() { ReportNo = ReportNo });
+            string name = $"T-Peel Strength  Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-            TPeelStrengthTest_ViewModel report = this.GetReport(ReportNo, false);
+            TPeelStrengthTest_ViewModel report = this.GetReport(ReportNo, false, name);
             string mailBody = "";
             string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
             SendMail_Request sendMail_Request = new SendMail_Request
             {
                 Subject = $"T-Peel Strength  Test/{model.Main.OrderID}/" +
                 $"{model.Main.StyleID}/" +
-                $"{model.Main.Article}/" +
+                $"{model.Main.FabricRefNo}/" +
+                $"{model.Main.FabricColor}/" +
                 $"{model.Main.Result}/" +
                 $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = TO,

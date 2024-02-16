@@ -405,7 +405,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 DataTable dtResult = _PerspirationFastnessProvider.GetFailMailContentData(poID, TestNo);
                 string ID = dtResult.Rows[0]["ID"].ToString();
                 dtResult.Columns.Remove("ID");
-                BaseResult baseResult = ToReport(ID, out string PDFFileName, true, isTest);
+
+                string name = $"Perspiration Fastness Test_{dtResult.Rows[0]["SP#"]}_" +
+                        $"{dtResult.Rows[0]["SP#"]}_" +
+                        $"{dtResult.Rows[0]["Article"]}_" +
+                        $"{dtResult.Rows[0]["Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                BaseResult baseResult = ToReport(ID, out string PDFFileName, true, isTest, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", PDFFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
@@ -447,7 +454,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
 
 
-        public BaseResult ToReport(string ID, out string FileName, bool isPDF, bool isTest = false)
+        public BaseResult ToReport(string ID, out string FileName, bool isPDF, bool isTest = false, string AssignedFineName = "")
         {
             BaseResult result = new BaseResult();
             _PerspirationFastnessProvider = new PerspirationFastnessProvider(Common.ProductionDataAccessLayer);
@@ -576,6 +583,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 #region Save & Show Excel
 
                 string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    fileName = AssignedFineName;
+                }
+
                 string filexlsx = fileName + ".xlsx";
                 string fileNamePDF = fileName + ".pdf";
 

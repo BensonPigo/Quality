@@ -272,10 +272,19 @@ VALUES
            ,@AddName)
 ;
 
-INSERT INTO PMSFile.dbo.EvaporationRateTest
-    ( ReportNo ,TestBeforePicture ,TestAfterPicture)
-VALUES
-    ( @ReportNo ,@TestBeforePicture ,@TestAfterPicture)
+IF EXISTS(
+    SELECT 1 FROM PMSFile.dbo.EvaporationRateTest WHERE ReportNo = @ReportNo
+)
+BEGIN
+    UPDATE PMSFile.dbo.EvaporationRateTest
+    SET TestBeforePicture = @TestBeforePicture , TestAfterPicture = @TestAfterPicture
+    WHERE ReportNo = @ReportNo
+END
+ELSE
+BEGIN
+    INSERT INTO PMSFile.dbo.EvaporationRateTest (ReportNo,TestBeforePicture,TestAfterPicture)
+    VALUES(@ReportNo,@TestBeforePicture,@TestAfterPicture)
+END
 ");
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);

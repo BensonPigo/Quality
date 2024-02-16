@@ -17,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using static Sci.MyUtility;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -426,7 +427,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public RandomTumblePillingTest_ViewModel GetReport(string ReportNo, bool isPDF)
+        public RandomTumblePillingTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             RandomTumblePillingTest_ViewModel result = new RandomTumblePillingTest_ViewModel();
 
@@ -597,10 +598,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
-                string fileName = $"RandomTumblePillingTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string tmpName= $"RandomTumblePillingTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"RandomTumblePillingTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
 
@@ -649,15 +657,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _Provider = new RandomTumblePillingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
 
             RandomTumblePillingTest_ViewModel model = this.GetData(new RandomTumblePillingTest_Request() { ReportNo = ReportNo });
+            string name = $"Random Tumble Pilling Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-            RandomTumblePillingTest_ViewModel report = this.GetReport(ReportNo, false);
+            RandomTumblePillingTest_ViewModel report = this.GetReport(ReportNo, false , name);
             string mailBody = "";
             string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
             SendMail_Request sendMail_Request = new SendMail_Request
             {
                 Subject = $"Random Tumble Pilling Test/{model.Main.OrderID}/" +
                 $"{model.Main.StyleID}/" +
-                $"{model.Main.Article}/" +
+                $"{model.Main.FabricRefNo}/" +
+                $"{model.Main.FabricColor}/" +
                 $"{model.Main.Result}/" +
                 $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = TO,

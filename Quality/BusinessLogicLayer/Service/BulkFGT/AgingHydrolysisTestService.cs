@@ -23,6 +23,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
+
 //using static Sci.MyUtility;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -502,7 +504,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public AgingHydrolysisTest_Detail_ViewModel GetReport(string ReportNo, bool isPDF)
+        public AgingHydrolysisTest_Detail_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             AgingHydrolysisTest_Detail_ViewModel result = new AgingHydrolysisTest_Detail_ViewModel();
 
@@ -672,10 +674,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Cells[14, 5] = agingHydrolysisTest_Detail_Mockup.Rows[3]["Comment"].ToString();
                 }
 
-                string fileName = $"AgingHydrolysisTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string tmpName = $"AgingHydrolysisTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"AgingHydrolysisTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
 
@@ -729,7 +738,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 AgingHydrolysisTestID = detail.MainDetailData.AgingHydrolysisTestID,
             }).FirstOrDefault();
 
-            AgingHydrolysisTest_Detail_ViewModel report = this.GetReport(ReportNo, false);
+            string name = $"Accelerated Aging by Hydrolysis Test_{MainData.OrderID}_" +
+                $"{MainData.StyleID}_" +
+                $"{detail.MainDetailData.FabricRefNo}_" +
+                $"{detail.MainDetailData.FabricColor}_" +
+                $"{detail.MainDetailData.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+            AgingHydrolysisTest_Detail_ViewModel report = this.GetReport(ReportNo, false, name);
             string mailBody = "";
             string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName) ;
             SendMail_Request sendMail_Request = new SendMail_Request

@@ -23,6 +23,8 @@ using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
 using DatabaseObject.ResultModel;
 using Library;
+using System.Web.UI.WebControls;
+using static Ict.Win.Design.DateTimeConverter;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -255,7 +257,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public BaseResult ToReport(string ReportNo ,bool IsPDF,  out string FinalFilenmae)
+        public BaseResult ToReport(string ReportNo ,bool IsPDF,  out string FinalFilenmae, string AssignedFineName = "")
         {
 
             BaseResult result = new BaseResult();
@@ -428,11 +430,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 //string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
                 //string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
+                string tmpName= $"Daily HT Wash Test){DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
-                string fileName = $"Daily HT Wash Test){DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"Daily HT Wash Test){DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
 
@@ -575,7 +583,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             HeatTransferWash_ViewModel model = this.GetHeatTransferWash(new HeatTransferWash_Request() { ReportNo = ReportNo });
             string FinalFilenmae = string.Empty;
-            BaseResult report = this.ToReport(ReportNo, false ,out FinalFilenmae);
+
+            string name = $"Daily Heat Transfer Wash Test_{model.Main.OrderID}_" +
+                        $"{model.Main.StyleID}_" +
+                        $"{model.Main.Article}_" +
+                        $"{model.Main.Line}_" +
+                        $"{model.Main.Result}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+            BaseResult report = this.ToReport(ReportNo, false ,out FinalFilenmae, name);
 
             string mailBody = "";
             string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FinalFilenmae);

@@ -24,6 +24,7 @@ using Ict;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Web.Razor.Editor;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -615,7 +616,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     aICommentType += ",Odour Test";
                 }
 
-                GarmentTest_Detail_Result baseResult = ToReport(ID, No, ReportType.Wash_Test_2018, true);
+                string name = $"Garment Test_{dtContent.Rows[0]["OrderID"]}_" +
+                    $"{dtContent.Rows[0]["StyleID"]}_" +
+                    $"{dtContent.Rows[0]["Article"]}_" +
+                    $"{dtContent.Rows[0]["Result"]}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                
+                GarmentTest_Detail_Result baseResult = ToReport(ID, No, ReportType.Wash_Test_2018, true, AssignedFineName: name);
                 string FileName = baseResult.Result.Value ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.reportPath) : string.Empty;
                 SendMail_Request request = new SendMail_Request()
                 {
@@ -930,7 +937,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return strValie;
         }
 
-        public GarmentTest_Detail_Result ToReport(string ID, string No, ReportType type, bool IsToPDF, bool test = false)
+        public GarmentTest_Detail_Result ToReport(string ID, string No, ReportType type, bool IsToPDF, bool test = false, string AssignedFineName = "")
         {
             GarmentTest_Detail_Result all_Data = Get_All_Detail(ID, No);
             all_Data.reportPath = string.Empty;
@@ -2496,6 +2503,11 @@ and t.GarmentTest=1
                         #region Save & Show Excel
 
                         string fileName_2018 = $"{basefileName_2018}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                        if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                        {
+                            fileName_2018 = AssignedFineName;
+                        }
+
                         string filexlsx_2018 = fileName_2018 + ".xlsx";
                         string fileNamePDF_2018 = fileName_2018 + ".pdf";
 
@@ -2707,9 +2719,12 @@ and t.GarmentTest=1
 
                     #region Save & Show Excel
 
-
-
                     string fileName_2020 = $"{basefileName_2020}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                    if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                    {
+                        fileName_2020 = AssignedFineName;
+                    }
+
                     string filexlsx_2020 = fileName_2020 + ".xlsx";
                     string fileNamePDF_2020 = fileName_2020 + ".pdf";
 
@@ -2967,6 +2982,11 @@ and t.GarmentTest=1
                       + all_Data.Main.SeasonID.ToString() + "_" + all_Data.Main.StyleID.ToString() + "_" + all_Data.Main.Article.ToString();
 
                     string fileName_Physical = $"WashTest_Physical_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                    if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                    {
+                        fileName_Physical = AssignedFineName;
+                    }
+
                     string filexlsx_Physical = fileName_Physical + ".xlsx";
                     string fileNamePDF_Physical = fileName_Physical + ".pdf";
 

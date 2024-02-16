@@ -480,7 +480,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-        public StickerTest_ViewModel GetReport(string ReportNo, bool isPDF)
+        public StickerTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             StickerTest_ViewModel result = new StickerTest_ViewModel();
 
@@ -633,11 +633,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
+                string tmpName = $"StickerTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
-                string fileName = $"StickerTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"StickerTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
                 Microsoft.Office.Interop.Excel.Workbook workbook = excel.ActiveWorkbook;
@@ -695,15 +700,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _Provider = new StickerTestProvider(Common.ManufacturingExecutionDataAccessLayer);
 
             StickerTest_ViewModel model = this.GetData(new StickerTest_Request() { ReportNo = ReportNo });
+            string name = $"Residue ,Ageing Test for Sticker Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-            StickerTest_ViewModel report = this.GetReport(ReportNo, false);
+            StickerTest_ViewModel report = this.GetReport(ReportNo, false, name);
             string mailBody = "";
             string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
             SendMail_Request sendMail_Request = new SendMail_Request
             {
                 Subject = $"Residue/Ageing Test for Sticker Test/{model.Main.OrderID}/" +
                 $"{model.Main.StyleID}/" +
-                $"{model.Main.Article}/" +
+                $"{model.Main.FabricRefNo}/" +
+                $"{model.Main.FabricColor}/" +
                 $"{model.Main.Result}/" +
                 $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = TO,

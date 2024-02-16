@@ -7,6 +7,7 @@ using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
+using Microsoft.Office.Interop.Excel;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
@@ -268,7 +269,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
 
 
-        public BaseResult ToReport(string ReportNo, bool IsPDF, out string FinalFilenmae)
+        public BaseResult ToReport(string ReportNo, bool IsPDF, out string FinalFilenmae, string AssignedFineName = "")
         {
 
             BaseResult result = new BaseResult();
@@ -343,28 +344,39 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     bodyStart++;
                 }
 
-                string excelFileName = $"Daily Bulk Moisture Test_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-                string pdfFileName = $"Daily Bulk Moisture Test_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string tmpName = $"Daily Bulk Moisture Test_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string excelFileName = $"{tmpName}.xlsx";
+                string pdfFileName = $"{tmpName}.pdf";
 
                 string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
                 string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
+                Excel.Workbook workBook = excel.ActiveWorkbook;
                 if (IsPDF)
                 {
                     Microsoft.Office.Interop.Excel.XlFixedFormatType targetType = Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF;
-                    Excel.Workbook workBook = excel.ActiveWorkbook;
+                    
                     workBook.ExportAsFixedFormat(targetType, pdfPath);
                     Marshal.ReleaseComObject(workBook);
                     FinalFilenmae = pdfFileName;
                 }
                 else
                 {
-                    excel.ActiveWorkbook.SaveAs(excelPath);
+                    workBook.SaveAs(excelPath);
+                    //excel.ActiveWorkbook.SaveAs(excelPath);
                     FinalFilenmae = excelFileName;
                 }
 
+                workBook.Close();
                 excel.Quit();
                 Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(workBook);
                 Marshal.ReleaseComObject(excel);
 
                 result.Result = true;
@@ -384,17 +396,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _Provider = new DailyMoistureProvider(Common.ManufacturingExecutionDataAccessLayer);
 
             DailyMoisture_ViewModel model = this.GetDailyMoisture(new DailyMoisture_Request() { ReportNo = ReportNo });
+            string name = $"Daily Moisture Test_{model.Main.OrderID}_" +
+                    $"{model.Main.StyleID}_" +
+                    $"{model.Main.Line}_" +
+                    $"{model.Main.Result}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-            BaseResult report = this.ToReport(ReportNo, false,out string TempFileName);
+            BaseResult report = this.ToReport(ReportNo, false,out string TempFileName, name);
             string mailBody = "";
             string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", TempFileName);
             SendMail_Request sendMail_Request = new SendMail_Request
             {
                 Subject = $"Daily Moisture Test/{model.Main.OrderID}/" +
-                $"{model.Main.StyleID}/" +
-                $"{model.Main.Line}/" +
-                $"{model.Main.Result}/" +
-                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                    $"{model.Main.StyleID}/" +
+                    $"{model.Main.Line}/" +
+                    $"{model.Main.Result}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
 
                 To = TO,
                 CC = CC,
@@ -402,15 +419,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 //alternateView = plainView,
                 FileonServer = new List<string> { FileName },
                 IsShowAIComment = true,
-                AICommentType = "Accelerated Aging by Hydrolysis",
+                //AICommentType = "Accelerated Aging by Hydrolysis",
                 StyleID = model.Main.StyleID,
                 SeasonID = model.Main.SeasonID,
                 BrandID = model.Main.BrandID,
             };
 
             _MailService = new MailToolsService();
-            string comment = _MailService.GetAICommet(sendMail_Request);
-            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            string comment = string.Empty;// _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = string.Empty;//_MailService.GetBuyReadyDate(sendMail_Request);
             sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
 
             return MailTools.SendMail(sendMail_Request);

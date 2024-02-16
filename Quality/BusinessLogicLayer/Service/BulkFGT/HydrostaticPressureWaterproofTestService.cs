@@ -20,6 +20,7 @@ using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using System.Net.Mail;
+using System.Web.UI.WebControls;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -440,7 +441,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-        public HydrostaticPressureWaterproofTest_ViewModel GetReport(string ReportNo, bool isPDF)
+        public HydrostaticPressureWaterproofTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             HydrostaticPressureWaterproofTest_ViewModel result = new HydrostaticPressureWaterproofTest_ViewModel();
 
@@ -619,11 +620,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
 
                 }
+                string tmpName = $"HydrostaticPressureWaterproofTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
-                string fileName = $"HydrostaticPressureWaterproofTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"HydrostaticPressureWaterproofTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
 
@@ -686,7 +694,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             HydrostaticPressureWaterproofTest_ViewModel model = this.GetData(new HydrostaticPressureWaterproofTest_Request() { ReportNo = ReportNo });
 
-            HydrostaticPressureWaterproofTest_ViewModel report = this.GetReport(ReportNo, false);
+            string name = $"Hydrostatic Pressure Waterproof Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+            HydrostaticPressureWaterproofTest_ViewModel report = this.GetReport(ReportNo, false, name);
             string mailBody = "";
             string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
             SendMail_Request sendMail_Request = new SendMail_Request
