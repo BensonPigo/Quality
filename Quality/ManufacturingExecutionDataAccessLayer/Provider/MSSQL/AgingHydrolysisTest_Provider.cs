@@ -318,13 +318,29 @@ DELETE FROM AgingHydrolysisTest where ID = @ID
                 oldDetailData = oldDetailData.Where(o => o.ReportNo == sources.DetailList.FirstOrDefault().ReportNo).ToList();
             }
 
-            List<AgingHydrolysisTest_Detail> needUpdateDetailList =
+            List<AgingHydrolysisTest_Detail> needUpdateDetailList =new List<AgingHydrolysisTest_Detail>();
+
+            // 若是Detail頁面的Save，才需比對所有欄位；Index的Save只能異動MaterialType
+            if (isSaveDetailPage)
+            {
+                needUpdateDetailList =
                 PublicClass.CompareListValue<AgingHydrolysisTest_Detail>(
                     sources.DetailList,
                     oldDetailData,
                     "ReportNo",
                     "MaterialType,ReportDate,ReceivedDate,FabricRefNo,AccRefNo,FabricColor,AccColor,Result,Comment");
 
+            }
+            else
+            {
+                needUpdateDetailList =
+                PublicClass.CompareListValue<AgingHydrolysisTest_Detail>(
+                    sources.DetailList,
+                    oldDetailData,
+                    "ReportNo",
+                    "MaterialType");
+
+            }
 
             string insertDetail = $@" ----寫入AgingHydrolysisTest_Detail
 SET XACT_ABORT ON
@@ -344,10 +360,16 @@ VALUES
            ,GETDATE()
            ,@AddName)
 ;
-INSERT INTO PMSFile.dbo.AgingHydrolysisTest_Image 
-    ( ReportNo)
-VALUES
-    ( @ReportNo)
+
+if not exists(
+    select * from PMSFile.dbo.AgingHydrolysisTest_Image 
+)
+begin
+    INSERT INTO PMSFile.dbo.AgingHydrolysisTest_Image 
+        ( ReportNo)
+    VALUES
+        ( @ReportNo)
+end
 ";
             string updateDetail = $@" ----更新AgingHydrolysisTest_Detail
 SET XACT_ABORT ON

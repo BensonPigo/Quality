@@ -391,7 +391,7 @@
                         </div>
 
                         <div class="MainDataAreaItem odd">
-                            @Html.TextBoxFor(o => o.MainData.Time, new { @class = "CanEdit", @type = "number" ,@style="width:70%", @onchange = "value=TimeCheck(value)" })
+                            @Html.TextBoxFor(o => o.MainData.Time, new { @class = "CanEdit", @type = "number", @style = "width:70%", @onchange = "value=TimeCheck(value)" })
                             @Html.DropDownListFor(o => o.MainData.TimeUnit, Model.TimeUnit_Source, new { @class = "CanEdit", })
                         </div>
                         <div class="MainDataAreaItem odd">
@@ -445,6 +445,7 @@
                                 for (int i = 0; i < Model.DetailList.Count; i++)
                                 {
                                     string rowName = $@"Row{i}";
+                                    string MaterialTypeCanEdit = string.IsNullOrWhiteSpace(Model.DetailList[i].ReportDateText) ? "CanEdit" : string.Empty;
                                     <div class="DetailDataAreaItem1 colBody @rowName">
                                         <input type="hidden" class="detailRowIdx" name="name" value="@i" />
                                         @*@Html.TextBoxFor(o => Model.DetailList[i].ReportNo, new { @class = "" })*@
@@ -456,7 +457,7 @@
                                     </div>
 
                                     <div class="DetailDataAreaItem1 colBody @rowName">
-                                        <select id="DetailList_@{@i}__MaterialType" name="DetailList[@{@i}].MaterialType" class="CanEdit DetailInput">
+                                        <select id="DetailList_@{@i}__MaterialType" name="DetailList[@{@i}].MaterialType" class="@MaterialTypeCanEdit DetailInput">
                                             @foreach (var item in Model.MaterialType_Source)
                                             {
                                                 string selected = item.Value.Equals(Model.DetailList[i].MaterialType) ? "selected" : "";
