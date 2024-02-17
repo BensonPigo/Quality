@@ -63,6 +63,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,LastLoginTime"+ Environment.NewLine);
             SbSql.Append("        ,ESignature"+ Environment.NewLine);
             SbSql.Append("        ,Remark"+ Environment.NewLine);
+            SbSql.Append("        ,ADAccount" + Environment.NewLine);
             SbSql.Append("FROM [Pass1] WITH(NOLOCK)" + Environment.NewLine);
             SbSql.Append("Where ID=@ID" + Environment.NewLine);
             if (Item.Password != null) { SbSql.Append("and Password = @Password" + Environment.NewLine); }

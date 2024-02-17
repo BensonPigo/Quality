@@ -37,6 +37,14 @@ namespace BusinessLogicLayer
                 }
             }
         }
+        public static string Region
+        {
+            get
+            {
+                GetRegion();
+                return region;
+            }
+        }
         public static string DashboardDataAccessLayer {
             get {
                 GetRegion();

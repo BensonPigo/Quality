@@ -112,6 +112,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         [StringLength(100)]
         
         public string Remark { get; set; }
+        public string ADAccount { get; set; }
 
     }
 }
