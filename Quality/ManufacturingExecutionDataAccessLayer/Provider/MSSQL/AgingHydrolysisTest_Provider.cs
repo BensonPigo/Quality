@@ -338,7 +338,7 @@ DELETE FROM AgingHydrolysisTest where ID = @ID
                     sources.DetailList,
                     oldDetailData,
                     "ReportNo",
-                    "MaterialType");
+                    "ReportNo,MaterialType");
 
             }
 
@@ -396,6 +396,23 @@ UPDATE  PMSFile.dbo.AgingHydrolysisTest_Image
 SET TestBeforePicture = @TestBeforePicture ,TestAfterPicture = @TestAfterPicture
 WHERE ReportNo = @ReportNo
 ";
+
+            if (!isSaveDetailPage)
+            {
+                updateDetail = $@" ----更新AgingHydrolysisTest_Detail
+
+UPDATE AgingHydrolysisTest_Detail
+SET EditDate = GETDATE() , EditName = @EditName
+    ,MaterialType = @MaterialType
+WHERE ReportNo = @ReportNo
+;
+if @MaterialType != 'Mockup'
+begin
+    delete from AgingHydrolysisTest_Detail_Mockup where ReportNo = @ReportNo
+end 
+
+";
+            }
             string deleteDetail = $@" ----刪除AgingHydrolysisTest_Detail
 SET XACT_ABORT ON
 
@@ -454,6 +471,7 @@ DELETE FROM PMSFile.dbo.AgingHydrolysisTest_Image  where ReportNo = @ReportNo
                         }
 
                         ExecuteNonQuery(CommandType.Text, updateDetail, listDetailPar);
+                        
                         break;
                     case CompareStateType.Delete:
                         listDetailPar.Add(new SqlParameter($"@ReportNo", detailItem.ReportNo));
