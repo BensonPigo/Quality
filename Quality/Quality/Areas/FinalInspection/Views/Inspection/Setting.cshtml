@@ -924,24 +924,34 @@
             });
 
             $("#InspectionStage").change(function () {
-                if ($(this).val() == "Final" || $(this).val() == "3rd Party") {
-                    $("#AQLPlan").attr("disabled", false);
-                    $("#AQLProPlan").attr("disabled", false);
+
+                var brandID = '@Model.BrandID';
+                if (brandID == 'ADIDAS') {
+                    if ($(this).val() == "Final" || $(this).val() == "3rd Party") {
+                        $("#AQLPlan").attr("disabled", false);
+                        $("#AQLProPlan").attr("disabled", false);
+                    }
+                    else {
+                        $("#AQLPlan").val("");
+                        $("#AQLPlan").attr("disabled", true);
+                        //$("#AQLProPlan").val("");
+                        $("#AQLProPlan").attr("disabled", true);
+                    }
                 }
                 else {
-                    $("#AQLPlan").val("");
-                    $("#AQLPlan").attr("disabled", true);
-                    //$("#AQLProPlan").val("");
-                    $("#AQLProPlan").attr("disabled", true);
+                    $("#AQLPlan").attr("disabled", false);
+                    $("#AQLProPlan").attr("disabled", false);
+
                 }
             });
 
             // AQLPlan選單變化事件
             $("#AQLPlan").change(function () {
                 var aql = $(this).val()
-                var TotalAvailableQty = $("#totalAvailableQty").text();
+                var TotalAvailableQty = parseInt($("#totalAvailableQty").text());
 
-                if (TotalAvailableQty == 0 && $("#FinalInspectionID").val() != '') {
+                //if (TotalAvailableQty == 0 && $("#FinalInspectionID").val() != '') {
+                if (TotalAvailableQty == 0) {
                     msg.WithError("Total Available Qty cann't be 0.");
                     $(this).val('');
                     return;
@@ -1002,7 +1012,8 @@
                 var aql = $(this).val()
                 var TotalAvailableQty = $("#totalAvailableQty").text();
 
-                if (TotalAvailableQty == 0 && $("#FinalInspectionID").val() != '') {
+                //if (TotalAvailableQty == 0 && $("#FinalInspectionID").val() != '') {
+                if (TotalAvailableQty == 0) {
                     msg.WithError("Total Available Qty cann't be 0.");
                     $(this).val('');
                     return;
@@ -1037,9 +1048,12 @@
                 }
             });
 
-            $("#AQLPlan").change();
 
-            $("#AQLProPlan").change();
+            $("#InspectionStage").change();
+
+            //$("#AQLPlan").change();
+
+            //$("#AQLProPlan").change();
         });
 
         // Selected PO異動Available Qty時。自動加總到下方的「Total Available Qty」、右方的「AQL Plan」
@@ -1428,18 +1442,40 @@
         }
 
         function onInspectionStageChange(value) {
-            //選擇 Final或3rd Party時，會把[AQL Plan]變成可編輯，而[Sample Plan Qty]唯讀
-            if (value == "Final" || value == "3rd Party") {
-                $('#SampleSize').prop('disabled', true);
-                $('#AcceptQty').prop('disabled', true);
-                $('#RejectQty').prop('disabled', true);
-            }
+            var brandID = '@Model.BrandID';
 
-            //選擇Inline或Stagger時，會把[AQL Plan]變成唯讀並將內容變為空白，而[Sample Plan Qty]可編輯"
-            if (value == "Inline" || value == "Stagger") {
-                $('#SampleSize').prop('disabled', false);
-                $('#AcceptQty').prop('disabled', false);
-                $('#RejectQty').prop('disabled', false);
+            if (brandID == 'ADIDAS') {
+                //選擇 Final或3rd Party時，會把[AQL Plan]變成可編輯，而[Sample Plan Qty]唯讀
+                if (value == "Final" || value == "3rd Party") {
+                    $('#SampleSize').prop('disabled', true);
+                    $('#AcceptQty').prop('disabled', true);
+                    $('#RejectQty').prop('disabled', true);
+                }
+
+                //選擇Inline或Stagger時，會把[AQL Plan]變成唯讀並將內容變為空白，而[Sample Plan Qty]可編輯"
+                if (value == "Inline" || value == "Stagger") {
+                    $('#SampleSize').prop('disabled', false);
+                    $('#AcceptQty').prop('disabled', false);
+                    $('#RejectQty').prop('disabled', false);
+                }
+
+            }
+            else {
+
+                //選擇 Final或3rd Party時，會把[AQL Plan]變成可編輯，而[Sample Plan Qty]唯讀
+                if (value == "Final" || value == "3rd Party" || value == "Inline" || value == "Stagger") {
+                    $('#SampleSize').prop('disabled', true);
+                    $('#AcceptQty').prop('disabled', true);
+                    $('#RejectQty').prop('disabled', true);
+                }
+
+                ////選擇Inline或Stagger時，會把[AQL Plan]變成唯讀並將內容變為空白，而[Sample Plan Qty]可編輯"
+                //if (value == "Inline" || value == "Stagger") {
+                //    $('#SampleSize').prop('disabled', false);
+                //    $('#AcceptQty').prop('disabled', false);
+                //    $('#RejectQty').prop('disabled', false);
+                //}
+
             }
 
             currentStage = value;

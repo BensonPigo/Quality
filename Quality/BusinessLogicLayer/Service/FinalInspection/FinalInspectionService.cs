@@ -36,7 +36,7 @@ namespace BusinessLogicLayer.Service
                 case -1:
                     return "100% Inspection";
                 case 0:
-                    return "100% Inspection";
+                    return string.Empty;
                 default:
                     _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
                     List<AcceptableQualityLevels> acceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().ToList();
@@ -1199,11 +1199,11 @@ namespace BusinessLogicLayer.Service
 
             return allStep;
         }
-        public List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID)
+        public List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID, string InspectionStage)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-            List<FinalInspectionBasicGeneral> allStep = _FinalInspectionProvider.GetGeneralByBrand(FinalInspectionID, BrandID);
+            List<FinalInspectionBasicGeneral> allStep = _FinalInspectionProvider.GetGeneralByBrand(FinalInspectionID, BrandID , InspectionStage);
 
             return allStep;
         }
