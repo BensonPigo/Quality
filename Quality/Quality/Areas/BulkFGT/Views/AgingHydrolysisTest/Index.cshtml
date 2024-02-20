@@ -391,7 +391,7 @@
                         </div>
 
                         <div class="MainDataAreaItem odd">
-                            @Html.TextBoxFor(o => o.MainData.Time, new { @class = "CanEdit", @type = "number" ,@style="width:70%", @onchange = "value=TimeCheck(value)" })
+                            @Html.TextBoxFor(o => o.MainData.Time, new { @class = "CanEdit", @type = "number", @style = "width:70%", @onchange = "value=TimeCheck(value)" })
                             @Html.DropDownListFor(o => o.MainData.TimeUnit, Model.TimeUnit_Source, new { @class = "CanEdit", })
                         </div>
                         <div class="MainDataAreaItem odd">
@@ -445,6 +445,7 @@
                                 for (int i = 0; i < Model.DetailList.Count; i++)
                                 {
                                     string rowName = $@"Row{i}";
+                                    string MaterialTypeCanEdit = string.IsNullOrWhiteSpace(Model.DetailList[i].ReportDateText) ? "CanEdit" : string.Empty;
                                     <div class="DetailDataAreaItem1 colBody @rowName">
                                         <input type="hidden" class="detailRowIdx" name="name" value="@i" />
                                         @*@Html.TextBoxFor(o => Model.DetailList[i].ReportNo, new { @class = "" })*@
@@ -456,7 +457,7 @@
                                     </div>
 
                                     <div class="DetailDataAreaItem1 colBody @rowName">
-                                        <select id="DetailList_@{@i}__MaterialType" name="DetailList[@{@i}].MaterialType" class="CanEdit DetailInput">
+                                        <select id="DetailList_@{@i}__MaterialType" name="DetailList[@{@i}].MaterialType" class="@MaterialTypeCanEdit DetailInput">
                                             @foreach (var item in Model.MaterialType_Source)
                                             {
                                                 string selected = item.Value.Equals(Model.DetailList[i].MaterialType) ? "selected" : "";
@@ -739,6 +740,7 @@
                 }
             });
 
+            $('select').removeAttr("disabled");
 
             $("#SaveSubmit").click();
 
@@ -781,6 +783,7 @@
                     let targetRow = t.parent('div').attr('class').split(' ').filter(o => o.includes('Row'))[0];
 
                     $(`.${targetRow}`).remove();
+                    reBuildIndex();
                     msg.WithSuccess("Delete Success");
                 }, null);
         });
@@ -918,5 +921,51 @@
 
     function SpNoChange(value) {
         $('#btnQuery').unbind('click').click();
+    }
+
+    // 若表身有資料被刪除，則重新編號索引
+    function reBuildIndex() {
+
+        // 取剩下的Row
+        var rows = $('.detailRowIdx');
+
+        // 新的索引，一律從0開始
+        var newIndex = 0;
+
+        // 剩下的Row逐一處理，可能會有連號造成Index不連貫，例如原本有三筆資料，索引0、1、2，但1刪掉了，剩下的兩筆索引要重新編成0、1
+        rows.each(function () {
+
+            // 取得舊索引
+            var oldIndex = $(this).val();
+
+            // 取得Name或ID用到舊索引的控制項，一律換成新索引
+            $(`input[name^="DetailList[${oldIndex}]"]`).each(function () {
+                var oldName = $(this).attr('name');
+                var newName = oldName.replace(oldIndex, newIndex);
+                $(this).attr('name', newName);
+            })
+
+            $(`input[id^="DetailList_${oldIndex}_"]`).each(function () {
+                var oldID = $(this).attr('id');
+                var newID = oldID.replace(oldIndex, newIndex);
+                $(this).attr('id', newID);
+            })
+
+            $(`select[name^="DetailList[${oldIndex}]"]`).each(function () {
+                var oldName = $(this).attr('name');
+                var newName = oldName.replace(oldIndex, newIndex);
+                $(this).attr('name', newName);
+
+            })
+
+            $(`select[id^="DetailList_${oldIndex}_"]`).each(function () {
+                var oldID = $(this).attr('id');
+                var newID = oldID.replace(oldIndex, newIndex);
+                $(this).attr('id', newID);
+            })
+            $(this).attr('value', newIndex);
+            newIndex++;
+        });
+
     }
 </script>
