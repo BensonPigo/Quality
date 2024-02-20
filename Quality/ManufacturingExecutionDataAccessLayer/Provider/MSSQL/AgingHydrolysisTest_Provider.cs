@@ -396,9 +396,21 @@ begin
     delete from AgingHydrolysisTest_Detail_Mockup where ReportNo = @ReportNo
 end 
 ;
-UPDATE  PMSFile.dbo.AgingHydrolysisTest_Image 
-SET TestBeforePicture = @TestBeforePicture ,TestAfterPicture = @TestAfterPicture
-WHERE ReportNo = @ReportNo
+if not exists(
+    select * from PMSFile.dbo.AgingHydrolysisTest_Image WHERE ReportNo = @ReportNo
+)
+begin
+    INSERT INTO PMSFile.dbo.AgingHydrolysisTest_Image 
+        ( ReportNo ,TestBeforePicture ,TestAfterPicture)
+    VALUES
+        ( @ReportNo ,@TestBeforePicture ,@TestAfterPicture)
+end
+else
+begin
+    UPDATE  PMSFile.dbo.AgingHydrolysisTest_Image 
+    SET TestBeforePicture = @TestBeforePicture ,TestAfterPicture = @TestAfterPicture
+    WHERE ReportNo = @ReportNo
+end
 ";
 
             if (!isSaveDetailPage)
@@ -415,6 +427,21 @@ begin
     delete from AgingHydrolysisTest_Detail_Mockup where ReportNo = @ReportNo
 end 
 
+if not exists(
+    select * from PMSFile.dbo.AgingHydrolysisTest_Image WHERE ReportNo = @ReportNo
+)
+begin
+    INSERT INTO PMSFile.dbo.AgingHydrolysisTest_Image 
+        ( ReportNo ,TestBeforePicture ,TestAfterPicture)
+    VALUES
+        ( @ReportNo ,@TestBeforePicture ,@TestAfterPicture)
+end
+else
+begin
+    UPDATE  PMSFile.dbo.AgingHydrolysisTest_Image 
+    SET TestBeforePicture = @TestBeforePicture ,TestAfterPicture = @TestAfterPicture
+    WHERE ReportNo = @ReportNo
+end
 ";
             }
             string deleteDetail = $@" ----刪除AgingHydrolysisTest_Detail
