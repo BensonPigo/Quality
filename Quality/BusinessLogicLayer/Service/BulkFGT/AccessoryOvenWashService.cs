@@ -494,7 +494,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     $"{dt.Rows[0]["Wash Result"]}_" +
                     $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-                BaseResult baseResult = WashTestExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName);
+                BaseResult baseResult = WashTestExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName, AssignedFineName: name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {

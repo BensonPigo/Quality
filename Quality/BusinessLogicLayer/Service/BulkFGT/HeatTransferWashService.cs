@@ -424,13 +424,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     bodyStart++;
                 }
 
-                //string excelFileName = $"Daily HT Wash Test_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-                //string pdfFileName = $"Daily HT Wash Test_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
-
-                //string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
-                //string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
-
-                string tmpName= $"Daily HT Wash Test){DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                string tmpName= $"Daily HT Wash Test-{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {
@@ -443,45 +437,27 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
-
-                Microsoft.Office.Interop.Excel.Workbook workbook = excel.ActiveWorkbook;
-                workbook.SaveAs(fullExcelFileName);
-
-                workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-
-
+                Excel.Workbook workBook = excel.ActiveWorkbook;
                 if (IsPDF)
                 {
-                    if (ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
-                    {
-                        FinalFilenmae = fullPdfFileName;
-                        result.Result = true;
-                    }
-                    else
-                    {
-                        result.ErrorMessage = "Convert To PDF Fail";
-                        result.Result = false;
-                    }
-                    //Microsoft.Office.Interop.Excel.XlFixedFormatType targetType = Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF;
-                    //Excel.Workbook workBook = excel.ActiveWorkbook;
-                    //workBook.ExportAsFixedFormat(targetType, pdfPath);
-                    //Marshal.ReleaseComObject(workBook);
-                    //FinalFilenmae = pdfFileName;
+                    Microsoft.Office.Interop.Excel.XlFixedFormatType targetType = Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF;
+
+                    workBook.ExportAsFixedFormat(targetType, fullPdfFileName);
+                    Marshal.ReleaseComObject(workBook);
+                    FinalFilenmae = filePdfName;
                 }
                 else
                 {
-                    FinalFilenmae = fullExcelFileName;
-                    result.Result = true;
+                    workBook.SaveAs(fullExcelFileName);
                     //excel.ActiveWorkbook.SaveAs(excelPath);
-                    //FinalFilenmae = excelFileName;
+                    FinalFilenmae = fileName;
                 }
 
-                //excel.Quit();
-                //Marshal.ReleaseComObject(worksheet);
-                //Marshal.ReleaseComObject(excel);
+                workBook.Close();
+                excel.Quit();
+                Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(workBook);
+                Marshal.ReleaseComObject(excel);
             }
             catch (Exception ex)
             {
