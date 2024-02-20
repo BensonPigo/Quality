@@ -323,12 +323,16 @@ DELETE FROM AgingHydrolysisTest where ID = @ID
             // 若是Detail頁面的Save，才需比對所有欄位；Index的Save只能異動MaterialType
             if (isSaveDetailPage)
             {
-                needUpdateDetailList =
-                PublicClass.CompareListValue<AgingHydrolysisTest_Detail>(
-                    sources.DetailList,
-                    oldDetailData,
-                    "ReportNo",
-                    "MaterialType,ReportDate,ReceivedDate,FabricRefNo,AccRefNo,FabricColor,AccColor,Result,Comment");
+                needUpdateDetailList = sources.DetailList;
+                foreach (var item in needUpdateDetailList)
+                {
+                    item.StateType = CompareStateType.Edit;
+                }
+                //PublicClass.CompareListValue<AgingHydrolysisTest_Detail>(
+                //    sources.DetailList,
+                //    oldDetailData,
+                //    "ReportNo",
+                //    "MaterialType,ReportDate,ReceivedDate,FabricRefNo,AccRefNo,FabricColor,AccColor,Result,Comment");
 
             }
             else
@@ -362,7 +366,7 @@ VALUES
 ;
 
 if not exists(
-    select * from PMSFile.dbo.AgingHydrolysisTest_Image 
+    select * from PMSFile.dbo.AgingHydrolysisTest_Image WHERE ReportNo = @ReportNo
 )
 begin
     INSERT INTO PMSFile.dbo.AgingHydrolysisTest_Image 
