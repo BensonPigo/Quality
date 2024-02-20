@@ -318,13 +318,33 @@ DELETE FROM AgingHydrolysisTest where ID = @ID
                 oldDetailData = oldDetailData.Where(o => o.ReportNo == sources.DetailList.FirstOrDefault().ReportNo).ToList();
             }
 
-            List<AgingHydrolysisTest_Detail> needUpdateDetailList =
+            List<AgingHydrolysisTest_Detail> needUpdateDetailList =new List<AgingHydrolysisTest_Detail>();
+
+            // 若是Detail頁面的Save，才需比對所有欄位；Index的Save只能異動MaterialType
+            if (isSaveDetailPage)
+            {
+                needUpdateDetailList = sources.DetailList;
+                foreach (var item in needUpdateDetailList)
+                {
+                    item.StateType = CompareStateType.Edit;
+                }
+                //PublicClass.CompareListValue<AgingHydrolysisTest_Detail>(
+                //    sources.DetailList,
+                //    oldDetailData,
+                //    "ReportNo",
+                //    "MaterialType,ReportDate,ReceivedDate,FabricRefNo,AccRefNo,FabricColor,AccColor,Result,Comment");
+
+            }
+            else
+            {
+                needUpdateDetailList =
                 PublicClass.CompareListValue<AgingHydrolysisTest_Detail>(
                     sources.DetailList,
                     oldDetailData,
                     "ReportNo",
-                    "MaterialType,ReportDate,ReceivedDate,FabricRefNo,AccRefNo,FabricColor,AccColor,Result,Comment");
+                    "ReportNo,MaterialType");
 
+            }
 
             string insertDetail = $@" ----寫入AgingHydrolysisTest_Detail
 SET XACT_ABORT ON
@@ -344,10 +364,16 @@ VALUES
            ,GETDATE()
            ,@AddName)
 ;
-INSERT INTO PMSFile.dbo.AgingHydrolysisTest_Image 
-    ( ReportNo)
-VALUES
-    ( @ReportNo)
+
+if not exists(
+    select * from PMSFile.dbo.AgingHydrolysisTest_Image WHERE ReportNo = @ReportNo
+)
+begin
+    INSERT INTO PMSFile.dbo.AgingHydrolysisTest_Image 
+        ( ReportNo)
+    VALUES
+        ( @ReportNo)
+end
 ";
             string updateDetail = $@" ----更新AgingHydrolysisTest_Detail
 SET XACT_ABORT ON
@@ -370,10 +396,54 @@ begin
     delete from AgingHydrolysisTest_Detail_Mockup where ReportNo = @ReportNo
 end 
 ;
-UPDATE  PMSFile.dbo.AgingHydrolysisTest_Image 
-SET TestBeforePicture = @TestBeforePicture ,TestAfterPicture = @TestAfterPicture
-WHERE ReportNo = @ReportNo
+if not exists(
+    select * from PMSFile.dbo.AgingHydrolysisTest_Image WHERE ReportNo = @ReportNo
+)
+begin
+    INSERT INTO PMSFile.dbo.AgingHydrolysisTest_Image 
+        ( ReportNo ,TestBeforePicture ,TestAfterPicture)
+    VALUES
+        ( @ReportNo ,@TestBeforePicture ,@TestAfterPicture)
+end
+else
+begin
+    UPDATE  PMSFile.dbo.AgingHydrolysisTest_Image 
+    SET TestBeforePicture = @TestBeforePicture ,TestAfterPicture = @TestAfterPicture
+    WHERE ReportNo = @ReportNo
+end
 ";
+
+            if (!isSaveDetailPage)
+            {
+                updateDetail = $@" ----更新AgingHydrolysisTest_Detail
+
+UPDATE AgingHydrolysisTest_Detail
+SET EditDate = GETDATE() , EditName = @EditName
+    ,MaterialType = @MaterialType
+WHERE ReportNo = @ReportNo
+;
+if @MaterialType != 'Mockup'
+begin
+    delete from AgingHydrolysisTest_Detail_Mockup where ReportNo = @ReportNo
+end 
+
+if not exists(
+    select * from PMSFile.dbo.AgingHydrolysisTest_Image WHERE ReportNo = @ReportNo
+)
+begin
+    INSERT INTO PMSFile.dbo.AgingHydrolysisTest_Image 
+        ( ReportNo ,TestBeforePicture ,TestAfterPicture)
+    VALUES
+        ( @ReportNo ,@TestBeforePicture ,@TestAfterPicture)
+end
+else
+begin
+    UPDATE  PMSFile.dbo.AgingHydrolysisTest_Image 
+    SET TestBeforePicture = @TestBeforePicture ,TestAfterPicture = @TestAfterPicture
+    WHERE ReportNo = @ReportNo
+end
+";
+            }
             string deleteDetail = $@" ----刪除AgingHydrolysisTest_Detail
 SET XACT_ABORT ON
 
@@ -432,6 +502,7 @@ DELETE FROM PMSFile.dbo.AgingHydrolysisTest_Image  where ReportNo = @ReportNo
                         }
 
                         ExecuteNonQuery(CommandType.Text, updateDetail, listDetailPar);
+                        
                         break;
                     case CompareStateType.Delete:
                         listDetailPar.Add(new SqlParameter($"@ReportNo", detailItem.ReportNo));
