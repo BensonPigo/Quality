@@ -563,7 +563,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             string name = $"Daily Heat Transfer Wash Test_{model.Main.OrderID}_" +
                         $"{model.Main.StyleID}_" +
                         $"{model.Main.Article}_" +
-                        $"{model.Main.Line}_" +
                         $"{model.Main.Result}_" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
@@ -576,7 +575,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Subject = $"Daily Heat Transfer Wash Test/{model.Main.OrderID}/" +
                         $"{model.Main.StyleID}/" +
                         $"{model.Main.Article}/" +
-                        $"{model.Main.Line}/" +
                         $"{model.Main.Result}/" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = TO,
