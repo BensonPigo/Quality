@@ -19,6 +19,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using Excel = Microsoft.Office.Interop.Excel;
 
 
@@ -332,7 +333,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return baseResult;
         }
 
-        public SendMail_Result SendFailResultMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest)
+        public SendMail_Result SendMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -341,13 +342,23 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 DataTable dtResult = _WaterFastnessProvider.GetFailMailContentData(poID, TestNo);
                 string ID = dtResult.Rows[0]["ID"].ToString();
                 dtResult.Columns.Remove("ID");
-                BaseResult baseResult = ToReport(ID, out string PDFFileName, true, isTest);
+                string name = $"Water Fastness Test_{poID}_" +
+                        $"{dtResult.Rows[0]["Style"]}_" +
+                        $"{dtResult.Rows[0]["Article"]}_" +
+                        $"{dtResult.Rows[0]["Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                BaseResult baseResult = ToReport(ID, out string PDFFileName, true, isTest, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", PDFFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
                     CC = ccAddress,
-                    Subject = "Fabric Oven Test - Test Fail",
+                    Subject = $"Water Fastness Test/{poID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Article"]}/" +
+                        $"{dtResult.Rows[0]["Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -400,7 +411,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             worksheet.Cells[setRow, 23] = dr["Remark"];
         }
 
-        public BaseResult ToReport(string ID, out string FileName, bool isPDF, bool isTest = false)
+        public BaseResult ToReport(string ID, out string FileName, bool isPDF, bool isTest = false, string AssignedFineName = "")
         {
             BaseResult result = new BaseResult();
             _WaterFastnessProvider = new WaterFastnessProvider(Common.ProductionDataAccessLayer);
@@ -512,6 +523,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 #region Save & Show Excel
 
                 string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    fileName = AssignedFineName;
+                }
+
                 string filexlsx = fileName + ".xlsx";
                 string fileNamePDF = fileName + ".pdf";
 

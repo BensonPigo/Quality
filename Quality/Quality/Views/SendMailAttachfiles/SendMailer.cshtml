@@ -66,23 +66,23 @@
                 <input type="button" id="btnGroup" name="name" style="width:12%;" value="Group" />
             </td>
         </tr>
-        <tr>
+        @*<tr>
             <td>
                 Subject:
             </td>
             <td>
                 @Html.TextBoxFor(m => m.Subject, new { @style = "width:100%;" })
             </td>
-        </tr>
-        <tr>
+        </tr>*@
+        @*<tr>
             <td>
                 Description:
             </td>
             <td>
                 @Html.TextBoxFor(m => m.Body, new { @style = "width:100%;" })
             </td>
-        </tr>
-        <tr>
+        </tr>*@
+        @*<tr>
             <td>
                 Attachment
             </td>
@@ -95,10 +95,10 @@
                 }
                 <input type="file" name="fileUploader" multiple="multiple" />
             </td>
-        </tr>
+        </tr>*@
         <tr>
             <td colspan="2" style="vertical-align: middle; text-align: center;">
-                <input type="submit" value="Send" />
+                <input type="button" id="btnSend" value="Send" />
                 <input class="sendMailExit" type="button" value="Exit" />
             </td>
         </tr>
@@ -116,6 +116,18 @@
         $("#btnGroup").click(function () {
             FailMail();
         });
+
+        $("#btnSend").click(function () {
+            // 呼叫父視窗的GetSendMailer Function，把值傳回去
+            var Mail = {
+                To: $("#To").val(),
+                CC: $("#CC").val(),
+            };
+
+            window.opener.GetSendMailer(Mail);
+            window.close();
+        });
+
     });
 
     function FailMail() {

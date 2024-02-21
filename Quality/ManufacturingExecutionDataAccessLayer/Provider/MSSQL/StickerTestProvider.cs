@@ -256,10 +256,20 @@ VALUES
            ,@AddName)
 ;
 
-INSERT INTO PMSFile.dbo.StickerTest
-    ( ReportNo ,TestBeforePicture ,TestAfterPicture)
-VALUES
-    ( @ReportNo ,@TestBeforePicture ,@TestAfterPicture)
+IF EXISTS(
+    SELECT 1 FROM PMSFile.dbo.StickerTest WHERE ReportNo = @ReportNo
+)
+BEGIN
+    UPDATE PMSFile.dbo.StickerTest
+    SET TestBeforePicture = @TestBeforePicture , TestAfterPicture = @TestAfterPicture
+    WHERE ReportNo = @ReportNo
+END
+ELSE
+BEGIN
+    INSERT INTO PMSFile.dbo.StickerTest (ReportNo,TestBeforePicture,TestAfterPicture)
+    VALUES(@ReportNo,@TestBeforePicture,@TestAfterPicture)
+END
+
 ");
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);

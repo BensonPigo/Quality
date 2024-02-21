@@ -151,7 +151,7 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public Report_Result GetPDF(MockupWash_ViewModel mockupWash, bool test = false)
+        public Report_Result GetPDF(MockupWash_ViewModel mockupWash, bool test = false, string AssignedFineName = "")
         {
             Report_Result result = new Report_Result();
             if (mockupWash == null)
@@ -328,6 +328,12 @@ namespace BusinessLogicLayer.Service
                 #endregion
 
                 string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    fileName = AssignedFineName;
+                }
+
                 string filexlsx = fileName + ".xlsx";
                 string fileNamePDF = fileName + ".pdf";
 
@@ -538,16 +544,27 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
+        public SendMail_Result SendMail(MockupFailMail_Request mail_Request)
         {
             _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
             System.Data.DataTable dt = _MockupWashProvider.GetMockupWashFailMailContentData(mail_Request.ReportNo);
+
             MockupWash_ViewModel model = GetMockupWash(new MockupWash_Request { ReportNo = mail_Request.ReportNo });
-            Report_Result baseResult = GetPDF(model);
+
+            string name = $"Mockup Wash _{model.POID}_" +
+                    $"{model.StyleID}_" +
+                    $"{model.Article}_" +
+                    $"{model.Result}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+            Report_Result baseResult = GetPDF(model,AssignedFineName: name);
             string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
             SendMail_Request sendMail_Request = new SendMail_Request
             {
-                Subject = "Mockup Wash – Test Fail",
+                Subject = $"Mockup Wash /{model.POID}/" +
+                    $"{model.StyleID}/" +
+                    $"{model.Article}/" +
+                    $"{model.Result}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = mail_Request.To,
                 CC = mail_Request.CC,
                 //Body = mailBody,

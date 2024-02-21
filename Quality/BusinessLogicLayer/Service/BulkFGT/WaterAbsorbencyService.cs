@@ -1,4 +1,6 @@
 ﻿using ADOHelper.Utility;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -9,12 +11,14 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Web.UI.WebControls;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
     public class WaterAbsorbencyService
     {
         private WaterAbsorbencyProvider _Provider;
+        private MailToolsService _MailService;
         public WaterAbsorbency_ViewModel GetDefaultModel(bool iNew = false)
         {
             WaterAbsorbency_ViewModel model = new WaterAbsorbency_ViewModel()
@@ -366,7 +370,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public WaterAbsorbency_ViewModel GetReport(string ReportNo, bool isPDF)
+        public WaterAbsorbency_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             WaterAbsorbency_ViewModel result = new WaterAbsorbency_ViewModel();
             string basefileName = "WaterAbsorbencyTest";
@@ -500,11 +504,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                     worksheet.Cells[17, 8] = detailData.Result;
                 }
+                string tmpName = $"WaterAbsorbency_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
 
-                string fileName = $"WaterAbsorbency_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"WaterAbsorbency_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
 
@@ -546,6 +555,45 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Marshal.ReleaseComObject(excel);
             }
             return result;
+        }
+
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new WaterAbsorbencyProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            WaterAbsorbency_ViewModel model = this.GetData(new WaterAbsorbency_Request() { ReportNo = ReportNo });
+            string name = $"Water Absorbency Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+            WaterAbsorbency_ViewModel report = this.GetReport(ReportNo, false, name);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Water Absorbency Test/{model.Main.OrderID}/" +
+                $"{model.Main.StyleID}/" +
+                $"{model.Main.FabricRefNo}/" +
+                $"{model.Main.FabricColor}/" +
+                $"{model.Main.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

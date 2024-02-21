@@ -151,7 +151,7 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public Report_Result GetPDF(MockupOven_ViewModel mockupOven)
+        public Report_Result GetPDF(MockupOven_ViewModel mockupOven, string AssignedFineName = "")
         {
             Report_Result result = new Report_Result();
             if (mockupOven == null)
@@ -334,6 +334,12 @@ namespace BusinessLogicLayer.Service
                 #endregion
 
                 string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    fileName = AssignedFineName;
+                }
+
                 string filexlsx = fileName + ".xlsx";
                 string fileNamePDF = fileName + ".pdf";
 
@@ -543,17 +549,28 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
+        public SendMail_Result SendMail(MockupFailMail_Request mail_Request)
         {
             _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
             System.Data.DataTable dt = _MockupOvenProvider.GetMockupOvenFailMailContentData(mail_Request.ReportNo);
             //string mailBody = MailTools.DataTableChangeHtml(dt,"","", out AlternateView plainView);
             MockupOven_ViewModel model = GetMockupOven(new MockupOven_Request { ReportNo = mail_Request.ReportNo });
-            Report_Result baseResult = GetPDF(model);
+
+            string name = $"Mockup Oven _{model.POID}_" +
+                $"{model.StyleID}_" +
+                $"{model.Article}_" +
+                $"{model.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+            
+            Report_Result baseResult = GetPDF(model, name);
             string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
             SendMail_Request sendMail_Request = new SendMail_Request
             {
-                Subject = "Mockup Oven – Test Fail",
+                Subject = $"Mockup Oven /{model.POID}/" +
+                $"{model.StyleID}/" +
+                $"{model.Article}/" +
+                $"{model.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = mail_Request.To,
                 CC = mail_Request.CC,
                 //Body = mailBody,

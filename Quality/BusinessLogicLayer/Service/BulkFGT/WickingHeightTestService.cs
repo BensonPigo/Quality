@@ -1,4 +1,6 @@
 ﻿using ADOHelper.Utility;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -11,12 +13,14 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
     public class WickingHeightTestService
     {
         private WickingHeightTestProvider _Provider;
+        private MailToolsService _MailService;
 
         public WickingHeightTest_ViewModel GetDefaultModel(bool iNew = false)
         {
@@ -397,7 +401,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public WickingHeightTest_ViewModel GetReport(string ReportNo, bool isPDF)
+        public WickingHeightTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             WickingHeightTest_ViewModel result = new WickingHeightTest_ViewModel();
 
@@ -511,11 +515,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         i++;
                     }
                 }
-
-                string fileName = $"WickingHeightTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string tmpName = $@"WickingHeightTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"WickingHeightTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
 
@@ -558,6 +566,44 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
 
             return result;
+        }
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new WickingHeightTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            WickingHeightTest_ViewModel model = this.GetData(new WickingHeightTest_Request() { ReportNo = ReportNo });
+            string name = $"Wicking Height Test_{model.Main.OrderID}_" +
+                    $"{model.Main.StyleID}_" +
+                    $"{model.Main.FabricRefNo}_" +
+                    $"{model.Main.FabricColor}_" +
+                    $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+            WickingHeightTest_ViewModel report = this.GetReport(ReportNo, false,AssignedFineName : name);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Wicking Height Test/{model.Main.OrderID}/" +
+                    $"{model.Main.StyleID}/" +
+                    $"{model.Main.FabricRefNo}/" +
+                    $"{model.Main.FabricColor}/" +
+                    $"{model.Main.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

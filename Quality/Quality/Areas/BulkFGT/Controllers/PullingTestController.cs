@@ -370,9 +370,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult FailMail(string ReportNo, string TO, string CC)
+        public JsonResult SendMail(string ReportNo, string TO, string CC)
         {
-            SendMail_Result result = Service.FailSendMail(ReportNo, TO, CC);
+            SendMail_Result result = Service.SendMail(ReportNo, TO, CC);
             return Json(result);
         }
 

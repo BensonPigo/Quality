@@ -148,6 +148,7 @@ where 1=1
                 { "@FabricDescription", DbType.String, Req.Main.FabricDescription ?? "" } ,
                 { "@Temperature", DbType.Int32, Req.Main.Temperature } ,
                 { "@DryingCondition", DbType.String, Req.Main.DryingCondition ?? "" } ,
+                { "@Remark", DbType.String, Req.Main.Remark ?? "" } ,
                 { "@WashCycles", DbType.Int32, Req.Main.WashCycles } ,
                 { "@Result", DbType.String, Req.Main.Result ?? "Pass" } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
@@ -191,6 +192,7 @@ INSERT INTO dbo.HydrostaticPressureWaterproofTest
            ,WashCycles
            ,Result
            ,Status
+           ,Remark
            ,AddDate
            ,AddName)
 VALUES
@@ -212,14 +214,25 @@ VALUES
            ,@WashCycles
            ,@Result
            ,'New'
+           ,@Remark
            ,GETDATE()
            ,@AddName)
 ;
 
-INSERT INTO PMSFile.dbo.HydrostaticPressureWaterproofTest
-    ( ReportNo ,TestBeforePicture ,TestAfterPicture)
-VALUES
-    ( @ReportNo ,@TestBeforePicture ,@TestAfterPicture)
+IF NOT EXISTS ( select 1 from PMSFile.dbo.HydrostaticPressureWaterproofTest where ReportNo = @ReportNo)
+begin
+    INSERT INTO PMSFile.dbo.HydrostaticPressureWaterproofTest
+        ( ReportNo ,TestBeforePicture ,TestAfterPicture)
+    VALUES
+        ( @ReportNo ,@TestBeforePicture ,@TestAfterPicture)
+end
+else
+begin
+    UPDATE PMSFile.dbo.HydrostaticPressureWaterproofTest
+    SET TestBeforePicture = NULL, TestAfterPicture = NULL
+    where ReportNo = @ReportNo
+
+end
 ");
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
@@ -233,6 +246,8 @@ VALUES
                 { "@Result", DbType.String, Req.Main.Result ?? "Pass" } ,
                 { "@Seq1", DbType.String, Req.Main.Seq1 ?? "" } ,
                 { "@Seq2", DbType.String, Req.Main.Seq2 ?? "" } ,
+                { "@FabricRefNo", DbType.String, Req.Main.FabricRefNo ?? "" } ,
+                { "@FabricColor", DbType.String, Req.Main.FabricColor ?? "" } ,
                 { "@FabricDescription", DbType.String, Req.Main.FabricDescription ?? "" } ,
                 { "@Remark", DbType.String, Req.Main.Remark ?? "" } ,
                 { "@EditName", DbType.String, UserID ?? "" } ,
@@ -265,6 +280,8 @@ UPDATE HydrostaticPressureWaterproofTest
       ,SubmitDate = @SubmitDate
       ,Seq1 = @Seq1
       ,Seq2 = @Seq2
+      ,FabricRefNo = @FabricRefNo
+      ,FabricColor = @FabricColor
       ,FabricDescription = @FabricDescription
 WHERE ReportNo = @ReportNo
 ;
@@ -423,7 +440,6 @@ WHERE ReportNo = @ReportNo
 UPDATE HydrostaticPressureWaterproofTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New'
-    , Result = ''
     , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ;

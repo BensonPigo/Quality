@@ -5,6 +5,7 @@ using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Org.BouncyCastle.Ocsp;
 using ProductionDataAccessLayer.Provider.MSSQL.BukkFGT;
 using Sci;
 using System;
@@ -15,8 +16,10 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BusinessLogicLayer.Service.BulkFGT
@@ -188,13 +191,27 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
                 DataTable dt = _AccessoryOvenWashProvider.GetData_OvenDataTable(Req);
-                BaseResult baseResult = OvenTestExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName);
-                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
+                string name = $"Accessory Oven Test_{Req.POID}_" +
+                    $"{dt.Rows[0]["Style"]}_" +
+                    $"{dt.Rows[0]["Refno"]}_" +
+                    $"{dt.Rows[0]["Color"]}_" +
+                    $"{dt.Rows[0]["Oven Result"]}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                BaseResult baseResult = OvenTestExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName, AssignedFineName: name);
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName)
+                    : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
-                    Subject = "Accessory Oven Test - Test Fail",
+                    // 測試名稱/SP號/款號/料號/顏色/測試結果/寄信年月日時分秒
+                    Subject = $"Accessory Oven Test/{Req.POID}/" +
+                    $"{dt.Rows[0]["Style"]}/" +
+                    $"{dt.Rows[0]["Refno"]}/" +
+                    $"{dt.Rows[0]["Color"]}/" +
+                    $"{dt.Rows[0]["Oven Result"]}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -228,7 +245,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
 
 
-        public BaseResult OvenTestExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName)
+        public BaseResult OvenTestExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName, string AssignedFineName = "")
         {
             _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
 
@@ -325,8 +342,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #region Save & Show Excel
 
-                string pdfFileName = $"AccessoryOvenTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
-                FileName = $"AccessoryOvenTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string tmpName = $"AccessoryOvenTest{DateTime.Now.ToString("yyyyMMddmmss")}";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string pdfFileName = $"{tmpName}.pdf";
+                FileName = $"{tmpName}.xlsx";
 
                 string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
                 string excelPath = Path.Combine(baseFilePath, "TMP", FileName);
@@ -464,13 +487,25 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
                 DataTable dt = _AccessoryOvenWashProvider.GetData_WashDataTable(Req);
-                BaseResult baseResult = WashTestExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName);
+                string name = $"Accessory Wash Test_{Req.POID}_" +
+                    $"{dt.Rows[0]["Style"]}_" +
+                    $"{dt.Rows[0]["Refno"]}_" +
+                    $"{dt.Rows[0]["Color"]}_" +
+                    $"{dt.Rows[0]["Wash Result"]}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                BaseResult baseResult = WashTestExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName, AssignedFineName: name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
-                    Subject = "Accessory Wash Test - Test Fail",
+                    Subject = $"Accessory Wash Test/{Req.POID}/" +
+                    $"{dt.Rows[0]["Style"]}/" +
+                    $"{dt.Rows[0]["Refno"]}/" +
+                    $"{dt.Rows[0]["Color"]}/" +
+                    $"{dt.Rows[0]["Wash Result"]}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -502,7 +537,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public BaseResult WashTestExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName)
+        public BaseResult WashTestExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName, string AssignedFineName = "")
         {
             _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
 
@@ -604,8 +639,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #region Save & Show Excel
 
-                string pdfFileName = $"AccessoryWashTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
-                FileName = $"AccessoryWashTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string tmpName= $"AccessoryWashTest{DateTime.Now.ToString("yyyyMMddmmss")}";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+                string pdfFileName = $"{tmpName}.pdf";
+                FileName = $"{tmpName}.xlsx";
 
                 string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
                 string excelPath = Path.Combine(baseFilePath, "TMP", FileName);
@@ -751,7 +791,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
                 DataTable dt = _AccessoryOvenWashProvider.GetData_WashingFastnessDataTable(Req);
-                BaseResult baseResult = WashingFastnessExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName);
+
+                string name = $"Accessory Washing Fastness Test_" +
+                        $"{Req.POID}_" +
+                        $"{dt.Rows[0]["Style"]}_" +
+                        $"{dt.Rows[0]["Refno"]}_" +
+                        $"{dt.Rows[0]["Color"]}_" +
+                        $"{dt.Rows[0]["Washing Fastness Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                BaseResult baseResult = WashingFastnessExcel(Req.AIR_LaboratoryID.ToString(), Req.POID, Req.Seq1, Req.Seq2, true, out string excelFileName, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
 
 
@@ -759,7 +808,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     To = Req.ToAddress,
                     CC = Req.CcAddress,
-                    Subject = "Accessory Washing Fastness Test - Test Fail",
+                    Subject = $"Accessory Washing Fastness Test/" +
+                        $"{Req.POID}/" +
+                        $"{dt.Rows[0]["Style"]}/" +
+                        $"{dt.Rows[0]["Refno"]}/" +
+                        $"{dt.Rows[0]["Color"]}/" +
+                        $"{dt.Rows[0]["Washing Fastness Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -790,7 +845,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public BaseResult WashingFastnessExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName)
+        public BaseResult WashingFastnessExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName, string AssignedFineName = "")
         {
             _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
 
@@ -953,9 +1008,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
 
                 #region Save & Show Excel
+                string tmpName = $"Accessory Washing Fastness{DateTime.Now.ToString("yyyyMMddmmss")}";
 
-                string pdfFileName = $"Accessory Washing Fastness{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
-                FileName = $"Accessory Washing Fastness{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string pdfFileName = $"{tmpName}.pdf";
+                FileName = $"{tmpName}.xlsx";
 
                 string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
                 string excelPath = Path.Combine(baseFilePath, "TMP", FileName);

@@ -225,7 +225,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult OvenFailMail(Accessory_Oven Req)
+        public JsonResult SendOvenMail(Accessory_Oven Req)
         {
             SendMail_Result result = _Service.SendOvenMail(Req);
             return Json(result);
@@ -244,24 +244,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
-        [HttpPost]
-        [SessionAuthorizeAttribute]
-        public JsonResult OvenSendMail(string AIR_LaboratoryID, string POID, string Seq1, string Seq2)
-        {
-            this.CheckSession();
-
-            BaseResult result = null;
-            string FileName = string.Empty;
-
-            result = _Service.OvenTestExcel(AIR_LaboratoryID, POID, Seq1, Seq2, true, out FileName);
-            if (!result.Result)
-            {
-                result.ErrorMessage = result.ErrorMessage.ToString();
-            }
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
-        }
         #endregion
 
         #region WashTest頁面
@@ -394,7 +376,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult WashFailMail(Accessory_Wash Req)
+        public JsonResult SendWashMail(Accessory_Wash Req)
         {
             SendMail_Result result = _Service.SendWashMail(Req);
             return Json(result);
@@ -413,25 +395,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
-        [HttpPost]
-        [SessionAuthorizeAttribute]
-        public JsonResult WashSendMail(string AIR_LaboratoryID, string POID, string Seq1, string Seq2)
-        {
-            this.CheckSession();
-            ViewBag.UserMail = this.UserMail;
-
-            BaseResult result = null;
-            string FileName = string.Empty;
-
-            result = _Service.WashTestExcel(AIR_LaboratoryID, POID, Seq1, Seq2, true, out FileName);
-            if (!result.Result)
-            {
-                result.ErrorMessage = result.ErrorMessage.ToString();
-            }
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
-        }
         #endregion
 
         #region WashingFastness (501)頁面
@@ -564,7 +527,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult WashingFastnessFailMail(Accessory_WashingFastness Req)
+        public JsonResult SendWashingFastnessMail(Accessory_WashingFastness Req)
         {
             SendMail_Result result = _Service.SendWashingFastnessMail(Req);
             return Json(result);
@@ -583,24 +546,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
-        [HttpPost]
-        [SessionAuthorizeAttribute]
-        public JsonResult WashingFastnessSendMail(string AIR_LaboratoryID, string POID, string Seq1, string Seq2)
-        {
-            this.CheckSession();
-
-            BaseResult result = null;
-            string FileName = string.Empty;
-
-            result = _Service.WashingFastnessExcel(AIR_LaboratoryID, POID, Seq1, Seq2, true, out FileName);
-            if (!result.Result)
-            {
-                result.ErrorMessage = result.ErrorMessage.ToString();
-            }
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
-        }
         #endregion
 
     }

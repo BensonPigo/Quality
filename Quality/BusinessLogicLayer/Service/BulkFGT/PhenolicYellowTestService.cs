@@ -1,6 +1,8 @@
 ﻿using ADOHelper.Utility;
 using BusinessLogicLayer.Helper;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -14,6 +16,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using static Sci.MyUtility;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -22,6 +25,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
     public class PhenolicYellowTestService
     {
         private PhenolicYellowTestProvider _Provider;
+        private MailToolsService _MailService;
         public PhenolicYellowTest_ViewModel GetDefaultModel(bool iNew = false)
         {
             PhenolicYellowTest_ViewModel model = new PhenolicYellowTest_ViewModel()
@@ -408,7 +412,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public PhenolicYellowTest_ViewModel GetReport(string ReportNo, bool isPDF)
+        public PhenolicYellowTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             PhenolicYellowTest_ViewModel result = new PhenolicYellowTest_ViewModel();
 
@@ -537,10 +541,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
-                string fileName = $"PhenolicYellowTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string tmpName = $"PhenolicYellowTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"PhenolicYellowTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
 
@@ -582,6 +593,46 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Marshal.ReleaseComObject(excel);
             }
             return result;
+        }
+
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new PhenolicYellowTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            PhenolicYellowTest_ViewModel model = this.GetData(new PhenolicYellowTest_Request() { ReportNo = ReportNo });
+
+            string name = $"Phenolic Yellowing Test_{model.Main.OrderID}_" +
+                    $"{model.Main.StyleID}_" +
+                    $"{model.Main.FabricRefNo}_" +
+                    $"{model.Main.FabricColor}_" +
+                    $"{model.Main.Result}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+            PhenolicYellowTest_ViewModel report = this.GetReport(ReportNo, false, name);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Phenolic Yellowing Test/{model.Main.OrderID}/" +
+                    $"{model.Main.StyleID}/" +
+                    $"{model.Main.FabricRefNo}/" +
+                    $"{model.Main.FabricColor}/" +
+                    $"{model.Main.Result}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

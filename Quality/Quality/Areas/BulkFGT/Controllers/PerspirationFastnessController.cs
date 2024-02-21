@@ -463,7 +463,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             //}
             //html += "</select></td>";
 
-            html += "<td><img  class='detailDelete' src='/Image/Icon/Delete.png' width='30'></td>";
+            html += $@"<td><div style=""width:5vw;""><img class=""detailDelete"" src=""/Image/Icon/Delete.png"" width=""30"" /></div></td>";
             html += "</tr>";
 
             return Content(html);
@@ -478,12 +478,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { result.Result, result.ErrorMessage, PerspirationFastnessResult });
         }
 
-        [HttpPost]
-        public JsonResult FailMail(string ID, string No, string TO, string CC)
-        {
-            SendMail_Result result = _PerspirationFastnessService.SendFailResultMail(TO, CC, ID, No, false);
-            return Json(result);
-        }
+        //[HttpPost]
+        //public JsonResult FailMail(string ID, string No, string TO, string CC)
+        //{
+        //    SendMail_Result result = _PerspirationFastnessService.SendMail(TO, CC, ID, No, false);
+        //    return Json(result);
+        //}
         [HttpPost]
         [SessionAuthorizeAttribute]
         public JsonResult Amend_Detail(string POID, string TestNo)
@@ -516,21 +516,23 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendMail(string ID, string No)
+        public JsonResult SendMail(string ID, string No, string TO, string CC)
         {
-            this.CheckSession();
+            SendMail_Result result = _PerspirationFastnessService.SendMail(TO, CC, ID, No, false);
+            return Json(result);
+            //this.CheckSession();
 
-            BaseResult result = null;
-            string FileName = string.Empty;
+            //BaseResult result = null;
+            //string FileName = string.Empty;
 
-            result = _PerspirationFastnessService.ToReport(ID, out FileName, true, false);
-            if (!result.Result)
-            {
-                result.ErrorMessage = result.ErrorMessage.ToString();
-            }
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            //result = _PerspirationFastnessService.ToReport(ID, out FileName, true, false);
+            //if (!result.Result)
+            //{
+            //    result.ErrorMessage = result.ErrorMessage.ToString();
+            //}
+            //string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
 
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
+            //return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
         }
     }
 }

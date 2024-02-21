@@ -19,13 +19,13 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         BaseResult SaveFabricOvenTestDetail(FabricOvenTest_Detail_Result fabricOvenTest_Detail_Result, string userID);
 
         BaseResult EncodeFabricOvenTestDetail(string poID, string TestNo, out string ovenTestResult);
-        SendMail_Result SendFailResultMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest);
+        SendMail_Result SendMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest);
 
         BaseResult AmendFabricOvenTestDetail(string poID, string TestNo);
 
         BaseResult ToExcelFabricOvenTestDetail(string poID, string TestNo, out string excelFileName, bool isTest);
 
-        BaseResult ToPdfFabricOvenTestDetail(string poID, string TestNo, out string pdfFileName, bool isTest);
+        BaseResult ToPdfFabricOvenTestDetail(string poID, string TestNo, out string pdfFileName, bool isTest, string AssignedFineName = "");
         BaseResult ToPdfFabricOvenTestDetail_Ori(string poID, string TestNo, out string pdfFileName, bool isTest);
     }
 }

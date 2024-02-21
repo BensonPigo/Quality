@@ -19,6 +19,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -287,20 +288,33 @@ namespace BusinessLogicLayer.Service
             return baseResult;
         }
 
-        public SendMail_Result SendFailResultMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest)
+        public SendMail_Result SendMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest)
         {
             SendMail_Result result = new SendMail_Result();
             try
             {
                 _FabricOvenTestProvider = new FabricOvenTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricOvenTestProvider.GetFailMailContentData(poID, TestNo);
-                BaseResult baseResult = ToPdfFabricOvenTestDetail(poID, TestNo, out string pdfFileName, isTest);
+
+                string name = $"Fabric Oven Test_{poID}_" +
+                    $"{dtResult.Rows[0]["Style"]}_" +
+                    $"{dtResult.Rows[0]["Article"]}_" +
+                    $"{dtResult.Rows[0]["Result"]}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+
+                BaseResult baseResult = ToPdfFabricOvenTestDetail(poID, TestNo, out string pdfFileName, isTest, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", pdfFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
                     CC = ccAddress,
-                    Subject = "Fabric Oven Test - Test Fail",
+                    //Subject = "Fabric Oven Test - Test Fail",
+                    Subject = $"Fabric Oven Test/{poID}/" +
+                    $"{dtResult.Rows[0]["Style"]}/" +
+                    $"{dtResult.Rows[0]["Article"]}/" +
+                    $"{dtResult.Rows[0]["Result"]}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -970,7 +984,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult ToPdfFabricOvenTestDetail(string poID, string TestNo, out string pdfFileName, bool isTest)
+        public BaseResult ToPdfFabricOvenTestDetail(string poID, string TestNo, out string pdfFileName, bool isTest, string AssignedFineName = "")
         {
             _FabricOvenTestProvider = new FabricOvenTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -1142,8 +1156,14 @@ namespace BusinessLogicLayer.Service
 
                 #region Save & Show Excel
 
-                pdfFileName = $"FabricOvenTestDetailReportToPDF{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
-                string excelFileName = $"FabricOvenTestDetailReportToPDF{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                string tmpName= $"FabricOvenTestDetailReportToPDF{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+                pdfFileName = $"{tmpName}.pdf";
+                string excelFileName = $"{tmpName}.xlsx";
 
                 string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
                 string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);

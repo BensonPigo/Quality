@@ -318,13 +318,25 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 DataTable dtContent = _IColorFastnessProvider.Get_Mail_Content(POID, ID, TestNo);
-                Fabric_ColorFastness_Detail_ViewModel ColorFastnessDetailView = ToPDF(ID, false);
+
+                string name = $"Washing Fastness Test_{dtContent.Rows[0]["ID"]}_" +
+                        $"{dtContent.Rows[0]["StyleID"]}_" +
+                        $"{dtContent.Rows[0]["Article"]}_" +
+                        $"{dtContent.Rows[0]["Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                Fabric_ColorFastness_Detail_ViewModel ColorFastnessDetailView = ToPDF(ID, false , AssignedFineName: name);
                 string FileName = ColorFastnessDetailView.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", ColorFastnessDetailView.reportPath) : string.Empty;
                 SendMail_Request request = new SendMail_Request()
                 {
                     To = ToAddress,
                     CC = CCAddress,
-                    Subject = "Washing Fastness - Test Fail",
+                    //Subject = "Washing Fastness - Test Fail",
+                    Subject = $"Washing Fastness Test /{dtContent.Rows[0]["ID"]}/" +
+                        $"{dtContent.Rows[0]["StyleID"]}/" +
+                        $"{dtContent.Rows[0]["Article"]}/" +
+                        $"{dtContent.Rows[0]["Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = strHtml,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -360,7 +372,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public Fabric_ColorFastness_Detail_ViewModel ToPDF(string ID, bool IsPDF, bool test = false)
+        public Fabric_ColorFastness_Detail_ViewModel ToPDF(string ID, bool IsPDF, bool test = false, string AssignedFineName = "")
         {
             Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
             _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(Common.ProductionDataAccessLayer);
@@ -504,6 +516,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
             #region Save & Show Excel
 
             string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+            if (!string.IsNullOrWhiteSpace(AssignedFineName))
+            {
+                fileName = AssignedFineName;
+            }
             string filexlsx = fileName + ".xlsx";
             string fileNamePDF = fileName + ".pdf";
 

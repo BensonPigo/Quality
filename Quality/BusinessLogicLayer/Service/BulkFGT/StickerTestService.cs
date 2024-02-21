@@ -18,12 +18,15 @@ using System.Data;
 using Microsoft.Office.Interop.Excel;
 using DataTable = System.Data.DataTable;
 using System.Web.Mvc;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
     public class StickerTestService
     {
         private StickerTestProvider _Provider;
+        private MailToolsService _MailService;
         public StickerTest_ViewModel GetDefaultModel(bool IsNew = false)
         {
             StickerTest_ViewModel model = new StickerTest_ViewModel()
@@ -477,7 +480,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-        public StickerTest_ViewModel GetReport(string ReportNo, bool isPDF)
+        public StickerTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             StickerTest_ViewModel result = new StickerTest_ViewModel();
 
@@ -630,11 +633,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
+                string tmpName = $"StickerTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
-                string fileName = $"StickerTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"StickerTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
                 Microsoft.Office.Interop.Excel.Workbook workbook = excel.ActiveWorkbook;
@@ -686,6 +694,44 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 destinationPdf.NewPage();
                 contentByte.AddTemplate(importedPage, 0, 0);
             }
+        }
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new StickerTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            StickerTest_ViewModel model = this.GetData(new StickerTest_Request() { ReportNo = ReportNo });
+            string name = $"Residue ,Ageing Test for Sticker Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+            StickerTest_ViewModel report = this.GetReport(ReportNo, false, name);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Residue/Ageing Test for Sticker Test/{model.Main.OrderID}/" +
+                $"{model.Main.StyleID}/" +
+                $"{model.Main.FabricRefNo}/" +
+                $"{model.Main.FabricColor}/" +
+                $"{model.Main.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

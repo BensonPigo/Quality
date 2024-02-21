@@ -897,20 +897,64 @@
 
         $('#Encode').on('click', function (e) {
             if (EditMode == false && $('#Main_ReportNo').val() != null && $('#Main_ReportNo').val() != "") {
-                e.preventDefault();
-                msg.WithConfirm('Do you want to Encode the data ?',
-                    function () {
-                        $("#EncodeSubmit").click();
+                //e.preventDefault();
+                msg.WithConfirm('Do you want to Encode the data ?', function () {
+                        //$("#EncodeSubmit").click();
+
+                        $.ajax({
+                            url: "@Url.Action("Encode")",
+                            type: 'POST',
+                            contentType: "application/json; charset=utf-8",
+                            data: JSON.stringify({ ReportNo: $('#Main_ReportNo').val()}),
+                            async: false,
+                            success: function (data) {
+                                if (data.Result) {
+                                    if (data.Action == "FailMail()") {
+                                        FailMail();
+                                    }
+                                    else {
+                                        msg.WithSuccesCheck("Success", function () {
+                                            $("#btnQuery").click();
+                                        });
+                                    }
+                                }
+                                else {
+                                    msg.WithError(data.ErrMsg);
+                                }
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                console.log(xhr.responseText);
+                            }
+                        });
                     }, null);
             }
         });
 
         $('#Amend').on('click', function (e) {
             if (EditMode == false && $('#Main_ReportNo').val() != null && $('#Main_ReportNo').val() != "") {
-                e.preventDefault();
-                msg.WithConfirm('Do you want to Amend the data ?',
-                    function () {
-                        $("#AmendSubmit").click();
+                //e.preventDefault();
+                msg.WithConfirm('Do you want to Amend the data ?', function () {
+                    //$("#AmendSubmit").click();
+                    $.ajax({
+                        url: "@Url.Action("Amend")",
+                        type: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({ ReportNo: $('#Main_ReportNo').val() }),
+                        async: false,
+                        success: function (data) {
+                            if (data.Result) {
+                                msg.WithSuccesCheck("Success", function () {
+                                    $("#btnQuery").click();
+                                });
+                            }
+                            else {
+                                msg.WithError(data.ErrMsg);
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
+                        }
+                    });
                     }, null);
             }
         });
@@ -945,29 +989,12 @@
 
 
         $('#SendMail').on('click', function () {
-            $.ajax({
-                url: "@Url.Action("SendMail", new { Area = "BulkFGT" })",
-                type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ ReportNo: $('#ReportNo').val() }),
-                async: false,
-                success: function (data) {
-                    if (data.Result) {
-                        var para = "?To=" + $('#Main_MRHandleEmail').val();
-                        para += "&CC=";
-                        para += "&Subject=" + "Daily HT Wash Test – ReportNo:" + $('#ReportNo').val();
-                        para += "&Body=" + "Attachment Is Daily HT Wash Test - ReportNo:" + $('#ReportNo').val() + " detail data";
-                        para += "&file=" + data.FileName;
-                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
-                    }
-                    else {
-                        msg.WithError(data.ErrorMessage);
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
-                }
-            });
+            if ($('#ReportNo').val() == '') {
+                return;
+            }
+            var para = '';
+            window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
+
         });
     }
 
@@ -1317,6 +1344,7 @@
         window.open('@Url.Action("TestFailMailList", "PublicWindow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
     }
 
+
     function GetTestFailMailList(data) {
         var to = "";
         var cc = "";
@@ -1326,17 +1354,21 @@
         });
 
         $.ajax({
-            url: "@Url.Action("FailMail", "MockupOvenTest", new { Area = "BulkFGT" })",
+            url: "@Url.Action("SendMail")",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ ReportNo: $('#ReportNo').val(), TO: to, CC: cc }),
+            data: JSON.stringify({ ReportNo: '@Model.Main.ReportNo', TO: to, CC: cc }),
             async: false,
             success: function (data) {
                 if (data.result) {
-                    msg.WithSuccess("Success");
+                    msg.WithSuccesCheck("Success", function () {
+                        $("#btnQuery").click();
+                    });
                 }
                 else {
-                    msg.WithWarning(data.resultMsg);
+                    msg.WithWarningCheck(data.resultMsg, function () {
+                        location.reload();
+                    });
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -1346,6 +1378,40 @@
                 });
             }
         });
+    }
+
+    function GetSendMailer(data) {
+        var to = data.To;
+        var cc = data.CC;
+
+        if (to != "") {
+
+        $.ajax({
+            url: "@Url.Action("SendMail")",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ReportNo: '@Model.Main.ReportNo', TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSuccesCheck("Success", function () {
+                        $("#btnQuery").click();
+                    });
+                }
+                else {
+                    msg.WithWarningCheck(data.resultMsg, function () {
+                        location.reload();
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // console.log(xhr.responseText);
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
+        }
     }
 
     var isHeatTransfer = false;
@@ -1380,20 +1446,7 @@
         //HTRefNoAutoChange();
     }
 
-    //function HTRefNoAutoChange() {
 
-    //    isHeatTransfer = $("#Main_ArtworkTypeID").val() == 'HEAT TRANSFER';
-
-    //    if (!isHeatTransfer) {
-    //        $('.HTRefNoTxt').val('').attr("readonly", "readonly");
-    //        $('.btnHTRefNoSelectItem').attr("disabled", "disabled");
-    //    }
-    //    else {
-    //        $('.HTRefNoTxt').removeAttr("readonly");
-    //        $('.btnHTRefNoSelectItem').removeAttr("disabled");
-    //    }
-
-    //}
 
     function PressureCheck(value) {
         if (parseFloat(value) >= 100) {
