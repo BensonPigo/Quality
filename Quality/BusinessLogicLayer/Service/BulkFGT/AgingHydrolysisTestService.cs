@@ -10,6 +10,7 @@ using Library;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Ocsp;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
@@ -27,6 +28,7 @@ using System.Web.UI.WebControls;
 
 //using static Sci.MyUtility;
 using static System.Net.Mime.MediaTypeNames;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -510,6 +512,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             string basefileName = "AgingHydrolysisTest";
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+            string tmpName = string.Empty;
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
 
@@ -533,6 +536,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     result.ErrorMessage = "Report No. not found.";
                     result.Result = false;
                 }
+
+                tmpName = $"Accelerated Aging by Hydrolysis Test_{agingHydrolysisTest_Detail.Rows[0]["OrderID"]}_" +
+                $"{agingHydrolysisTest_Detail.Rows[0]["StyleID"]}_" +
+                $"{agingHydrolysisTest_Detail.Rows[0]["FabricRefNo"]}_" +
+                $"{agingHydrolysisTest_Detail.Rows[0]["FabricColor"]}_" +
+                $"{agingHydrolysisTest_Detail.Rows[0]["Result"]}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
 
                 if (reportDataSet.Tables.Count == 2)
                 {
@@ -674,7 +685,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Cells[14, 5] = agingHydrolysisTest_Detail_Mockup.Rows[3]["Comment"].ToString();
                 }
 
-                string tmpName = $"AgingHydrolysisTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                //string tmpName = $"AgingHydrolysisTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {

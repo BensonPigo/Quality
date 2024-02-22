@@ -17,6 +17,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
@@ -417,6 +418,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _WaterFastnessProvider = new WaterFastnessProvider(Common.ProductionDataAccessLayer);
             List<WaterFastness_Excel> dataList = new List<WaterFastness_Excel>();
 
+            string tmpName = string.Empty;
+
             FileName = string.Empty;
 
             try
@@ -430,6 +433,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     return result;
                 }
 
+                tmpName = $"Water Fastness Test_{dataList.FirstOrDefault().POID}_" +
+                        $"{dataList.FirstOrDefault().StyleID}_" +
+                        $"{dataList.FirstOrDefault().Article}_" +
+                        $"{dataList.FirstOrDefault().AllResult}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
                 string basefileName = "WaterFastness_ToExcel";
                 string openfilepath;
 
@@ -441,6 +450,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
                 }
+
+
 
                 Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
@@ -522,14 +533,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #region Save & Show Excel
 
-                string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {
-                    fileName = AssignedFineName;
+                    tmpName = AssignedFineName;
                 }
 
-                string filexlsx = fileName + ".xlsx";
-                string fileNamePDF = fileName + ".pdf";
+                string filexlsx = tmpName + ".xlsx";
+                string fileNamePDF = tmpName + ".pdf";
 
                 string filepath;
                 string filepathpdf;

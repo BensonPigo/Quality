@@ -29,7 +29,7 @@ namespace BusinessLogicLayer.Interface
         BaseResult AmendFabricCrkShrkTestCrockingDetail(long ID);
 
         //BaseResult ToExcelFabricCrkShrkTestCrockingDetail(long ID, out string excelFileName, bool isTest);   ISP20220019註解
-        BaseResult Crocking_ToExcel(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "");
+        BaseResult ToReport_Crocking(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "");
         //BaseResult ToPdfFabricCrkShrkTestCrockingDetail(long ID, out string pdfFileName, bool isTest);   ISP20220019註解
 
         // Heat
@@ -41,7 +41,7 @@ namespace BusinessLogicLayer.Interface
         SendMail_Result SendHeatFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID);
         BaseResult AmendFabricCrkShrkTestHeatDetail(long ID);
 
-        BaseResult ToExcelFabricCrkShrkTestHeatDetail(long ID, out string excelFileName, string AssignedFineName = "");
+        BaseResult ToReport_Heat(long ID, out string excelFileName, string AssignedFineName = "");
 
         // Iron
         FabricCrkShrkTestIron_Result GetFabricCrkShrkTestIron_Result(long ID);
@@ -52,7 +52,7 @@ namespace BusinessLogicLayer.Interface
         SendMail_Result SendIronFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID);
         BaseResult AmendFabricCrkShrkTestIronDetail(long ID);
 
-        BaseResult ToExcelFabricCrkShrkTestIronDetail(long ID, out string excelFileName, string AssignedFineName = "");
+        BaseResult ToReport_Iron(long ID, out string excelFileName, string AssignedFineName = "");
 
         // Wash
         FabricCrkShrkTestWash_Result GetFabricCrkShrkTestWash_Result(long ID);
@@ -65,7 +65,7 @@ namespace BusinessLogicLayer.Interface
 
         BaseResult AmendFabricCrkShrkTestWashDetail(long ID);
 
-        BaseResult ToExcelFabricCrkShrkTestWashDetail(long ID, out string excelFileName, string AssignedFineName = "");
+        BaseResult ToReport_Wash(long ID, out string excelFileName, string AssignedFineName = "");
 
 
     }

@@ -978,6 +978,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(Common.ProductionDataAccessLayer);
             DataTable dtShrinkages = _IGarmentTestDetailShrinkageProvider.Get_dt_Shrinkage(ID, No);
 
+            string typeName = $"Garment Test_{all_Data.Detail.OrderID}_" +
+                $"{all_Data.Main.StyleID}_" +
+                $"{all_Data.Main.Article}_" +
+                $"{(all_Data.Detail.Result == "P" ? "Pass" : "Fail")}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
             switch (type)
             {
                 case ReportType.Wash_Test_2018:
@@ -989,6 +995,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         all_Data.Result = false;
                         return all_Data;
                     }
+                    typeName = $"Garment Test Wash 2018_{all_Data.Detail.OrderID}_" +
+                       $"{all_Data.Main.StyleID}_" +
+                       $"{all_Data.Main.Article}_" +
+                       $"{(all_Data.Detail.Result == "P" ? "Pass" : "Fail")}_" +
+                       $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                     try
                     {
@@ -2502,14 +2513,13 @@ and t.GarmentTest=1
 
                         #region Save & Show Excel
 
-                        string fileName_2018 = $"{basefileName_2018}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
                         if (!string.IsNullOrWhiteSpace(AssignedFineName))
                         {
-                            fileName_2018 = AssignedFineName;
+                            typeName = AssignedFineName;
                         }
 
-                        string filexlsx_2018 = fileName_2018 + ".xlsx";
-                        string fileNamePDF_2018 = fileName_2018 + ".pdf";
+                        string filexlsx_2018 = typeName + ".xlsx";
+                        string fileNamePDF_2018 = typeName + ".pdf";
 
                         string filepath_2018;
                         string filepathpdf_2018;
@@ -2571,6 +2581,12 @@ and t.GarmentTest=1
                         all_Data.ErrMsg = "FGWT data not found!";
                         return all_Data;
                     }
+
+                    typeName = $"Garment Test Wash 2020_{all_Data.Detail.OrderID}_" +
+                       $"{all_Data.Main.StyleID}_" +
+                       $"{all_Data.Main.Article}_" +
+                       $"{(all_Data.Detail.Result == "P" ? "Pass" : "Fail")}_" +
+                       $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                     string basefileName_2020 = "WashTest_2020_FGWT";
                     string openfilepath_2020;
@@ -2719,14 +2735,13 @@ and t.GarmentTest=1
 
                     #region Save & Show Excel
 
-                    string fileName_2020 = $"{basefileName_2020}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
                     if (!string.IsNullOrWhiteSpace(AssignedFineName))
                     {
-                        fileName_2020 = AssignedFineName;
+                        typeName = AssignedFineName;
                     }
 
-                    string filexlsx_2020 = fileName_2020 + ".xlsx";
-                    string fileNamePDF_2020 = fileName_2020 + ".pdf";
+                    string filexlsx_2020 = typeName + ".xlsx";
+                    string fileNamePDF_2020 = typeName + ".pdf";
 
                     string filepath_2020;
                     string filepathpdf_2020;
@@ -2782,6 +2797,12 @@ and t.GarmentTest=1
                         all_Data.Result = false;
                         return all_Data;
                     }
+
+                    typeName = $"Garment Test Physical_{all_Data.Detail.OrderID}_" +
+                       $"{all_Data.Main.StyleID}_" +
+                       $"{all_Data.Main.Article}_" +
+                       $"{(all_Data.Detail.Result == "P" ? "Pass" : "Fail")}_" +
+                       $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                     string basefileName_Physical = "WashTest_Physical";
                     string openfilepath_Physical;
@@ -2978,17 +2999,13 @@ and t.GarmentTest=1
 
                     #region Save & Show Excel
 
-                    string fileProcessName_Physical = "FGWT" + "_"
-                      + all_Data.Main.SeasonID.ToString() + "_" + all_Data.Main.StyleID.ToString() + "_" + all_Data.Main.Article.ToString();
-
-                    string fileName_Physical = $"WashTest_Physical_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
                     if (!string.IsNullOrWhiteSpace(AssignedFineName))
                     {
-                        fileName_Physical = AssignedFineName;
+                        typeName = AssignedFineName;
                     }
 
-                    string filexlsx_Physical = fileName_Physical + ".xlsx";
-                    string fileNamePDF_Physical = fileName_Physical + ".pdf";
+                    string filexlsx_Physical = typeName + ".xlsx";
+                    string fileNamePDF_Physical = typeName + ".pdf";
 
                     string filepath_Physical;
                     string filepathpdf_Physical;

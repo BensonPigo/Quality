@@ -486,15 +486,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             string basefileName = "StickerTest";
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+            string tmpName = string.Empty;
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
 
             try
             {
-
                 // 取得報表資料
 
                 StickerTest_ViewModel model = this.GetData(new StickerTest_Request() { ReportNo = ReportNo });
+
+                tmpName = $"Residue ,Ageing Test for Sticker Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 _Provider = new StickerTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 model.Item_Source = _Provider.GetTestItems();
@@ -632,8 +639,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         detailIdx += 5;
                     }
                 }
-
-                string tmpName = $"StickerTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {

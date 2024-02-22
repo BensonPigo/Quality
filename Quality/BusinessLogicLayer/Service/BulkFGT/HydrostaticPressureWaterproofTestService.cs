@@ -450,6 +450,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
 
+            string tmpName = string.Empty;
+
             try
             {
 
@@ -462,7 +464,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-
+                tmpName = $"Hydrostatic Pressure Waterproof Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 string reportNo = model.Main.ReportNo;
                 //string machineReport = string.IsNullOrEmpty(model.Main.MachineReport) ? string.Empty : model.Main.MachineReport;
@@ -620,8 +627,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
 
                 }
-                string tmpName = $"HydrostaticPressureWaterproofTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-
 
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {

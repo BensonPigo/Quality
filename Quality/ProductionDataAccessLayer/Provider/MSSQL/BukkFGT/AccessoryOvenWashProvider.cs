@@ -1330,6 +1330,7 @@ select   al.WashingFastnessReceivedDate
         ,a.Refno
 		,o.SeasonID
         ,Color = pc.SpecValue
+        ,WashingFastnessResult = al.WashingFastness
         ,al.ChangeScale
         ,al.ResultChange
         ,al.AcetateScale

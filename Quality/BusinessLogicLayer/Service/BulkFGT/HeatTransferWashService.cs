@@ -263,6 +263,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             BaseResult result = new BaseResult();
             _Provider = new HeatTransferWashProvider(Common.ManufacturingExecutionDataAccessLayer);
             FinalFilenmae = string.Empty;
+            string tmpName = string.Empty;
 
             try
             {
@@ -270,6 +271,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 List<HeatTransferWash_Detail_Result> body =_Provider.GetDetailData(ReportNo).ToList();
 
                 System.Data.DataTable ReportTechnician = _Provider.GetReportTechnician(new HeatTransferWash_Request() { ReportNo = ReportNo });
+
+                tmpName = $"Daily Heat Transfer Wash Test_{head.OrderID}_" +
+                       $"{head.StyleID}_" +
+                       $"{head.Article}_" +
+                       $"{head.Result}_" +
+                       $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
                 string strXltName = baseFilePath + "\\XLT\\HeatTransferWash.xltx";
@@ -423,8 +430,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Cells[bodyStart, 10] = item.Remark;
                     bodyStart++;
                 }
-
-                string tmpName= $"Daily HT Wash Test-{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {

@@ -161,6 +161,7 @@ namespace BusinessLogicLayer.Service
                 return result;
             }
 
+            string tmpName = string.Empty;
             try
             {
                 if (!(IsTest.ToLower() == "true"))
@@ -175,6 +176,13 @@ namespace BusinessLogicLayer.Service
                         System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
                     }
                 }
+
+                tmpName = $"Mockup Oven _{mockupOven.POID}_" +
+                    $"{mockupOven.StyleID}_" +
+                    $"{mockupOven.Article}_" +
+                    $"{mockupOven.Result}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
 
                 _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
                 _InspectionTypeProvider = new InspectionTypeProvider(Common.ProductionDataAccessLayer);
@@ -333,15 +341,13 @@ namespace BusinessLogicLayer.Service
 
                 #endregion
 
-                string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {
-                    fileName = AssignedFineName;
+                    tmpName = AssignedFineName;
                 }
 
-                string filexlsx = fileName + ".xlsx";
-                string fileNamePDF = fileName + ".pdf";
+                string filexlsx = tmpName + ".xlsx";
+                string fileNamePDF = tmpName + ".pdf";
 
                 string filepath;
                 string filepathpdf;

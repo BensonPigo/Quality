@@ -992,6 +992,7 @@ namespace BusinessLogicLayer.Service
 
             BaseResult result = new BaseResult();
             pdfFileName = string.Empty;
+            string tmpName = string.Empty;
 
             try
             {
@@ -1026,8 +1027,15 @@ namespace BusinessLogicLayer.Service
                     brandID = listOrders[0].BrandID;
                 }
 
+                tmpName = $"Fabric Oven Test_{poID}_" +
+                    $"{styleID}_" +
+                    $"{dtOven.Rows[0]["Article"]}_" +
+                    $"{dtOven.Rows[0]["Result"]}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
                 string strXltName = baseFilePath + "\\XLT\\FabricOvenTestDetailReportToPDF.xltx";
                 Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
+
                 if (excel == null)
                 {
                     result.ErrorMessage = "Excel template not found!";
@@ -1155,9 +1163,6 @@ namespace BusinessLogicLayer.Service
                 }
 
                 #region Save & Show Excel
-
-                string tmpName= $"FabricOvenTestDetailReportToPDF{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {
                     tmpName = AssignedFineName;

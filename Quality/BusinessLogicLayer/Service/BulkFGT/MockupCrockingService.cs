@@ -116,6 +116,8 @@ namespace BusinessLogicLayer.Service
                 return result;
             }
 
+            string tmpName = string.Empty;
+
             try
             {
                 if (!test)
@@ -131,8 +133,11 @@ namespace BusinessLogicLayer.Service
                     }
                 }
 
-                _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
-
+                tmpName = $"Mockup Crocking _{mockupCrocking.POID}_" +
+                $"{mockupCrocking.StyleID}_" +
+                $"{mockupCrocking.Article}_" +
+                $"{mockupCrocking.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 var mockupCrocking_Detail = mockupCrocking.MockupCrocking_Detail;
                 string basefileName = "MockupCrocking";
@@ -237,16 +242,14 @@ namespace BusinessLogicLayer.Service
                 }
                 #endregion
 
-                string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {
-                    fileName = AssignedFineName;
+                    tmpName = AssignedFineName;
                 }
 
 
-                string filexlsx = fileName + ".xlsx";
-                string fileNamePDF = fileName + ".pdf";
+                string filexlsx = tmpName + ".xlsx";
+                string fileNamePDF = tmpName + ".pdf";
 
                 string filepath;
                 string filepathpdf;

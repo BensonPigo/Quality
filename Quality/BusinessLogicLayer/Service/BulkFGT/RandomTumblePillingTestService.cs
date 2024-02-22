@@ -433,6 +433,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             string basefileName = "RandomTumblePillingTest";
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+            string tmpName = string.Empty;
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
 
@@ -445,6 +446,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 RandomTumblePillingTest_ViewModel model = this.GetData(new RandomTumblePillingTest_Request() { ReportNo = ReportNo });
 
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new RandomTumblePillingTest_Request() { ReportNo = ReportNo });
+
+                tmpName = $"Random Tumble Pilling Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
@@ -597,8 +605,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         rowIdx++;
                     }
                 }
-
-                string tmpName= $"RandomTumblePillingTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {

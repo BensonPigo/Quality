@@ -804,6 +804,8 @@ select cd.SubmitDate
         ,SCIRefno_Color = psd.SCIRefno + ' ' + pc.SpecValue
         ,c.Temperature
         ,c.Time
+        ,c.Article
+        ,AllResult = c.Result
         ,cd.ChangeScale
         ,cd.AcetateScale
         ,cd.CottonScale

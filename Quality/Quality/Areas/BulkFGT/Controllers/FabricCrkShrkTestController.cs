@@ -279,7 +279,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             BaseResult result;
             string FileName;
-            result = _FabricCrkShrkTest_Service.Crocking_ToExcel(ID, IsToPDF, out FileName);
+            result = _FabricCrkShrkTest_Service.ToReport_Crocking(ID, IsToPDF, out FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
@@ -468,7 +468,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Report_Heat(long ID)
         {
             BaseResult result;
-            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestHeatDetail(ID, out string FileName);
+            result = _FabricCrkShrkTest_Service.ToReport_Heat(ID, out string FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
@@ -663,7 +663,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Report_Iron(long ID)
         {
             BaseResult result;
-            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestIronDetail(ID, out string FileName);
+            result = _FabricCrkShrkTest_Service.ToReport_Iron(ID, out string FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
@@ -869,7 +869,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Report_Wash(long ID)
         {
             BaseResult result;
-            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestWashDetail(ID, out string FileName);
+            result = _FabricCrkShrkTest_Service.ToReport_Wash(ID, out string FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }

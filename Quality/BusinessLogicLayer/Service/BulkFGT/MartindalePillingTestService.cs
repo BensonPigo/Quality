@@ -435,6 +435,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
+            string tmpName = string.Empty;
 
             try
             {
@@ -445,6 +446,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 MartindalePillingTest_ViewModel model = this.GetData(new MartindalePillingTest_Request() { ReportNo = ReportNo });
 
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new MartindalePillingTest_Request() { ReportNo = ReportNo });
+
+                tmpName = $"Martindale Pilling Test Evaporation Rate Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
@@ -574,8 +582,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         worksheet.Cells[10, 4] = $@"{model.Main.TestStandard} {detailData.Scale}";
                     }
                 }
-
-                string tmpName = $"MartindalePillingTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {

@@ -922,6 +922,9 @@ select cd.SubmitDate
         ,c.MetalContent
         ,c.Temperature
         ,c.Time
+        ,AllResult = c.Result
+        ,c.Article
+        ,cd.Result
         ,cd.AlkalineChangeScale
         ,cd.AlkalineAcetateScale
         ,cd.AlkalineCottonScale

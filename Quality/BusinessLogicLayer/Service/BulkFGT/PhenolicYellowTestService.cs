@@ -418,6 +418,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             string basefileName = "PhenolicYellowTest";
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+            string tmpName = string.Empty;
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
 
@@ -430,6 +431,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 PhenolicYellowTest_ViewModel model = this.GetData(new PhenolicYellowTest_Request() { ReportNo = ReportNo });
 
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new PhenolicYellowTest_Request() { ReportNo = ReportNo });
+
+                tmpName = $"Phenolic Yellowing Test_{model.Main.OrderID}_" +
+                    $"{model.Main.StyleID}_" +
+                    $"{model.Main.FabricRefNo}_" +
+                    $"{model.Main.FabricColor}_" +
+                    $"{model.Main.Result}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
@@ -540,8 +548,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         worksheet.Cells[17, 2] = detailData.Remark;
                     }
                 }
-
-                string tmpName = $"PhenolicYellowTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {

@@ -707,7 +707,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             string basefileName = "EvaporationRateTest";
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
-
+            string tmpName = string.Empty;
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
 
             try
@@ -724,6 +724,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 excel.Visible = false;
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
+
+                tmpName = $"Evaporation Rate Test_{model.Main.OrderID}_" +
+                   $"{model.Main.StyleID}_" +
+                   $"{model.Main.FabricRefNo}_" +
+                   $"{model.Main.FabricColor}_" +
+                   $"{model.Main.Result}_" +
+                   $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 #region Before Sheet
 
@@ -1092,7 +1099,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
                 #endregion
 
-                string tmpName = $"EvaporationRateTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                //string tmpName = $"EvaporationRateTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {

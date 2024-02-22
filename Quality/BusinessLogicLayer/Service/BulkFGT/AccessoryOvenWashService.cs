@@ -128,7 +128,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(_ISQLDataTransaction);
-                AccessoryOvenWashProvider _MESProvider=new AccessoryOvenWashProvider(Common.ManufacturingExecutionDataAccessLayer);
+                AccessoryOvenWashProvider _MESProvider = new AccessoryOvenWashProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 result.ScaleData = _AccessoryOvenWashProvider.GetScaleData();
                 int r = _AccessoryOvenWashProvider.UpdateOvenTest(Req);
@@ -225,7 +225,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
 
-                string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate ,out System.Net.Mail.AlternateView plainView);
+                string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, out System.Net.Mail.AlternateView plainView);
 
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;
@@ -254,6 +254,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Accessory_OvenExcel Model = new Accessory_OvenExcel();
 
             FileName = string.Empty;
+            string tmpName = string.Empty;
 
             try
             {
@@ -273,6 +274,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Seq1 = Seq1,
                     Seq2 = Seq2,
                 });
+
+                tmpName = $"Accessory Oven Test"
+                    + $"_{POID}"
+                    + $"_{Model.StyleID}"
+                    + $"_{Model.Refno}"
+                    + $"_{Model.Color}"
+                    + $"_{Model.OvenResult}"
+                    + $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 if (Model == null)
                 {
@@ -342,7 +351,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #region Save & Show Excel
 
-                string tmpName = $"AccessoryOvenTest{DateTime.Now.ToString("yyyyMMddmmss")}";
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {
                     tmpName = AssignedFineName;
@@ -546,6 +554,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Accessory_WashExcel Model = new Accessory_WashExcel();
 
             FileName = string.Empty;
+            string tmpName = string.Empty;
 
             try
             {
@@ -565,6 +574,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Seq1 = Seq1,
                     Seq2 = Seq2,
                 });
+
+                tmpName = $"Accessory Wash Test"
+                    + $"_{POID}"
+                    + $"_{Model.StyleID}"
+                    + $"_{Model.Refno}"
+                    + $"_{Model.Color}"
+                    + $"_{Model.WashResult}"
+                    + $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 if (Model == null)
                 {
@@ -639,7 +656,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #region Save & Show Excel
 
-                string tmpName= $"AccessoryWashTest{DateTime.Now.ToString("yyyyMMddmmss")}";
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {
                     tmpName = AssignedFineName;
@@ -854,6 +870,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Accessory_WashingFastnessExcel Model = new Accessory_WashingFastnessExcel();
 
             FileName = string.Empty;
+            string tmpName = string.Empty;
 
             try
             {
@@ -866,6 +883,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Seq1 = Seq1,
                     Seq2 = Seq2,
                 });
+
+                tmpName = $"Accessory Washing Fastness Test"
+                    + $"_{POID}"
+                    + $"_{Model.StyleID}"
+                    + $"_{Model.Refno}"
+                    + $"_{Model.Color}"
+                    + $"_{Model.WashingFastnessResult}"
+                    + $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 if (Model == null)
                 {
@@ -1008,7 +1033,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
 
                 #region Save & Show Excel
-                string tmpName = $"Accessory Washing Fastness{DateTime.Now.ToString("yyyyMMddmmss")}";
 
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {

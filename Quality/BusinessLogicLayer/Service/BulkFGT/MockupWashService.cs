@@ -154,6 +154,7 @@ namespace BusinessLogicLayer.Service
         public Report_Result GetPDF(MockupWash_ViewModel mockupWash, bool test = false, string AssignedFineName = "")
         {
             Report_Result result = new Report_Result();
+            string tmpName = string.Empty;
             if (mockupWash == null)
             {
                 result.Result = false;
@@ -176,6 +177,11 @@ namespace BusinessLogicLayer.Service
                         System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
                     }
                 }
+                tmpName = $"Mockup Wash _{mockupWash.POID}_" +
+                    $"{mockupWash.StyleID}_" +
+                    $"{mockupWash.Article}_" +
+                    $"{mockupWash.Result}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
                 _InspectionTypeProvider = new InspectionTypeProvider(Common.ProductionDataAccessLayer);
@@ -327,15 +333,13 @@ namespace BusinessLogicLayer.Service
                 }
                 #endregion
 
-                string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {
-                    fileName = AssignedFineName;
+                    tmpName = AssignedFineName;
                 }
 
-                string filexlsx = fileName + ".xlsx";
-                string fileNamePDF = fileName + ".pdf";
+                string filexlsx = tmpName + ".xlsx";
+                string fileNamePDF = tmpName + ".pdf";
 
                 string filepath;
                 string filepathpdf;

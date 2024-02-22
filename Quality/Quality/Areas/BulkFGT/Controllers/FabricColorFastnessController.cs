@@ -373,11 +373,11 @@ namespace Quality.Areas.BulkFGT.Controllers
             Fabric_ColorFastness_Detail_ViewModel result;
             if (IsToPDF)
             {
-                result = _FabricColorFastness_Service.ToPDF(ID, true, false);
+                result = _FabricColorFastness_Service.ToReport(ID, true);
             }
             else
             {
-                result = _FabricColorFastness_Service.ToPDF(ID, false, false);
+                result = _FabricColorFastness_Service.ToReport(ID, false);
             }
 
             string FileName = result.reportPath;

@@ -194,6 +194,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 string name = $"Pulling Test_{dt.Rows[0]["POID"]}_" +
                         $"{dt.Rows[0]["StyleID"]}_" +
                         $"{dt.Rows[0]["Article"]}_" +
+                        $"{dt.Rows[0]["Result"]}_" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 Report_Result baseResult = GetPDF(ReportNo, name);
@@ -215,6 +216,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Subject = $"Pulling Test/{dt.Rows[0]["POID"]}/" +
                         $"{dt.Rows[0]["StyleID"]}/" +
                         $"{dt.Rows[0]["Article"]}/" +
+                        $"{dt.Rows[0]["Result"]}/" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
@@ -259,6 +261,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
 
             string basefileName = "PullingTest";
+            string tmpName = string.Empty;
 
             try
             {
@@ -285,6 +288,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     openfilepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XLT", $"{basefileName}.xltx");
                 }
+
+                tmpName = $"Pulling Test_{model.POID}_" +
+                        $"{model.StyleID}_" +
+                        $"{model.Article}_" +
+                        $"{model.Result}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
                 excelApp.DisplayAlerts = false;
@@ -377,15 +386,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #region Save & Show Excel
 
-                string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {
-                    fileName = AssignedFineName;
+                    tmpName = AssignedFineName;
                 }
 
-                string filexlsx = fileName + ".xlsx";
-                string fileNamePDF = fileName + ".pdf";
+                string filexlsx = tmpName + ".xlsx";
+                string fileNamePDF = tmpName + ".pdf";
 
                 string filepath;
                 string filepathpdf;

@@ -387,6 +387,8 @@ select fl.ReportNo
 	,o.SeasonID
 	,o.BrandID
 	,o.StyleID
+	,fl.Crocking
+    ,f.Refno
 	,SCIRefno_Color = f.SCIRefno + ' ' + pc.SpecValue
 	,Color = pc.SpecValue
 	,Inspector = LabTech.Val

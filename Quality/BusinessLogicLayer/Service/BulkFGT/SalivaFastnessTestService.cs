@@ -415,6 +415,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             string basefileName = "SalivaFastnessTest";
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+            string tmpName = string.Empty;
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
 
@@ -427,6 +428,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 SalivaFastnessTest_ViewModel model = this.GetData(new SalivaFastnessTest_Request() { ReportNo = ReportNo });
 
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new SalivaFastnessTest_Request() { ReportNo = ReportNo });
+
+                tmpName = $"Saliva Fastness Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_ " +
+                $"{model.Main.FabricColor}_ " +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
@@ -581,30 +589,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         rowIdx += 6;
                     }
                 }
-                //else
-                //{
-                //    foreach (var detailData in model.DetailList)
-                //    {
-                //        worksheet.Cells[14, 4] = detailData.AcetateScale;
-                //        worksheet.Cells[14, 6] = detailData.AcetateResult;
-
-                //        worksheet.Cells[15, 4] = detailData.CottonScale;
-                //        worksheet.Cells[15, 6] = detailData.CottonResult;
-
-                //        worksheet.Cells[16, 4] = detailData.NylonScale;
-                //        worksheet.Cells[16, 6] = detailData.NylonResult;
-
-                //        worksheet.Cells[17, 4] = detailData.PolyesterScale;
-                //        worksheet.Cells[17, 6] = detailData.PolyesterResult;
-
-                //        worksheet.Cells[18, 4] = detailData.AcrylicScale;
-                //        worksheet.Cells[18, 6] = detailData.AcrylicResult;
-
-                //        worksheet.Cells[19, 4] = detailData.WoolScale;
-                //        worksheet.Cells[19, 6] = detailData.WoolResult;
-                //    }
-                //}
-                string tmpName = $"SalivaFastnessTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {

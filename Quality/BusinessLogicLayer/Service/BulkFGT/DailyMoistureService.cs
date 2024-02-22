@@ -275,7 +275,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             BaseResult result = new BaseResult();
             _Provider = new DailyMoistureProvider(Common.ManufacturingExecutionDataAccessLayer);
             FinalFilenmae = string.Empty;
-
+            string tmpName = string.Empty;
             try
             {
                 DailyMoisture_Result head = _Provider.GetMainData(new DailyMoisture_Request() { ReportNo = ReportNo });
@@ -291,6 +291,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     result.Result = false;
                     return result;
                 }
+
+                tmpName = $"Daily Moisture Test_{head.OrderID}_" +
+                   $"{head.StyleID}_" +
+                   $"{head.Line}_" +
+                   $"{head.Result}_" +
+                   $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+
+
                 excel.Visible = false;
                 excel.DisplayAlerts = false;
 
@@ -344,7 +353,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     bodyStart++;
                 }
 
-                string tmpName = $"Daily Bulk Moisture Test_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                //string tmpName = $"Daily Bulk Moisture Test_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
 
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {

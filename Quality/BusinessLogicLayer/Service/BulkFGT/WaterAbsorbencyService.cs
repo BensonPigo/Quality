@@ -375,6 +375,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             WaterAbsorbency_ViewModel result = new WaterAbsorbency_ViewModel();
             string basefileName = "WaterAbsorbencyTest";
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+            string tmpName = string.Empty;
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
 
@@ -387,6 +388,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 WaterAbsorbency_ViewModel model = this.GetData(new WaterAbsorbency_Request() { ReportNo = ReportNo });
 
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new WaterAbsorbency_Request() { ReportNo = ReportNo });
+
+                tmpName = $"Water Absorbency Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
 
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
@@ -504,7 +513,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                     worksheet.Cells[17, 8] = detailData.Result;
                 }
-                string tmpName = $"WaterAbsorbency_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {
                     tmpName = AssignedFineName;

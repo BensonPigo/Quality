@@ -19,6 +19,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using static MICS.DataAccessLayer.Provider.MSSQL.ColorFastnessDetailProvider;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -325,7 +326,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         $"{dtContent.Rows[0]["Result"]}_" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-                Fabric_ColorFastness_Detail_ViewModel ColorFastnessDetailView = ToPDF(ID, false , AssignedFineName: name);
+                Fabric_ColorFastness_Detail_ViewModel ColorFastnessDetailView = ToReport(ID, false , AssignedFineName: name);
                 string FileName = ColorFastnessDetailView.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", ColorFastnessDetailView.reportPath) : string.Empty;
                 SendMail_Request request = new SendMail_Request()
                 {
@@ -365,14 +366,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public Fabric_ColorFastness_Detail_ViewModel ToExcel()
-        {
-            Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
 
-            return result;
-        }
-
-        public Fabric_ColorFastness_Detail_ViewModel ToPDF(string ID, bool IsPDF, bool test = false, string AssignedFineName = "")
+        public Fabric_ColorFastness_Detail_ViewModel ToReport(string ID, bool IsPDF, string AssignedFineName = "")
         {
             Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
             _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(Common.ProductionDataAccessLayer);
@@ -386,16 +381,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 return result;
             }
 
+            string tmpName = $"Washing Fastness Test_{dataList[0].POID}_" +
+                    $"{dataList[0].StyleID}_" +
+                    $"{dataList[0].Article}_" +
+                    $"{dataList[0].ColorFastnessResult}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
             string basefileName = "FabricColorFastness_ToExcel";
-            string openfilepath;
-            if (test)
-            {
-                openfilepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XLT", $"{basefileName}.xltx");
-            }
-            else
-            {
-                openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
-            }
+            string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
 
             Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
             excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
@@ -421,7 +414,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Excel.Range cellSignature = worksheet.get_Range("D14:D15");
             if (dataList[0].Signature != null)
             {
-                string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].Signature, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
+                string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].Signature, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
                 worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellSignature.Left + 5, cellSignature.Top + 5, cellSignature.Width - 10, cellSignature.Height - 10);
             }
 
@@ -499,14 +492,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Excel.Range cellBefore = worksheet.Cells[nowRow + 23, 1];
                 if (dataList[0].TestBeforePicture != null)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestBeforePicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);                    
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestBeforePicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);                    
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left , cellBefore.Top , 200, 300);
                 }
 
                 Excel.Range cellAfter = worksheet.Cells[nowRow + 23, 5];
                 if (dataList[0].TestAfterPicture != null)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestAfterPicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestAfterPicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left , cellAfter.Top , 200, 300);
                 }
 
@@ -515,27 +508,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             #region Save & Show Excel
 
-            string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+            //string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
             if (!string.IsNullOrWhiteSpace(AssignedFineName))
             {
-                fileName = AssignedFineName;
+                tmpName = AssignedFineName;
             }
-            string filexlsx = fileName + ".xlsx";
-            string fileNamePDF = fileName + ".pdf";
+            string filexlsx = tmpName + ".xlsx";
+            string fileNamePDF = tmpName + ".pdf";
 
-            string filepath;
-            string filepathpdf;
-            if (test)
-            {
-                filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx);
-                filepathpdf = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF);
-            }
-            else
-            {
-                filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
-                filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
-            }
-
+            string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
+            string filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
 
             Excel.Workbook workbook = excel.ActiveWorkbook;
             worksheet2.Visible = Excel.XlSheetVisibility.xlSheetHidden;

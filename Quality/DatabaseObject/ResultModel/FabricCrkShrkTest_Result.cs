@@ -132,6 +132,8 @@ namespace DatabaseObject.ResultModel
         public string Roll { get; set; }
         public string Dyelot { get; set; }
         public string SCIRefno_Color { get; set; }
+       public string Refno { get; set; }
+        public string Crocking { get; set; }
         public string Color { get; set; }
         public string DryScale { get; set; }
         public string DryScale_Weft { get; set; }

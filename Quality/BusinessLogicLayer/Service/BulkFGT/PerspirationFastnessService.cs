@@ -407,7 +407,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 dtResult.Columns.Remove("ID");
 
                 string name = $"Perspiration Fastness Test_{dtResult.Rows[0]["SP#"]}_" +
-                        $"{dtResult.Rows[0]["SP#"]}_" +
                         $"{dtResult.Rows[0]["Article"]}_" +
                         $"{dtResult.Rows[0]["Result"]}_" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
@@ -421,7 +420,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     //Subject = "Perspiration Fastness Test - Test Fail",
 
                     Subject = $"Perspiration Fastness Test/{dtResult.Rows[0]["SP#"]}/" +
-                        $"{dtResult.Rows[0]["SP#"]}/" +
                         $"{dtResult.Rows[0]["Article"]}/" +
                         $"{dtResult.Rows[0]["Result"]}/" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
@@ -460,6 +458,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _PerspirationFastnessProvider = new PerspirationFastnessProvider(Common.ProductionDataAccessLayer);
             List<PerspirationFastness_Excel> dataList = new List<PerspirationFastness_Excel>();
 
+            string tmpName = string.Empty;
             FileName = string.Empty;
 
             try
@@ -472,6 +471,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     result.ErrorMessage = "Data not found!";
                     return result;
                 }
+
+                tmpName = $"Perspiration Fastness Test_{dataList.FirstOrDefault().POID}_" +
+                       $"{dataList.FirstOrDefault().StyleID}_" +
+                       $"{dataList.FirstOrDefault().Article}_" +
+                       $"{dataList.FirstOrDefault().AllResult}_" +
+                       $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 string basefileName = "PerspirationFastness_ToExcel";
                 string openfilepath;
@@ -582,15 +587,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #region Save & Show Excel
 
-                string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {
-                    fileName = AssignedFineName;
+                    tmpName = AssignedFineName;
                 }
 
-                string filexlsx = fileName + ".xlsx";
-                string fileNamePDF = fileName + ".pdf";
+                string filexlsx = tmpName + ".xlsx";
+                string fileNamePDF = tmpName + ".pdf";
 
                 string filepath;
                 string filepathpdf;
