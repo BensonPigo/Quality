@@ -279,88 +279,49 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View("Index", model);
         }
 
-        [SessionAuthorizeAttribute]
-        [HttpPost]
-        [MultipleButton(Name = "action", Argument = "Encode")]
-        public ActionResult Encode(HeatTransferWash_ViewModel Req)
+        public JsonResult Encode(string ReportNo)
         {
+            CheckSession();
             HeatTransferWash_ViewModel model = new HeatTransferWash_ViewModel();
-            Req.Main = new HeatTransferWash_Result()
-            {
-                ReportNo = Req.Request.ReportNo,
-                Status = "Confirmed",
-                EditName = this.UserID,
+            HeatTransferWash_ViewModel Req = new HeatTransferWash_ViewModel() 
+            { 
+             Main = new HeatTransferWash_Result()
+             {
+                 ReportNo = ReportNo,
+                 Status = "Confirmed",
+                 EditName = this.UserID,
+             }
             };
             BaseResult result = _Service.EncodeAmend(Req);
 
-            if (!result.Result)
-            {
-                string ErrorMessage = result.ErrorMessage;
-                model.ErrorMessage = $@"msg.WithInfo(""{ErrorMessage}"")";
-            }
-            else if (result.Result)
-            {
-                model = _Service.GetHeatTransferWash(new HeatTransferWash_Request()
-                {
-                    ReportNo = Req.Request.ReportNo,
-                    BrandID = Req.Request.BrandID,
-                    SeasonID = Req.Request.SeasonID,
-                    StyleID = Req.Request.StyleID,
-                    Article = Req.Request.Article,
-                });
-            }
+            model = _Service.GetHeatTransferWash(new HeatTransferWash_Request() { ReportNo = ReportNo });
 
-            var tmpArtworkType_Source = _Service.GetArtworkTypeList(new Orders()
+            if (model.Main.Result == "Fail")
             {
-                BrandID = Req.Request.BrandID,
-                SeasonID = Req.Request.SeasonID,
-                StyleID = Req.Request.StyleID,
-            });
-
-            model.ArtworkType_Source = tmpArtworkType_Source.Any() ? tmpArtworkType_Source : new List<SelectListItem>();
-            return View("Index", model);
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage, Action = "FailMail()" });
+            }
+            else
+            {
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage, Action = "" });
+            }
         }
 
-        [SessionAuthorizeAttribute]
-        [HttpPost]
-        [MultipleButton(Name = "action", Argument = "Amend")]
-        public ActionResult Amend(HeatTransferWash_ViewModel Req)
+        public ActionResult Amend(string ReportNo)
         {
             HeatTransferWash_ViewModel model = new HeatTransferWash_ViewModel();
-            Req.Main = new HeatTransferWash_Result()
+            HeatTransferWash_ViewModel Req = new HeatTransferWash_ViewModel()
             {
-                ReportNo = Req.Request.ReportNo,
-                Status = "New",
-                EditName = this.UserID,
+                Main = new HeatTransferWash_Result() 
+                { 
+                    ReportNo = ReportNo,
+                    Status = "New",
+                    EditName = this.UserID, 
+                }
             };
             BaseResult result = _Service.EncodeAmend(Req);
+            
 
-            if (!result.Result)
-            {
-                string ErrorMessage = result.ErrorMessage;
-                model.ErrorMessage = $@"msg.WithInfo(""{ErrorMessage}"")";
-            }
-            else if (result.Result)
-            {
-                model = _Service.GetHeatTransferWash(new HeatTransferWash_Request()
-                {
-                    ReportNo = Req.Request.ReportNo,
-                    BrandID = Req.Request.BrandID,
-                    SeasonID = Req.Request.SeasonID,
-                    StyleID = Req.Request.StyleID,
-                    Article = Req.Request.Article,
-                });
-            }
-
-            var tmpArtworkType_Source = _Service.GetArtworkTypeList(new Orders()
-            {
-                BrandID = Req.Request.BrandID,
-                SeasonID = Req.Request.SeasonID,
-                StyleID = Req.Request.StyleID,
-            });
-
-            model.ArtworkType_Source = tmpArtworkType_Source.Any() ? tmpArtworkType_Source : new List<SelectListItem>();
-            return View("Index", model);
+            return Json(new { result.Result, ErrMsg = result.ErrorMessage });
         }
 
         [SessionAuthorizeAttribute]
@@ -512,22 +473,10 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendMail(string ReportNo)
+        public JsonResult SendMail(string ReportNo, string TO, string CC)
         {
-            this.CheckSession();
-
-            BaseResult result = null;
-            string FileName = string.Empty;
-
-            result = _Service.ToReport(ReportNo, true, out FileName);
-
-            if (!result.Result)
-            {
-                result.ErrorMessage = result.ErrorMessage.ToString();
-            }
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
+            SendMail_Result result = _Service.SendMail(ReportNo, TO, CC);
+            return Json(result);
         }
     }
 }

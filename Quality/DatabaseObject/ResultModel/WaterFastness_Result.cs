@@ -152,9 +152,11 @@ namespace DatabaseObject.ResultModel
         public string SeasonID { get; set; }
         public string BrandID { get; set; }
         public string StyleID { get; set; }
+        public string Article { get; set; }
         public string POID { get; set; }
         public string Roll { get; set; }
         public string Dyelot { get; set; }
+        public string AllResult { get; set; }
         public int Temperature { get; set; }
         public int Time { get; set; }
         public string SCIRefno_Color { get; set; }

@@ -1698,32 +1698,8 @@
             if ($("#Main_ReportNo").val() == '') {
                 return false;
             }
-
-            $.ajax({
-                url: "@Url.Action("SendMailToMR")",
-                type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({
-                    ReportNo: $('#Main_ReportNo').val()
-                }),
-                async: false,
-                success: function (data) {
-                    if (data.Result) {
-                        var para = "?To=";
-                        para += "&CC=";
-                        para += "&Subject=" + "Bulk Evaporation Rate Test – ReportNo:" + $("#Main_ReportNo").val();
-                        para += `&Body=Attachment Is Bulk Evaporation Rate Test - ReportNo:${$("#Main_ReportNo").val() } detail data`;
-                        para += "&file=" + data.FileName;
-                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
-                    }
-                    else {
-                        msg.WithError(data.ErrorMessage);
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
-                }
-            });
+            var para = '';
+            window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
         });
 
         $("#Excel").on("click", function () {
@@ -1782,9 +1758,14 @@
                     async: false,
                     success: function (data) {
                         if (data.Result) {
-                            msg.WithSuccesCheck("Success", function () {
-                                $("#btnQuery").click();
-                            });
+                            if (data.Action == "FailMail()") {
+                                FailMail();
+                            }
+                            else {
+                                msg.WithSuccesCheck("Success", function () {
+                                    $("#btnQuery").click();
+                                });
+                            }
                         }
                         else {
                             msg.WithError(data.ErrMsg);
@@ -2306,4 +2287,79 @@
         let avg = Number.parseFloat(allRate / count).toFixed(3);
         $(`input[detailtype="Main${detailType}"]`).val(avg);
     }
+
+    function FailMail() {
+        var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
+        window.open('@Url.Action("TestFailMailList", "PublicWindow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+
+        $.ajax({
+            url: "@Url.Action("SendMail")",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ReportNo: '@Model.Main.ReportNo', TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSuccesCheck("Success", function () {
+                        $("#btnQuery").click();
+                    });
+                }
+                else {
+                    msg.WithWarningCheck(data.resultMsg, function () {
+                        location.reload();
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // console.log(xhr.responseText);
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
+    }
+
+    function GetSendMailer(data) {
+        var to = data.To;
+        var cc = data.CC;
+
+        if (to != "") {
+
+        $.ajax({
+            url: "@Url.Action("SendMail")",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ReportNo: '@Model.Main.ReportNo', TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSuccesCheck("Success", function () {
+                        $("#btnQuery").click();
+                    });
+                }
+                else {
+                    msg.WithWarningCheck(data.resultMsg, function () {
+                        location.reload();
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // console.log(xhr.responseText);
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
+        }
+    }
+
 </script>

@@ -473,7 +473,7 @@ WHERE ReportNo = @ReportNo
                 sqlCmd = $@"
 UPDATE RandomTumblePillingTest
 SET EditDate = GETDATE() , EditName = @EditName
-    , Status = 'New' ,Result=''
+    , Status = 'New' 
     , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ";

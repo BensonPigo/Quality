@@ -16,12 +16,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using System.Web.Mvc;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
+using ProductionDataAccessLayer.Provider.MSSQL;
+using System.Net.Mail;
+using System.Web.UI.WebControls;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
     public class HydrostaticPressureWaterproofTestService
     {
         private HydrostaticPressureWaterproofTestProvider _Provider;
+        private MailToolsService _MailService;
         public HydrostaticPressureWaterproofTest_ViewModel GetDefaultModel(bool IsNew = false)
         {
             HydrostaticPressureWaterproofTest_ViewModel model = new HydrostaticPressureWaterproofTest_ViewModel()
@@ -435,7 +441,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-        public HydrostaticPressureWaterproofTest_ViewModel GetReport(string ReportNo, bool isPDF)
+        public HydrostaticPressureWaterproofTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             HydrostaticPressureWaterproofTest_ViewModel result = new HydrostaticPressureWaterproofTest_ViewModel();
 
@@ -443,6 +449,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
+
+            string tmpName = string.Empty;
 
             try
             {
@@ -456,7 +464,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-
+                tmpName = $"Hydrostatic Pressure Waterproof Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 string reportNo = model.Main.ReportNo;
                 //string machineReport = string.IsNullOrEmpty(model.Main.MachineReport) ? string.Empty : model.Main.MachineReport;
@@ -615,10 +628,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 }
 
-                string fileName = $"HydrostaticPressureWaterproofTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"HydrostaticPressureWaterproofTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
 
@@ -672,6 +690,47 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 destinationPdf.NewPage();
                 contentByte.AddTemplate(importedPage, 0, 0);
             }
+        }
+
+
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new HydrostaticPressureWaterproofTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            HydrostaticPressureWaterproofTest_ViewModel model = this.GetData(new HydrostaticPressureWaterproofTest_Request() { ReportNo = ReportNo });
+
+            string name = $"Hydrostatic Pressure Waterproof Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+            HydrostaticPressureWaterproofTest_ViewModel report = this.GetReport(ReportNo, false, name);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Hydrostatic Pressure Waterproof Test/{model.Main.OrderID}/" +
+                $"{model.Main.StyleID}/" +
+                $"{model.Main.FabricRefNo}/" +
+                $"{model.Main.FabricColor}/" +
+                $"{model.Main.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

@@ -122,6 +122,7 @@ select [ReportNo] = c.ID
 		,c.Detergent
 		,c.Machine
 		,c.Drying
+        ,ColorFastnessResult = c.Result
 		,cd.SEQ1
 		,cd.SEQ2
 		,cd.Roll
