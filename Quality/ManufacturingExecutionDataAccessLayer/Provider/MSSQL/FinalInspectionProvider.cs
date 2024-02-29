@@ -1687,20 +1687,22 @@ END
             {
                 foreach (MeasurementItem measurementItem in measurement.ListMeasurementItem)
                 {
-                    objParameter = new SQLParameterCollection();
-                    objParameter.Add($@"@SizeUnit", measurement.SizeUnit);
-                    objParameter.Add("@ID", measurement.FinalInspectionID);
-                    objParameter.Add("@Article", measurement.SelectedArticle);
-                    objParameter.Add("@SizeCode", measurement.SelectedSize);
-                    objParameter.Add("@Location", measurement.SelectedProductType);
-                    objParameter.Add("@Code", measurementItem.Code);
-                    objParameter.Add("@SizeSpec", measurementItem.ResultSizeSpec);
-                    objParameter.Add("@MeasurementUkey", measurementItem.MeasurementUkey);
-                    objParameter.Add("@AddName", userID);
-                    objParameter.Add("@AddDate", dtDateTime.Rows[0]["DateTime"]);
+                    objParameter = new SQLParameterCollection
+                    {
+                        { "@SizeUnit", measurement.SizeUnit },
+                        { "@ID", measurement.FinalInspectionID },
+                        { "@Article", measurement.SelectedArticle },
+                        { "@SizeCode", measurement.SelectedSize },
+                        { "@Location", measurement.SelectedProductType },
+                        { "@Code", measurementItem.Code },
+                        { "@SizeSpec", measurementItem.ResultSizeSpec },
+                        { "@MeasurementUkey", measurementItem.MeasurementUkey },
+                        { "@AddName", userID },
+                        { "@AddDate", dtDateTime.Rows[0]["DateTime"] }
+                    };
 
                     bool isFractional = false;
-                    if (measurementItem.ResultSizeSpec != null && measurementItem.ResultSizeSpec.Contains("/"))
+                    if (measurementItem.ResultSizeSpec != null && measurementItem.ResultSizeSpec.Contains("/") && !System.Text.RegularExpressions.Regex.IsMatch(measurementItem.ResultSizeSpec, @"[a-zA-Z]"))
                     {
                         isFractional = true;
                     }
