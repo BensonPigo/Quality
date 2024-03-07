@@ -264,8 +264,8 @@
                                     <td style="width: 10vw;"><h5>Report No</h5></td>
                                     <td style="width: 20vw;">
                                         <input id="ReportNo" name="ReportNo" readonly="readonly" type="text" value="@Model.ReportNo">
-                                        <input type="hidden" id="TestBeforePicture" name="TestBeforePicture" value="@Model.TestBeforePicture">
-                                        <input type="hidden" id="TestAfterPicture" name="TestAfterPicture" value="@Model.TestAfterPicture">
+                                        @Html.HiddenFor(o => o.TestBeforePicture)
+                                        @Html.HiddenFor(o => o.TestAfterPicture)
                                     </td>
                                     <td style="width: 10vw;"><h5>SP#</h5></td>
                                     <td style="width: 20vw;">
