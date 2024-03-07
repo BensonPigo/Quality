@@ -353,42 +353,42 @@
                     </div>
 
                     <div style="margin-top: 1em; overflow:auto">
-                        <table cellspacing="100" id="crocking_Detail" class="DataTable DetailTable table table-striped display;">
+                        <table id="crocking_Detail" class="DataTable DetailTable table table-striped display;">
                             <thead>
                                 <tr class="row-name" id="row-name">
-                                    <th style="width:5vw">Roll#</th>
-                                    <th style="width:5vw">Dyelot</th>
-                                    <th style="width:5vw">Result</th>
+                                    <th>Roll#</th>
+                                    <th>Dyelot</th>
+                                    <th>Result</th>
                                     @if (Model.CrockingTestOption == 0)
                                     {
-                                        <th style="width:5vw">Dry Scale</th>
-                                        <th style="width:5vw">Result(Dry)</th>
-                                        <th style="width:5vw" notShow="testOption">Dry Scale (Weft)</th>
-                                        <th style="width:5vw" notShow="testOption">Dry Result (Waft)</th>
-                                        <th style="width:5vw">Wet Scale</th>
-                                        <th style="width:5vw">Result(Wet)</th>
-                                        <th style="width:5vw" notShow="testOption">Wet Scale (Weft)</th>
-                                        <th style="width:5vw" notShow="testOption">Wet Result (Weft)</th>
+                                        <th>Dry Scale</th>
+                                        <th>Result(Dry)</th>
+                                        <th  notShow="testOption">Dry Scale (Weft)</th>
+                                        <th  notShow="testOption">Dry Result (Waft)</th>
+                                        <th>Wet Scale</th>
+                                        <th>Result(Wet)</th>
+                                        <th  notShow="testOption">Wet Scale (Weft)</th>
+                                        <th  notShow="testOption">Wet Result (Weft)</th>
                                     }
                                     else
                                     {
                                         // 使用testOption，決定是否隱藏
-                                        <th style="width:5vw">Dry Scale (Warp)</th>
-                                        <th style="width:5vw">Dry Result (Warp)</th>
-                                        <th style="width:5vw">Dry Scale (Weft)</th>
-                                        <th style="width:5vw">Dry Result (Waft)</th>
-                                        <th style="width:5vw">Wet Scale (Warp)</th>
-                                        <th style="width:5vw">Wet Result (Warp)</th>
-                                        <th style="width:5vw">Wet Scale (Weft)</th>
-                                        <th style="width:5vw">Wet Result (Weft)</th>
+                                        <th>Dry Scale (Warp)</th>
+                                        <th>Dry Result (Warp)</th>
+                                        <th>Dry Scale (Weft)</th>
+                                        <th>Dry Result (Waft)</th>
+                                        <th>Wet Scale (Warp)</th>
+                                        <th>Wet Result (Warp)</th>
+                                        <th>Wet Scale (Weft)</th>
+                                        <th>Wet Result (Weft)</th>
                                     }
 
-                                    <th style="width:5vw">Insp. Date</th>
-                                    <th style="width:5vw">Lab Tech</th>
-                                    <th style="width:5vw">Name</th>
-                                    <th style="width:5vw">Remark</th>
-                                    <th style="width:5vw">Last Update</th>
-                                    <th style="width:5vw"></th>
+                                    <th>Insp. Date</th>
+                                    <th>Lab Tech</th>
+                                    <th>Name</th>
+                                    <th>Remark</th>
+                                    <th>Last Update</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -551,7 +551,7 @@
                                             @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].LastUpdate, new { @readonly = "readonly" })
                                         </td>
                                         <td>
-                                            <img class='detailDelete' src="~/Image/Icon/Delete.png" width='30'>
+                                            <img class='detailDelete' src="~/Image/Icon/Delete.png" style="min-width:30px">
                                         </td>
                                     </tr>
                                 }
