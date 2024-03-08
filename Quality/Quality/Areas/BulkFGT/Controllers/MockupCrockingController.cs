@@ -13,9 +13,12 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 using static Quality.Helper.Attribute;
 
 namespace Quality.Areas.BulkFGT.Controllers
@@ -192,6 +195,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model = new MockupCrocking_ViewModel() { ReportNo_Source = new List<string>(), };
             }
 
+            Req.MailSubject = model.MailSubject;
             Req.Result = model.Result;
             Req.MRName = model.MRName;
             Req.MRMail = model.MRMail;
@@ -418,13 +422,16 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendMail(string ReportNo, string TO, string CC)
+        public JsonResult SendMail(string ReportNo, string TO, string CC, string Subject, string Body ,List<HttpPostedFileBase> Files)
         {
             MockupFailMail_Request mail = new MockupFailMail_Request()
             {
                 ReportNo = ReportNo,
                 To = TO,
                 CC = CC,
+                Subject = Subject,
+                Body = Body,
+                Files = Files,
             };
 
             SendMail_Result result = _MockupCrockingService.SendMail(mail);

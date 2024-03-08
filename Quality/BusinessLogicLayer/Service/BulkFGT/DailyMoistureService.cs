@@ -18,6 +18,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -68,6 +69,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     });
                     model.Details = _Provider.GetDetailData(ReportNoList.FirstOrDefault().Value).ToList();
                 }
+
+                string Subject = $"Daily Moisture Test/{model.Main.OrderID}/" +
+                    $"{model.Main.StyleID}/" +
+                    $"{model.Main.Line}/" +
+                    $"{model.Main.Result}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                model.Main.MailSubject = Subject;
                 model.ReportNo_Source = ReportNoList;
                 model.Request.ReportNo = model.Main.ReportNo;
                 model.Request.BrandID = model.Main.BrandID;
@@ -400,7 +409,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
 
 
-        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             _Provider = new DailyMoistureProvider(Common.ManufacturingExecutionDataAccessLayer);
 
@@ -427,6 +436,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Body = mailBody,
                 //alternateView = plainView,
                 FileonServer = new List<string> { FileName },
+                FileUploader = Files,
                 IsShowAIComment = true,
                 //AICommentType = "Accelerated Aging by Hydrolysis",
                 StyleID = model.Main.StyleID,
@@ -434,9 +444,21 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 BrandID = model.Main.BrandID,
             };
 
+            if (!string.IsNullOrEmpty(Subject))
+            {
+                sendMail_Request.Subject = Subject;
+            }
+
+
             _MailService = new MailToolsService();
             string comment = string.Empty;// _MailService.GetAICommet(sendMail_Request);
             string buyReadyDate = string.Empty;//_MailService.GetBuyReadyDate(sendMail_Request);
+
+            if (!string.IsNullOrEmpty(Body))
+            {
+                sendMail_Request.Body = Body + @"</br>" + @"</br>" + mailBody;
+            }
+
             sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
 
             return MailTools.SendMail(sendMail_Request);

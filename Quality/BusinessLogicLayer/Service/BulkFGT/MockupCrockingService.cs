@@ -48,7 +48,14 @@ namespace BusinessLogicLayer.Service
                     mockupCrocking_model.ReportNo_Source = _MockupCrockingProvider.GetMockupCrockingReportNoList(MockupCrocking).Select(s => s.ReportNo).ToList();
                     MockupCrocking_Detail mockupCrocking_Detail = new MockupCrocking_Detail() { ReportNo = mockupCrocking_model.ReportNo };
                     mockupCrocking_model.MockupCrocking_Detail = _MockupCrockingDetailProvider.GetMockupCrocking_Detail(mockupCrocking_Detail).ToList();
+
+                    mockupCrocking_model.MailSubject = $"Mockup Crocking /{mockupCrocking_model.POID}/" +
+                    $"{mockupCrocking_model.StyleID}/" +
+                    $"{mockupCrocking_model.Article}/" +
+                    $"{mockupCrocking_model.Result}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
                 }
+
             }
             catch (Exception ex)
             {
@@ -487,6 +494,7 @@ namespace BusinessLogicLayer.Service
                 //Body = mailBody,
                 //alternateView = plainView,
                 FileonServer = new List<string> { FileName },
+                FileUploader = mail_Request.Files,
                 IsShowAIComment = true,
                 AICommentType = "Mockup Crocking Test",
                 StyleID = model.StyleID,
@@ -494,10 +502,20 @@ namespace BusinessLogicLayer.Service
                 BrandID = model.BrandID,
             };
 
+            if (!string.IsNullOrEmpty(mail_Request.Subject))
+            {
+                sendMail_Request.Subject = mail_Request.Subject;
+            }
+
             _MailService = new MailToolsService();
             string comment = _MailService.GetAICommet(sendMail_Request);
             string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
             string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, out AlternateView plainView);
+
+            if (!string.IsNullOrEmpty(mail_Request.Body))
+            {
+                mailBody = mail_Request.Body + @"</br>" + @"</br>" + mailBody;
+            }
 
             sendMail_Request.Body = mailBody;
             sendMail_Request.alternateView = plainView;

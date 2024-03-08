@@ -66,25 +66,25 @@
                 <input type="button" id="btnGroup" name="name" style="width:12%;" value="Group" />
             </td>
         </tr>
-        @*<tr>
+        <tr>
             <td>
                 Subject:
             </td>
             <td>
                 @Html.TextBoxFor(m => m.Subject, new { @style = "width:100%;" })
             </td>
-        </tr>*@
-        @*<tr>
+        </tr>
+        <tr>
             <td>
                 Description:
             </td>
             <td>
                 @Html.TextBoxFor(m => m.Body, new { @style = "width:100%;" })
             </td>
-        </tr>*@
-        @*<tr>
+        </tr>
+        <tr>
             <td>
-                Attachment
+                Other attachment
             </td>
             <td>
                 @for (int i = 0; i < Model.FileonServer.Count; i++)
@@ -93,9 +93,9 @@
                     @Html.HiddenFor(model => Model.FileonServer[i])
                     <br />
                 }
-                <input type="file" name="fileUploader" multiple="multiple" />
+                <input id="otherFile" type="file" name="fileUploader" multiple="multiple" />
             </td>
-        </tr>*@
+        </tr>
         <tr>
             <td colspan="2" style="vertical-align: middle; text-align: center;">
                 <input type="button" id="btnSend" value="Send" />
@@ -118,10 +118,23 @@
         });
 
         $("#btnSend").click(function () {
+
+            // 取出檔案Raw data
+            let rawFiles = document.getElementById('otherFile').files;
+            let form = new FormData();
+
+            $.each(rawFiles, function () {
+                form.append(this.name, this);
+            })
+
+
             // 呼叫父視窗的GetSendMailer Function，把值傳回去
             var Mail = {
                 To: $("#To").val(),
                 CC: $("#CC").val(),
+                Subject: $("#Subject").val(),
+                Body: $("#Body").val(),
+                RawFiles: rawFiles,
             };
 
             window.opener.GetSendMailer(Mail);

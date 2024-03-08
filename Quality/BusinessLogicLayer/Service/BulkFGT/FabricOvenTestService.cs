@@ -22,6 +22,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BusinessLogicLayer.Service
@@ -288,7 +289,7 @@ namespace BusinessLogicLayer.Service
             return baseResult;
         }
 
-        public SendMail_Result SendMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest)
+        public SendMail_Result SendMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -323,10 +324,20 @@ namespace BusinessLogicLayer.Service
                     OrderID = poID,
                 };
 
+                if (!string.IsNullOrEmpty(Subject))
+                {
+                    sendMail_Request.Subject = Subject;
+                }
+
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
                 string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+
+                if (!string.IsNullOrEmpty(Body))
+                {
+                    mailBody = Body + @"</br>" + @"</br>" + mailBody;
+                }
 
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;

@@ -1380,7 +1380,7 @@
         });
 
         $('#SendMail').unbind('click').on('click', function () {
-            var para = '';
+            var para = '?Subject=@Model.Main.MailSubject';
             window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
 
         });
@@ -1450,34 +1450,51 @@
     function GetSendMailer(data) {
         var to = data.To;
         var cc = data.CC;
+        var subject = data.Subject;
+        var body = data.Body;
+        var rawFiles = data.RawFiles;
 
         if (to != "") {
 
-        $.ajax({
-            url: "@Url.Action("SendMail")",
-            type: 'POST',
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ POID: $('#Main_POID').val(), ID: $('#Main_ID').val(), TestNo: $('#Main_TestNo').val(), TO: to, CC: cc }),
-            async: false,
-            success: function (data) {
-                if (data.Result) {
-                    msg.WithSuccesCheck("Success", function () {
+            let formData = new FormData();
+            formData.append('POID', $("#Main_POID").val());
+            formData.append('ID', $("#Main_ID").val());
+            formData.append('TestNo', $("#Main_TestNo").val());
+            formData.append('To', to);
+            formData.append('CC', cc);
+            formData.append('Subject', subject);
+            formData.append('Body', body);
+
+            $.each(rawFiles, function () {
+                formData.append('Files', this);
+            })
+
+            $.ajax({
+                url: "@Url.Action("SendMail")",
+                type: 'POST',
+                contentType: false,
+                data: formData,
+                async: false,
+                processData: false,
+                success: function (data) {
+                    if (data.Result) {
+                        msg.WithSuccesCheck("Success", function () {
+                            location.reload();
+                        });
+                    }
+                    else {
+                        msg.WithWarningCheck(data.ErrorMessage, function () {
+                            location.reload();
+                        });
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    // console.log(xhr.responseText);
+                    msg.WithWarningCheck(xhr.responseText, function () {
                         location.reload();
                     });
                 }
-                else {
-                    msg.WithWarningCheck(data.ErrorMessage, function () {
-                        location.reload();
-                    });
-                }
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                // console.log(xhr.responseText);
-                msg.WithWarningCheck(xhr.responseText, function () {
-                    location.reload();
-                });
-            }
-        });
+            });
         }
     }
 

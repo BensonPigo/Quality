@@ -17,8 +17,10 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.UI.WebControls;
 using static MICS.DataAccessLayer.Provider.MSSQL.ColorFastnessDetailProvider;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -131,10 +133,19 @@ namespace BusinessLogicLayer.Service.BulkFGT
         public Fabric_ColorFastness_Detail_ViewModel GetDetailBody(string ID)
         {
             _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(Common.ProductionDataAccessLayer);
+            _IColorFastnessProvider = new ColorFastnessProvider(Common.ProductionDataAccessLayer);
             Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
             try
             {
                 result = _IColorFastnessDetailProvider.Get_DetailBody(ID);
+
+                DataTable dtContent = _IColorFastnessProvider.Get_Mail_Content(result.Main.POID, ID, result.Main.TestNo.ToString());
+                string Subject = $"Washing Fastness Test /{dtContent.Rows[0]["ID"]}/" +
+                    $"{dtContent.Rows[0]["StyleID"]}/" +
+                    $"{dtContent.Rows[0]["Article"]}/" +
+                    $"{dtContent.Rows[0]["Result"]}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                result.Main.MailSubject = Subject;
             }
             catch (Exception ex)
             {
@@ -305,7 +316,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public BaseResult SentMail(string POID, string ID, string TestNo, string ToAddress, string CCAddress)
+        public BaseResult SentMail(string POID, string ID, string TestNo, string ToAddress, string CCAddress, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             BaseResult result = new BaseResult();
             _IColorFastnessProvider = new ColorFastnessProvider(Common.ProductionDataAccessLayer);
@@ -341,16 +352,26 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     //Body = strHtml,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    FileUploader = Files,
                     IsShowAIComment = true,
                     AICommentType = "Washing Fastness",
                     OrderID = POID,
                 };
+
+                if (!string.IsNullOrEmpty(Subject))
+                {
+                    request.Subject = Subject;
+                }
 
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(request);
                 string strHtml = MailTools.DataTableChangeHtml(dtContent, comment, buyReadyDate, out System.Net.Mail.AlternateView plainView);
 
+                if (!string.IsNullOrEmpty(Body))
+                {
+                    strHtml = Body + @"</br>" + @"</br>" + strHtml;
+                }
                 request.Body = strHtml;
                 request.alternateView = plainView;
 

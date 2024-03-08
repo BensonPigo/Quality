@@ -385,9 +385,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
-        public JsonResult SendMail(string POID, string ID, string TestNo, string TO, string CC)
+        public JsonResult SendMail(string POID, string ID, string TestNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
-            BaseResult result = _FabricColorFastness_Service.SentMail(POID, ID, TestNo, TO, CC);
+            BaseResult result = _FabricColorFastness_Service.SentMail(POID, ID, TestNo, TO, CC, Subject, Body, Files);
             return Json(result);
         }
     }

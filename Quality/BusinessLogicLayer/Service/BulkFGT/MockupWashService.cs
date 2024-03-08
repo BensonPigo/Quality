@@ -58,6 +58,13 @@ namespace BusinessLogicLayer.Service
                     {
                         mockupWash_model.TestingMethod_Source.Add(new SelectListItem() { Value = item.ID, Text = item.Description });
                     }
+
+
+                    mockupWash_model.MailSubject = $"Mockup Wash /{mockupWash_model.POID}/" +
+                        $"{mockupWash_model.StyleID}/" +
+                        $"{mockupWash_model.Article}/" +
+                        $"{mockupWash_model.Result}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
                 }
             }
             catch (Exception ex)
@@ -574,6 +581,7 @@ namespace BusinessLogicLayer.Service
                 //Body = mailBody,
                 //alternateView = plainView,
                 FileonServer = new List<string> { FileName },
+                FileUploader = mail_Request.Files,
                 IsShowAIComment = true,
                 AICommentType = "Mockup Wash Test",
                 StyleID = model.StyleID,
@@ -581,10 +589,20 @@ namespace BusinessLogicLayer.Service
                 BrandID = model.BrandID,
             };
 
+            if (!string.IsNullOrEmpty(mail_Request.Subject))
+            {
+                sendMail_Request.Subject = mail_Request.Subject;
+            }
+
             _MailService = new MailToolsService();
             string comment = _MailService.GetAICommet(sendMail_Request);
             string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
             string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, out AlternateView plainView);
+
+            if (!string.IsNullOrEmpty(mail_Request.Body))
+            {
+                mailBody = mail_Request.Body + @"</br>" + @"</br>" + mailBody;
+            }
 
             sendMail_Request.Body = mailBody;
             sendMail_Request.alternateView = plainView;
