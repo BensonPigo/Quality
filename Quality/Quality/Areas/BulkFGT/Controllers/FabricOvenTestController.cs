@@ -293,9 +293,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendMail(string ID, string No, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
+        public JsonResult SendMail(string POID, string No, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
-            SendMail_Result result = _FabricOvenTestService.SendMail(TO, CC, ID, No, false, Subject, Body, Files);
+            SendMail_Result result = _FabricOvenTestService.SendMail(TO, CC, POID, No, false, Subject, Body, Files);
             return Json(result);}
     }
 }

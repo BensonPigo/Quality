@@ -1215,12 +1215,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             string comment = _MailService.GetAICommet(sendMail_Request);
             string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
 
-            if (!string.IsNullOrEmpty(Body))
-            {
-                sendMail_Request.Body = Body + @"</br>" + @"</br>" + mailBody;
-            }
-
-            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+            sendMail_Request.Body = Body + Environment.NewLine + sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
 
             return MailTools.SendMail(sendMail_Request);
         }

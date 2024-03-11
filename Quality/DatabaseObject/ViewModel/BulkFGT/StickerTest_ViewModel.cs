@@ -190,6 +190,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
         public byte[] TestBeforePicture { get; set; }
         public byte[] TestAfterPicture { get; set; }
+        public string MailSubject { get; set; }
 
 
         public string AddName { get; set; }

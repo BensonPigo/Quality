@@ -2082,12 +2082,8 @@ namespace BusinessLogicLayer.Service
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, Body, out AlternateView plainView);
 
-                if (!string.IsNullOrEmpty(Body))
-                {
-                    mailBody = Body + @"</br>" + @"</br>" + mailBody;
-                }
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;
 
@@ -2145,12 +2141,8 @@ namespace BusinessLogicLayer.Service
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, Body, out AlternateView plainView);
 
-                if (!string.IsNullOrEmpty(Body))
-                {
-                    mailBody = Body + @"</br>" + @"</br>" + mailBody;
-                }
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;
 
@@ -2208,12 +2200,7 @@ namespace BusinessLogicLayer.Service
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
-
-                if (!string.IsNullOrEmpty(Body))
-                {
-                    mailBody = Body + @"</br>" + @"</br>" + mailBody;
-                }
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, Body, out AlternateView plainView);
 
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;
@@ -2273,12 +2260,7 @@ namespace BusinessLogicLayer.Service
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
-
-                if (!string.IsNullOrEmpty(Body))
-                {
-                    mailBody = Body + @"</br>" + @"</br>" + mailBody;
-                }
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, Body, out AlternateView plainView);
 
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;

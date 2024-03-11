@@ -105,15 +105,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 Result.garmentTest = new GarmentTest_ViewModel() { ID = 0 };
                 Result.SizeCodes = new List<string>();
-            }
-            
-            //if (Result.garmentTest_Details == null || Result.garmentTest_Details.Count == 0)
-            //{
-            //    Result.garmentTest_Details = new List<GarmentTest_Detail_ViewModel>()
-            //    {
-            //        new GarmentTest_Detail_ViewModel() { No = 1, ID = Result.garmentTest.ID },
-            //    };
-            //}
+            }            
 
             Result.req = Req;
             List<SelectListItem> SizeCodeList = new SetListItem().ItemListBinding(Result.SizeCodes);
@@ -162,7 +154,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendMail(string ID, string No, string TO, string CC)
+        public JsonResult SendMail(string ID, string No, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             GarmentTest_ViewModel result = _GarmentTest_Service.UpdateMailSender(ID, No, this.UserID);
             GarmentTest_Detail_ViewModel detail = _GarmentTest_Service.Get_Detail(ID, No);
@@ -172,7 +164,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<Quality_MailGroup> mailGroups = new List<Quality_MailGroup>() {
                 new Quality_MailGroup() { ToAddress = TO, CcAddress = CC, }
             };
-            GarmentTest_Result result2 = _GarmentTest_Service.SentMail(ID, No, mailGroups);
+            GarmentTest_Result result2 = _GarmentTest_Service.SentMail(ID, No, mailGroups, Subject, Body, Files);
 
             return Json(result2);
         }
@@ -470,7 +462,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<Quality_MailGroup> mailGroups = new List<Quality_MailGroup>() {
                 new Quality_MailGroup() { ToAddress = TO, CcAddress = CC, }
             };
-            GarmentTest_Result result = _GarmentTest_Service.SentMail(ID, No, mailGroups);
+            GarmentTest_Result result = _GarmentTest_Service.SentMail(ID, No, mailGroups, string.Empty, string.Empty, null);
 
             return Json(new { result.Result, result.ErrMsg });
         }

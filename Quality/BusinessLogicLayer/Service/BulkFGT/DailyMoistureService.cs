@@ -449,17 +449,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 sendMail_Request.Subject = Subject;
             }
 
-
             _MailService = new MailToolsService();
             string comment = string.Empty;// _MailService.GetAICommet(sendMail_Request);
             string buyReadyDate = string.Empty;//_MailService.GetBuyReadyDate(sendMail_Request);
 
-            if (!string.IsNullOrEmpty(Body))
-            {
-                sendMail_Request.Body = Body + @"</br>" + @"</br>" + mailBody;
-            }
-
-            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+            sendMail_Request.Body = Body + Environment.NewLine + sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
 
             return MailTools.SendMail(sendMail_Request);
         }

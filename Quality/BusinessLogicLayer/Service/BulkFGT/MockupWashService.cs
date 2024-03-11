@@ -295,7 +295,7 @@ namespace BusinessLogicLayer.Service
                     || (mockupWash.HTFlim > 0)
                     || (mockupWash.HTTime > 0)
                     || (mockupWash.HTPressure > 0)
-                    || !string.IsNullOrEmpty(mockupWash.HTPellOff) 
+                    || !string.IsNullOrEmpty(mockupWash.HTPellOff)
                     || (mockupWash.HT2ndPressnoreverse > 0)
                     || (mockupWash.HT2ndPressreversed > 0)
                     || !string.IsNullOrEmpty(mockupWash.HTCoolingTime))
@@ -567,7 +567,7 @@ namespace BusinessLogicLayer.Service
                     $"{model.Article}_" +
                     $"{model.Result}_" +
                     $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
-            Report_Result baseResult = GetPDF(model,AssignedFineName: name);
+            Report_Result baseResult = GetPDF(model, AssignedFineName: name);
             string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
             SendMail_Request sendMail_Request = new SendMail_Request
             {
@@ -597,12 +597,7 @@ namespace BusinessLogicLayer.Service
             _MailService = new MailToolsService();
             string comment = _MailService.GetAICommet(sendMail_Request);
             string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-            string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, out AlternateView plainView);
-
-            if (!string.IsNullOrEmpty(mail_Request.Body))
-            {
-                mailBody = mail_Request.Body + @"</br>" + @"</br>" + mailBody;
-            }
+            string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, mail_Request.Body, out AlternateView plainView);
 
             sendMail_Request.Body = mailBody;
             sendMail_Request.alternateView = plainView;

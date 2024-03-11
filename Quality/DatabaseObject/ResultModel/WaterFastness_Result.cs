@@ -69,6 +69,7 @@ namespace DatabaseObject.ResultModel
         public int Time { get; set; }
         public byte[] TestBeforePicture { get; set; }
         public byte[] TestAfterPicture { get; set; }
+        public string MailSubject { get; set; }
     }
 
     public class WaterFastness_Detail_Detail : CompareBase

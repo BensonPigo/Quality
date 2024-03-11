@@ -352,9 +352,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendMail(string ID, string No, string TO, string CC)
+        public JsonResult SendMail(string POID, string No, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
-            SendMail_Result result = _WaterFastnessService.SendMail(TO, CC, ID, No, false);
+            SendMail_Result result = _WaterFastnessService.SendMail(TO, CC, POID, No, false, Subject, Body, Files);
             return Json(result);
         }
         [HttpPost]

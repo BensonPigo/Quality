@@ -337,7 +337,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         $"{dtContent.Rows[0]["Result"]}_" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-                Fabric_ColorFastness_Detail_ViewModel ColorFastnessDetailView = ToReport(ID, false , AssignedFineName: name);
+                Fabric_ColorFastness_Detail_ViewModel ColorFastnessDetailView = ToReport(ID, false, AssignedFineName: name);
                 string FileName = ColorFastnessDetailView.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", ColorFastnessDetailView.reportPath) : string.Empty;
                 SendMail_Request request = new SendMail_Request()
                 {
@@ -366,12 +366,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(request);
-                string strHtml = MailTools.DataTableChangeHtml(dtContent, comment, buyReadyDate, out System.Net.Mail.AlternateView plainView);
+                string strHtml = MailTools.DataTableChangeHtml(dtContent, comment, buyReadyDate, Body, out System.Net.Mail.AlternateView plainView);
 
-                if (!string.IsNullOrEmpty(Body))
-                {
-                    strHtml = Body + @"</br>" + @"</br>" + strHtml;
-                }
                 request.Body = strHtml;
                 request.alternateView = plainView;
 
@@ -503,7 +499,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             // 圖片
             Excel.Worksheet worksheet4 = excel.ActiveWorkbook.Worksheets[4];
-            nowRow = 17 + (dataList.Count * (dataList[0].BrandID == "U.ARMOUR" ? 2 :6)); 
+            nowRow = 17 + (dataList.Count * (dataList[0].BrandID == "U.ARMOUR" ? 2 : 6));
             foreach (ColorFastness_Excel item in dataList)
             {
                 Excel.Range rngToCopy = worksheet4.get_Range("A1:H42");
@@ -513,15 +509,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Excel.Range cellBefore = worksheet.Cells[nowRow + 23, 1];
                 if (dataList[0].TestBeforePicture != null)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestBeforePicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);                    
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left , cellBefore.Top , 200, 300);
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestBeforePicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left, cellBefore.Top, 200, 300);
                 }
 
                 Excel.Range cellAfter = worksheet.Cells[nowRow + 23, 5];
                 if (dataList[0].TestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestAfterPicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left , cellAfter.Top , 200, 300);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left, cellAfter.Top, 200, 300);
                 }
 
                 nowRow = nowRow + 42;

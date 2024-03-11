@@ -508,7 +508,7 @@
                                             @Html.TextBoxFor(o => Model.garmentTest_Details[i].Remark, "", "")
                                         </td>
                                         <td style="">
-                                            <img class="SendMail" src="~/Image/Icon/Mail.png" width="30" />
+                                            <img class="SendMail" src="~/Image/Icon/Mail.png" width="30" MailSubject="@Model.garmentTest_Details[i].MailSubject"/>
                                         </td>
                                         <td class="Sender" style="">
                                             @Html.DisplayFor(o => Model.garmentTest_Details[i].Sender, "", "")
@@ -784,7 +784,8 @@
             }
 
             sendMailTargetTr = $(this).parent().parent();
-            var para = '';
+            var mailSubject = $(this).attr('MailSubject');
+            var para = '?Subject=' + mailSubject;
             window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
         });
 
@@ -894,6 +895,9 @@
     function GetSendMailer(data) {
         var to = data.To;
         var cc = data.CC;
+        var subject = data.Subject;
+        var body = data.Body;
+        var rawFiles = data.RawFiles;
 
         if (to != "") {
 
@@ -902,12 +906,25 @@
             var id = fcol.attr("idx");
             var no = fcol.attr("idv");
 
+            let formData = new FormData();
+            formData.append('ID', id);
+            formData.append('No', no);
+            formData.append('To', to);
+            formData.append('CC', cc);
+            formData.append('Subject', subject);
+            formData.append('Body', body);
+
+            $.each(rawFiles, function () {
+                formData.append('Files', this);
+            })
+
             $.ajax({
                 url: "@Url.Action("SendMail", "GarmentTest", new { Area = "BulkFGT" })",
                 type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ ID: id, No: no, TO: to, CC: cc }),
+                contentType: false,
+                data: formData,
                 async: false,
+                processData: false,
                 success: function (data) {
                     if (data.Result) {
                         msg.WithSuccesCheck("Success", function () {

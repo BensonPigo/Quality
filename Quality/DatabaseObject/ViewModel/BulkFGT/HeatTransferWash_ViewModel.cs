@@ -77,12 +77,6 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Status { get; set; }
         public string ArtworkTypeID { get; set; }
         public string ArtworkTypeID_FullName { get; set; }
-        //public int Temperature { get; set; }
-        //public int Time { get; set; }
-        //public decimal Pressure { get; set; }
-        //public string PeelOff { get; set; }
-        //public int Cycles { get; set; }
-        //public int TemperatureUnit { get; set; }
 
         public string TestBeforePicture_Base64 { get; set; }
         public string TestAfterPicture_Base64 { get; set; }
@@ -94,6 +88,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public byte[] TestAfterPicture { get; set; }
 
         public byte[] Signature { get; set; }
+        public string MailSubject { get; set; }
         public string AddNameText { get; set; }
         public string AddName { get; set; }
         public DateTime? AddDate { get; set; }

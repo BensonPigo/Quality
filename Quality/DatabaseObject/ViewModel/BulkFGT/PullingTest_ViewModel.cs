@@ -141,5 +141,6 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string EditName { get; set; }
         public string Gender { get; set; }
         public byte[] Signature { get; set; }
+        public string MailSubject { get; set; }
     }
 }

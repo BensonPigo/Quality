@@ -21,6 +21,7 @@ using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Web.Mvc;
 using System.Windows;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace BusinessLogicLayer.Service
 {
@@ -606,12 +607,7 @@ namespace BusinessLogicLayer.Service
             _MailService = new MailToolsService();
             string comment = _MailService.GetAICommet(sendMail_Request);
             string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-            string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, out AlternateView plainView);
-
-            if (!string.IsNullOrEmpty(mail_Request.Body))
-            {
-                mailBody = mail_Request.Body + @"</br>" + @"</br>" + mailBody;
-            }
+            string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, mail_Request.Body, out AlternateView plainView);
 
             sendMail_Request.Body = mailBody;
             sendMail_Request.alternateView = plainView;

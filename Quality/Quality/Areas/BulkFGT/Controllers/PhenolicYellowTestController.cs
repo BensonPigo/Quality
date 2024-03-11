@@ -320,23 +320,10 @@ namespace Quality.Areas.BulkFGT.Controllers
         //}
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendMail(string ReportNo, string TO, string CC)
+        public JsonResult SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
-            SendMail_Result result = _Service.SendMail(ReportNo, TO, CC);
+            SendMail_Result result = _Service.SendMail(ReportNo, TO, CC, Subject, Body, Files);
             return Json(result);
-            //this.CheckSession();
-
-            //BaseResult result = null;
-            //string FileName = string.Empty;
-
-            //result = _PerspirationFastnessService.ToReport(ID, out FileName, true, false);
-            //if (!result.Result)
-            //{
-            //    result.ErrorMessage = result.ErrorMessage.ToString();
-            //}
-            //string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-
-            //return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
         }
     }
 }

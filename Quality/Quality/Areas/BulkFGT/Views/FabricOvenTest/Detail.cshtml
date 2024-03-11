@@ -942,7 +942,7 @@
         });
 
         $('#SendMail').unbind('click').on('click', function () {
-            var para = '';
+            var para = '?Subject=@Model.Main.MailSubject';
             window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
 
         });
@@ -1012,15 +1012,31 @@
     function GetSendMailer(data) {
         var to = data.To;
         var cc = data.CC;
+        var subject = data.Subject;
+        var body = data.Body;
+        var rawFiles = data.RawFiles;
 
         if (to != "") {
+
+            let formData = new FormData();
+            formData.append('POID', $("#Main_POID").val());
+            formData.append('No', $("#Main_TestNo").val());
+            formData.append('To', to);
+            formData.append('CC', cc);
+            formData.append('Subject', subject);
+            formData.append('Body', body);
+
+            $.each(rawFiles, function () {
+                formData.append('Files', this);
+            })
 
             $.ajax({
                 url: "@Url.Action("SendMail", "FabricOvenTest", new { Area = "BulkFGT" })",
                 type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ ID: $('#Main_POID').val(), No: $('#Main_TestNo').val(), TO: to, CC: cc }),
+                contentType: false,
+                data: formData,
                 async: false,
+                processData: false,
                 success: function (data) {
                     if (data.result) {
                         msg.WithSuccesCheck("Success", function () {

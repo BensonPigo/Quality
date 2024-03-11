@@ -772,12 +772,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             SendMail_Request sendMail_Request = new SendMail_Request
             {
                 Subject = $"Accelerated Aging by Hydrolysis Test/{MainData.OrderID}/" +
-                $"{MainData.StyleID}/" +
-                $"{detail.MainDetailData.FabricRefNo}/" +
-                $"{detail.MainDetailData.FabricColor}/" +
-                $"{detail.MainDetailData.Result}/" +
-                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
-
+                    $"{MainData.StyleID}/" +
+                    $"{detail.MainDetailData.FabricRefNo}/" +
+                    $"{detail.MainDetailData.FabricColor}/" +
+                    $"{detail.MainDetailData.Result}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = TO,
                 CC = CC,
                 Body = mailBody,
@@ -800,11 +799,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             string comment = _MailService.GetAICommet(sendMail_Request);
             string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
 
-            if (!string.IsNullOrEmpty(Body))
-            {
-                mailBody = Body + @"</br>" + @"</br>" + mailBody;
-            }
-            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+            sendMail_Request.Body = Body + Environment.NewLine + sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
 
             return MailTools.SendMail(sendMail_Request);
         }

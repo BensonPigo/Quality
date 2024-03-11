@@ -51,7 +51,7 @@
     <table class="DataTable">
         <tr>
             <td>
-                To:
+                To
             </td>
             <td>
                 @Html.TextBoxFor(m => m.To, new { @style = "width:100%;" })
@@ -59,7 +59,7 @@
         </tr>
         <tr>
             <td>
-                CC:
+                CC
             </td>
             <td>
                 @Html.TextBoxFor(m => m.CC, new { @style = "width:87%;" })
@@ -68,7 +68,7 @@
         </tr>
         <tr>
             <td>
-                Subject:
+                Subject
             </td>
             <td>
                 @Html.TextBoxFor(m => m.Subject, new { @style = "width:100%;" })
@@ -76,7 +76,7 @@
         </tr>
         <tr>
             <td>
-                Description:
+                Other Content
             </td>
             <td>
                 @Html.TextBoxFor(m => m.Body, new { @style = "width:100%;" })
@@ -84,7 +84,7 @@
         </tr>
         <tr>
             <td>
-                Other attachment
+                Other Attachment
             </td>
             <td>
                 @for (int i = 0; i < Model.FileonServer.Count; i++)
