@@ -64,7 +64,10 @@ namespace BusinessLogicLayer.Service
 
                 _MeasurementProvider = new MeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
                 List<DatabaseObject.ManufacturingExecutionDB.Measurement> baseMeasurementItems = _MeasurementProvider.GetMeasurementsByPOID(finalInspection.CustPONO, OrderID, userID).ToList();
-                measurement.ListMeasurementItem = baseMeasurementItems.Select( s =>
+                
+                measurement.ListMeasurementItem = baseMeasurementItems
+                    .Where(o => measurement.ListSize.Any(x=>x.SizeCode == o.SizeCode))
+                    .Select( s =>
                         new MeasurementItem() {
                             Description = s.Description,
                             SizeSpec = s.SizeSpec,
