@@ -17,54 +17,14 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 {
     public class MockupCrockingProvider : SQLDAL, IMockupCrockingProvider
     {
-        private IMockupCrockingDetailProvider _MockupCrockingDetailProvider;
         #region 底層連線
         public MockupCrockingProvider(string ConString) : base(ConString) { }
         public MockupCrockingProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
-        #region CRUD Base
-        public IList<MockupCrocking> Get(MockupCrocking Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("SELECT" + Environment.NewLine);
-            SbSql.Append("         m.ReportNo" + Environment.NewLine);
-            SbSql.Append("        ,POID" + Environment.NewLine);
-            SbSql.Append("        ,StyleID" + Environment.NewLine);
-            SbSql.Append("        ,SeasonID" + Environment.NewLine);
-            SbSql.Append("        ,BrandID" + Environment.NewLine);
-            SbSql.Append("        ,Article" + Environment.NewLine);
-            SbSql.Append("        ,ArtworkTypeID" + Environment.NewLine);
-            SbSql.Append("        ,Remark" + Environment.NewLine);
-            SbSql.Append("        ,T1Subcon" + Environment.NewLine);
-            SbSql.Append("        ,TestDate" + Environment.NewLine);
-            SbSql.Append("        ,ReceivedDate" + Environment.NewLine);
-            SbSql.Append("        ,ReleasedDate" + Environment.NewLine);
-            SbSql.Append("        ,Result" + Environment.NewLine);
-            SbSql.Append("        ,Technician" + Environment.NewLine);
-            SbSql.Append("        ,MR" + Environment.NewLine);
-            SbSql.Append("        ,Type" + Environment.NewLine);
-            SbSql.Append("        ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_MockupCrocking mi WITH(NOLOCK) where m.ReportNo=mi.ReportNo)" + Environment.NewLine);
-            SbSql.Append("        ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_MockupCrocking mi WITH(NOLOCK) where m.ReportNo=mi.ReportNo)" + Environment.NewLine);
-            SbSql.Append("        ,AddDate" + Environment.NewLine);
-            SbSql.Append("        ,AddName" + Environment.NewLine);
-            SbSql.Append("        ,EditDate" + Environment.NewLine);
-            SbSql.Append("        ,EditName" + Environment.NewLine);
-            SbSql.Append("        ,EditName" + Environment.NewLine);
-            SbSql.Append($@"FROM [MockupCrocking] m WITH(NOLOCK) " + Environment.NewLine);
+        #region MockupCrocking CUD
 
-            SbSql.Append("Where 1 = 1" + Environment.NewLine);
-            if (!string.IsNullOrEmpty(Item.ReportNo))
-            {
-                SbSql.Append("And m.ReportNo = @ReportNo" + Environment.NewLine);
-                objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
-            }
-
-            return ExecuteList<MockupCrocking>(CommandType.Text, SbSql.ToString(), objParameter);
-        }
-
-        public int Create(MockupCrocking Item, string Mdivision, out string NewReportNo)
+        public int CreateMockupCrocking(MockupCrocking Item, string Mdivision, out string NewReportNo)
         {
             NewReportNo = GetID(Mdivision + "CK", "MockupCrocking", DateTime.Today, 2, "ReportNo");
             StringBuilder SbSql = new StringBuilder();
@@ -148,7 +108,7 @@ END
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public void Update(MockupCrocking_ViewModel Item)
+        public void UpdateMockupCrocking(MockupCrocking_ViewModel Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -216,8 +176,8 @@ end
             objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
 
 
-            _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(Common.ProductionDataAccessLayer);
-            var oldCrockingData = _MockupCrockingDetailProvider.GetMockupCrocking_Detail(new MockupCrocking_Detail() { ReportNo = Item.ReportNo }).ToList();
+            //_MockupCrockingDetailProvider = new MockupCrockingDetailProvider(Common.ProductionDataAccessLayer);
+            var oldCrockingData = this.GetMockupCrocking_Detail(new MockupCrocking_Detail() { ReportNo = Item.ReportNo }).ToList();
 
             List<MockupCrocking_Detail_ViewModel> needUpdateDetailList =
                 PublicClass.CompareListValue<MockupCrocking_Detail_ViewModel>(
@@ -319,7 +279,7 @@ WHERE UKey = @Ukey
             }
         }
 
-        public int Delete(MockupCrocking Item)
+        public int DeleteMockupCrocking(MockupCrocking Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -335,6 +295,65 @@ WHERE UKey = @Ukey
         }
         #endregion
 
+        #region MockupCrocking_Detail CD
+
+        public int CreateDetail(MockupCrocking_Detail Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("INSERT INTO [MockupCrocking_Detail]" + Environment.NewLine);
+            SbSql.Append("(" + Environment.NewLine);
+            SbSql.Append("         ReportNo" + Environment.NewLine);
+            SbSql.Append("        ,Design" + Environment.NewLine);
+            SbSql.Append("        ,ArtworkColor" + Environment.NewLine);
+            SbSql.Append("        ,FabricRefNo" + Environment.NewLine);
+            SbSql.Append("        ,FabricColor" + Environment.NewLine);
+            SbSql.Append("        ,DryScale" + Environment.NewLine);
+            SbSql.Append("        ,WetScale" + Environment.NewLine);
+            SbSql.Append("        ,Result" + Environment.NewLine);
+            SbSql.Append("        ,Remark" + Environment.NewLine);
+            SbSql.Append("        ,EditName" + Environment.NewLine);
+            SbSql.Append("        ,EditDate" + Environment.NewLine);
+            SbSql.Append(")" + Environment.NewLine);
+            SbSql.Append("VALUES" + Environment.NewLine);
+            SbSql.Append("(" + Environment.NewLine);
+            SbSql.Append("         @ReportNo"); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            SbSql.Append("        ,@Design"); objParameter.Add("@Design", DbType.String, Item.Design ?? string.Empty);
+            SbSql.Append("        ,@ArtworkColor"); objParameter.Add("@ArtworkColor", DbType.String, Item.ArtworkColor ?? string.Empty);
+            SbSql.Append("        ,@FabricRefNo"); objParameter.Add("@FabricRefNo", DbType.String, Item.FabricRefNo ?? string.Empty);
+            SbSql.Append("        ,@FabricColor"); objParameter.Add("@FabricColor", DbType.String, Item.FabricColor ?? string.Empty);
+            SbSql.Append("        ,@DryScale"); objParameter.Add("@DryScale", DbType.String, Item.DryScale ?? string.Empty);
+            SbSql.Append("        ,@WetScale"); objParameter.Add("@WetScale", DbType.String, Item.WetScale ?? string.Empty);
+            SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result ?? string.Empty);
+            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark ?? string.Empty);
+            SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName ?? string.Empty);
+            SbSql.Append("        ,GETDATE()");
+            SbSql.Append(")" + Environment.NewLine);
+
+
+            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+
+        public int DeleteDetail(MockupCrocking_Detail Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("DELETE FROM [MockupCrocking_Detail]" + Environment.NewLine);
+            if (string.IsNullOrEmpty(Item.ReportNo))
+            {
+                SbSql.Append("Where Ukey = @Ukey" + Environment.NewLine);
+                objParameter.Add("@Ukey", Item.Ukey);
+            }
+            else
+            {
+                SbSql.Append("Where ReportNo = @ReportNo" + Environment.NewLine);
+                objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            }
+
+            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+        #endregion
+
         public IList<MockupCrocking_ViewModel> GetMockupCrockingReportNoList(MockupCrocking_Request Item)
         {
             StringBuilder SbSql = new StringBuilder();
@@ -344,14 +363,6 @@ SELECT ReportNo
 FROM [MockupCrocking] m WITH(NOLOCK)
 ");
             SbSql.Append("Where 1 = 1" + Environment.NewLine);
-
-            /*
-            if (!string.IsNullOrEmpty(Item.ReportNo))
-            {
-                SbSql.Append("And ReportNo = @ReportNo" + Environment.NewLine);
-                objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
-            }
-            */
 
             if (!string.IsNullOrEmpty(Item.BrandID))
             {
@@ -466,6 +477,40 @@ outer apply (select Name from Pass1 WITH(NOLOCK) where id = m.EditName) EditName
             SbSql.Append("Order by ReportNo");
 
             return ExecuteList<MockupCrocking_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+
+        public IList<MockupCrocking_Detail_ViewModel> GetMockupCrocking_Detail(MockupCrocking_Detail Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append(@"
+SELECT
+         md.ReportNo
+        ,md.Ukey
+        ,md.Design
+        ,md.ArtworkColor
+        ,md.FabricRefNo
+        ,md.FabricColor
+        ,md.DryScale
+        ,md.WetScale
+        ,md.Result
+        ,md.Remark
+        ,md.EditName
+        ,md.EditDate
+		,ArtworkColorName = (select stuff((select concat(';', Name) from Color WITH(NOLOCK) where ID in (select Data from SplitString(md.ArtworkColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
+        ,FabricColorName = (select stuff((select concat(';', Name) from Color WITH(NOLOCK) where ID in (select Data from SplitString(md.FabricColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
+		,LastUpdate = iif(isnull(md.EditName, '') <> '', Concat(md.EditName, '-' + Format(md.EditDate,'yyyy/MM/dd HH:mm:ss')), Format(md.EditDate,'yyyy/MM/dd HH:mm:ss'))
+FROM [MockupCrocking_Detail] md WITH(NOLOCK)
+inner join MockupCrocking m WITH(NOLOCK) on m.ReportNo = md.ReportNo
+Where 1=1
+");
+            if (!string.IsNullOrEmpty(Item.ReportNo))
+            {
+                SbSql.Append("And md.ReportNo = @ReportNo" + Environment.NewLine);
+                objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            }
+
+            return ExecuteList<MockupCrocking_Detail_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
         public DataTable GetMockupCrockingFailMailContentData(string ReportNo)

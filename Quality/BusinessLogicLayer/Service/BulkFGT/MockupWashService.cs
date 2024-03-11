@@ -25,7 +25,6 @@ namespace BusinessLogicLayer.Service
     public class MockupWashService : IMockupWashService
     {
         private IMockupWashProvider _MockupWashProvider;
-        private IMockupWashDetailProvider _MockupWashDetailProvider;
         private IStyleBOAProvider _IStyleBOAProvider;
         private IStyleArtworkProvider _IStyleArtworkProvider;
         private IDropDownListProvider _DropDownListProvider;
@@ -42,13 +41,12 @@ namespace BusinessLogicLayer.Service
             try
             {
                 _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
-                _MockupWashDetailProvider = new MockupWashDetailProvider(Common.ProductionDataAccessLayer);
                 mockupWash_model = _MockupWashProvider.GetMockupWash(MockupWash, istop1: true).ToList().FirstOrDefault();
                 if (mockupWash_model != null)
                 {
                     mockupWash_model.ReportNo_Source = _MockupWashProvider.GetMockupWashReportNoList(MockupWash).Select(s => s.ReportNo).ToList();
                     MockupWash_Detail mockupWash_Detail = new MockupWash_Detail() { ReportNo = mockupWash_model.ReportNo };
-                    mockupWash_model.MockupWash_Detail = _MockupWashDetailProvider.GetMockupWash_Detail(mockupWash_Detail).ToList();
+                    mockupWash_model.MockupWash_Detail = _MockupWashProvider.GetMockupWash_Detail(mockupWash_Detail).ToList();
 
                     mockupWash_model.TestingMethod_Source = new List<SelectListItem>();
                     _DropDownListProvider = new DropDownListProvider(Common.ProductionDataAccessLayer);
@@ -218,7 +216,7 @@ namespace BusinessLogicLayer.Service
                 // 設定表頭資料
                 worksheet.Cells[4, 2] = mockupWash.ReportNo;
                 worksheet.Cells[5, 2] = mockupWash.T1Subcon + "-" + mockupWash.T1SubconAbb; ;
-                worksheet.Cells[6, 2] = mockupWash.T2Supplier + "-" + mockupWash.T2SupplierAbb; ;
+                worksheet.Cells[6, 2] = mockupWash.T2Supplier + "-" + mockupWash.T2SupplierAbb;
 
                 worksheet.Cells[7, 2] = mockupWash.MethodDescription;
                 worksheet.Cells[4, 6] = mockupWash.ReleasedDate;
@@ -401,7 +399,6 @@ namespace BusinessLogicLayer.Service
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupWashProvider = new MockupWashProvider(_ISQLDataTransaction);
-            _MockupWashDetailProvider = new MockupWashDetailProvider(_ISQLDataTransaction);
             int count;
             try
             {
@@ -421,7 +418,7 @@ namespace BusinessLogicLayer.Service
                     MockupWash.Result = string.Empty;
                 }
 
-                count = _MockupWashProvider.Create(MockupWash, Mdivision, out NewReportNo);
+                count = _MockupWashProvider.CreateMockupWash(MockupWash, Mdivision, out NewReportNo);
                 if (count == 0)
                 {
                     result.Result = false;
@@ -434,7 +431,7 @@ namespace BusinessLogicLayer.Service
                 {
                     MockupWash_Detail.EditName = userid;
                     MockupWash_Detail.ReportNo = MockupWash.ReportNo;
-                    count = _MockupWashDetailProvider.Create(MockupWash_Detail);
+                    count = _MockupWashProvider.CreateDetail(MockupWash_Detail);
                     if (count == 0)
                     {
                         result.Result = false;
@@ -486,10 +483,9 @@ namespace BusinessLogicLayer.Service
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupWashProvider = new MockupWashProvider(_ISQLDataTransaction);
-            _MockupWashDetailProvider = new MockupWashDetailProvider(_ISQLDataTransaction);
             try
             {
-                _MockupWashProvider.Update(MockupWash);
+                _MockupWashProvider.UpdateMockupWash(MockupWash);
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }
@@ -509,11 +505,10 @@ namespace BusinessLogicLayer.Service
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupWashProvider = new MockupWashProvider(_ISQLDataTransaction);
-            _MockupWashDetailProvider = new MockupWashDetailProvider(_ISQLDataTransaction);
             try
             {
-                _MockupWashProvider.Delete(MockupWash);
-                _MockupWashDetailProvider.Delete(new MockupWash_Detail_ViewModel() { ReportNo = MockupWash.ReportNo });
+                _MockupWashProvider.DeleteMockupWash(MockupWash);
+                _MockupWashProvider.DeleteDetail(new MockupWash_Detail_ViewModel() { ReportNo = MockupWash.ReportNo });
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }
@@ -532,13 +527,13 @@ namespace BusinessLogicLayer.Service
         {
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
-            _MockupWashDetailProvider = new MockupWashDetailProvider(_ISQLDataTransaction);
+            _MockupWashProvider = new MockupWashProvider(_ISQLDataTransaction);
             try
             {
                 foreach (var MockupWash_Detail in MockupWashDetail)
                 {
                     MockupWash_Detail.ReportNo = null;
-                    _MockupWashDetailProvider.Delete(MockupWash_Detail);
+                    _MockupWashProvider.DeleteDetail(MockupWash_Detail);
                 }
 
                 result.Result = true;

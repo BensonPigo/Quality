@@ -28,7 +28,6 @@ namespace BusinessLogicLayer.Service
     public class MockupOvenService : IMockupOvenService
     {
         private IMockupOvenProvider _MockupOvenProvider;
-        private IMockupOvenDetailProvider _MockupOvenDetailProvider;
         private IStyleBOAProvider _IStyleBOAProvider;
         private IStyleArtworkProvider _IStyleArtworkProvider;
         private IOrdersProvider _OrdersProvider;
@@ -47,14 +46,13 @@ namespace BusinessLogicLayer.Service
             try
             {
                 _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
-                _MockupOvenDetailProvider = new MockupOvenDetailProvider(Common.ProductionDataAccessLayer);
                 mockupOven_model = _MockupOvenProvider.GetMockupOven(MockupOven, istop1: true).ToList().FirstOrDefault();
                 if (mockupOven_model != null)
                 {
                     mockupOven_model.ScaleID_Source = GetScale();
                     mockupOven_model.ReportNo_Source = _MockupOvenProvider.GetMockupOvenReportNoList(MockupOven).Select(s => s.ReportNo).ToList();
                     MockupOven_Detail mockupOven_Detail = new MockupOven_Detail() { ReportNo = mockupOven_model.ReportNo };
-                    mockupOven_model.MockupOven_Detail = _MockupOvenDetailProvider.GetMockupOven_Detail(mockupOven_Detail).ToList();
+                    mockupOven_model.MockupOven_Detail = _MockupOvenProvider.GetMockupOven_Detail(mockupOven_Detail).ToList();
 
                     mockupOven_model.MailSubject = $"Mockup Oven /{mockupOven_model.POID}/" +
                     $"{mockupOven_model.StyleID}/" +
@@ -411,7 +409,6 @@ namespace BusinessLogicLayer.Service
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupOvenProvider = new MockupOvenProvider(_ISQLDataTransaction);
-            _MockupOvenDetailProvider = new MockupOvenDetailProvider(_ISQLDataTransaction);
             int count;
             try
             {
@@ -431,7 +428,7 @@ namespace BusinessLogicLayer.Service
                     MockupOven.Result = string.Empty;
                 }
 
-                count = _MockupOvenProvider.Create(MockupOven, Mdivision, out NewReportNo);
+                count = _MockupOvenProvider.CreateMockupOven(MockupOven, Mdivision, out NewReportNo);
                 if (count == 0)
                 {
                     result.Result = false;
@@ -444,7 +441,7 @@ namespace BusinessLogicLayer.Service
                 {
                     MockupOven_Detail.EditName = userid;
                     MockupOven_Detail.ReportNo = MockupOven.ReportNo;
-                    count = _MockupOvenDetailProvider.Create(MockupOven_Detail);
+                    count = _MockupOvenProvider.CreateDetail(MockupOven_Detail);
                     if (count == 0)
                     {
                         result.Result = false;
@@ -498,7 +495,7 @@ namespace BusinessLogicLayer.Service
             _MockupOvenProvider = new MockupOvenProvider(_ISQLDataTransaction);
             try
             {
-                _MockupOvenProvider.Update(MockupOven);
+                _MockupOvenProvider.UpdateMockupOven(MockupOven);
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }
@@ -518,11 +515,10 @@ namespace BusinessLogicLayer.Service
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupOvenProvider = new MockupOvenProvider(_ISQLDataTransaction);
-            _MockupOvenDetailProvider = new MockupOvenDetailProvider(_ISQLDataTransaction);
             try
             {
-                _MockupOvenProvider.Delete(MockupOven);
-                _MockupOvenDetailProvider.Delete(new MockupOven_Detail_ViewModel() { ReportNo = MockupOven.ReportNo });
+                _MockupOvenProvider.DeleteMockupOven(MockupOven);
+                _MockupOvenProvider.DeleteDetail(new MockupOven_Detail_ViewModel() { ReportNo = MockupOven.ReportNo });
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }
@@ -541,13 +537,13 @@ namespace BusinessLogicLayer.Service
         {
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
-            _MockupOvenDetailProvider = new MockupOvenDetailProvider(_ISQLDataTransaction);
+            _MockupOvenProvider = new MockupOvenProvider(_ISQLDataTransaction);
             try
             {
                 foreach (var MockupOven_Detail in MockupOvenDetail)
                 {
                     MockupOven_Detail.ReportNo = null;
-                    _MockupOvenDetailProvider.Delete(MockupOven_Detail);
+                    _MockupOvenProvider.DeleteDetail(MockupOven_Detail);
                 }
 
                 result.Result = true;
@@ -568,7 +564,6 @@ namespace BusinessLogicLayer.Service
         {
             _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
             System.Data.DataTable dt = _MockupOvenProvider.GetMockupOvenFailMailContentData(mail_Request.ReportNo);
-            //string mailBody = MailTools.DataTableChangeHtml(dt,"","", out AlternateView plainView);
             MockupOven_ViewModel model = GetMockupOven(new MockupOven_Request { ReportNo = mail_Request.ReportNo });
 
             string name = $"Mockup Oven _{model.POID}_" +
