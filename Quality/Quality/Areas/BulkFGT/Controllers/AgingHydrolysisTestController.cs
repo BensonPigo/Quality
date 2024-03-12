@@ -43,10 +43,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             return View(model);
         }
 
-        public ActionResult IndexBack(string OrderID)
+        public ActionResult IndexBack(string BrandID, string SeasonID, string StyleID, string Article,string OrderID)
         {
             AgingHydrolysisTest_Request request = new AgingHydrolysisTest_Request()
             {
+                BrandID = BrandID,
+                SeasonID = SeasonID,
+                StyleID = StyleID,
+                Article = Article,
                 OrderID = OrderID,
             };
 
@@ -80,6 +84,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             AgingHydrolysisTest_ViewModel model = _service.GetDefaultModel();
 
             model.MainData.EditType = "New";
+            model.MainData.TimeUnit = "Hour";
 
             return View("Index", model);
         }
@@ -302,20 +307,5 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(result);
         }
 
-        public JsonResult SendMailToMR(string ReportNo)
-        {
-            this.CheckSession();
-            AgingHydrolysisTest_Detail_ViewModel result = _service.GetReport(ReportNo, false);
-
-            if (!result.Result)
-            {
-                result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
-                return Json(new { result.Result, ErrMsg = result.ErrorMessage });
-            }
-
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
-
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, FileName = result.TempFileName });
-        }
     }
 }

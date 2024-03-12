@@ -151,9 +151,10 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public Report_Result GetPDF(MockupWash_ViewModel mockupWash, bool test = false)
+        public Report_Result GetPDF(MockupWash_ViewModel mockupWash, bool test = false, string AssignedFineName = "")
         {
             Report_Result result = new Report_Result();
+            string tmpName = string.Empty;
             if (mockupWash == null)
             {
                 result.Result = false;
@@ -176,6 +177,11 @@ namespace BusinessLogicLayer.Service
                         System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
                     }
                 }
+                tmpName = $"Mockup Wash _{mockupWash.POID}_" +
+                    $"{mockupWash.StyleID}_" +
+                    $"{mockupWash.Article}_" +
+                    $"{mockupWash.Result}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
                 _InspectionTypeProvider = new InspectionTypeProvider(Common.ProductionDataAccessLayer);
@@ -278,13 +284,13 @@ namespace BusinessLogicLayer.Service
                 }
 
                 // ISP20230792
-                if ((mockupWash.HTPlate.HasValue && mockupWash.HTPlate.Value > 0)
-                    || (mockupWash.HTFlim.HasValue && mockupWash.HTFlim.Value > 0)
-                    || (mockupWash.HTTime.HasValue && mockupWash.HTTime.Value > 0)
-                    || (mockupWash.HTPressure.HasValue && mockupWash.HTPressure.Value > 0)
+                if ((mockupWash.HTPlate > 0)
+                    || (mockupWash.HTFlim > 0)
+                    || (mockupWash.HTTime > 0)
+                    || (mockupWash.HTPressure > 0)
                     || !string.IsNullOrEmpty(mockupWash.HTPellOff) 
-                    || (mockupWash.HT2ndPressnoreverse.HasValue && mockupWash.HT2ndPressnoreverse.Value > 0)
-                    || (mockupWash.HT2ndPressreversed.HasValue && mockupWash.HT2ndPressreversed.Value > 0)
+                    || (mockupWash.HT2ndPressnoreverse > 0)
+                    || (mockupWash.HT2ndPressreversed > 0)
                     || !string.IsNullOrEmpty(mockupWash.HTCoolingTime))
                 {
                     int aRow = 11 + haveHTrow + mockupWash_Detail.Count - 1;
@@ -292,13 +298,13 @@ namespace BusinessLogicLayer.Service
                     Range rngToInsert = worksheet.get_Range($"A{aRow}", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
 
-                    worksheet.Cells[aRow + 1, 3] = mockupWash.HTPlate.HasValue ? mockupWash.HTPlate.Value : 0;
-                    worksheet.Cells[aRow + 2, 3] = mockupWash.HTFlim.HasValue ? mockupWash.HTFlim.Value : 0;
-                    worksheet.Cells[aRow + 3, 3] = mockupWash.HTTime.HasValue ? mockupWash.HTTime.Value : 0;
-                    worksheet.Cells[aRow + 4, 3] = mockupWash.HTPressure.HasValue ? mockupWash.HTPressure.Value : 0;
+                    worksheet.Cells[aRow + 1, 3] = mockupWash.HTPlate;
+                    worksheet.Cells[aRow + 2, 3] = mockupWash.HTFlim;
+                    worksheet.Cells[aRow + 3, 3] = mockupWash.HTTime;
+                    worksheet.Cells[aRow + 4, 3] = mockupWash.HTPressure;
                     worksheet.Cells[aRow + 1, 8] = mockupWash.HTPellOff;
-                    worksheet.Cells[aRow + 2, 8] = mockupWash.HT2ndPressnoreverse.HasValue ? mockupWash.HT2ndPressnoreverse.Value : 0;
-                    worksheet.Cells[aRow + 3, 8] = mockupWash.HT2ndPressreversed.HasValue ? mockupWash.HT2ndPressreversed.Value : 0;
+                    worksheet.Cells[aRow + 2, 8] = mockupWash.HT2ndPressnoreverse;
+                    worksheet.Cells[aRow + 3, 8] = mockupWash.HT2ndPressreversed;
                     worksheet.Cells[aRow + 4, 8] = mockupWash.HTCoolingTime;
                 }
 
@@ -327,9 +333,13 @@ namespace BusinessLogicLayer.Service
                 }
                 #endregion
 
-                string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-                string filexlsx = fileName + ".xlsx";
-                string fileNamePDF = fileName + ".pdf";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string filexlsx = tmpName + ".xlsx";
+                string fileNamePDF = tmpName + ".pdf";
 
                 string filepath;
                 string filepathpdf;
@@ -538,16 +548,27 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
+        public SendMail_Result SendMail(MockupFailMail_Request mail_Request)
         {
             _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
             System.Data.DataTable dt = _MockupWashProvider.GetMockupWashFailMailContentData(mail_Request.ReportNo);
+
             MockupWash_ViewModel model = GetMockupWash(new MockupWash_Request { ReportNo = mail_Request.ReportNo });
-            Report_Result baseResult = GetPDF(model);
+
+            string name = $"Mockup Wash _{model.POID}_" +
+                    $"{model.StyleID}_" +
+                    $"{model.Article}_" +
+                    $"{model.Result}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+            Report_Result baseResult = GetPDF(model,AssignedFineName: name);
             string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
             SendMail_Request sendMail_Request = new SendMail_Request
             {
-                Subject = "Mockup Wash – Test Fail",
+                Subject = $"Mockup Wash /{model.POID}/" +
+                    $"{model.StyleID}/" +
+                    $"{model.Article}/" +
+                    $"{model.Result}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = mail_Request.To,
                 CC = mail_Request.CC,
                 //Body = mailBody,

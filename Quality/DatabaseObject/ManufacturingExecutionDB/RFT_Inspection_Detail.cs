@@ -7,11 +7,11 @@ namespace DatabaseObject.ManufacturingExecutionDB
         /// <summary>檢驗紀錄 ID (CFT_Inspeciton.ID)</summary>
         [Required]
         [Display(Name = "檢驗紀錄 ID (CFT_Inspeciton.ID)")]
-        public Int64 ID { get; set; }
+        public long ID { get; set; }
         /// <summary>檢驗瑕疵紀錄</summary>
         [Required]
         [Display(Name = "檢驗瑕疵紀錄")]
-        public Int64 Ukey { get; set; }
+        public long Ukey { get; set; }
         /// <summary>瑕疵描述</summary>
         [Required]
         [StringLength(100)]

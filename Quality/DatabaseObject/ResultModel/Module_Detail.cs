@@ -8,7 +8,7 @@ namespace DatabaseObject.ResultModel
 {
     public class Module_Detail
     {
-        public Int64 MenuID { get; set; }
+        public long MenuID { get; set; }
         public string ModuleName { get; set; }
         public string FunctionName { get; set; }
         public bool Used { get; set; }

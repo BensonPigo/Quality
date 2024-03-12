@@ -17,8 +17,10 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using Excel = Microsoft.Office.Interop.Excel;
 
 
@@ -332,7 +334,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return baseResult;
         }
 
-        public SendMail_Result SendFailResultMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest)
+        public SendMail_Result SendMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -341,13 +343,23 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 DataTable dtResult = _WaterFastnessProvider.GetFailMailContentData(poID, TestNo);
                 string ID = dtResult.Rows[0]["ID"].ToString();
                 dtResult.Columns.Remove("ID");
-                BaseResult baseResult = ToReport(ID, out string PDFFileName, true, isTest);
+                string name = $"Water Fastness Test_{poID}_" +
+                        $"{dtResult.Rows[0]["Style"]}_" +
+                        $"{dtResult.Rows[0]["Article"]}_" +
+                        $"{dtResult.Rows[0]["Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                BaseResult baseResult = ToReport(ID, out string PDFFileName, true, isTest, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", PDFFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
                     CC = ccAddress,
-                    Subject = "Fabric Oven Test - Test Fail",
+                    Subject = $"Water Fastness Test/{poID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Article"]}/" +
+                        $"{dtResult.Rows[0]["Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -400,11 +412,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             worksheet.Cells[setRow, 23] = dr["Remark"];
         }
 
-        public BaseResult ToReport(string ID, out string FileName, bool isPDF, bool isTest = false)
+        public BaseResult ToReport(string ID, out string FileName, bool isPDF, bool isTest = false, string AssignedFineName = "")
         {
             BaseResult result = new BaseResult();
             _WaterFastnessProvider = new WaterFastnessProvider(Common.ProductionDataAccessLayer);
             List<WaterFastness_Excel> dataList = new List<WaterFastness_Excel>();
+
+            string tmpName = string.Empty;
 
             FileName = string.Empty;
 
@@ -419,6 +433,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     return result;
                 }
 
+                tmpName = $"Water Fastness Test_{dataList.FirstOrDefault().POID}_" +
+                        $"{dataList.FirstOrDefault().StyleID}_" +
+                        $"{dataList.FirstOrDefault().Article}_" +
+                        $"{dataList.FirstOrDefault().AllResult}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
                 string basefileName = "WaterFastness_ToExcel";
                 string openfilepath;
 
@@ -430,6 +450,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
                 }
+
+
 
                 Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
@@ -511,9 +533,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #region Save & Show Excel
 
-                string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-                string filexlsx = fileName + ".xlsx";
-                string fileNamePDF = fileName + ".pdf";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string filexlsx = tmpName + ".xlsx";
+                string fileNamePDF = tmpName + ".pdf";
 
                 string filepath;
                 string filepathpdf;

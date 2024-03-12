@@ -610,35 +610,8 @@
         });
 
         $('#SendMail').unbind('click').on('click', function () {
-
-            $.ajax({
-                url: "@Url.Action("IronSendMail", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
-                type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({
-                    ID: $('#ID').val()
-                }),
-                async: false,
-                success: function (data) {
-                    if (data.Result) {
-                        var para = "?To=";
-                        para += "&CC=" + '@ViewBag.UserMail';
-                        para += "&Subject=" + "Fabric Iron Test – Seq:" + '@Model.Iron_Main.SEQ';
-                        para += "&Body=" + "Attachment is Fabric Iron Test– Seq:" + '@Model.Iron_Main.SEQ' + " detail data";
-                        para += "&file=" + data.FileName;
-                        @*para += "&IsShowAIComment=true";
-                        para += "&Type=Fabric Crocking & Shrinkage Test";
-                        para += "&OrderID=" + '@Model.Iron_Main.POID';*@
-                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
-                    }
-                    else {
-                        msg.WithError(data.ErrorMessage);
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
-                }
-            });
+            var para = '';
+            window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
         });
 
         if (@Model.Iron_Main.IronEncode == false) {
@@ -743,7 +716,7 @@
         var poid = '@Model.Iron_Main.POID';
 
         $.ajax({
-            url: "@Url.Action("FailMail_Iron", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+            url: "@Url.Action("IronSendMail", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ ID: $('#ID').val(), TO: to, CC: cc, OrderID: poid }),
@@ -766,6 +739,41 @@
                 });
             }
         });
+    }
+
+    function GetSendMailer(data) {
+        var to = data.To;
+        var cc = data.CC;
+        var poid = '@Model.Iron_Main.POID';
+
+        if (to != "") {
+
+        $.ajax({
+            url: "@Url.Action("IronSendMail", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ID: $('#ID').val(), TO: to, CC: cc, OrderID: poid }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSuccesCheck("Success", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithWarningCheck(data.resultMsg, function () {
+                        location.reload();
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // console.log(xhr.responseText);
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
+        }
     }
 
     function AddDetailRow() {
@@ -814,16 +822,17 @@
             var targetID = $(this).closest('tr').attr('idx');
             var checkValue = $("#Iron_Detail_" + targetID + "__Roll").val();
 
+            var receivingID = '@Model.Iron_Main.ReceivingID';
             if (checkValue == "") {
                 $("#Iron_Detail_" + targetID + "__Dyelot").val('');
                 return;
             }
 
             $.ajax({
-                url: "@Url.Action("FtyInventoryList", "PublicWindow",new { Area=""})",
+                url: "@Url.Action("AllReceivingDetailList", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ POID: poid, Seq1: seq1, Seq2: seq2, Roll: checkValue, ReturnType: "JSON" }),
+                data: JSON.stringify({ POID: poid, Seq1: seq1, Seq2: seq2, Roll: checkValue, ReceivingID: receivingID, ReturnType: "JSON" }),
                 async: true,
                 success: function (data) {
                     if (data.length == 0) {
@@ -844,8 +853,9 @@
 
         $('.btnRollSelectItem').unbind('click').on('click', function () {
             var targetID = $(this).closest('tr').attr('idx');
-            var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq2=" + seq2 + "&TargetID=" + targetID;
-            window.open('@Url.Action("FtyInventoryList", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+            var receivingID = '@Model.Iron_Main.ReceivingID';
+            var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq2=" + seq2 + "&TargetID=" + targetID + "&ReceivingID=" + receivingID;
+            window.open('@Url.Action("AllReceivingDetailList", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
         });
 
         $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
@@ -940,7 +950,7 @@
         });
     }
 
-    function GetFtyInventory(data, targetID) {
+    function GetAllReceivingDetail(data, targetID) {
         $("#Iron_Detail_" + targetID + "__Roll").val(data.Roll);
         $("#Iron_Detail_" + targetID + "__Dyelot").val(data.Dyelot);
     }

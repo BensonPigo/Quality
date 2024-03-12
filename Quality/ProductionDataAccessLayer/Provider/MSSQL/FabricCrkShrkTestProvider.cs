@@ -82,8 +82,8 @@ select	[SubmitDate] = od.SubmitDate,
         [ResultStain] = od.ResultStain,
         [Remark] = od.Remark,
         [LastUpdate] = Concat(od.EditName, '-', pass1EditName.Name, ' ', pass1EditName.Extno),
-        [Temperature] = cast(od.Temperature as varchar),
-        [Time] = cast(od.Time as varchar)
+        [Temperature] = od.Temperature,
+        [Time] = od.Time
 from Oven_Detail od with (nolock)
 inner join Oven o with (nolock) on o.ID = od.ID
 left join PO_Supp_Detail psd with (nolock) on o.POID = psd.ID and od.SEQ1 = psd.SEQ1 and od.SEQ2 = psd.SEQ2
@@ -261,6 +261,7 @@ select	[POID] = f.POID,
         [ArriveQty] = f.ArriveQty,
         [WhseArrival] = r.WhseArrival,
         [ExportID] = r.ExportID,
+        f.ReceivingID,
         [Supp] = Concat(f.SuppID, s.AbbEn),
         [Crocking] = fl.Crocking,
         [CrockingDate] = fl.CrockingDate,
@@ -386,6 +387,8 @@ select fl.ReportNo
 	,o.SeasonID
 	,o.BrandID
 	,o.StyleID
+	,fl.Crocking
+    ,f.Refno
 	,SCIRefno_Color = f.SCIRefno + ' ' + pc.SpecValue
 	,Color = pc.SpecValue
 	,Inspector = LabTech.Val
@@ -853,6 +856,7 @@ select	[POID] = f.POID,
         [ArriveQty] = f.ArriveQty,
         [WhseArrival] = r.WhseArrival,
         [ExportID] = r.ExportID,
+        f.ReceivingID,
         [Supp] = Concat(f.SuppID, s.AbbEn),
         [Heat] = fl.Heat,
         [HeatDate] = fl.HeatDate,
@@ -1266,6 +1270,7 @@ select	[POID] = f.POID,
         [ArriveQty] = f.ArriveQty,
         [WhseArrival] = r.WhseArrival,
         [ExportID] = r.ExportID,
+        f.ReceivingID,
         [Supp] = Concat(f.SuppID, s.AbbEn),
         [Iron] = fl.Iron,
         [IronDate] = fl.IronDate,
@@ -1681,6 +1686,7 @@ select	[POID] = f.POID,
         [ArriveQty] = f.ArriveQty,
         [WhseArrival] = r.WhseArrival,
         [ExportID] = r.ExportID,
+        f.ReceivingID,
         [Supp] = Concat(f.SuppID, s.AbbEn),
         [Wash] = fl.Wash,
         [WashDate] = fl.WashDate,

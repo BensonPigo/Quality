@@ -5,7 +5,7 @@ namespace DatabaseObject.ProductionDB
     public class InspectionType
     {
         /// <summary>ID</summary>
-        public Int64? ID { get; set; }
+        public long ID { get; set; }
 
         /// <summary>Category</summary>
         public string Category { get; set; }

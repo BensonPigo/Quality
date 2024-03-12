@@ -21,6 +21,10 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
+using DatabaseObject.ResultModel;
+using Library;
+using System.Web.UI.WebControls;
+using static Ict.Win.Design.DateTimeConverter;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -29,6 +33,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         public HeatTransferWashProvider _Provider;
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
+        private MailToolsService _MailService;
         public BaseResult Create(HeatTransferWash_ViewModel model, string MDivision, string userid, out string NewReportNo)
         {
             BaseResult result = new BaseResult();
@@ -252,12 +257,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public BaseResult ToReport(string ReportNo ,bool IsPDF,  out string FinalFilenmae)
+        public BaseResult ToReport(string ReportNo ,bool IsPDF,  out string FinalFilenmae, string AssignedFineName = "")
         {
 
             BaseResult result = new BaseResult();
             _Provider = new HeatTransferWashProvider(Common.ManufacturingExecutionDataAccessLayer);
             FinalFilenmae = string.Empty;
+            string tmpName = string.Empty;
 
             try
             {
@@ -265,6 +271,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 List<HeatTransferWash_Detail_Result> body =_Provider.GetDetailData(ReportNo).ToList();
 
                 System.Data.DataTable ReportTechnician = _Provider.GetReportTechnician(new HeatTransferWash_Request() { ReportNo = ReportNo });
+
+                tmpName = $"Daily Heat Transfer Wash Test_{head.OrderID}_" +
+                       $"{head.StyleID}_" +
+                       $"{head.Article}_" +
+                       $"{head.Result}_" +
+                       $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
                 string strXltName = baseFilePath + "\\XLT\\HeatTransferWash.xltx";
@@ -419,31 +431,38 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     bodyStart++;
                 }
 
-                string excelFileName = $"Daily HT Wash Test_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-                string pdfFileName = $"Daily HT Wash Test_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
 
-                string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
-                string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
+                string fileName = $"{tmpName}.xlsx";
+                string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
+                string filePdfName = $"{tmpName}.pdf";
+                string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
+
+                Excel.Workbook workBook = excel.ActiveWorkbook;
                 if (IsPDF)
                 {
                     Microsoft.Office.Interop.Excel.XlFixedFormatType targetType = Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF;
-                    Excel.Workbook workBook = excel.ActiveWorkbook;
-                    workBook.ExportAsFixedFormat(targetType, pdfPath);
+
+                    workBook.ExportAsFixedFormat(targetType, fullPdfFileName);
                     Marshal.ReleaseComObject(workBook);
-                    FinalFilenmae = pdfFileName;
+                    FinalFilenmae = filePdfName;
                 }
                 else
                 {
-                    excel.ActiveWorkbook.SaveAs(excelPath);
-                    FinalFilenmae = excelFileName;
+                    workBook.SaveAs(fullExcelFileName);
+                    //excel.ActiveWorkbook.SaveAs(excelPath);
+                    FinalFilenmae = fileName;
                 }
 
+                workBook.Close();
                 excel.Quit();
                 Marshal.ReleaseComObject(worksheet);
+                Marshal.ReleaseComObject(workBook);
                 Marshal.ReleaseComObject(excel);
-
-                result.Result = true;
             }
             catch (Exception ex)
             {
@@ -537,6 +556,46 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
 
             return result;
+        }
+
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new HeatTransferWashProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            HeatTransferWash_ViewModel model = this.GetHeatTransferWash(new HeatTransferWash_Request() { ReportNo = ReportNo });
+            string FinalFilenmae = string.Empty;
+
+            string name = $"Daily Heat Transfer Wash Test_{model.Main.OrderID}_" +
+                        $"{model.Main.StyleID}_" +
+                        $"{model.Main.Article}_" +
+                        $"{model.Main.Result}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+            BaseResult report = this.ToReport(ReportNo, false ,out FinalFilenmae, name);
+
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FinalFilenmae);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Daily Heat Transfer Wash Test/{model.Main.OrderID}/" +
+                        $"{model.Main.StyleID}/" +
+                        $"{model.Main.Article}/" +
+                        $"{model.Main.Result}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

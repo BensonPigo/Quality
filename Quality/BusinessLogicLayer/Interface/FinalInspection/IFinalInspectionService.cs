@@ -37,7 +37,7 @@ namespace BusinessLogicLayer.Interface
         BaseResult CheckStep(string FinalInspectionID);
         BaseResult UpdateStepByAction(string FinalInspectionID, string UserID, FinalInspectionSStepAction action);
 
-        List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID);
+        List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID, string InspectionStage);
         List<FinalInspectionBasicCheckList> GetCheckListByBrand(string FinalInspectionID, string BrandID);
 
         List<FinalInspectionBasicGeneral> GetAllGeneral();

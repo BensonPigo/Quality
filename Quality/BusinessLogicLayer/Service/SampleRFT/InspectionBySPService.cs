@@ -76,7 +76,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 Result.FactoryID = orderInfo.FactoryID;
                 Result.Model = orderInfo.Model;
                 Result.SampleStage = orderInfo.OrderTypeID;
-                Result.OrderQty = orderInfo.Qty.Value;
+                Result.OrderQty = orderInfo.Qty;
                 Result.ComboType = orderInfo.ComboType;
                 Result.TopSewingLineID = orderInfo.TopSewingLineID;
                 Result.BottomSewingLineID = orderInfo.BottomSewingLineID;
@@ -161,7 +161,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 Result.FactoryID = orderInfo.FactoryID;
                 Result.Model = orderInfo.Model;
                 Result.SampleStage = orderInfo.OrderTypeID;
-                Result.OrderQty = orderInfo.Qty.Value;
+                Result.OrderQty = orderInfo.Qty;
                 Result.ComboType = orderInfo.ComboType;
                 Result.TopSewingLineID = orderInfo.TopSewingLineID;
                 Result.BottomSewingLineID = orderInfo.BottomSewingLineID;
@@ -516,7 +516,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 }
                 else if (existedData.InspectionStage == "AQL")
                 {
-                    result.MaxRejectQty = existedData.SampleSize.Value;
+                    result.MaxRejectQty = existedData.SampleSize;
                 }
 
                 var summary = _Provider.GetDefectDefaultBody(ID);
@@ -673,7 +673,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
                 }
                 else if (existedData.InspectionStage == "AQL")
                 {
-                    result.MaxBAQty = existedData.SampleSize.Value;
+                    result.MaxBAQty = existedData.SampleSize;
                 }
 
                 var body = _Provider.GetBeautifulProductAudit(ID);

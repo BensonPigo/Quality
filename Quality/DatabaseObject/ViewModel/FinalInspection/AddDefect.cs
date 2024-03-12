@@ -8,10 +8,10 @@ namespace DatabaseObject.ViewModel.FinalInspection
     public class AddDefect : BaseResult
     {
         public string FinalInspectionID { get; set; }
-        public int? RejectQty { get; set; }
+        public int RejectQty { get; set; }
         public string InspectionStep { get; set; } = "";
 
-        public int? SampleSize { get; set; }
+        public int SampleSize { get; set; }
         public Setting FinalInspection { get; set; }
 
         public List<FinalInspectionDefectItem> ListFinalInspectionDefectItem { get; set; }
@@ -43,7 +43,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
 
         public byte[] TempImage { get; set; }
         public string TempRemark { get; set; }
-        public Int64 RowIndex { get; set; }
+        public long RowIndex { get; set; }
         public string LoginToken { get; set; }
     }
     public class ImageRemark

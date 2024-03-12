@@ -162,14 +162,19 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendMail(string ID, string No)
+        public JsonResult SendMail(string ID, string No, string TO, string CC)
         {
-            GarmentTest_ViewModel result = _GarmentTest_Service.SendMail(ID, No, this.UserID);
+            GarmentTest_ViewModel result = _GarmentTest_Service.UpdateMailSender(ID, No, this.UserID);
             GarmentTest_Detail_ViewModel detail = _GarmentTest_Service.Get_Detail(ID, No);
             result.Sender = detail.Sender;
             result.SendDate = detail.SendDate.HasValue ? detail.SendDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
 
-            return Json(result);
+            List<Quality_MailGroup> mailGroups = new List<Quality_MailGroup>() {
+                new Quality_MailGroup() { ToAddress = TO, CcAddress = CC, }
+            };
+            GarmentTest_Result result2 = _GarmentTest_Service.SentMail(ID, No, mailGroups);
+
+            return Json(result2);
         }
 
         [HttpPost]
@@ -202,7 +207,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             string html = "";
             html += "<tr idx='" + i + "'>";
-            html += "<td><a idx='" + ID + "' idv = '" + lastNO.ToString() + "'></a></td>";
+            html += "<td><a class='detailA' NewNo='true' idx='" + ID + "' idv = '" + lastNO.ToString() + "'></a></td>";
             html += "<td><input id='garmentTest_Details_" + i + "__OrderID' name='garmentTest_Details[" + i + "].OrderID' class='Detail_OrderID' type='text'></td>";
             html += "<td><select id='garmentTest_Details_" + i + "__SizeCode' name='garmentTest_Details[" + i + "].SizeCode' class='Detail_SizeCode'><option value=''></option>";
             //foreach(string val in sizecodes)
@@ -352,7 +357,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             if (newItem.TestUnit.ToLower() == "pass/fail")
             {
-                newItem.Criteria = null;
+                newItem.Criteria = 0;
             }
 
             GarmentTest_ViewModel Detail_Result = _GarmentTest_Service.Import_FGPT_Item(newItem);

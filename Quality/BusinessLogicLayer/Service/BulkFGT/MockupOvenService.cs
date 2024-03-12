@@ -151,7 +151,7 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public Report_Result GetPDF(MockupOven_ViewModel mockupOven)
+        public Report_Result GetPDF(MockupOven_ViewModel mockupOven, string AssignedFineName = "")
         {
             Report_Result result = new Report_Result();
             if (mockupOven == null)
@@ -161,6 +161,7 @@ namespace BusinessLogicLayer.Service
                 return result;
             }
 
+            string tmpName = string.Empty;
             try
             {
                 if (!(IsTest.ToLower() == "true"))
@@ -175,6 +176,13 @@ namespace BusinessLogicLayer.Service
                         System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
                     }
                 }
+
+                tmpName = $"Mockup Oven _{mockupOven.POID}_" +
+                    $"{mockupOven.StyleID}_" +
+                    $"{mockupOven.Article}_" +
+                    $"{mockupOven.Result}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
 
                 _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
                 _InspectionTypeProvider = new InspectionTypeProvider(Common.ProductionDataAccessLayer);
@@ -279,28 +287,28 @@ namespace BusinessLogicLayer.Service
                 }
 
                 // ISP20230792
-                if ((mockupOven.HTPlate.HasValue && mockupOven.HTPlate.Value > 0)
-                    || (mockupOven.HTFlim.HasValue && mockupOven.HTFlim.Value > 0)
-                    || (mockupOven.HTTime.HasValue && mockupOven.HTTime.Value > 0)
-                    || (mockupOven.HTPressure.HasValue && mockupOven.HTPressure.Value > 0)
+                if ((mockupOven.HTPlate > 0)
+                    || (mockupOven.HTFlim > 0)
+                    || (mockupOven.HTTime > 0)
+                    || (mockupOven.HTPressure > 0)
                     || !string.IsNullOrEmpty(mockupOven.HTPellOff) 
-                    || (mockupOven.HT2ndPressnoreverse.HasValue && mockupOven.HT2ndPressnoreverse.Value > 0)
-                    || (mockupOven.HT2ndPressreversed.HasValue && mockupOven.HT2ndPressreversed.Value > 0)
-                    || (mockupOven.HTCoolingTime.HasValue && mockupOven.HTCoolingTime.Value > 0))
+                    || (mockupOven.HT2ndPressnoreverse > 0)
+                    || (mockupOven.HT2ndPressreversed > 0)
+                    || (mockupOven.HTCoolingTime > 0))
                 {
                     int aRow = 11 + haveHTrow + mockupOven_Detail.Count - 1;
                     Range rngToCopy = worksheet2.get_Range($"A1:N5", Type.Missing).EntireRow;
                     Range rngToInsert = worksheet.get_Range($"A{aRow}", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
 
-                    worksheet.Cells[aRow + 1, 3] = mockupOven.HTPlate.HasValue ? mockupOven.HTPlate.Value : 0;
-                    worksheet.Cells[aRow + 2, 3] = mockupOven.HTFlim.HasValue ? mockupOven.HTFlim.Value : 0;
-                    worksheet.Cells[aRow + 3, 3] = mockupOven.HTTime.HasValue ? mockupOven.HTTime.Value : 0;
-                    worksheet.Cells[aRow + 4, 3] = mockupOven.HTPressure.HasValue ? mockupOven.HTPressure.Value : 0;
+                    worksheet.Cells[aRow + 1, 3] = mockupOven.HTPlate;
+                    worksheet.Cells[aRow + 2, 3] = mockupOven.HTFlim;
+                    worksheet.Cells[aRow + 3, 3] = mockupOven.HTTime;
+                    worksheet.Cells[aRow + 4, 3] = mockupOven.HTPressure;
                     worksheet.Cells[aRow + 1, 11] = mockupOven.HTPellOff;
-                    worksheet.Cells[aRow + 2, 11] = mockupOven.HT2ndPressnoreverse.HasValue ? mockupOven.HT2ndPressnoreverse.Value : 0;
-                    worksheet.Cells[aRow + 3, 11] = mockupOven.HT2ndPressreversed.HasValue ? mockupOven.HT2ndPressreversed.Value : 0;
-                    worksheet.Cells[aRow + 4, 11] = mockupOven.HTCoolingTime.HasValue ? mockupOven.HTCoolingTime.Value : 0;
+                    worksheet.Cells[aRow + 2, 11] = mockupOven.HT2ndPressnoreverse;
+                    worksheet.Cells[aRow + 3, 11] = mockupOven.HT2ndPressreversed;
+                    worksheet.Cells[aRow + 4, 11] = mockupOven.HTCoolingTime;
                 }
 
                 // 塞進資料
@@ -333,9 +341,13 @@ namespace BusinessLogicLayer.Service
 
                 #endregion
 
-                string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-                string filexlsx = fileName + ".xlsx";
-                string fileNamePDF = fileName + ".pdf";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string filexlsx = tmpName + ".xlsx";
+                string fileNamePDF = tmpName + ".pdf";
 
                 string filepath;
                 string filepathpdf;
@@ -543,17 +555,28 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
+        public SendMail_Result SendMail(MockupFailMail_Request mail_Request)
         {
             _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
             System.Data.DataTable dt = _MockupOvenProvider.GetMockupOvenFailMailContentData(mail_Request.ReportNo);
             //string mailBody = MailTools.DataTableChangeHtml(dt,"","", out AlternateView plainView);
             MockupOven_ViewModel model = GetMockupOven(new MockupOven_Request { ReportNo = mail_Request.ReportNo });
-            Report_Result baseResult = GetPDF(model);
+
+            string name = $"Mockup Oven _{model.POID}_" +
+                $"{model.StyleID}_" +
+                $"{model.Article}_" +
+                $"{model.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+            
+            Report_Result baseResult = GetPDF(model, name);
             string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
             SendMail_Request sendMail_Request = new SendMail_Request
             {
-                Subject = "Mockup Oven – Test Fail",
+                Subject = $"Mockup Oven /{model.POID}/" +
+                $"{model.StyleID}/" +
+                $"{model.Article}/" +
+                $"{model.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = mail_Request.To,
                 CC = mail_Request.CC,
                 //Body = mailBody,

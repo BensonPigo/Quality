@@ -353,42 +353,42 @@
                     </div>
 
                     <div style="margin-top: 1em; overflow:auto">
-                        <table cellspacing="100" id="crocking_Detail" class="DataTable DetailTable table table-striped display;">
+                        <table id="crocking_Detail" class="DataTable DetailTable table table-striped display;">
                             <thead>
                                 <tr class="row-name" id="row-name">
-                                    <th style="width:5vw">Roll#</th>
-                                    <th style="width:5vw">Dyelot</th>
-                                    <th style="width:5vw">Result</th>
+                                    <th>Roll#</th>
+                                    <th>Dyelot</th>
+                                    <th>Result</th>
                                     @if (Model.CrockingTestOption == 0)
                                     {
-                                        <th style="width:5vw">Dry Scale</th>
-                                        <th style="width:5vw">Result(Dry)</th>
-                                        <th style="width:5vw" notShow="testOption">Dry Scale (Weft)</th>
-                                        <th style="width:5vw" notShow="testOption">Dry Result (Waft)</th>
-                                        <th style="width:5vw">Wet Scale</th>
-                                        <th style="width:5vw">Result(Wet)</th>
-                                        <th style="width:5vw" notShow="testOption">Wet Scale (Weft)</th>
-                                        <th style="width:5vw" notShow="testOption">Wet Result (Weft)</th>
+                                        <th>Dry Scale</th>
+                                        <th>Result(Dry)</th>
+                                        <th  notShow="testOption">Dry Scale (Weft)</th>
+                                        <th  notShow="testOption">Dry Result (Waft)</th>
+                                        <th>Wet Scale</th>
+                                        <th>Result(Wet)</th>
+                                        <th  notShow="testOption">Wet Scale (Weft)</th>
+                                        <th  notShow="testOption">Wet Result (Weft)</th>
                                     }
                                     else
                                     {
                                         // 使用testOption，決定是否隱藏
-                                        <th style="width:5vw">Dry Scale (Warp)</th>
-                                        <th style="width:5vw">Dry Result (Warp)</th>
-                                        <th style="width:5vw">Dry Scale (Weft)</th>
-                                        <th style="width:5vw">Dry Result (Waft)</th>
-                                        <th style="width:5vw">Wet Scale (Warp)</th>
-                                        <th style="width:5vw">Wet Result (Warp)</th>
-                                        <th style="width:5vw">Wet Scale (Weft)</th>
-                                        <th style="width:5vw">Wet Result (Weft)</th>
+                                        <th>Dry Scale (Warp)</th>
+                                        <th>Dry Result (Warp)</th>
+                                        <th>Dry Scale (Weft)</th>
+                                        <th>Dry Result (Waft)</th>
+                                        <th>Wet Scale (Warp)</th>
+                                        <th>Wet Result (Warp)</th>
+                                        <th>Wet Scale (Weft)</th>
+                                        <th>Wet Result (Weft)</th>
                                     }
 
-                                    <th style="width:5vw">Insp. Date</th>
-                                    <th style="width:5vw">Lab Tech</th>
-                                    <th style="width:5vw">Name</th>
-                                    <th style="width:5vw">Remark</th>
-                                    <th style="width:5vw">Last Update</th>
-                                    <th style="width:5vw"></th>
+                                    <th>Insp. Date</th>
+                                    <th>Lab Tech</th>
+                                    <th>Name</th>
+                                    <th>Remark</th>
+                                    <th>Last Update</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -551,7 +551,7 @@
                                             @Html.TextBoxFor(modelItem => Model.Crocking_Detail[i].LastUpdate, new { @readonly = "readonly" })
                                         </td>
                                         <td>
-                                            <img class='detailDelete' src="~/Image/Icon/Delete.png" width='30'>
+                                            <img class='detailDelete' src="~/Image/Icon/Delete.png" style="min-width:30px">
                                         </td>
                                     </tr>
                                 }
@@ -727,35 +727,8 @@
         });
 
         $('#SendMail').unbind('click').on('click', function () {
-
-            $.ajax({
-                url: "@Url.Action("CrockingSendMail", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
-                type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({
-                    ID: $('#ID').val()
-                }),
-                async: false,
-                success: function (data) {
-                    if (data.Result) {
-                        var para = "?To=";
-                        para += "&CC=" + '@ViewBag.UserMail';
-                        para += "&Subject=" + "Fabric Crocking Test – Seq:" + '@Model.Crocking_Main.SEQ';
-                        para += "&Body=" + "Attachment is Fabric Crocking Test– Seq:" + '@Model.Crocking_Main.SEQ' + " detail data";
-                        para += "&file=" + data.FileName;
-                        @*para += "&IsShowAIComment=true";
-                        para += "&Type=Fabric Crocking & Shrinkage Test";
-                        para += "&OrderID=" + '@Model.Crocking_Main.POID';*@
-                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
-                    }
-                    else {
-                        msg.WithError(data.ErrorMessage);
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
-                }
-            });
+            var para = '';
+            window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
         });
 
         if (@Model.Crocking_Main.CrockingEncdoe == false) {
@@ -862,7 +835,7 @@
         });
         var poid = '@Model.Crocking_Main.POID';
         $.ajax({
-            url: "@Url.Action("FailMail_Crocking", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+            url: "@Url.Action("CrockingSendMail", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ ID: $('#ID').val(), TO: to, CC: cc, OrderID: poid }),
@@ -885,6 +858,41 @@
                 });
             }
         });
+    }
+
+    function GetSendMailer(data) {
+        var to = data.To;
+        var cc = data.CC;
+        var poid = '@Model.Crocking_Main.POID';
+
+        if (to != "") {
+
+        $.ajax({
+            url: "@Url.Action("CrockingSendMail", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ID: $('#ID').val(), TO: to, CC: cc, OrderID: poid }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSuccesCheck("Success", function () {
+                        location.reload();
+                    });
+                }
+                else {
+                    msg.WithWarningCheck(data.resultMsg, function () {
+                        location.reload();
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // console.log(xhr.responseText);
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
+        }
     }
 
     function AddDetailRow() {
@@ -968,6 +976,7 @@
         $('.inputRollSelectItem').unbind('blur').on('blur', function () {
             var targetID = $(this).closest('tr').attr('idx');
             var checkValue = $("#Crocking_Detail_" + targetID + "__Roll").val();
+            var receivingID = '@Model.Crocking_Main.ReceivingID';
 
             if (checkValue == "") {
                 $("#Crocking_Detail_" + targetID + "__Dyelot").val('');
@@ -975,10 +984,10 @@
             }
 
             $.ajax({
-                url: "@Url.Action("FtyInventoryList", "PublicWindow",new { Area=""})",
+                url: "@Url.Action("AllReceivingDetailList", "PublicWindow",new { Area=""})",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ POID: poid, Seq1: seq1, Seq2: seq2, Roll: checkValue, ReturnType: "JSON" }),
+                data: JSON.stringify({ POID: poid, Seq1: seq1, Seq2: seq2, Roll: checkValue, ReceivingID: receivingID, ReturnType: "JSON" }),
                 async: true,
                 success: function (data) {
                     if (data.length == 0) {
@@ -999,8 +1008,9 @@
 
         $('.btnRollSelectItem').unbind('click').on('click', function () {
             var targetID = $(this).closest('tr').attr('idx');
-            var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq2=" + seq2 + "&TargetID=" + targetID;
-            window.open('@Url.Action("FtyInventoryList", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+            var receivingID = '@Model.Crocking_Main.ReceivingID';
+            var para = "?POID=" + poid + "&Seq1=" + seq1 + "&Seq2=" + seq2 + "&TargetID=" + targetID + "&ReceivingID=" + receivingID;
+            window.open('@Url.Action("AllReceivingDetailList", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
         });
 
         $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
@@ -1052,7 +1062,7 @@
         });
     }
 
-    function GetFtyInventory(data, targetID) {
+    function GetAllReceivingDetail(data, targetID) {
         $("#Crocking_Detail_" + targetID + "__Roll").val(data.Roll);
         $("#Crocking_Detail_" + targetID + "__Dyelot").val(data.Dyelot);
     }

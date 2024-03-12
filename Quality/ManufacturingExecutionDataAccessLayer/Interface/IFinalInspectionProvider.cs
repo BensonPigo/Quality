@@ -96,7 +96,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         IList<EndlineMoisture> GetEndlineMoistureDefault();
         void UpdateMoisture(MoistureResult moistureResult);
 
-        bool CheckMoistureExists(string finalInspectionID, string article, long? finalInspection_OrderCartonUkey);
+        bool CheckMoistureExists(string finalInspectionID, string article, long finalInspection_OrderCartonUkey);
 
         void DeleteMoisture(long ukey);
 
@@ -143,7 +143,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         BaseResult UpdateJunk(string ID);
 
-        List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID);
+        List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID, string InspectionStage);
         List<FinalInspectionBasicCheckList> GetCheckListByBrand(string FinalInspectionID, string BrandID);
         void UpdateGeneral(FinalInspectionGeneral General);
         void UpdateCheckList(FinalInspectionCheckList CheckList);
@@ -159,5 +159,9 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         List<FinalInspectionBasicCheckList> GetAllCheckList();
         int GetAvailableQty(string FinalInspectionID);
         void UpdateMeasurement(ServiceMeasurement model, string userID);
+        List<FinalInspectionSignature> GetFinalInspectionSignature(FinalInspectionSignature Req);
+        List<FinalInspectionSignature> GetFinalInspectionSignatureUser();
+        bool InsertFinalInspectionSignatureUser(string FinalInspectionID, string JobTitle, List<FinalInspectionSignature> allData);
+        bool InsertFinalInspectionSignature(FinalInspectionSignature Req);
     }
 }

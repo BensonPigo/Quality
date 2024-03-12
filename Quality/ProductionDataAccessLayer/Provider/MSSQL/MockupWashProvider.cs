@@ -171,8 +171,19 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append(")" + Environment.NewLine);
 
             SbSql.Append($@"
-INSERT INTO SciPMSFile_MockupWash (ReportNo,TestBeforePicture,TestAfterPicture)
-VALUES (@ReportNo,@TestBeforePicture,@TestAfterPicture)
+IF EXISTS(
+    SELECT 1 FROM SciPMSFile_MockupWash WHERE ReportNo = @ReportNo
+)
+BEGIN
+    UPDATE SciPMSFile_MockupWash
+    SET TestBeforePicture = @TestBeforePicture , TestAfterPicture = @TestAfterPicture
+    WHERE ReportNo = @ReportNo
+END
+ELSE
+BEGIN
+    INSERT INTO SciPMSFile_MockupWash (ReportNo,TestBeforePicture,TestAfterPicture)
+    VALUES(@ReportNo,@TestBeforePicture,@TestAfterPicture)
+END
 ");
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
@@ -254,13 +265,13 @@ end
             objParameter.Add("@OtherMethod", DbType.Boolean, Item.OtherMethod);
             objParameter.Add("@MethodID", DbType.String, HttpUtility.HtmlDecode(Item.MethodID) ?? string.Empty);
             objParameter.Add("@TestingMethod", DbType.String, HttpUtility.HtmlDecode(Item.TestingMethod) ?? string.Empty);
-            objParameter.Add("@HTPlate", DbType.Int32, Item.HTPlate ?? 0);
-            objParameter.Add("@HTFlim", DbType.Int32, Item.HTFlim ?? 0);
-            objParameter.Add("@HTTime", DbType.Int32, Item.HTTime ?? 0);
-            objParameter.Add("@HTPressure", DbType.Decimal, (decimal)(Item.HTPressure ?? 0));
+            objParameter.Add("@HTPlate", DbType.Int32, Item.HTPlate);
+            objParameter.Add("@HTFlim", DbType.Int32, Item.HTFlim);
+            objParameter.Add("@HTTime", DbType.Int32, Item.HTTime);
+            objParameter.Add("@HTPressure", DbType.Decimal, (decimal)(Item.HTPressure));
             objParameter.Add("@HTPellOff", DbType.String, HttpUtility.HtmlDecode(Item.HTPellOff) ?? string.Empty);
-            objParameter.Add("@HT2ndPressnoreverse", DbType.Int32, Item.HT2ndPressnoreverse ?? 0);
-            objParameter.Add("@HT2ndPressreversed", DbType.Int32, Item.HT2ndPressreversed ?? 0);
+            objParameter.Add("@HT2ndPressnoreverse", DbType.Int32, Item.HT2ndPressnoreverse);
+            objParameter.Add("@HT2ndPressreversed", DbType.Int32, Item.HT2ndPressreversed);
             objParameter.Add("@HTCoolingTime", DbType.String, HttpUtility.HtmlDecode(Item.HTCoolingTime) ?? string.Empty);
             if (Item.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Item.TestBeforePicture); }
             else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }

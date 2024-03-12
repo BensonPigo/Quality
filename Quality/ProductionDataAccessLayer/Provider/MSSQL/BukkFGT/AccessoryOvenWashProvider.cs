@@ -175,7 +175,7 @@ AND Seq1 = @Seq1_{idx}
 AND Seq2 = @Seq2_{idx}
 ";
 
-                listPar.Add($"@ID_{idx}", DbType.Int64, data.AIR_LaboratoryID);
+                listPar.Add($"@ID_{idx}",  data.AIR_LaboratoryID);
                 listPar.Add($"@Seq1_{idx}", DbType.String, data.Seq1);
                 listPar.Add($"@Seq2_{idx}", DbType.String, data.Seq2);
                 listPar.Add($"@NonOven_{idx}",DbType.Boolean, data.NonOven);
@@ -224,7 +224,7 @@ AND Seq1 = @Seq1_{idx}
 AND Seq2 = @Seq2_{idx}
 ";
 
-                listPar.Add($"@ID_{idx}", DbType.Int64, data.AIR_LaboratoryID);
+                listPar.Add($"@ID_{idx}",  data.AIR_LaboratoryID);
                 listPar.Add($"@Seq1_{idx}", DbType.String, data.Seq1);
                 listPar.Add($"@Seq2_{idx}", DbType.String, data.Seq2);
                 listPar.Add($"@NonOven_{idx}", DbType.Boolean, data.NonOven);
@@ -1330,6 +1330,7 @@ select   al.WashingFastnessReceivedDate
         ,a.Refno
 		,o.SeasonID
         ,Color = pc.SpecValue
+        ,WashingFastnessResult = al.WashingFastness
         ,al.ChangeScale
         ,al.ResultChange
         ,al.AcetateScale

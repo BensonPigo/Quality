@@ -523,7 +523,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [SessionAuthorizeAttribute]
         [HttpPost]
-        public JsonResult FailMail(string ReportNo, string TO, string CC)
+        public JsonResult SendMail(string ReportNo, string TO, string CC)
         {
             MockupFailMail_Request mail = new MockupFailMail_Request()
             {
@@ -532,7 +532,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 CC = CC,
             };
 
-            SendMail_Result result = _MockupOvenService.FailSendMail(mail);
+            SendMail_Result result = _MockupOvenService.SendMail(mail);
             return Json(result);
         }
     }

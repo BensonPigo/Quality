@@ -315,7 +315,7 @@ begin
     INSERT INTO PMSFile.dbo.MartindalePillingTest
         ( ReportNo ,TestBeforePicture ,Test500AfterPicture ,Test2000AfterPicture)
     VALUES
-        ( @ReportNo ,@TestAfterPicture ,@Test500AfterPicture ,@Test2000AfterPicture)
+        ( @ReportNo ,@TestBeforePicture ,@Test500AfterPicture ,@Test2000AfterPicture)
 end
 ";
 

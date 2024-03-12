@@ -323,7 +323,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             html += "<td></td>"; // LastUpdate
 
-            html += "<td><img class='detailDelete' src='/Image/Icon/Delete.png' width='30'></td>";
+            html += $@"<td><div style=""width:5vw;""><img class=""detailDelete"" src=""/Image/Icon/Delete.png"" width=""30"" /></div></td>";
             html += "</tr>";
 
             return Content(html);
@@ -368,24 +368,16 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult FailMail(string POID, string ID, string TestNo, string TO, string CC)
-        {
-            BaseResult result = _FabricColorFastness_Service.SentMail(POID, ID, TestNo, TO, CC);
-            return Json(result);
-        }
-
-        [HttpPost]
-        [SessionAuthorizeAttribute]
         public JsonResult Report(string ID, bool IsToPDF)
         {
             Fabric_ColorFastness_Detail_ViewModel result;
             if (IsToPDF)
             {
-                result = _FabricColorFastness_Service.ToPDF(ID, true, false);
+                result = _FabricColorFastness_Service.ToReport(ID, true);
             }
             else
             {
-                result = _FabricColorFastness_Service.ToPDF(ID, false, false);
+                result = _FabricColorFastness_Service.ToReport(ID, false);
             }
 
             string FileName = result.reportPath;
@@ -393,22 +385,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
-        [HttpPost]
-        [SessionAuthorizeAttribute]
-        public JsonResult SendMailToMR(string ID)
+        public JsonResult SendMail(string POID, string ID, string TestNo, string TO, string CC)
         {
-            this.CheckSession();
-
-            Fabric_ColorFastness_Detail_ViewModel result = _FabricColorFastness_Service.ToPDF(ID, true, false);
-            string FileName = result.reportPath;
-
-            if (!result.Result)
-            {
-                result.ErrorMessage = result.ErrorMessage.ToString();
-            }
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
+            BaseResult result = _FabricColorFastness_Service.SentMail(POID, ID, TestNo, TO, CC);
+            return Json(result);
         }
     }
 }

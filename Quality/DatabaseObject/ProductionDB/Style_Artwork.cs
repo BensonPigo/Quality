@@ -26,13 +26,13 @@ namespace DatabaseObject.ProductionDB
         public string ArtworkName { get; set; }
 
         [Display(Name = "數量")]
-        public int? Qty { get; set; }
+        public int Qty { get; set; }
 
         [Display(Name = "報價")]
-        public decimal? Price { get; set; }
+        public decimal Price { get; set; }
 
         [Display(Name = "成本")]
-        public decimal? Cost { get; set; }
+        public decimal Cost { get; set; }
 
         [Display(Name = "備註")]
         public string Remark { get; set; }
@@ -52,40 +52,40 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "最後修改時間")]
         public DateTime? EditDate { get; set; }
 
-        [Display(Name = "")]
-        public int? TMS { get; set; }
+        
+        public int TMS { get; set; }
 
-        [Display(Name = "")]
+        
         public long TradeUkey { get; set; }
 
-        [Display(Name = "")]
+        
         public string SMNoticeID { get; set; }
 
-        [Display(Name = "")]
+        
         public string PatternVersion { get; set; }
 
-        [Display(Name = "")]
-        public int? ActStitch { get; set; }
+        
+        public int ActStitch { get; set; }
 
-        [Display(Name = "")]
-        public decimal? PPU { get; set; }
+        
+        public decimal PPU { get; set; }
 
-        [Display(Name = "")]
+        
         public string InkType { get; set; }
 
-        [Display(Name = "")]
+        
         public string Colors { get; set; }
 
-        [Display(Name = "")]
-        public decimal? Length { get; set; }
+        
+        public decimal Length { get; set; }
 
-        [Display(Name = "")]
-        public decimal? Width { get; set; }
+        
+        public decimal Width { get; set; }
 
-        [Display(Name = "")]
+        
         public bool AntiMigration { get; set; }
 
-        [Display(Name = "")]
+        
         public string PrintType { get; set; }
     }
 }

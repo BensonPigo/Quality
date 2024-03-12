@@ -1,5 +1,6 @@
 ﻿using BusinessLogicLayer.Service.BulkFGT;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Microsoft.Office.Interop.Excel;
 using Quality.Controllers;
@@ -289,7 +290,16 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             }, this.UserID);
 
-            return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+            MartindalePillingTest_ViewModel model = _Service.GetData(new MartindalePillingTest_Request() { ReportNo = ReportNo });
+
+            if (model.Main.Result == "Fail")
+            {
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage, Action = "FailMail()" });
+            }
+            else
+            {
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage, Action = "" });
+            }
         }
 
         [HttpPost]
@@ -345,20 +355,28 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
-        public JsonResult SendMailToMR(string ReportNo)
+        //public JsonResult SendMailToMR(string ReportNo)
+        //{
+        //    this.CheckSession();
+        //    MartindalePillingTest_ViewModel result = _Service.GetReport(ReportNo, true);
+
+        //    if (!result.Result)
+        //    {
+        //        result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
+        //        return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+        //    }
+
+        //    string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
+
+        //    return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, FileName = result.TempFileName });
+        //}
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult SendMail(string ReportNo, string TO, string CC)
         {
-            this.CheckSession();
-            MartindalePillingTest_ViewModel result = _Service.GetReport(ReportNo, true);
-
-            if (!result.Result)
-            {
-                result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
-                return Json(new { result.Result, ErrMsg = result.ErrorMessage });
-            }
-
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
-
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, FileName = result.TempFileName });
+            SendMail_Result result = _Service.SendMail(ReportNo, TO, CC);
+            return Json(result);
         }
     }
 }

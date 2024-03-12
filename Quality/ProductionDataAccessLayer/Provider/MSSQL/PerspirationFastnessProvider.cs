@@ -56,8 +56,8 @@ select	[TestNo] = cast(o.TestNo as varchar),
         [Result] = o.Result,
 		[Remark] = o.Remark,
 		[Status] = o.Status,
-        Temperature = Cast( o.Temperature as varchar),
-        Time = Cast(  o.Time as varchar),
+        Temperature =  o.Temperature,
+        Time =   o.Time ,
         o.MetalContent
         ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_PerspirationFastness oi WITH(NOLOCK) where  o.ID = oi.ID)
         ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_PerspirationFastness oi WITH(NOLOCK) where o.ID = oi.ID)
@@ -117,8 +117,8 @@ select	[SubmitDate] = od.SubmitDate,
         ,od.AcidResultWool,
         [Remark] = od.Remark,
         [LastUpdate] = Concat(od.EditName, '-', pass1EditName.Name, ' ', pass1EditName.Extno),
-        [Temperature] = cast(o.Temperature as varchar),
-        [Time] = cast(o.Time as varchar)
+        [Temperature] = o.Temperature ,
+        [Time] = o.Time 
 from PerspirationFastness_Detail od with (nolock)
 inner join PerspirationFastness o with (nolock) on o.ID = od.ID
 left join PO_Supp_Detail psd with (nolock) on o.POID = psd.ID and od.SEQ1 = psd.SEQ1 and od.SEQ2 = psd.SEQ2
@@ -922,6 +922,9 @@ select cd.SubmitDate
         ,c.MetalContent
         ,c.Temperature
         ,c.Time
+        ,AllResult = c.Result
+        ,c.Article
+        ,cd.Result
         ,cd.AlkalineChangeScale
         ,cd.AlkalineAcetateScale
         ,cd.AlkalineCottonScale

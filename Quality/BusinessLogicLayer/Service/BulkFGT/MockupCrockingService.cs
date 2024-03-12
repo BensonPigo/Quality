@@ -106,7 +106,7 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public Report_Result GetPDF(MockupCrocking_ViewModel mockupCrocking, bool test = false)
+        public Report_Result GetPDF(MockupCrocking_ViewModel mockupCrocking, bool test = false, string AssignedFineName = "")
         {
             Report_Result result = new Report_Result();
             if (mockupCrocking == null)
@@ -115,6 +115,8 @@ namespace BusinessLogicLayer.Service
                 result.ErrorMessage = "Get Data Fail!";
                 return result;
             }
+
+            string tmpName = string.Empty;
 
             try
             {
@@ -131,8 +133,11 @@ namespace BusinessLogicLayer.Service
                     }
                 }
 
-                _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
-
+                tmpName = $"Mockup Crocking _{mockupCrocking.POID}_" +
+                $"{mockupCrocking.StyleID}_" +
+                $"{mockupCrocking.Article}_" +
+                $"{mockupCrocking.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 var mockupCrocking_Detail = mockupCrocking.MockupCrocking_Detail;
                 string basefileName = "MockupCrocking";
@@ -237,9 +242,14 @@ namespace BusinessLogicLayer.Service
                 }
                 #endregion
 
-                string fileName = $"{basefileName}{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-                string filexlsx = fileName + ".xlsx";
-                string fileNamePDF = fileName + ".pdf";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+
+                string filexlsx = tmpName + ".xlsx";
+                string fileNamePDF = tmpName + ".pdf";
 
                 string filepath;
                 string filepathpdf;
@@ -449,17 +459,29 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public SendMail_Result FailSendMail(MockupFailMail_Request mail_Request)
+        public SendMail_Result SendMail(MockupFailMail_Request mail_Request)
         {
             _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
             System.Data.DataTable dt = _MockupCrockingProvider.GetMockupCrockingFailMailContentData(mail_Request.ReportNo);
             
             MockupCrocking_ViewModel model = GetMockupCrocking(new MockupCrocking_Request { ReportNo = mail_Request.ReportNo });
-            Report_Result baseResult = GetPDF(model);
+
+            string name = $"Mockup Crocking _{model.POID}_" +
+                $"{model.StyleID}_" +
+                $"{model.Article}_" +
+                $"{model.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+
+            Report_Result baseResult = GetPDF(model,AssignedFineName: name);
             string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
             SendMail_Request sendMail_Request = new SendMail_Request
             {
-                Subject = "Mockup Crocking – Test Fail",
+                Subject = $"Mockup Crocking /{model.POID}/" +
+                $"{model.StyleID}/" +
+                $"{model.Article}/" +
+                $"{model.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = mail_Request.To,
                 CC = mail_Request.CC,
                 //Body = mailBody,

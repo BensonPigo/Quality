@@ -1,4 +1,5 @@
 ﻿using BusinessLogicLayer.Service.BulkFGT;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Microsoft.Office.Interop.Excel;
 using Quality.Controllers;
@@ -156,7 +157,16 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             }, this.UserID);
 
-            return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+            WickingHeightTest_ViewModel model = _Service.GetData(new WickingHeightTest_Request() { ReportNo = ReportNo });
+
+            if (model.Main.Result == "Fail")
+            {
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage, Action = "FailMail()" });
+            }
+            else
+            {
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage, Action = "" });
+            }
         }
 
         [HttpPost]
@@ -227,6 +237,11 @@ namespace Quality.Areas.BulkFGT.Controllers
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
 
             return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, FileName = result.TempFileName });
+        }
+        public JsonResult SendMail(string ReportNo, string TO, string CC)
+        {
+            SendMail_Result result = _Service.SendMail(ReportNo, TO, CC);
+            return Json(result);
         }
     }
 }

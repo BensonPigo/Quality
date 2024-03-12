@@ -623,7 +623,7 @@ Delete {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTes
 
                 SQLParameterCollection objParameter = new SQLParameterCollection
                 {
-                    { "@ID", DbType.Int64, newItem.ID } ,
+                    { "@ID",  newItem.ID } ,
                     { "@No", DbType.Int32, newItem.No } ,
                     { "@Location", DbType.String, newItem.Location } ,
                     { "@Type", DbType.String, newItem.Type } ,
@@ -661,7 +661,7 @@ VALUES
 
                 SQLParameterCollection objParameter = new SQLParameterCollection
                 {
-                    { "@ID", DbType.Int64, newItem.ID } ,
+                    { "@ID",  newItem.ID } ,
                     { "@No", DbType.Int32, newItem.No } ,
                     { "@Location", DbType.String, newItem.Location } ,
                     { "@Type", DbType.String, newItem.Type } ,

@@ -37,7 +37,7 @@ namespace DatabaseObject.ProductionDB
         /// <summary>CPU和TMS換算值(1400)</summary>
         [Required]
         [Display(Name = "CPU和TMS換算值(1400)")]
-        public int? StdTMS { get; set; }
+        public int StdTMS { get; set; }
         /// <summary>夾檔存放位置</summary>
         [StringLength(80)]
         [Display(Name = "夾檔存放位置")]
@@ -116,121 +116,121 @@ namespace DatabaseObject.ProductionDB
         public string ExchangeID { get; set; }
         /// <summary></summary>
         [StringLength(20)]
-        [Display(Name = "")]
+        
         public string RFIDServerName { get; set; }
         /// <summary></summary>
         [StringLength(20)]
-        [Display(Name = "")]
+        
         public string RFIDDatabaseName { get; set; }
         /// <summary></summary>
         [StringLength(20)]
-        [Display(Name = "")]
+        
         public string RFIDLoginId { get; set; }
         /// <summary></summary>
         [StringLength(20)]
-        [Display(Name = "")]
+        
         public string RFIDLoginPwd { get; set; }
         /// <summary></summary>
         [StringLength(20)]
-        [Display(Name = "")]
+        
         public string RFIDTable { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public decimal ProphetSingleSizeDeduct { get; set; }
         /// <summary></summary>
         [StringLength(8)]
-        [Display(Name = "")]
+        
         public string PrintingSuppID { get; set; }
         /// <summary>驗布機延遲時間(秒)</summary>
         [Display(Name = "驗布機延遲時間(秒)")]
         public decimal QCMachineDelayTime { get; set; }
         /// <summary></summary>
         [StringLength(15)]
-        [Display(Name = "")]
+        
         public string APSLoginId { get; set; }
         /// <summary></summary>
         [StringLength(15)]
-        [Display(Name = "")]
+        
         public string APSLoginPwd { get; set; }
         /// <summary></summary>
         [StringLength(130)]
-        [Display(Name = "")]
+        
         public string SQLServerName { get; set; }
         /// <summary></summary>
         [StringLength(15)]
-        [Display(Name = "")]
+        
         public string APSDatabaseName { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool RFIDMiddlewareInRFIDServer { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool UseAutoScanPack { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool MtlAutoLock { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool InspAutoLockAcc { get; set; }
         /// <summary></summary>
         [StringLength(80)]
-        [Display(Name = "")]
+        
         public string ShippingMarkPath { get; set; }
         /// <summary></summary>
         [StringLength(80)]
-        [Display(Name = "")]
+        
         public string StyleSketch { get; set; }
         /// <summary></summary>
         [StringLength(20)]
-        [Display(Name = "")]
+        
         public string ARKServerName { get; set; }
         /// <summary></summary>
         [StringLength(20)]
-        [Display(Name = "")]
+        
         public string ARKDatabaseName { get; set; }
         /// <summary></summary>
         [StringLength(20)]
-        [Display(Name = "")]
+        
         public string ARKLoginId { get; set; }
         /// <summary></summary>
         [StringLength(20)]
-        [Display(Name = "")]
+        
         public string ARKLoginPwd { get; set; }
         /// <summary></summary>
         [StringLength(80)]
-        [Display(Name = "")]
+        
         public string MarkerInputPath { get; set; }
         /// <summary></summary>
         [StringLength(80)]
-        [Display(Name = "")]
+        
         public string MarkerOutputPath { get; set; }
         /// <summary></summary>
         [StringLength(80)]
-        [Display(Name = "")]
+        
         public string ReplacementReport { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool CuttingP10mustCutRef { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool Automation { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public Int16 AutomationAutoRunTime { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool CanReviseDailyLockData { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool AutoGenerateByTone { get; set; }
         /// <summary>Misc Local Purchase Approve Name</summary>
         [StringLength(10)]
@@ -241,54 +241,54 @@ namespace DatabaseObject.ProductionDB
         public int MiscPOApproveDay { get; set; }
         /// <summary>QMS</summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool QMSAutoAdjustMtl { get; set; }
         /// <summary>���ҽd���ɸ�|</summary>
         [Required]
         [StringLength(80)]
-        [Display(Name = "")]
+        
         public string ShippingMarkTemplatePath { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool WIP_FollowCutOutput { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool NoRestrictOrdersDelivery { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public bool WIP_ByShell { get; set; }
         /// <summary>RF Card Erase Before Printing</summary>
         [Required]
         [Display(Name = "RF Card Erase Before Printing")]
         public bool RFCardEraseBeforePrinting { get; set; }
         /// <summary>PH ���u�����@�Ѫ� CPU</summary>
-        [Display(Name = "")]
-        public int? SewlineAvgCPU { get; set; }
+        
+        public int SewlineAvgCPU { get; set; }
         /// <summary>�H�U�P�_ smalll logo �����׼з� (CM)</summary>
-        [Display(Name = "")]
-        public decimal? SmallLogoCM { get; set; }
+        
+        public decimal SmallLogoCM { get; set; }
         /// <summary>�O�_�S�LWS���ˬdRFID�d���ƨϥ�</summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool CheckRFIDCardDuplicateByWebservice { get; set; }
         /// <summary>�O�_combine subprocess����bundle</summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool IsCombineSubProcess { get; set; }
         /// <summary>�O�_������AllParts</summary>
         [Required]
-        [Display(Name = "")]
+        
         public bool IsNoneShellNoCreateAllParts { get; set; }
         /// <summary>�t��</summary>
         [Required]
         [StringLength(2)]
-        [Display(Name = "")]
+        
         public string Region { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public int DQSQtyPCT { get; set; }
 
         public decimal FinalInspection_CTNMoistureStandard { get; set; }

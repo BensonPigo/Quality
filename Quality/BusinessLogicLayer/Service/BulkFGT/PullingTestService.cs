@@ -183,7 +183,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
 
 
-        public SendMail_Result FailSendMail(string ReportNo, string ToAddress, string CcAddress)
+        public SendMail_Result SendMail(string ReportNo, string ToAddress, string CcAddress)
         {
 
             SendMail_Result result = new SendMail_Result();
@@ -191,19 +191,33 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 System.Data.DataTable dt = _PullingTestProvider.GetData_DataTable(ReportNo);
-                Report_Result baseResult = GetPDF(ReportNo);
+                string name = $"Pulling Test_{dt.Rows[0]["POID"]}_" +
+                        $"{dt.Rows[0]["StyleID"]}_" +
+                        $"{dt.Rows[0]["Article"]}_" +
+                        $"{dt.Rows[0]["Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                Report_Result baseResult = GetPDF(ReportNo, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.TempFileName) : string.Empty;
 
                 string unit = dt.Rows[0]["PullForceUnit"].ToString();
-                dt.Columns["PullForceUnit"].ColumnName = unit;
-                dt.Rows[0][unit] = dt.Rows[0]["PullForce"].ToString();
-                dt.Columns.Remove("PullForce");
+                if (!string.IsNullOrEmpty(unit))
+                {
+                    dt.Columns["PullForceUnit"].ColumnName = unit;
+                    dt.Rows[0][unit] = dt.Rows[0]["PullForce"].ToString();
+                    dt.Columns.Remove("PullForce");
+                }
 
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = ToAddress,
                     CC = CcAddress,
-                    Subject = "Pulling Test - Test Fail",
+                    //Subject = "Pulling Test - Test Fail",
+                    Subject = $"Pulling Test/{dt.Rows[0]["POID"]}/" +
+                        $"{dt.Rows[0]["StyleID"]}/" +
+                        $"{dt.Rows[0]["Article"]}/" +
+                        $"{dt.Rows[0]["Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -236,7 +250,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public Report_Result GetPDF(string ReportNo)
+        public Report_Result GetPDF(string ReportNo, string AssignedFineName = "")
         {
             Report_Result result = new Report_Result();
             if (string.IsNullOrEmpty(ReportNo))
@@ -247,6 +261,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
 
             string basefileName = "PullingTest";
+            string tmpName = string.Empty;
 
             try
             {
@@ -273,6 +288,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     openfilepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XLT", $"{basefileName}.xltx");
                 }
+
+                tmpName = $"Pulling Test_{model.POID}_" +
+                        $"{model.StyleID}_" +
+                        $"{model.Article}_" +
+                        $"{model.Result}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
                 excelApp.DisplayAlerts = false;
@@ -365,9 +386,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #region Save & Show Excel
 
-                string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-                string filexlsx = fileName + ".xlsx";
-                string fileNamePDF = fileName + ".pdf";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string filexlsx = tmpName + ".xlsx";
+                string fileNamePDF = tmpName + ".pdf";
 
                 string filepath;
                 string filepathpdf;

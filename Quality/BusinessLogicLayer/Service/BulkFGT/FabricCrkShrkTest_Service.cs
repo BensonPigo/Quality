@@ -16,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
@@ -873,55 +874,15 @@ namespace BusinessLogicLayer.Service
             return baseResult;
         }
 
-        public SendMail_Result SendCrockingFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID)
-        {
-            SendMail_Result result = new SendMail_Result();
-            try
-            {
-                _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
-                DataTable dtResult = _FabricCrkShrkTestProvider.GetCrockingFailMailContentData(ID);
-                BaseResult baseResult = Crocking_ToExcel(ID, true, out string excelFileName);
-                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
-                SendMail_Request sendMail_Request = new SendMail_Request()
-                {
-                    To = toAddress,
-                    CC = ccAddress,
-                    Subject = "Fabric Crocking Test - Test Fail",
-                    //Body = mailBody,
-                    //alternateView = plainView,
-                    FileonServer = new List<string> { FileName },
-                    IsShowAIComment = true,
-                    AICommentType = "Fabric Crocking & Shrinkage Test",
-                    OrderID = OrderID,
-                };
-
-                _MailService = new MailToolsService();
-                string comment = _MailService.GetAICommet(sendMail_Request);
-                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
-
-                sendMail_Request.Body = mailBody;
-                sendMail_Request.alternateView = plainView;
 
 
-                result = MailTools.SendMail(sendMail_Request);
-            }
-            catch (Exception ex)
-            {
-                result.result = false;
-                result.resultMsg = ex.Message.Replace("'", string.Empty);
-            }
-
-            return result;
-        }
-
-        public BaseResult ToExcelFabricCrkShrkTestHeatDetail(long ID, out string excelFileName)
+        public BaseResult ToReport_Heat(long ID, out string excelFileName, string AssignedFineName = "")
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             BaseResult result = new BaseResult();
             excelFileName = string.Empty;
-
+            string tmpName = string.Empty;
             try
             {
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
@@ -951,6 +912,14 @@ namespace BusinessLogicLayer.Service
                     result.ErrorMessage = "Data not found!";
                     return result;
                 }
+
+                tmpName = $"Fabric Heat Test_{fabricCrkShrkTestHeat_Main.POID}_" +
+                        $"{fabricCrkShrkTestHeat_Main.StyleID}_" +
+                        $"{fabricCrkShrkTestHeat_Main.Refno}_" +
+                        $"{fabricCrkShrkTestHeat_Main.ColorID}_" +
+                        $"{fabricCrkShrkTestHeat_Main.Heat}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
 
                 // 撈seasonID
                 // 撈取seasonID
@@ -1033,7 +1002,13 @@ namespace BusinessLogicLayer.Service
                 excel.Cells.EntireRow.AutoFit();       ////自動欄高
 
                 #region Save & Show Excel
-                excelFileName = $"FabricHeatTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                excelFileName = $"{tmpName}.xlsx";
                 string filepath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
                 Excel.Workbook workbook = excel.ActiveWorkbook;
@@ -1054,12 +1029,13 @@ namespace BusinessLogicLayer.Service
             return result;
 
         }
-        public BaseResult ToExcelFabricCrkShrkTestIronDetail(long ID, out string excelFileName)
+        public BaseResult ToReport_Iron(long ID, out string excelFileName, string AssignedFineName = "")
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             BaseResult result = new BaseResult();
             excelFileName = string.Empty;
+            string tmpName = string.Empty;
 
             try
             {
@@ -1090,6 +1066,13 @@ namespace BusinessLogicLayer.Service
                     result.ErrorMessage = "Data not found!";
                     return result;
                 }
+
+                tmpName = $"Fabric Iron Test_{fabricCrkShrkTestIron_Main.POID}_" +
+                        $"{fabricCrkShrkTestIron_Main.StyleID}_" +
+                        $"{fabricCrkShrkTestIron_Main.Refno}_" +
+                        $"{fabricCrkShrkTestIron_Main.ColorID}_" +
+                        $"{fabricCrkShrkTestIron_Main.Iron}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 // 撈seasonID
                 // 撈取seasonID
@@ -1172,7 +1155,13 @@ namespace BusinessLogicLayer.Service
                 excel.Cells.EntireRow.AutoFit();       ////自動欄高
 
                 #region Save & Show Excel
-                excelFileName = $"FabricIronTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                excelFileName = $"{tmpName}.xlsx";
                 string filepath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
                 Excel.Workbook workbook = excel.ActiveWorkbook;
@@ -1193,13 +1182,13 @@ namespace BusinessLogicLayer.Service
             return result;
 
         }
-
-        public BaseResult ToExcelFabricCrkShrkTestWashDetail(long ID, out string excelFileName)
+        public BaseResult ToReport_Wash(long ID, out string excelFileName, string AssignedFineName = "")
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             BaseResult result = new BaseResult();
             excelFileName = string.Empty;
+            string tmpName = string.Empty;
 
             try
             {
@@ -1235,6 +1224,13 @@ namespace BusinessLogicLayer.Service
                     result.ErrorMessage = "Data not found!";
                     return result;
                 }
+
+                tmpName = $"Fabric Wash Test_{fabricCrkShrkTestWash_Main.POID}_" +
+                        $"{fabricCrkShrkTestWash_Main.StyleID}_" +
+                        $"{fabricCrkShrkTestWash_Main.Refno}_" +
+                        $"{fabricCrkShrkTestWash_Main.ColorID}_" +
+                        $"{fabricCrkShrkTestWash_Main.Wash}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 // 撈seasonID
                 List<Orders> listOrders = _OrdersProvider.Get(new Orders() { ID = fabricCrkShrkTestWash_Main.POID }).ToList();
@@ -1350,8 +1346,15 @@ namespace BusinessLogicLayer.Service
                 }
                 #endregion
 
-                #region Save & Show Excel
-                excelFileName = $"FabricWashTest{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                #region Save & Show 
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                excelFileName = $"{tmpName}.xlsx";
+
                 string filepath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
                 Excel.Workbook workbook = excel.ActiveWorkbook;
@@ -1371,7 +1374,150 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+        public BaseResult ToReport_Crocking(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "")
+        {
+            BaseResult result = new BaseResult();
+            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+            List<Crocking_Excel> dataList_Head = new List<Crocking_Excel>();
+            List<Crocking_Excel> dataList_Body = new List<Crocking_Excel>();
+            excelFileName = string.Empty;
+            string tmpName = string.Empty;
 
+            dataList_Head = _FabricCrkShrkTestProvider.CrockingTest_ToExcel_Head(ID).ToList();
+            dataList_Body = _FabricCrkShrkTestProvider.CrockingTest_ToExcel_Body(ID).ToList();
+            if (!dataList_Head.Any())
+            {
+                result.Result = false;
+                result.ErrorMessage = "Data not found!";
+                return result;
+            }
+
+            tmpName = $"Fabric Crocking Test_{dataList_Head.FirstOrDefault().POID}_" +
+                    $"{dataList_Head.FirstOrDefault().StyleID}_" +
+                    $"{dataList_Head.FirstOrDefault().Refno}_" +
+                    $"{dataList_Head.FirstOrDefault().Color}_" +
+                    $"{dataList_Head.FirstOrDefault().Crocking}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+            string basefileName = "FabricCrockingTest";
+            string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+
+            Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
+            excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
+            //excel.Visible = true;
+            Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
+
+            worksheet.Cells[2, 3] = dataList_Head.FirstOrDefault().ReportNo;
+
+            worksheet.Cells[3, 3] = dataList_Head.FirstOrDefault().SubmitDate.HasValue ? dataList_Head.FirstOrDefault().SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+            worksheet.Cells[3, 7] = DateTime.Now.ToString("yyyy/MM/dd");
+
+            worksheet.Cells[4, 3] = dataList_Head.FirstOrDefault().SeasonID;
+            worksheet.Cells[4, 7] = dataList_Head.FirstOrDefault().BrandID;
+
+            worksheet.Cells[5, 3] = dataList_Head.FirstOrDefault().StyleID;
+            worksheet.Cells[5, 7] = dataList_Head.FirstOrDefault().POID;
+
+            worksheet.Cells[6, 3] = dataList_Head.FirstOrDefault().Article;
+
+            worksheet.Cells[7, 3] = dataList_Head.FirstOrDefault().SCIRefno_Color;
+            worksheet.Cells[8, 7] = dataList_Head.FirstOrDefault().Color;
+
+            worksheet.Cells[72, 3] = dataList_Head.FirstOrDefault().Inspector;
+
+            #region 添加圖片
+            Excel.Range cellBeforePicture = worksheet.Cells[46, 1];
+            if (dataList_Head.FirstOrDefault().CrockingTestBeforePicture != null)
+            {
+                string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestBeforePicture, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
+                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
+            }
+
+            Excel.Range cellAfterPicture = worksheet.Cells[46, 5];
+            if (dataList_Head.FirstOrDefault().CrockingTestAfterPicture != null)
+            {
+                string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestAfterPicture, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
+                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 323, 255);
+            }
+            #endregion
+
+            // 複製Row：表身幾筆，就幾個Row
+            if (dataList_Body.Any() && dataList_Body.Count > 1)
+            {
+                int copyCtn = dataList_Body.Count - 1;
+                Excel.Range paste = worksheet.get_Range($"A13:A13", Type.Missing).EntireRow;
+                Excel.Range copyRange = worksheet.get_Range("A13:H14").EntireRow;
+                for (int j = 1; j <= copyCtn; j++)
+                {
+                    paste.Insert(Excel.XlInsertShiftDirection.xlShiftDown, copyRange.Copy(Type.Missing));
+                }
+            }
+
+            int ctn = 0;
+            foreach (var item in dataList_Body)
+            {
+                int rowIdx = ctn * 2;
+                worksheet.Cells[13 + rowIdx, 1] = item.Roll;
+                worksheet.Cells[13 + rowIdx, 2] = item.Dyelot;
+
+                worksheet.Cells[13 + rowIdx, 4] = item.DryScale;
+                worksheet.Cells[13 + rowIdx, 5] = item.DryScale_Weft;
+                worksheet.Cells[13 + rowIdx, 6] = item.WetScale;
+                worksheet.Cells[13 + rowIdx, 7] = item.WetScale_Weft;
+
+                worksheet.Cells[14 + rowIdx, 4] = item.ResultDry;
+                worksheet.Cells[14 + rowIdx, 5] = item.ResultDry_Weft;
+                worksheet.Cells[14 + rowIdx, 6] = item.ResultWet;
+                worksheet.Cells[14 + rowIdx, 7] = item.ResultWet_Weft;
+                ctn++;
+            }
+
+            #region Save & Show Excel
+
+            if (!string.IsNullOrWhiteSpace(AssignedFineName))
+            {
+                tmpName = AssignedFineName;
+            }
+
+            string filexlsx = tmpName + ".xlsx";
+            string fileNamePDF = tmpName + ".pdf";
+
+            string filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
+            string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
+
+
+            Excel.Workbook workbook = excel.ActiveWorkbook;
+            workbook.SaveAs(filepath);
+
+            excelFileName = filexlsx;
+
+            if (IsPDF)
+            {
+                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                {
+                    excelFileName = fileNamePDF;
+                    result.Result = true;
+                }
+                else
+                {
+                    result.ErrorMessage = "Convert To PDF Fail";
+                    result.Result = false;
+                }
+
+            }
+
+            workbook.Close();
+            excel.Quit();
+            Marshal.ReleaseComObject(worksheet);
+            Marshal.ReleaseComObject(workbook);
+            Marshal.ReleaseComObject(excel);
+
+
+            result.Result = true;
+            #endregion
+
+            return result;
+        }
         private string CreateExcelOnlyWetDry(long ID, bool isTest)
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
@@ -1860,13 +2006,25 @@ namespace BusinessLogicLayer.Service
             {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetHeatFailMailContentData(ID);
-                BaseResult baseResult = ToExcelFabricCrkShrkTestHeatDetail(ID, out string excelFileName);
+                string name = $"Fabric Heat Test_{OrderID}_" +
+                        $"{dtResult.Rows[0]["Style"]}_" +
+                        $"{dtResult.Rows[0]["Refno"]}_" +
+                        $"{dtResult.Rows[0]["Color"]}_" +
+                        $"{dtResult.Rows[0]["Heat Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                BaseResult baseResult = ToReport_Heat(ID, out string excelFileName, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
                     CC = ccAddress,
-                    Subject = "Fabric Heat Test - Test Fail",
+                    Subject = $"Fabric Heat Test/{OrderID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Refno"]}/" +
+                        $"{dtResult.Rows[0]["Color"]}/" +
+                        $"{dtResult.Rows[0]["Heat Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -1901,13 +2059,25 @@ namespace BusinessLogicLayer.Service
             {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetIronFailMailContentData(ID);
-                BaseResult baseResult = ToExcelFabricCrkShrkTestIronDetail(ID, out string excelFileName);
+                string name = $"Fabric Iron Test_{OrderID}_" +
+                        $"{dtResult.Rows[0]["Style"]}_" +
+                        $"{dtResult.Rows[0]["Refno"]}_" +
+                        $"{dtResult.Rows[0]["Color"]}_" +
+                        $"{dtResult.Rows[0]["Iron Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                BaseResult baseResult = ToReport_Iron(ID, out string excelFileName, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
                     CC = ccAddress,
-                    Subject = "Fabric Iron Test - Test Fail",
+                    Subject = $"Fabric Iron Test/{OrderID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Refno"]}/" +
+                        $"{dtResult.Rows[0]["Color"]}/" +
+                        $"{dtResult.Rows[0]["Iron Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -1935,7 +2105,6 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
-
         public SendMail_Result SendWashFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID)
         {
             SendMail_Result result = new SendMail_Result();
@@ -1943,13 +2112,25 @@ namespace BusinessLogicLayer.Service
             {
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
                 DataTable dtResult = _FabricCrkShrkTestProvider.GetWashFailMailContentData(ID);
-                BaseResult baseResult = ToExcelFabricCrkShrkTestWashDetail(ID, out string excelFileName);
+                string name = $"Fabric Wash Test_{OrderID}_" +
+                        $"{dtResult.Rows[0]["Style"]}_" +
+                        $"{dtResult.Rows[0]["Refno"]}_" +
+                        $"{dtResult.Rows[0]["Color"]}_" +
+                        $"{dtResult.Rows[0]["Wash Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                BaseResult baseResult = ToReport_Wash(ID, out string excelFileName, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
                     To = toAddress,
                     CC = ccAddress,
-                    Subject = "Fabric Wash Test - Test Fail",
+                    Subject = $"Fabric Wash Test/{OrderID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Refno"]}/" +
+                        $"{dtResult.Rows[0]["Color"]}/" +
+                        $"{dtResult.Rows[0]["Wash Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
@@ -1968,6 +2149,60 @@ namespace BusinessLogicLayer.Service
 
                 result = MailTools.SendMail(sendMail_Request);
 
+            }
+            catch (Exception ex)
+            {
+                result.result = false;
+                result.resultMsg = ex.Message.Replace("'", string.Empty);
+            }
+
+            return result;
+        }
+        public SendMail_Result SendCrockingFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID)
+        {
+            SendMail_Result result = new SendMail_Result();
+            try
+            {
+                _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+                DataTable dtResult = _FabricCrkShrkTestProvider.GetCrockingFailMailContentData(ID);
+
+                string name = $"Fabric Crocking Test_{OrderID}_" +
+                        $"{dtResult.Rows[0]["Style"]}_" +
+                        $"{dtResult.Rows[0]["Refno"]}_" +
+                        $"{dtResult.Rows[0]["Color"]}_" +
+                        $"{dtResult.Rows[0]["Crocking Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                BaseResult baseResult = ToReport_Crocking(ID, true, out string excelFileName, name);
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
+                SendMail_Request sendMail_Request = new SendMail_Request()
+                {
+                    To = toAddress,
+                    CC = ccAddress,
+                    Subject = $"Fabric Crocking Test/{OrderID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Refno"]}/" +
+                        $"{dtResult.Rows[0]["Color"]}/" +
+                        $"{dtResult.Rows[0]["Crocking Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                    //Body = mailBody,
+                    //alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
+                    IsShowAIComment = true,
+                    AICommentType = "Fabric Crocking & Shrinkage Test",
+                    OrderID = OrderID,
+                };
+
+                _MailService = new MailToolsService();
+                string comment = _MailService.GetAICommet(sendMail_Request);
+                string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+
+                sendMail_Request.Body = mailBody;
+                sendMail_Request.alternateView = plainView;
+
+
+                result = MailTools.SendMail(sendMail_Request);
             }
             catch (Exception ex)
             {
@@ -1992,137 +2227,5 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public BaseResult Crocking_ToExcel(long ID, bool IsPDF, out string excelFileName)
-        {
-            BaseResult result = new BaseResult();
-            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
-            List<Crocking_Excel> dataList_Head = new List<Crocking_Excel>();
-            List<Crocking_Excel> dataList_Body= new List<Crocking_Excel>();
-            excelFileName = string.Empty;
-
-            dataList_Head = _FabricCrkShrkTestProvider.CrockingTest_ToExcel_Head(ID).ToList();
-            dataList_Body = _FabricCrkShrkTestProvider.CrockingTest_ToExcel_Body(ID).ToList();
-            if (!dataList_Head.Any())
-            {
-                result.Result = false;
-                result.ErrorMessage = "Data not found!";
-                return result;
-            }
-
-            string basefileName = "FabricCrockingTest";
-            string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
-
-            Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
-            excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-            //excel.Visible = true;
-            Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-
-            worksheet.Cells[2, 3] = dataList_Head.FirstOrDefault().ReportNo;
-
-            worksheet.Cells[3, 3] = dataList_Head.FirstOrDefault().SubmitDate.HasValue ? dataList_Head.FirstOrDefault().SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-            worksheet.Cells[3, 7] = DateTime.Now.ToString("yyyy/MM/dd");
-
-            worksheet.Cells[4, 3] = dataList_Head.FirstOrDefault().SeasonID;
-            worksheet.Cells[4, 7] = dataList_Head.FirstOrDefault().BrandID;
-
-            worksheet.Cells[5, 3] = dataList_Head.FirstOrDefault().StyleID;
-            worksheet.Cells[5, 7] = dataList_Head.FirstOrDefault().POID;
-
-            worksheet.Cells[6, 3] = dataList_Head.FirstOrDefault().Article;
-
-            worksheet.Cells[7, 3] = dataList_Head.FirstOrDefault().SCIRefno_Color;
-            worksheet.Cells[8, 7] = dataList_Head.FirstOrDefault().Color;
-
-            worksheet.Cells[72, 3] = dataList_Head.FirstOrDefault().Inspector;
-
-            #region 添加圖片
-            Excel.Range cellBeforePicture = worksheet.Cells[46, 1];
-            if (dataList_Head.FirstOrDefault().CrockingTestBeforePicture != null)
-            {
-                string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestBeforePicture, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
-            }
-
-            Excel.Range cellAfterPicture = worksheet.Cells[46, 5];
-            if (dataList_Head.FirstOrDefault().CrockingTestAfterPicture != null)
-            {
-                string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestAfterPicture, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 323, 255);
-            }
-            #endregion
-
-            // 複製Row：表身幾筆，就幾個Row
-            if (dataList_Body.Any() && dataList_Body.Count > 1)
-            {
-                int copyCtn = dataList_Body.Count - 1;
-                Excel.Range paste = worksheet.get_Range($"A13:A13", Type.Missing).EntireRow;
-                Excel.Range copyRange = worksheet.get_Range("A13:H14").EntireRow;
-                for (int j = 1; j <= copyCtn; j++)
-                {
-                    paste.Insert(Excel.XlInsertShiftDirection.xlShiftDown, copyRange.Copy(Type.Missing));
-                }
-            }
-
-            int ctn = 0;
-            foreach (var item in dataList_Body)
-            {
-                int rowIdx = ctn * 2;
-                worksheet.Cells[13 + rowIdx, 1] = item.Roll;
-                worksheet.Cells[13 + rowIdx, 2] = item.Dyelot;
-
-                worksheet.Cells[13 + rowIdx, 4] = item.DryScale;
-                worksheet.Cells[13 + rowIdx, 5] = item.DryScale_Weft;
-                worksheet.Cells[13 + rowIdx, 6] = item.WetScale;
-                worksheet.Cells[13 + rowIdx, 7] = item.WetScale_Weft;
-
-                worksheet.Cells[14 + rowIdx, 4] = item.ResultDry;
-                worksheet.Cells[14 + rowIdx, 5] = item.ResultDry_Weft;
-                worksheet.Cells[14 + rowIdx, 6] = item.ResultWet;
-                worksheet.Cells[14 + rowIdx, 7] = item.ResultWet_Weft;
-                ctn++;
-            }
-
-            #region Save & Show Excel
-
-            string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-            string filexlsx = fileName + ".xlsx";
-            string fileNamePDF = fileName + ".pdf";
-
-            string filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
-            string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
-
-
-            Excel.Workbook workbook = excel.ActiveWorkbook;
-            workbook.SaveAs(filepath);
-
-            excelFileName = filexlsx;
-
-            if (IsPDF)
-            {
-                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
-                {
-                    excelFileName = fileNamePDF;
-                    result.Result = true;
-                }
-                else
-                {
-                    result.ErrorMessage = "Convert To PDF Fail";
-                    result.Result = false;
-                }
-
-            }
-
-            workbook.Close();
-            excel.Quit();
-            Marshal.ReleaseComObject(worksheet);
-            Marshal.ReleaseComObject(workbook);
-            Marshal.ReleaseComObject(excel);
-
-
-            result.Result = true;
-            #endregion
-
-            return result;
-        }
     }
 }

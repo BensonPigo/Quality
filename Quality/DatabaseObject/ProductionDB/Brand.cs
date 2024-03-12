@@ -135,25 +135,25 @@ namespace DatabaseObject.ProductionDB
         [Display(Name = "最後修改時間")]
         public DateTime? EditDate { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public decimal LossSampleAccessory { get; set; }
         /// <summary></summary>
         [StringLength(10)]
-        [Display(Name = "")]
+        
         public string ShipLeader { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
+        
         public DateTime? ShipLeaderEditDate { get; set; }
         /// <summary></summary>
-        [Display(Name = "")]
-        public int? OTDExtension { get; set; }
+        
+        public int OTDExtension { get; set; }
         /// <summary></summary>
         [StringLength(1)]
-        [Display(Name = "")]
+        
         public string UseRatioRule { get; set; }
         /// <summary></summary>
         [StringLength(1)]
-        [Display(Name = "")]
+        
         public string UseRatioRule_Thick { get; set; }
 
     }

@@ -304,7 +304,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             var SamplePlanQty = 0;
             var AcceptedQty = 0;
             var RejectQty = 0;
-            int? maxStart = 0;
+            int maxStart = 0;
             AcceptableQualityLevels tmp = new AcceptableQualityLevels();
             switch (AQLPlan)
             {
@@ -319,8 +319,8 @@ namespace Quality.Areas.FinalInspection.Controllers
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     }
 
-                    SamplePlanQty = tmp.SampleSize.Value;
-                    AcceptedQty = tmp.AcceptedQty.Value;
+                    SamplePlanQty = tmp.SampleSize;
+                    AcceptedQty = tmp.AcceptedQty;
                     break;
                 case "1.0 Level II":
                     maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
@@ -333,8 +333,8 @@ namespace Quality.Areas.FinalInspection.Controllers
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "2" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     }
 
-                    SamplePlanQty = tmp.SampleSize.Value;
-                    AcceptedQty = tmp.AcceptedQty.Value;
+                    SamplePlanQty = tmp.SampleSize;
+                    AcceptedQty = tmp.AcceptedQty;
                     break;
                 case "1.0 Level S-4":
                     maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "S-4").Max(o => o.LotSize_Start);
@@ -346,8 +346,8 @@ namespace Quality.Areas.FinalInspection.Controllers
                     {
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "S-4" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     }
-                    SamplePlanQty = tmp.SampleSize.Value == 0 ? TotalAvailableQty : tmp.SampleSize.Value;
-                    AcceptedQty = tmp.AcceptedQty.Value;
+                    SamplePlanQty = tmp.SampleSize == 0 ? TotalAvailableQty : tmp.SampleSize;
+                    AcceptedQty = tmp.AcceptedQty;
                     break;
                 case "1.5 Level I":
                     maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
@@ -360,8 +360,8 @@ namespace Quality.Areas.FinalInspection.Controllers
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     }
 
-                    SamplePlanQty = tmp.SampleSize.Value;
-                    AcceptedQty = tmp.AcceptedQty.Value;
+                    SamplePlanQty = tmp.SampleSize;
+                    AcceptedQty = tmp.AcceptedQty;
                     break;
                 case "1.5 Level II":
                     maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
@@ -374,8 +374,8 @@ namespace Quality.Areas.FinalInspection.Controllers
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(1.5) && o.InspectionLevels == "2" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     }
 
-                    SamplePlanQty = tmp.SampleSize.Value;
-                    AcceptedQty = tmp.AcceptedQty.Value;
+                    SamplePlanQty = tmp.SampleSize;
+                    AcceptedQty = tmp.AcceptedQty;
                     break;
                 case "2.5 Level I":
                     maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
@@ -388,8 +388,8 @@ namespace Quality.Areas.FinalInspection.Controllers
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == Convert.ToDecimal(2.5) && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     }
 
-                    SamplePlanQty = tmp.SampleSize.Value;
-                    AcceptedQty = tmp.AcceptedQty.Value;
+                    SamplePlanQty = tmp.SampleSize;
+                    AcceptedQty = tmp.AcceptedQty;
                     break;
                 case "2.5 Level II":
                     maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "2").Max(o => o.LotSize_Start);
@@ -402,8 +402,8 @@ namespace Quality.Areas.FinalInspection.Controllers
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)2.5 && o.InspectionLevels == "2" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     }
 
-                    SamplePlanQty = tmp.SampleSize.Value;
-                    AcceptedQty = tmp.AcceptedQty.Value;
+                    SamplePlanQty = tmp.SampleSize;
+                    AcceptedQty = tmp.AcceptedQty;
                     break;
                 case "4.0 Level I":
                     maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)4.0 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
@@ -416,8 +416,8 @@ namespace Quality.Areas.FinalInspection.Controllers
                         tmp = setting.AcceptableQualityLevels.Where(o => o.AQLType == (decimal)4.0 && o.InspectionLevels == "1" && o.LotSize_Start <= TotalAvailableQty && TotalAvailableQty <= o.LotSize_End).FirstOrDefault();
                     }
 
-                    SamplePlanQty = tmp.SampleSize.Value;
-                    AcceptedQty = tmp.AcceptedQty.Value;
+                    SamplePlanQty = tmp.SampleSize;
+                    AcceptedQty = tmp.AcceptedQty;
                     break;
                 default:
                     break;
@@ -445,7 +445,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             //var SamplePlanQty = 0;
             //var AcceptedQty = 0;
             //var RejectQty = 0;
-            int? maxStart = 0;
+            int maxStart = 0;
             //setting.AcceptableQualityLevelsPros
             List<AcceptableQualityLevelsProList> tmp = new List<AcceptableQualityLevelsProList>();
 
@@ -544,10 +544,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             }
 
 
-            if (!setting.AcceptQty.HasValue)
-            {
-                setting.AcceptQty = 0;
-            }
 
             if (setting.SelectedPO != null && setting.SelectedPO.Where(o => string.IsNullOrEmpty(o.Seq)).Any())
             {
@@ -599,7 +595,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             FinalInspectionService service = new FinalInspectionService();
             DatabaseObject.ManufacturingExecutionDB.FinalInspection model = service.GetFinalInspection(FinalInspectionID);
-            model.GeneralList = service.GetGeneralByBrand(FinalInspectionID, model.BrandID);
+            model.GeneralList = service.GetGeneralByBrand(FinalInspectionID, model.BrandID ,model.InspectionStage);
 
             ViewData["FinalInspectionAllStep"] = service.GetAllStep(FinalInspectionID, string.Empty);
 
@@ -734,7 +730,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             if (result)
             {
                 FinalInspectionService fservice = new FinalInspectionService();
-                MeasurementRemainingAmount = service.GetMeasurementRemainingAmount(model.FinalInspectionID);
+                MeasurementRemainingAmount = service.GetMeasurementAmount(model.FinalInspectionID);
             }
             else
             {
@@ -801,13 +797,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 fservice.UpdateStepByAction(model.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Previous);
                 return this.RedirectAction(model.FinalInspectionID);
-
-                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                //{
-                //    ID = model.FinalInspectionID,
-                //    InspectionStep = "Insp-CheckList"
-                //}, "Insp-Measurement", this.UserID);
-                //return RedirectToAction("CheckList", new { FinalInspectionID = model.FinalInspectionID });
             }
             else if (goPage == "Next")
             {
@@ -818,28 +807,21 @@ namespace Quality.Areas.FinalInspection.Controllers
                 setting = finalInspectionSettingService.GetSettingForInspection(model.FinalInspectionID);
 
                 // ISP20231140  拿掉這個'件數'的檢核條件
-                //if (setting.InspectionStage == "Final" && setting.BrandID == "LLL")
-                //{
-                //    FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
-                //    int MeasurementRemainingAmount = service.GetMeasurementRemainingAmount(model.FinalInspectionID);
-                //    if (MeasurementRemainingAmount > 0)
-                //    {
-                //        TempData["MeasurementMsg"] = $@"At least {MeasurementRemainingAmount} more pieces of clothing need to be inspected.";
-                //        return RedirectToAction("Measurement",new { FinalInspectionID = model.FinalInspectionID });
-                //    }
-                //}
+                // ISP20231201  加上'件數'的檢核條件並調整內容
+                if (setting.InspectionStage == "Inline" && setting.BrandID == "NIKE")
+                {
+                    FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
+                    int MeasurementAmount = service.GetMeasurementAmount(model.FinalInspectionID);
+                    if (MeasurementAmount < 5)
+                    {
+                        TempData["MeasurementMsg"] = $@"Must Be Inspection 5 Measurment!!";
+                        return RedirectToAction("Measurement", new { FinalInspectionID = model.FinalInspectionID });
+                    }
+                }
 
 
                 fservice.UpdateStepByAction(model.FinalInspectionID, this.UserID, FinalInspectionSStepAction.Next);
                 return this.RedirectAction(model.FinalInspectionID);
-
-                //fservice.UpdateFinalInspectionByStep(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                //{
-                //    ID = model.FinalInspectionID,
-                //    InspectionStep = "Insp-AddDefect"
-                //}, "Insp-Measurement", this.UserID);
-
-                //return RedirectToAction("AddDefect", new { FinalInspectionID = model.FinalInspectionID });
             }
 
             return View();
@@ -979,7 +961,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             addDefct.RejectQty = latestModel.RejectQty;
             addDefct.SampleSize = latestModel.SampleSize;
 
-            addDefct.RejectQty = addDefct.RejectQty.HasValue ? addDefct.RejectQty : 0;
+            addDefct.RejectQty = addDefct.RejectQty;
             // 本次新增的圖片全面加入
             foreach (var item in addDefct.ListFinalInspectionDefectItem)
             {
@@ -1182,7 +1164,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             }
             else if (goPage == "Next")
             {
-                Req.BAQty = Req.BAQty.HasValue ? Req.BAQty.Value : 0;
+                //Req.BAQty = Req.BAQty.HasValue ? Req.BAQty.Value : 0;
                 // 本次新增的圖片全面加入
                 foreach (var item in Req.ListBACriteria)
                 {

@@ -231,7 +231,7 @@
                                                 <select id="WashingTemperature" name="WashingTemperature" disabled="disabled" style="width:157px;">
                                                     @foreach (var item in Model.WashingTemperatureData)
                                                     {
-                                                        string selected = item.Text.Equals(Model.WashingTemperature.ToString()) ? "selected" : "";
+                                                        string selected = item.Text == Model.WashingTemperature.ToString() ? "selected" : "";
                                                         <option value="@item.Value" @selected>@item.Text</option>
                                                     }
                                                 </select>
@@ -420,39 +420,9 @@
             });
 
             $('#SendMail').unbind('click').on('click', function () {
-
-                $.ajax({
-                    url: "@Url.Action("WashSendMail", "AccessoryOvenWash", new { Area = "BulkFGT" })",
-                    type: 'POST',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({
-                        AIR_LaboratoryID: $("#AIR_LaboratoryID").val(),
-                        POID: $("#POID").val(),
-                        Seq1: $("#Seq1").val(),
-                        Seq2: $("#Seq2").val(),
-                    }),
-                    async: false,
-                    success: function (data) {
-                        if (data.Result) {
-                            var para = "?To=";
-                            para += "&CC=" + '@ViewBag.UserMail';
-                            para += "&Subject=" + "Accessory Wash Test – ReportNo:" + '@Model.ReportNo';
-                            para += "&Body=" + "Attachment is Accessory Oven Test– ReportNo:" + '@Model.ReportNo' + " detail data";
-                            para += "&file=" + data.FileName;
-                            @*para += "&IsShowAIComment=true";
-                            para += "&Type=Accessory Oven & Wash Test";
-                            para += "&OrderID=" + '@Model.POID';*@
-                            window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
-                        }
-                        else {
-                            msg.WithError(data.ErrorMessage);
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr.responseText);
-                    }
-                });
-        });
+                var para = '';
+                window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
+            });
         }
 
     function ToReport(IsToPDF) {
@@ -517,10 +487,11 @@
                 Seq2: $("#Seq2").val(),
                 ToAddress: to,
                 CcAddress: cc,
+                ReportNo: '@Model.ReportNo',
             };
 
             $.ajax({
-                url: "@Url.Action("WashFailMail")",
+                url: "@Url.Action("SendWashMail")",
                 type: 'POST',
                 dataType: "json",
                 data: { Req: data},
@@ -542,6 +513,43 @@
         }
     }
 
+    function GetSendMailer(data) {
+        var to = data.To;
+        var cc = data.CC;
+
+        if (to != "") {
+            var data = {
+                AIR_LaboratoryID: $("#AIR_LaboratoryID").val(),
+                POID: $("#POID").val(),
+                Seq1: $("#Seq1").val(),
+                Seq2: $("#Seq2").val(),
+                ToAddress: to,
+                CcAddress: cc,
+                ReportNo: '@Model.ReportNo',
+            };
+
+            $.ajax({
+                url: "@Url.Action("SendWashMail")",
+                type: 'POST',
+                dataType: "json",
+                data: { Req: data},
+                async: false,
+                success: function (data) {
+                    if (data.result) {
+                        msg.WithSuccess("Success");
+                    }
+                    else {
+                        msg.WithWarning(data.resultMsg);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    msg.WithWarningCheck(xhr.responseText, function () {
+                        location.reload();
+                    });
+                }
+            });
+        }
+    }
 
     function DetailButtonBind() {
         $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {

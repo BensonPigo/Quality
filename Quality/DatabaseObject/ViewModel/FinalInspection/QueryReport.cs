@@ -1,7 +1,10 @@
 ﻿using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.Public;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace DatabaseObject.ViewModel.FinalInspection
 {
@@ -34,5 +37,26 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public List<MeasurementViewItem> ListMeasurementViewItem { get; set; }
 
         public List<SelectOrderShipSeq> ListShipModeSeq { get; set; }
+        public List<FinalInspectionSignature> ListFinalInspectionSignature{ get; set; }
+
+        public string GetUserIDByJobTitle(string JobTitle)
+        {
+            List<string> rtn = new List<string>();
+            if (this.ListFinalInspectionSignature.Any())
+            {
+                rtn = this.ListFinalInspectionSignature.Where(o => o.JobTitle == JobTitle).Select(o => o.UserID).Distinct().ToList();
+            }
+
+            string result = string.Join(",", rtn);
+
+            return result;
+        }
+        public string SignatureBy_QC { get; set; }
+        public string SignatureBy_QCManager { get; set; }
+        public string SignatureBy_Production { get; set; }
+        public string SignatureBy_ProductionManager { get; set; }
+        public string SignatureBy_TSD { get; set; }
+
+        public List<SelectListItem> JobTitleList { get; set; }
     }
 }

@@ -33,8 +33,8 @@ namespace DatabaseObject.ProductionDB
 
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
-        public int? Seq { get; set; }
+        
+        public int Seq { get; set; }
 
     }
 }

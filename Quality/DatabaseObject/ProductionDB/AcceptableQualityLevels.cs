@@ -24,15 +24,15 @@ namespace DatabaseObject.ProductionDB
         /// <summary>LotSize_Start</summary>
         [Required]
         [Display(Name = "LotSize_Start")]
-        public int? LotSize_Start { get; set; }
+        public int LotSize_Start { get; set; }
         /// <summary>LotSize_End</summary>
         [Required]
         [Display(Name = "LotSize_End")]
-        public int? LotSize_End { get; set; }
+        public int LotSize_End { get; set; }
         /// <summary>SampleSize</summary>
         [Required]
         [Display(Name = "SampleSize")]
-        public int? SampleSize { get; set; }
+        public int SampleSize { get; set; }
         /// <summary>Ukey</summary>
         [Required]
         [Display(Name = "Ukey")]
@@ -47,7 +47,7 @@ namespace DatabaseObject.ProductionDB
         public decimal AQLType { get; set; }
         /// <summary>可容忍檢驗失敗數量</summary>
         [Display(Name = "可容忍檢驗失敗數量")]
-        public int? AcceptedQty { get; set; }
+        public int AcceptedQty { get; set; }
 
     }
 }

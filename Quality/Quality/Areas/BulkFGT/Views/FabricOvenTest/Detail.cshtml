@@ -427,7 +427,7 @@
                                                 <select id="Details_@{@i}__Temperature" name="Details[@{@i}].Temperature">
                                                     @foreach (var item in (List<SelectListItem>)ViewBag.TemperatureList)
                                                     {
-                                                        string selected = item.Text.Equals(Model.Details[i].Temperature) ? "selected" : "";
+                                                        string selected = item.Text.Equals(Model.Details[i].Temperature.ToString()) ? "selected" : "";
                                                         <option value="@item.Value" @selected>@item.Text</option>
                                                     }
                                                 </select>
@@ -441,7 +441,7 @@
                                             <select id="Details_@{@i}__Time" name="Details[@{@i}].Time">
                                                 @foreach (var item in (List<SelectListItem>)ViewBag.TimeList)
                                                 {
-                                                    string selected = item.Text.Equals(Model.Details[i].Time) ? "selected" : "";
+                                                    string selected = item.Text.Equals(Model.Details[i].Time.ToString()) ? "selected" : "";
                                                     <option value="@item.Value" @selected>@item.Text</option>
                                                 }
                                             </select>
@@ -942,35 +942,9 @@
         });
 
         $('#SendMail').unbind('click').on('click', function () {
+            var para = '';
+            window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
 
-            $.ajax({
-                url: "@Url.Action("SendMail", "FabricOvenTest", new { Area = "BulkFGT" })",
-                type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({
-                    ID: $('#Main_POID').val(), No: $('#Main_TestNo').val()
-                }),
-                async: false,
-                success: function (data) {
-                    if (data.Result) {
-                        var para = "?To=";
-                        para += "&CC=" + '@ViewBag.UserMail';
-                        para += "&Subject=" + "Fabric Oven Test – Report No:" + '@Model.Main.ReportNo';
-                        para += "&Body=" + "Attachment is Fabric Oven Test – Report No:" + '@Model.Main.ReportNo' + " detail data";
-                        para += "&file=" + data.FileName;
-                        @*para += "&IsShowAIComment=true";
-                        para += "&Type=Fabric Oven Test";
-                        para += "&OrderID=" + '@Model.Main.POID';*@
-                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
-                    }
-                    else {
-                        msg.WithError(data.ErrorMessage);
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
-                }
-            });
         });
     }
 
@@ -1012,7 +986,7 @@
         });
 
         $.ajax({
-            url: "@Url.Action("FailMail", "FabricOvenTest", new { Area = "BulkFGT" })",
+            url: "@Url.Action("SendMail", "FabricOvenTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ ID: $('#Main_POID').val(), No: $('#Main_TestNo').val(), TO: to, CC: cc }),
@@ -1036,6 +1010,40 @@
                 });
             }
         });
+    }
+
+    function GetSendMailer(data) {
+        var to = data.To;
+        var cc = data.CC;
+
+        if (to != "") {
+
+            $.ajax({
+                url: "@Url.Action("SendMail", "FabricOvenTest", new { Area = "BulkFGT" })",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $('#Main_POID').val(), No: $('#Main_TestNo').val(), TO: to, CC: cc }),
+                async: false,
+                success: function (data) {
+                    if (data.result) {
+                        msg.WithSuccesCheck("Success", function () {
+                            location.reload();
+                        });
+                    }
+                    else {
+                        msg.WithWarningCheck(data.resultMsg, function () {
+                            location.reload();
+                        });
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    // console.log(xhr.responseText);
+                    msg.WithWarningCheck(xhr.responseText, function () {
+                        location.reload();
+                    });
+                }
+            });
+        }
     }
 
     function AddDetailRow() {

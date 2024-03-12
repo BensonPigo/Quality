@@ -2,15 +2,18 @@ using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
+using DatabaseObject.Public;
 using DatabaseObject.ViewModel.FinalInspection;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Transactions;
+using ToolKit;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
@@ -700,8 +703,8 @@ delete  FinalInspection_OrderCarton where ID = @FinalInspectionID
             objParameter.Add("@MDivisionid", MDivisionid);
             objParameter.Add("@AuditDate", setting.AuditDate);
             objParameter.Add("@SewingLineID", (setting.SewingLineID == null ? string.Empty : setting.SewingLineID));
-            objParameter.Add("@AcceptableQualityLevelsUkey", setting.AcceptableQualityLevelsUkey);
-            objParameter.Add("@AcceptableQualityLevelsProUkey", setting.AcceptableQualityLevelsProUkey);
+            objParameter.Add("@AcceptableQualityLevelsUkey", setting.AcceptableQualityLevelsUkey ?? "0");
+            objParameter.Add("@AcceptableQualityLevelsProUkey", setting.AcceptableQualityLevelsProUkey ?? "0");
             objParameter.Add("@SampleSize", setting.SampleSize);
             objParameter.Add("@AcceptQty", setting.AcceptQty);
             objParameter.Add("@UserID", userID);
@@ -990,7 +993,7 @@ WHERE FinalInspectionID = @FinalInspectionID
         public IList<ImageRemark> GetFinalInspectionDetail(long FinalInspection_DetailUkey)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
-            { "@FinalInspection_DetailUkey", DbType.Int64, FinalInspection_DetailUkey }
+            { "@FinalInspection_DetailUkey", FinalInspection_DetailUkey }
             };
 
             string sqlGetData = @"
@@ -1105,7 +1108,7 @@ where   ID = @FinalInspectionID
                             { "@GarmentDefectCodeID", DbType.String, defectItem.DefectCode },
                             { "@AreaCode", DbType.String, defectItem.AreaCode ?? string.Empty},
                             { "@Remark", DbType.String, defectItem.Remark ?? string.Empty},
-                            { "@Ukey", DbType.Int64, defectItem.Ukey },
+                            { "@Ukey",  defectItem.Ukey },
                             { "@Qty", DbType.Int32, defectItem.Qty }
                         };
 
@@ -1157,7 +1160,7 @@ insert into SciPMSFile_FinalInspection_DetailImage(ID, FinalInspection_DetailUke
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, addDefect.FinalInspectionID },
-                            { "@FinalInspection_DetailUkey", DbType.Int64, defectItem.Ukey },
+                            { "@FinalInspection_DetailUkey",  defectItem.Ukey },
                             { "@Image", DetailImage.Image == null ? System.Data.SqlTypes.SqlBinary.Null : DetailImage.Image},
                             { "@Remark",DbType.String, DetailImage.Remark ?? "" },
                         };
@@ -1180,7 +1183,7 @@ INSERT INTO FinalInspection_Detail_Operation
            ,@Operator)
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
-                            { "@FinalInspection_DetailUkey", DbType.Int64, defectItem.Ukey },
+                            { "@FinalInspection_DetailUkey",  defectItem.Ukey },
                             { "@Operation",DbType.String, strOperation},
                             { "@Operator",DbType.String, strOperator},
                         };
@@ -1298,7 +1301,7 @@ where   ID = @FinalInspectionID
                     SQLParameterCollection detailParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, beautifulProductAudit.FinalInspectionID },
                             { "@BACriteria", DbType.String, criteriaItem.BACriteria },
-                            { "@Ukey", DbType.Int64, criteriaItem.Ukey },
+                            { "@Ukey", criteriaItem.Ukey },
                             { "@Qty", DbType.Int32, criteriaItem.Qty }
                         };
 
@@ -1348,7 +1351,7 @@ insert into SciPMSFile_FinalInspection_NonBACriteriaImage(ID, FinalInspection_No
 ";
                             SQLParameterCollection imgParameter = new SQLParameterCollection() {
                             { "@FinalInspectionID", DbType.String, beautifulProductAudit.FinalInspectionID },
-                            { "@FinalInspection_NonBACriteriaUkey", DbType.Int64, criteriaItem.Ukey },
+                            { "@FinalInspection_NonBACriteriaUkey",  criteriaItem.Ukey },
                             { "@Remark", DbType.String, baDetail.Remark ?? ""},
                             { "@Image", baDetail.Image}
                         };
@@ -1365,7 +1368,7 @@ insert into SciPMSFile_FinalInspection_NonBACriteriaImage(ID, FinalInspection_No
         public IList<ImageRemark> GetBA_DetailImage(long FinalInspection_NonBACriteriaUkey)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
-            { "@FinalInspection_NonBACriteriaUkey", DbType.Int64, FinalInspection_NonBACriteriaUkey }
+            { "@FinalInspection_NonBACriteriaUkey",  FinalInspection_NonBACriteriaUkey }
             };
 
             string sqlGetData = @"
@@ -1625,7 +1628,7 @@ values
             ExecuteNonQuery(CommandType.Text, sqlDeleteMoisture, objParameter);
         }
 
-        public bool CheckMoistureExists(string finalInspectionID, string article, long? finalInspection_OrderCartonUkey)
+        public bool CheckMoistureExists(string finalInspectionID, string article, long finalInspection_OrderCartonUkey)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection();
             string where = string.Empty;
@@ -1637,7 +1640,7 @@ values
                 objParameter.Add("@article", article);
             }
 
-            if (finalInspection_OrderCartonUkey != null)
+            if (finalInspection_OrderCartonUkey > 0)
             {
                 where += " and FinalInspection_OrderCartonUkey = @finalInspection_OrderCartonUkey";
                 objParameter.Add("@finalInspection_OrderCartonUkey", finalInspection_OrderCartonUkey);
@@ -1669,7 +1672,7 @@ END
 ";
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlCheckMoistureExists, objParameter);
-            int ctn = Convert.ToInt32( ExecuteScalar(CommandType.Text, sqlCheckMoistureExists, objParameter));
+            int ctn = Convert.ToInt32(ExecuteScalar(CommandType.Text, sqlCheckMoistureExists, objParameter));
 
             return ctn > 0;
         }
@@ -1684,20 +1687,22 @@ END
             {
                 foreach (MeasurementItem measurementItem in measurement.ListMeasurementItem)
                 {
-                    objParameter = new SQLParameterCollection();
-                    objParameter.Add($@"@SizeUnit", measurement.SizeUnit);
-                    objParameter.Add("@ID", measurement.FinalInspectionID);
-                    objParameter.Add("@Article", measurement.SelectedArticle);
-                    objParameter.Add("@SizeCode", measurement.SelectedSize);
-                    objParameter.Add("@Location", measurement.SelectedProductType);
-                    objParameter.Add("@Code", measurementItem.Code);
-                    objParameter.Add("@SizeSpec", measurementItem.ResultSizeSpec);
-                    objParameter.Add("@MeasurementUkey", measurementItem.MeasurementUkey);
-                    objParameter.Add("@AddName", userID);
-                    objParameter.Add("@AddDate", dtDateTime.Rows[0]["DateTime"]);
+                    objParameter = new SQLParameterCollection
+                    {
+                        { "@SizeUnit", measurement.SizeUnit },
+                        { "@ID", measurement.FinalInspectionID },
+                        { "@Article", measurement.SelectedArticle },
+                        { "@SizeCode", measurement.SelectedSize },
+                        { "@Location", measurement.SelectedProductType },
+                        { "@Code", measurementItem.Code },
+                        { "@SizeSpec", measurementItem.ResultSizeSpec },
+                        { "@MeasurementUkey", measurementItem.MeasurementUkey },
+                        { "@AddName", userID },
+                        { "@AddDate", dtDateTime.Rows[0]["DateTime"] }
+                    };
 
                     bool isFractional = false;
-                    if (measurementItem.ResultSizeSpec != null && measurementItem.ResultSizeSpec.Contains("/"))
+                    if (measurementItem.ResultSizeSpec != null && measurementItem.ResultSizeSpec.Contains("/") && !System.Text.RegularExpressions.Regex.IsMatch(measurementItem.ResultSizeSpec, @"[a-zA-Z]"))
                     {
                         isFractional = true;
                     }
@@ -2845,11 +2850,12 @@ where   IsExportToP88 = 0 and
             return new BaseResult { Result = true };
         }
 
-        public List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID)
+        public List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID, string InspectionStage)
         {
             SQLParameterCollection objParameter = new SQLParameterCollection() {
                 { "@FinalInspectionID", DbType.String, FinalInspectionID },
                 { "@BrandID", DbType.String, BrandID },
+                { "@InspectionStage", DbType.String, InspectionStage },
 
             };
 
@@ -2860,11 +2866,12 @@ inner join FinalInspection_Order fo on a.ID = fo.ID
 inner join Production..Orders b on b.ID = fo.OrderID
 inner join FinalInspectionBasicBrand_General fbg on fbg.BrandID = 'DEFAULT'
 inner join  FinalInspectionBasicGeneral fb on fbg.BasicGeneralUkey = fb.Ukey
-where fb.Junk = 0 and a.ID = @FinalInspectionID
+where fb.Junk = 0 and a.ID = @FinalInspectionID AND a.InspectionStage=@InspectionStage
 ";
             if (!string.IsNullOrEmpty(BrandID))
             {
                 cmd = $@"
+
 if exists(
     select * from FinalInspectionBasicBrand_General where BrandID =@BrandID
 )
@@ -2872,7 +2879,7 @@ begin
     select DISTINCT b.*
     from FinalInspectionBasicBrand_General a
     inner join  FinalInspectionBasicGeneral b on a.BasicGeneralUkey = b.Ukey
-    where a.BrandID = @BrandID
+    where a.BrandID = @BrandID AND a.InspectionStage=@InspectionStage
 end
 else
 begin
@@ -2880,7 +2887,7 @@ begin
     from FinalInspection a
     inner join FinalInspection_Order fo on a.ID = fo.ID
     inner join Production..Orders b on b.ID = fo.OrderID
-    inner join FinalInspectionBasicBrand_General fbg on fbg.BrandID = 'DEFAULT'
+    inner join FinalInspectionBasicBrand_General fbg on fbg.BrandID = 'DEFAULT' and fbg.InspectionStage = a.InspectionStage
     inner join  FinalInspectionBasicGeneral fb on fbg.BasicGeneralUkey = fb.Ukey
     where fb.Junk = 0 and a.ID = @FinalInspectionID
 end 
@@ -2964,6 +2971,141 @@ from FinalInspectionBasicCheckList
             var r = ExecuteList<FinalInspectionBasicCheckList>(CommandType.Text, cmd, objParameter);
 
             return r.Any() ? r.ToList() : new List<FinalInspectionBasicCheckList>();
+        }
+
+
+        public List<FinalInspectionSignature> GetFinalInspectionSignature(FinalInspectionSignature Req)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@finalInspectionID", DbType.String, Req.FinalInspectionID },
+            { "@JobTitle", DbType.String, Req.JobTitle },
+            { "@UserID", DbType.String, Req.UserID }
+            };
+
+            string cmd = @"
+select a.FinalInspectionID
+		,a.UserID
+		,UserName = p.Name
+		,a.JobTitle
+		,b.Signature
+		,b.AddName
+		,b.AddDate
+from  FinalInspectionSignature a
+INNER JOIN Pass1 p on a.UserID=p.ID
+left join PMSFile.dbo. FinalInspectionSignature b on a.FinalInspectionID = b.FinalInspectionID AND a.JobTitle = b.JobTitle AND a.UserID = b.UserID
+where  a.FinalInspectionID = @finalInspectionID
+";
+
+            if (!string.IsNullOrEmpty(Req.JobTitle))
+            {
+                cmd += " and a.JobTitle = @JobTitle";
+            }
+            if (!string.IsNullOrEmpty(Req.UserID))
+            {
+                cmd += " and a.UserID = @UserID";
+            }
+            var r = ExecuteList<FinalInspectionSignature>(CommandType.Text, cmd, objParameter);
+
+            return r.Any() ? r.ToList() : new List<FinalInspectionSignature>();
+        }
+        public bool InsertFinalInspectionSignature(FinalInspectionSignature Req)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection() {
+            { "@finalInspectionID", DbType.String, Req.FinalInspectionID },
+            { "@JobTitle", DbType.String, Req.JobTitle },
+            { "@UserID", DbType.String, Req.UserID },
+            { "@AddName", DbType.String, Req.AddName },
+            { "@Signature", Req.Signature },
+            };
+
+            string cmd = @"
+if not exists(
+    select 1 
+    from PMSFile.dbo.FinalInspectionSignature
+    where FinalInspectionID = @finalInspectionID AND JobTitle = @JobTitle AND UserID = @UserID
+)
+BEGIN
+    INSERT INTO PMSFile.dbo.FinalInspectionSignature
+               (FinalInspectionID,UserID,JobTitle,Signature,AddName,AddDate)
+    VALUES
+               (@FinalInspectionID ,@UserID ,@JobTitle ,@Signature ,@AddName ,GETDATE() )
+END
+ELSE
+BEGIN
+    UPDATE PMSFile.dbo.FinalInspectionSignature
+    SET Signature = @Signature ,AddName = @AddName  ,AddDate = GETDATE()  
+    where FinalInspectionID = @finalInspectionID AND JobTitle = @JobTitle AND UserID = @UserID
+END
+
+
+";
+
+            ExecuteNonQuery(CommandType.Text, cmd, objParameter);
+            return true;
+        }
+
+        public List<FinalInspectionSignature> GetFinalInspectionSignatureUser()
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+
+            string cmd = @"
+select UserID= a.ID , UserName=b.Name
+from Quality_Pass1 a
+inner join Pass1 b on a.ID=b.ID
+where a.Junk=0
+";
+            var r = ExecuteList<FinalInspectionSignature>(CommandType.Text, cmd, objParameter);
+
+            return r.Any() ? r.ToList() : new List<FinalInspectionSignature>();
+        }
+
+        public bool InsertFinalInspectionSignatureUser(string FinalInspectionID, string JobTitle, List<FinalInspectionSignature> allData)
+        {
+            List<FinalInspectionSignature> oldData = this.GetFinalInspectionSignature(new FinalInspectionSignature()
+            {
+                FinalInspectionID = FinalInspectionID,
+                JobTitle = JobTitle
+            }).ToList();
+
+            List<FinalInspectionSignature> needUpdateDetailList =
+                PublicClass.CompareListValue<FinalInspectionSignature>(
+                    allData,
+                    oldData,
+                    "FinalInspectionID,UserID,JobTitle",
+                    "FinalInspectionID,UserID,JobTitle");
+
+            string insertDetail = $@" ----寫入 
+INSERT INTO FinalInspectionSignature (FinalInspectionID,UserID,JobTitle)
+VALUES  (@FinalInspectionID ,@UserID ,@JobTitle)
+";
+
+            string deleteDetail = $@" ----刪除 
+DELETE FROM FinalInspectionSignature where FinalInspectionID = @FinalInspectionID AND UserID = @UserID AND JobTitle = @JobTitle
+DELETE FROM PMSFile.dbo.FinalInspectionSignature where FinalInspectionID = @FinalInspectionID AND UserID = @UserID AND JobTitle = @JobTitle
+";
+
+            foreach (var detailItem in needUpdateDetailList)
+            {
+                SQLParameterCollection listDetailPar = new SQLParameterCollection();
+
+                listDetailPar.Add(new SqlParameter($"@FinalInspectionID", detailItem.FinalInspectionID));
+                listDetailPar.Add(new SqlParameter($"@UserID", detailItem.UserID));
+                listDetailPar.Add(new SqlParameter($"@JobTitle", detailItem.JobTitle));
+                switch (detailItem.StateType)
+                {
+                    case CompareStateType.Add:
+                        ExecuteNonQuery(CommandType.Text, insertDetail, listDetailPar);
+                        break;
+                    case CompareStateType.Delete:
+                        ExecuteNonQuery(CommandType.Text, deleteDetail, listDetailPar);
+                        break;
+                    case CompareStateType.None:
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return true;
         }
     }
 }

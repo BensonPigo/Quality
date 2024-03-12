@@ -940,32 +940,8 @@
             if ($("#Main_ReportNo").val() == '') {
                 return false;
             }
-
-            $.ajax({
-                url: "@Url.Action("SendMailToMR")",
-                type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({
-                    ReportNo: $('#Main_ReportNo').val()
-                }),
-                async: false,
-                success: function (data) {
-                    if (data.Result) {
-                        var para = "?To=";
-                        para += "&CC=";
-                        para += "&Subject=" + "Bulk Wicking Height Test – ReportNo:" + $("#Main_ReportNo").val();
-                        para += `&Body=Attachment Is Bulk Wicking Height Test - ReportNo:${$("#Main_ReportNo").val() } detail data`;
-                        para += "&file=" + data.FileName;
-                        window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=600');
-                    }
-                    else {
-                        msg.WithError(data.ErrorMessage);
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
-                }
-            });
+            var para = '';
+            window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
         });
 
         $("#Excel").on("click", function () {
@@ -1028,9 +1004,14 @@
                     async: false,
                     success: function (data) {
                         if (data.Result) {
-                            msg.WithSuccesCheck("Success", function () {
-                                $("#btnQuery").click();
-                            });
+                            if (data.Action == "FailMail()") {
+                                FailMail();
+                            }
+                            else {
+                                msg.WithSuccesCheck("Success", function () {
+                                    $("#btnQuery").click();
+                                });
+                            }
                         }
                         else {
                             msg.WithError(data.ErrMsg);
@@ -1157,17 +1138,17 @@
             return;
         }
 
-        const type = $('#Main_FabricType').val();        
+        const type = $('#Main_FabricType').val();
         const elem = document.getElementById(sel.id);
         const row = elem.getAttribute('idx');
         let testType;
 
         let values0, values1, values2;
         if (sel.id.match("Warp")) {
-            testType = "Warp";           
+            testType = "Warp";
         }
         else if (sel.id.match("Weft")) {
-            testType = "Weft";    
+            testType = "Weft";
         }
 
         if (row == 0) {
@@ -1191,7 +1172,7 @@
                 resultVal = "Pass";
                 color = "blue";
             }
-            else if (type == "KNIT" && avgVal >= 100) {                
+            else if (type == "KNIT" && avgVal >= 100) {
                 resultVal = "Pass";
                 color = "blue";
             }
@@ -1200,4 +1181,79 @@
             $('#DetailList_' + row + '__' + testType + 'Result').val(resultVal).css({ color: color });
         }
     }
+
+    function FailMail() {
+        var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";
+        window.open('@Url.Action("TestFailMailList", "PublicWindow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
+    }
+
+    function GetTestFailMailList(data) {
+        var to = "";
+        var cc = "";
+        $.each(data, function (index, value) {
+            to += value.To + ';';
+            cc += value.CC + ';';
+        });
+
+        $.ajax({
+            url: "@Url.Action("SendMail")",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ReportNo: '@Model.Main.ReportNo', TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSuccesCheck("Success", function () {
+                        $("#btnQuery").click();
+                    });
+                }
+                else {
+                    msg.WithWarningCheck(data.resultMsg, function () {
+                        location.reload();
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // console.log(xhr.responseText);
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
+    }
+
+    function GetSendMailer(data) {
+        var to = data.To;
+        var cc = data.CC;
+
+        if (to != "") {
+
+        $.ajax({
+            url: "@Url.Action("SendMail")",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ReportNo: '@Model.Main.ReportNo', TO: to, CC: cc }),
+            async: false,
+            success: function (data) {
+                if (data.result) {
+                    msg.WithSuccesCheck("Success", function () {
+                        $("#btnQuery").click();
+                    });
+                }
+                else {
+                    msg.WithWarningCheck(data.resultMsg, function () {
+                        location.reload();
+                    });
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                // console.log(xhr.responseText);
+                msg.WithWarningCheck(xhr.responseText, function () {
+                    location.reload();
+                });
+            }
+        });
+        }
+    }
+
 </script>

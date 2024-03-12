@@ -57,14 +57,17 @@ namespace BusinessLogicLayer.Service
                                 Value = s,
                             }).ToList();
 
-                measurement.MeasurementRemainingAmount = _FinalInspFromPMSProvider.GetMeasurementRemainingAmount(finalInspectionID);
+                measurement.MeasurementRemainingAmount = _FinalInspFromPMSProvider.GetMeasurementAmount(finalInspectionID);
 
                 _StyleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
                 measurement.SizeUnit = _StyleProvider.GetSizeUnitByCustPONO(finalInspection.CustPONO, OrderID);
 
                 _MeasurementProvider = new MeasurementProvider(Common.ManufacturingExecutionDataAccessLayer);
                 List<DatabaseObject.ManufacturingExecutionDB.Measurement> baseMeasurementItems = _MeasurementProvider.GetMeasurementsByPOID(finalInspection.CustPONO, OrderID, userID).ToList();
-                measurement.ListMeasurementItem = baseMeasurementItems.Select( s =>
+                
+                measurement.ListMeasurementItem = baseMeasurementItems
+                    .Where(o => measurement.ListSize.Any(x=>x.SizeCode == o.SizeCode))
+                    .Select( s =>
                         new MeasurementItem() {
                             Description = s.Description,
                             SizeSpec = s.SizeSpec,
@@ -85,12 +88,12 @@ namespace BusinessLogicLayer.Service
 
             return measurement;
         }
-        public int GetMeasurementRemainingAmount(string finalInspectionID)
+        public int GetMeasurementAmount(string finalInspectionID)
         {
             try
             {
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ManufacturingExecutionDataAccessLayer);
-                int MeasurementRemainingAmount = _FinalInspFromPMSProvider.GetMeasurementRemainingAmount(finalInspectionID);
+                int MeasurementRemainingAmount = _FinalInspFromPMSProvider.GetMeasurementAmount(finalInspectionID);
                 return MeasurementRemainingAmount;
             }
             catch (Exception ex)

@@ -138,7 +138,7 @@ where junk = 0
             return ExecuteList<Window_Style>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Article> Get_Article(string OrderID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
+        public IList<Window_Article> Get_Article(string OrderID, long StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -166,7 +166,7 @@ where 1=1
                 if (StyleUkey >0)
                 {
                     SbSql.Append("AND StyleUkey = @StyleUkey ");
-                    paras.Add("@StyleUkey ", DbType.Int64, StyleUkey);
+                    paras.Add("@StyleUkey ",  StyleUkey);
                 }
                 if (!string.IsNullOrEmpty(StyleID) && !string.IsNullOrEmpty(BrandID) && !string.IsNullOrEmpty(SeasonID))
                 {
@@ -206,7 +206,7 @@ AND StyleUkey in (
             return ExecuteList<Window_Article>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Article> Get_PoidArticle(string POID, Int64 StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
+        public IList<Window_Article> Get_PoidArticle(string POID, long StyleUkey, string StyleID, string BrandID, string SeasonID, string Article, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -235,7 +235,7 @@ where 1=1
                 if (StyleUkey > 0)
                 {
                     SbSql.Append("AND StyleUkey = @StyleUkey ");
-                    paras.Add("@StyleUkey ", DbType.Int64, StyleUkey);
+                    paras.Add("@StyleUkey ",  StyleUkey);
                 }
                 if (!string.IsNullOrEmpty(StyleID) && !string.IsNullOrEmpty(BrandID) && !string.IsNullOrEmpty(SeasonID))
                 {
@@ -275,7 +275,7 @@ AND StyleUkey in (
             return ExecuteList<Window_Article>(CommandType.Text, SbSql.ToString(), paras);
         }
 
-        public IList<Window_Size> Get_Size(string OrderID, Int64? StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, bool IsExact)
+        public IList<Window_Size> Get_Size(string OrderID, long StyleUkey, string BrandID, string SeasonID, string StyleID, string Article, string Size, bool IsExact)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection paras = new SQLParameterCollection();
@@ -705,6 +705,56 @@ Where 1=1
             return ExecuteList<Window_FtyInventory>(CommandType.Text, SbSql.ToString(), paras);
         }
 
+        public IList<Window_FtyInventory> Get_AllReceivingDetail(string POID, string Seq1, string Seq2, string Roll, string ReceivingID, bool IsExact)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            //台北
+            SbSql.Append($@"
+Select DISTINCT Roll, Dyelot
+from dbo.View_AllReceivingDetail WITH(NOLOCK)--工廠
+Where 1=1
+");
+            if (!string.IsNullOrEmpty(Seq1))
+            {
+                SbSql.Append($@"AND Seq1 = @Seq1 ");
+
+                paras.Add("@Seq1", DbType.String, Seq1);
+            }
+
+            if (!string.IsNullOrEmpty(Seq2))
+            {
+                SbSql.Append($@"AND Seq2 = @Seq2 ");
+
+                paras.Add("@Seq2", DbType.String, Seq2);
+            }
+
+            if (!string.IsNullOrEmpty(POID))
+            {
+                SbSql.Append($@"AND POID = @POID ");
+
+                paras.Add("@POID", DbType.String, POID);
+            }
+
+            if (!string.IsNullOrEmpty(Roll))
+            {
+                SbSql.Append($@"AND Roll = @Roll ");
+
+                paras.Add("@Roll", DbType.String, Roll);
+            }
+
+            if (!string.IsNullOrEmpty(ReceivingID))
+            {
+                SbSql.Append($@"AND ID = @ReceivingID ");
+
+                paras.Add("@ReceivingID", DbType.String, ReceivingID);
+            }
+
+            // IsExact沒有用到
+
+            return ExecuteList<Window_FtyInventory>(CommandType.Text, SbSql.ToString(), paras);
+        }
         public IList<Window_Appearance> Get_Appearance(string Lab)
         {
             StringBuilder SbSql = new StringBuilder();

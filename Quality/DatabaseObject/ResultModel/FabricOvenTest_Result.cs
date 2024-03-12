@@ -84,8 +84,8 @@ namespace DatabaseObject.ResultModel
         public string ResultStain { get; set; }
         public string Remark { get; set; }
         public string LastUpdate { get; set; }
-        public string Temperature { get; set; }
-        public string Time { get; set; }
+        public int Temperature { get; set; }
+        public int Time { get; set; }
 
         public string Seq1 {
             get {

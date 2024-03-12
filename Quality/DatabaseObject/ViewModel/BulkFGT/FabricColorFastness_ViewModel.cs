@@ -266,6 +266,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string StyleID { get; set; }
         public string POID { get; set; }
         public string Article { get; set; }
+        public string ColorFastnessResult { get; set; }
         public int Temperature { get; set; }
         public int Cycle { get; set; }
         public int CycleTime { get; set; }

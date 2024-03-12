@@ -1199,11 +1199,11 @@ namespace BusinessLogicLayer.Service
 
             return allStep;
         }
-        public List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID)
+        public List<FinalInspectionBasicGeneral> GetGeneralByBrand(string FinalInspectionID, string BrandID, string InspectionStage)
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-            List<FinalInspectionBasicGeneral> allStep = _FinalInspectionProvider.GetGeneralByBrand(FinalInspectionID, BrandID);
+            List<FinalInspectionBasicGeneral> allStep = _FinalInspectionProvider.GetGeneralByBrand(FinalInspectionID, BrandID , InspectionStage);
 
             return allStep;
         }

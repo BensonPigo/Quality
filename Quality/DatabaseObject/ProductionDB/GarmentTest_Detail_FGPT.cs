@@ -12,58 +12,81 @@ namespace DatabaseObject.ProductionDB
     /// ===  ==========  ====  ==========  ==========
     /// 01.  2021/08/23   1.00    Admin        Create
     /// </history>
+
+
     public class GarmentTest_Detail_FGPT
     {
-        /// <summary></summary>
-        
-        public Int64? ID { get; set; }
+        public long ID { get; set; }
 
-        /// <summary></summary>
-        
-        public int? No { get; set; }
+        public int No { get; set; }
 
-        /// <summary></summary>
-        
-        public string Location { get; set; } = "";
+        private string _Location;
 
-        /// <summary></summary>
-        
-        public string Type { get; set; }
+        public string Location
+        {
+            get => _Location ?? string.Empty;
+            set => _Location = value;
+        }
 
-        /// <summary></summary>
-        
-        public string TestName { get; set; }
+        private string _Type;
 
-        /// <summary></summary>
-        
-        public string TestDetail { get; set; }
+        public string Type
+        {
+            get => _Type ?? string.Empty;
+            set => _Type = value;
+        }
 
-        /// <summary></summary>
-        
-        public int? Criteria { get; set; }
+        private string _TestName;
 
-        /// <summary></summary>
-        
-        public string TestResult { get; set; }
+        public string TestName
+        {
+            get => _TestName ?? string.Empty;
+            set => _TestName = value;
+        }
 
-        /// <summary></summary>
-        
-        public string TestUnit { get; set; }
+        private string _TestDetail;
+
+        public string TestDetail
+        {
+            get => _TestDetail ?? string.Empty;
+            set => _TestDetail = value;
+        }
+
+        public int Criteria { get; set; }
+
+        private string _TestResult;
+
+        public string TestResult
+        {
+            get => _TestResult ?? string.Empty;
+            set => _TestResult = value;
+        }
+
+        private string _TestUnit;
+
+        public string TestUnit
+        {
+            get => _TestUnit ?? string.Empty;
+            set => _TestUnit = value;
+        }
+
         public string StandardRemark { get; set; }
 
-        /// <summary></summary>
+        private string _Wash5;
 
-        public int? Seq { get; set; }
+        public string Wash5
+        {
+            get => _Wash5 ?? string.Empty;
+            set => _Wash5 = value;
+        }
 
-        /// <summary></summary>
-        
-        public int? TypeSelection_VersionID { get; set; }
+        public int Seq { get; set; }
 
-        /// <summary></summary>
-        
-        public int? TypeSelection_Seq { get; set; }
+        public int TypeSelection_VersionID { get; set; }
+
+        public int TypeSelection_Seq { get; set; }
 
         public bool IsOriginal { get; set; }
-
     }
+
 }

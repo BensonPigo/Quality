@@ -422,10 +422,7 @@ where ReportNo = @ReportNo
 Update b
 Set  ReportDate = @ReportDate
     ,Status = @Status
-    ,Result = IIF(@Status ='New' 
-                        ,''
-                        , IIF( (select COUNT(1) from HeatTransferWash_Detail a where a.ReportNo=b.ReportNo and a.Result='Fail') > 0 , 'Fail' ,'Pass')
-                    )
+    ,Result = IIF( (select COUNT(1) from HeatTransferWash_Detail a where a.ReportNo=b.ReportNo and a.Result='Fail') > 0 , 'Fail' ,'Pass')
     ,EditDate = GETDATE()
     ,Editname = @Editname
 from HeatTransferWash b
@@ -523,7 +520,7 @@ delete HeatTransferWash_Detail where Ukey = @Ukey
                         ExecuteNonQuery(CommandType.Text, insert, listDetailPar);
                         break;
                     case DatabaseObject.Public.CompareStateType.Edit:
-                        listDetailPar.Add("@Ukey", DbType.Int64, detailItem.Ukey);
+                        listDetailPar.Add("@Ukey",  detailItem.Ukey);
 
                         ExecuteNonQuery(CommandType.Text, update, listDetailPar);
                         break;

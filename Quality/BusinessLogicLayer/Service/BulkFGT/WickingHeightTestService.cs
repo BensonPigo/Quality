@@ -1,4 +1,6 @@
 ﻿using ADOHelper.Utility;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -11,12 +13,14 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
     public class WickingHeightTestService
     {
         private WickingHeightTestProvider _Provider;
+        private MailToolsService _MailService;
 
         public WickingHeightTest_ViewModel GetDefaultModel(bool iNew = false)
         {
@@ -397,12 +401,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public WickingHeightTest_ViewModel GetReport(string ReportNo, bool isPDF)
+        public WickingHeightTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             WickingHeightTest_ViewModel result = new WickingHeightTest_ViewModel();
 
             string basefileName = "WickingHeightTest";
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+            string tmpName = string.Empty;
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
             try
@@ -414,6 +419,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 WickingHeightTest_ViewModel model = this.GetData(new WickingHeightTest_Request() { ReportNo = ReportNo });
 
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new WickingHeightTest_Request() { ReportNo = ReportNo });
+
+                tmpName = $"Wicking Height Test_{model.Main.OrderID}_" +
+                    $"{model.Main.StyleID}_" +
+                    $"{model.Main.FabricRefNo}_" +
+                    $"{model.Main.FabricColor}_" +
+                    $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
@@ -446,10 +458,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
 
                     // 姓名
-                    worksheet.Cells[23, 3] = TechnicianName;
+                    worksheet.Cells[25, 3] = TechnicianName;
 
                     // Signture 圖片
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[24, 3];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[26, 3];
                     if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
                     {
 
@@ -470,7 +482,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // TestWarpPicture 圖片
                 if (model.Main.TestWarpPicture != null && model.Main.TestWarpPicture.Length > 1)
                 {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[21, 1];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[23, 1];
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestWarpPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
@@ -478,7 +490,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // TestAfterPicture 圖片
                 if (model.Main.TestWeftPicture != null && model.Main.TestWeftPicture.Length > 1)
                 {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[21, 4];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[23, 4];
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestWeftPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
                 }
@@ -487,7 +499,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // 表身處理
                 if (model.DetailList.Any() && model.DetailList.Count >= 1)
                 {
-                    long detailUkey = model.DetailList.Where(x => x.EvaluationType == "Before Wash").Select(x => x.Ukey).FirstOrDefault();
+                    var detailBefore = model.DetailList.Where(x => x.EvaluationType == "Before Wash").FirstOrDefault();
+                    var detailAfter = model.DetailList.Where(x => x.EvaluationType == "After Wash").FirstOrDefault();
+
+                    worksheet.Cells[15, 2] = detailBefore.Remark;
+                    worksheet.Cells[20, 2] = detailAfter.Remark;
+
+                    long detailUkey = detailBefore.Ukey;
                     int i = 0;
                     foreach(var item in model.DetaiItemlList.Where(x => x.WickingHeightTestDetailUkey == detailUkey).OrderBy(x => x.Ukey))
                     {
@@ -496,20 +514,24 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         i++;
                     }
 
-                    detailUkey = model.DetailList.Where(x => x.EvaluationType == "After Wash").Select(x => x.Ukey).FirstOrDefault();
+                    detailUkey = detailAfter.Ukey;
                     i = 0;
                     foreach (var item in model.DetaiItemlList.Where(x => x.WickingHeightTestDetailUkey == detailUkey).OrderBy(x => x.Ukey))
                     {
-                        worksheet.Cells[18, 2 + i] = string.Format("{0}mm/{1}min", item.WarpValues.ToString(), item.WarpTime.ToString());
-                        worksheet.Cells[18, 5 + i] = string.Format("{0}mm/{1}min", item.WeftValues.ToString(), item.WeftTime.ToString());
+                        worksheet.Cells[19, 2 + i] = string.Format("{0}mm/{1}min", item.WarpValues.ToString(), item.WarpTime.ToString());
+                        worksheet.Cells[19, 5 + i] = string.Format("{0}mm/{1}min", item.WeftValues.ToString(), item.WeftTime.ToString());
                         i++;
                     }
                 }
 
-                string fileName = $"WickingHeightTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"WickingHeightTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
 
@@ -552,6 +574,44 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
 
             return result;
+        }
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new WickingHeightTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            WickingHeightTest_ViewModel model = this.GetData(new WickingHeightTest_Request() { ReportNo = ReportNo });
+            string name = $"Wicking Height Test_{model.Main.OrderID}_" +
+                    $"{model.Main.StyleID}_" +
+                    $"{model.Main.FabricRefNo}_" +
+                    $"{model.Main.FabricColor}_" +
+                    $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+            WickingHeightTest_ViewModel report = this.GetReport(ReportNo, false,AssignedFineName : name);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Wicking Height Test/{model.Main.OrderID}/" +
+                    $"{model.Main.StyleID}/" +
+                    $"{model.Main.FabricRefNo}/" +
+                    $"{model.Main.FabricColor}/" +
+                    $"{model.Main.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

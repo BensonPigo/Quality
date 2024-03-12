@@ -21,7 +21,7 @@ namespace DatabaseObject.ResultModel.FinalInspection
         [Display(Name = "SeasonID")]
         public string SeasonID { get; set; }
         [Display(Name = "Qty")]
-        public int? Qty { get; set; }
+        public int Qty { get; set; }
         [Display(Name = "Selected")]
         public bool Selected { get; set; }
         public string Article { get; set; }

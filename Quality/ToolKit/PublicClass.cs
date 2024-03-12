@@ -103,7 +103,7 @@ namespace ToolKit
             return rtnValue;
         }
 
-        public static decimal? ToDecimal(this object val)
+        public static decimal ToDecimal(this object val)
         {
             if (val == null)
             {

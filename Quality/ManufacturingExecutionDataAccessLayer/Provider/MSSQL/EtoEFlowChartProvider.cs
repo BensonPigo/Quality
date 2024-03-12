@@ -58,7 +58,7 @@ AND SeasonID = @SeasonID
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 select COUNT(1)
@@ -84,7 +84,7 @@ where StyleUkey = @StyleUkey
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
 
             string sqlcmd = string.Empty;
@@ -125,7 +125,7 @@ where StyleUkey = @StyleUkey
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
 
             string sqlcmd = string.Empty;
@@ -223,7 +223,7 @@ drop table #tmpBase
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 ------正式機執行
@@ -419,7 +419,7 @@ select * from (
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 
@@ -455,7 +455,7 @@ where b.ID = @StyleID AND b.BrandID = @BrandID AND b.SeasonID = @SeasonID
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 
@@ -503,7 +503,7 @@ AND  s.ExpectionFormDate >= DATEADD(Year,-2, GETDATE())
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 --DECLARE @StyleID as varchar(30)='S1805GHTT213'
@@ -556,7 +556,7 @@ drop table #tmp
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 --DECLARE @StyleID as varchar(30)='S1805GHTT213'
@@ -599,7 +599,7 @@ order by seq1,seq2
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 --DECLARE @StyleID as varchar(30)='ARWCS22114A'
@@ -649,7 +649,7 @@ drop table #tmp_subprocess_bundle
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 --DECLARE @StyleID as varchar(30)='ARWCS22114A'
@@ -712,7 +712,7 @@ drop table #tmp ,#tmp2
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 --DECLARE @StyleID as varchar(30)='ARWCS22114A'
@@ -747,7 +747,7 @@ where StyleUkey = @StyleUkey
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 --DECLARE @StyleID as varchar(30)='ARWCS22114A'
@@ -910,7 +910,7 @@ drop table #tmp_src ,#tmp_Summy_first , #tmp_Summy_Final
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 --DECLARE @StyleID as varchar(30)='ARWCS22114A'
@@ -947,7 +947,7 @@ drop table #tmpInspection
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 
@@ -1040,7 +1040,7 @@ drop table #tmp_summy_first
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 --DECLARE @StyleID as varchar(30)='ARWCS22114A'
@@ -1109,7 +1109,7 @@ drop table #Base,#AllQty,#tmp,#ErrorQty
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 --DECLARE @StyleID as varchar(30)='ARWCS22114A'
@@ -1203,7 +1203,7 @@ drop table #Base,#AllQty,#tmp,#ErrorQty
                 { "@SeasonID", DbType.String, Req.SeasonID } ,
                 { "@StyleID", DbType.String, Req.StyleID } ,
                 { "@Article", DbType.String, Req.Article } ,
-                { "@StyleUkey", DbType.Int64, Req.StyleUkey } ,
+                { "@StyleUkey",  Req.StyleUkey } ,
             };
             string sqlcmd = $@"
 --DECLARE @StyleID as varchar(30)='ARWCS22114A'

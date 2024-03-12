@@ -1,6 +1,8 @@
 ﻿using ADOHelper.Utility;
 using BusinessLogicLayer.Helper;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -15,6 +17,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using static Sci.MyUtility;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -23,6 +26,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
     public class MartindalePillingTestService
     {
         private MartindalePillingTestProvider _Provider;
+        private MailToolsService _MailService;
         public MartindalePillingTest_ViewModel GetDefaultModel(bool isNew = false)
         {
             MartindalePillingTest_ViewModel model = new MartindalePillingTest_ViewModel()
@@ -423,7 +427,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public MartindalePillingTest_ViewModel GetReport(string ReportNo, bool isPDF)
+        public MartindalePillingTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             MartindalePillingTest_ViewModel result = new MartindalePillingTest_ViewModel();
 
@@ -431,6 +435,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
+            string tmpName = string.Empty;
 
             try
             {
@@ -441,6 +446,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 MartindalePillingTest_ViewModel model = this.GetData(new MartindalePillingTest_Request() { ReportNo = ReportNo });
 
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new MartindalePillingTest_Request() { ReportNo = ReportNo });
+
+                tmpName = $"Martindale Pilling Test Evaporation Rate Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
@@ -571,10 +583,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
-                string fileName = $"MartindalePillingTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"MartindalePillingTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
 
@@ -616,6 +634,46 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Marshal.ReleaseComObject(excel);
             }
             return result;
+        }
+
+
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        {
+            _Provider = new MartindalePillingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            MartindalePillingTest_ViewModel model = this.GetData(new MartindalePillingTest_Request() { ReportNo = ReportNo });
+
+            string name = $"Martindale Pilling Test Evaporation Rate Test_{model.Main.OrderID}_" +
+                $"{model.Main.StyleID}_" +
+                $"{model.Main.FabricRefNo}_" +
+                $"{model.Main.FabricColor}_" +
+                $"{model.Main.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+            MartindalePillingTest_ViewModel report = this.GetReport(ReportNo, false, name);
+            string mailBody = "";
+            string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName);
+            SendMail_Request sendMail_Request = new SendMail_Request
+            {
+                Subject = $"Martindale Pilling Test Evaporation Rate Test/{model.Main.OrderID}/" +
+                $"{model.Main.StyleID}/" +
+                $"{model.Main.FabricRefNo}/" +
+                $"{model.Main.FabricColor}/" +
+                $"{model.Main.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+                To = TO,
+                CC = CC,
+                Body = mailBody,
+                //alternateView = plainView,
+                FileonServer = new List<string> { FileName },
+                IsShowAIComment = true,
+            };
+
+            _MailService = new MailToolsService();
+            string comment = _MailService.GetAICommet(sendMail_Request);
+            string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
+            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            return MailTools.SendMail(sendMail_Request);
         }
     }
 }

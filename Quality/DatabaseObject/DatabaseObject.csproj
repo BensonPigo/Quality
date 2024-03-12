@@ -71,6 +71,7 @@
     <Compile Include="ManufacturingExecutionDB\EndlineMoisture.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspectionBasicStep.cs" />
+    <Compile Include="ManufacturingExecutionDB\FinalInspectionSignature.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_DefectDetail.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Detail.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Measurement.cs" />
@@ -102,11 +103,9 @@
     <Compile Include="ProductionDB\Adidas_FGWT.cs" />
     <Compile Include="ProductionDB\Brand.cs" />
     <Compile Include="ProductionDB\ColorFastness.cs" />
-    <Compile Include="ProductionDB\ColorFastness_Detail.cs" />
     <Compile Include="ProductionDB\DropDownList.cs" />
     <Compile Include="ProductionDB\Factory.cs" />
     <Compile Include="ProductionDB\InspectionType.cs" />
-    <Compile Include="ProductionDB\FIR.cs" />
     <Compile Include="ProductionDB\FIR_Laboratory.cs" />
     <Compile Include="ProductionDB\FIR_Laboratory_Crocking.cs" />
     <Compile Include="ProductionDB\FIR_Laboratory_Heat.cs" />

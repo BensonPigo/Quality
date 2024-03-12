@@ -71,11 +71,11 @@ namespace DatabaseObject.ManufacturingExecutionDB
 
         /// <summary>樣本數量</summary>
         [Display(Name = "樣本數量")]
-        public int? SampleSize { get; set; }
+        public int SampleSize { get; set; }
 
         /// <summary>允許檢驗失敗數量</summary>
         [Display(Name = "允許檢驗失敗數量")]
-        public int? AcceptQty { get; set; }
+        public int AcceptQty { get; set; }
 
         /// <summary>是否收到Fabric Approval文件</summary>
         [Display(Name = "是否收到Fabric Approval文件")]
@@ -159,15 +159,15 @@ namespace DatabaseObject.ManufacturingExecutionDB
 
         /// <summary>檢驗成功數量</summary>
         [Display(Name = "檢驗成功數量")]
-        public int? PassQty { get; set; }
+        public int PassQty { get; set; }
 
         /// <summary>檢驗失敗數量</summary>
         [Display(Name = "檢驗失敗數量")]
-        public int? RejectQty { get; set; }
+        public int RejectQty { get; set; }
 
         /// <summary>beautiful product audit的完美數量</summary>
         [Display(Name = "beautiful product audit的完美數量")]
-        public int? BAQty { get; set; }
+        public int BAQty { get; set; }
 
         /// <summary>檢驗人員</summary>
         [StringLength(10)]
@@ -177,8 +177,8 @@ namespace DatabaseObject.ManufacturingExecutionDB
 
         /// <summary>完成比例</summary>
         [Display(Name = "完成比例")]
-        public decimal? ProductionStatus { get; set; }
-        public decimal? ProductionStatusDefault { get; set; }
+        public decimal ProductionStatus { get; set; }
+        public decimal ProductionStatusDefault { get; set; }
         
 
         /// <summary>Pass/ Fail/ On-going</summary>

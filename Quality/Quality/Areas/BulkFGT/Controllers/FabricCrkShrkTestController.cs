@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 
 namespace Quality.Areas.BulkFGT.Controllers
 {
@@ -274,41 +275,23 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult FailMail_Crocking(long ID, string TO, string CC, string OrderID)
-        {
-            SendMail_Result result = _FabricCrkShrkTest_Service.SendCrockingFailResultMail(TO, CC, ID, false, OrderID);
-            return Json(result);
-        }
-
-        [HttpPost]
-        [SessionAuthorizeAttribute]
         public JsonResult Report_Crocking(long ID, bool IsToPDF)
         {
             BaseResult result;
             string FileName;
-            result = _FabricCrkShrkTest_Service.Crocking_ToExcel(ID, IsToPDF, out FileName);
+            result = _FabricCrkShrkTest_Service.ToReport_Crocking(ID, IsToPDF, out FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult CrockingSendMail(long ID)
+        public JsonResult CrockingSendMail(long ID, string TO, string CC, string OrderID)
         {
             this.CheckSession();
 
-            BaseResult result = null;
-            string FileName = string.Empty;
-
-            result = _FabricCrkShrkTest_Service.Crocking_ToExcel(ID, true, out FileName);
-
-            if (!result.Result)
-            {
-                result.ErrorMessage = result.ErrorMessage.ToString();
-            }
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
+            SendMail_Result result = _FabricCrkShrkTest_Service.SendCrockingFailResultMail(TO, CC, ID, false, OrderID);
+            return Json(result);
         }
         #endregion
 
@@ -479,42 +462,25 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { result.Result, ErrorMessage = (result.ErrorMessage == null ? string.Empty : result.ErrorMessage.Replace("'", string.Empty)) });
         }
 
-        [HttpPost]
-        [SessionAuthorizeAttribute]
-        public JsonResult FailMail_Heat(long ID, string TO, string CC, string OrderID)
-        {
-            SendMail_Result result = _FabricCrkShrkTest_Service.SendHeatFailResultMail(TO, CC, ID, false, OrderID);
-            return Json(result);
-        }
 
         [HttpPost]
         [SessionAuthorizeAttribute]
         public JsonResult Report_Heat(long ID)
         {
             BaseResult result;
-            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestHeatDetail(ID, out string FileName);
+            result = _FabricCrkShrkTest_Service.ToReport_Heat(ID, out string FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult HeatSendMail(long ID)
+        public JsonResult HeatSendMail(long ID, string TO, string CC, string OrderID)
         {
             this.CheckSession();
 
-            BaseResult result = null;
-            string FileName = string.Empty;
-
-            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestHeatDetail(ID, out FileName);
-
-            if (!result.Result)
-            {
-                result.ErrorMessage = result.ErrorMessage.ToString();
-            }
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
+            SendMail_Result result = _FabricCrkShrkTest_Service.SendHeatFailResultMail(TO, CC, ID, false, OrderID);
+            return Json(result);
         }
         #endregion
 
@@ -697,29 +663,19 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Report_Iron(long ID)
         {
             BaseResult result;
-            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestIronDetail(ID, out string FileName);
+            result = _FabricCrkShrkTest_Service.ToReport_Iron(ID, out string FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult IronSendMail(long ID)
+        public JsonResult IronSendMail(long ID, string TO, string CC, string OrderID)
         {
             this.CheckSession();
 
-            BaseResult result = null;
-            string FileName = string.Empty;
-
-            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestIronDetail(ID, out FileName);
-
-            if (!result.Result)
-            {
-                result.ErrorMessage = result.ErrorMessage.ToString();
-            }
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
+            SendMail_Result result = _FabricCrkShrkTest_Service.SendIronFailResultMail(TO, CC, ID, false, OrderID);
+            return Json(result);
         }
         #endregion
 
@@ -910,40 +866,20 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult FailMail_Wash(long ID, string TO, string CC, string OrderID)
-        {
-            SendMail_Result result = _FabricCrkShrkTest_Service.SendWashFailResultMail(TO, CC, ID, false, OrderID);
-            return Json(result);
-        }
-
-        [HttpPost]
-        [SessionAuthorizeAttribute]
         public JsonResult Report_Wash(long ID)
         {
             BaseResult result;
-            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestWashDetail(ID, out string FileName);
+            result = _FabricCrkShrkTest_Service.ToReport_Wash(ID, out string FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult WashSendMail(long ID)
+        public JsonResult WashSendMail(long ID, string TO, string CC, string OrderID)
         {
-            this.CheckSession();
-
-            BaseResult result = null;
-            string FileName = string.Empty;
-
-            result = _FabricCrkShrkTest_Service.ToExcelFabricCrkShrkTestWashDetail(ID, out FileName);
-
-            if (!result.Result)
-            {
-                result.ErrorMessage = result.ErrorMessage.ToString();
-            }
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-
-            return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
+            SendMail_Result result = _FabricCrkShrkTest_Service.SendWashFailResultMail(TO, CC, ID, false, OrderID);
+            return Json(result);
         }
         #endregion
     }

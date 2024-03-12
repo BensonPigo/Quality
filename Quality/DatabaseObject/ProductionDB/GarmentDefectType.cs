@@ -38,11 +38,11 @@ namespace DatabaseObject.ProductionDB
         /// <summary></summary>
         [Required]
         [StringLength(100)]
-        [Display(Name = "")]
+        
         public string LocalDescription { get; set; }
         /// <summary></summary>
         [Required]
-        [Display(Name = "")]
+        
         public Byte Seq { get; set; }
 
     }

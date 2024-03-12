@@ -11,6 +11,8 @@
     <script src="~/ThirdParty/plugins/DataTables/datatables.min.js"></script>
     <link href="~/Areas/FinalInspection/CSS/FinalInspection.css" rel="stylesheet" />
 
+    <link href="~/ThirdParty/plugins/bootstrap-table/bootstrap-table.css" rel="stylesheet" />
+    <script src="~/ThirdParty/plugins/bootstrap-table/bootstrap-table.js"></script>
     <style type="text/css">
         .whiteBackgrond div {
             padding-bottom: 0.5em;
@@ -107,34 +109,42 @@
         .red {
             color: red !important;
         }
+
         #divSetting, #divPOInfo {
             width: 100%;
             display: flex;
             flex-direction: row;
             flex-wrap: wrap;
         }
+
         .divSettingCell {
             /*display: flex;*/
             width: 12.5%;
         }
+
         .divPOInfoCell {
             /*display: flex;*/
             width: 16.6%;
         }
+
         .divPOInfoCell5 {
             width: 83%;
+        }
+
+        dialog {
+            z-index: 9998;
         }
     </style>
 }
 
-<div class="whiteBackgrond" style="height:88vh">
-    <div style="padding:1em">
-        <div>
+<div class="whiteBackgrond" style="height:88vh;overflow-y:scroll;">
+    <div style="padding: 1em; display: flex; flex-direction: row; flex-wrap: wrap;">
+        <div style="width:100%;">
             <h1 style="font-size:2em;color: #999999;">Inspection Report</h1>
             <button class="site-btn btn-blue" style="position:absolute;top:1em;right:0" onclick="ClickDownload()">Download</button>
         </div>
         <div style=" display: flex; flex-direction: row; flex-wrap: wrap; border: 1px solid gray; width: 38%; height: 20vh; padding-left: 5px;float:left;">
-            <div  style="width: 100%"><h1 style="font-size:1.5em">PO information</h1></div>
+            <div style="width: 100%"><h1 style="font-size:1.5em">PO information</h1></div>
             <div>
                 @{
                     string IsFD = Model.FinalInspection.ISFD ? "red" : string.Empty;
@@ -172,33 +182,6 @@
                     }
                     <!--#endregion-->
                 </div>
-                @*<table>
-                    <tr>
-                        <td>PO#</td>
-                        <td class="valueColor @IsFD" style="width:20%">@Model.FinalInspection.CustPONO</td>
-                        <td style="padding-left:10px;">Style</td>
-                        <td class="valueColor" style="width:20%">@Model.StyleID</td>
-                        <td>Brand</td>
-                        <td class="valueColor">@Model.BrandID</td>
-                    </tr>
-                    <tr>
-                        <td>SP#</td>
-                        <td class="valueColor" colspan="5">
-                            <input type="text" value="@Model.SP" style="width:100%" class="@IsFD" readonly />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Factory</td>
-                        <td class="valueColor">@Model.FinalInspection.FactoryID</td>
-                        <td>Total SP# Qty</td>
-                        <td class="valueColor">@Model.TotalSPQty</td>
-                        @if (!string.IsNullOrEmpty(Model.Dest))
-                        {
-                            <td>Destination</td>
-                            <td class="valueColor">@Model.Dest</td>
-                        }
-                    </tr>
-                </table>*@
             </div>
         </div>
         <div style="display: flex; flex-direction: row; flex-wrap: wrap; border: 1px solid gray; width: 58%; height: 20vh; padding-left: 5px;margin-left:2px; float: left;">
@@ -281,45 +264,9 @@
                     <!--#endregion-->
                 </div>
 
-                @*<table>
-                    <tr>
-                        <td>Inspection Stage</td>
-                        <td class="valueColor" style="padding-left:10px;">@Model.FinalInspection.InspectionStage</td>
-                        <td style="padding-left:10px;">Carton</td>
-                        <td style="width:4vw">
-                            <button type="button" style="min-width:50%" onclick="open_cartonsDetail()" class="site-btn btn-blue">...</button>
-                        </td>
-                        <td>Shipmode Seq</td>
-                        <td style="width:4vw">
-                            <button type="button" style="min-width:50%" onclick="open_ShipmodeSeqDetail()" class="site-btn btn-blue">...</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Audit Date</td>
-                        <td class="valueColor">@Convert.ToDateTime(Model.FinalInspection.AuditDate).ToString("yyyy/MM/dd")</td>
-                        <td style="padding-left:10px;">Available Qty</td>
-                        <td class="valueColor">@Model.AvailableQty</td>
-                        <td colspan="4"></td>
-                    </tr>
-                    <tr>
-                        <td>AQL Plan</td>
-                        <td class="valueColor">@Model.AQLPlan</td>
-                        <td style="padding-left:10px;">Sample Plan Qty</td>
-                        <td class="valueColor" style="padding-left:10px;">@Model.FinalInspection.SampleSize</td>
-                        <td>Accepted</td>
-                        <td class="valueColor">@Model.FinalInspection.AcceptQty</td>
-                        <td>Rejected</td>
-                        <td class="valueColor" style="padding-left:10px;">@(Model.FinalInspection.AcceptQty+1)</td>
-                    </tr>
-                    <tr>
-                        <td>Re-Inspection</td>
-                        @{string strReInspection = Model.FinalInspection.ReInspection ? "Y" : "N";}
-                        <td class="valueColor">@strReInspection</td>
-                    </tr>
-                </table>*@
             </div>
         </div>
-        <div style="margin:0.5em"><h1 style="font-size:2em">Inspection Detail</h1></div>
+        <div style="margin: 0.5em; width: 100%;"><h1 style="font-size:2em">Inspection Detail</h1></div>
         <div id="tab-Change">
             <ul class="tab-title">
                 <li link="#tab01">General</li>
@@ -354,46 +301,75 @@
                 @Html.Partial("~/Areas/FinalInspection/Views/Query/_Tab7_Layout.cshtml")
             </div>
         </div>
-        <div>
-            <table style="width:100%">
-                <tr>
-                    <td style="width:7%">CFA</td>
-                    <td class="valueColor" style="width:10%">@Model.FinalInspection.CFA</td>
-                    <td style="width:7%">Pass Qty(pcs)</td>
-                    <td class="valueColor" style="width:5%">@Model.FinalInspection.PassQty</td>
-                    <td style="width:7%">Inpection Result</td>
-                    <td class="valueColor" style="width:10%">@Model.FinalInspection.InspectionResult</td>
-                    <td style="width:7%" rowspan="2">
-                        @if (Model.FinalInspection.InspectionResult == "On-going")
-                        {
-                            <button type="button" onclick="GoOnInspect()" class="site-btn btn-red">Go On Inspect</button>
-                        }
-                    </td>
-                    <td style="width:7%" rowspan="2">
-                        @if (Model.FinalInspection.InspectionResult != "On-going")
-                        {
-                            <button type="button" onclick="SendMail()" class="site-btn btn-blue">Send Mail</button>
-                        }
-                    </td>
-                </tr>
-                <tr>
-                    <td>Submit Date</td>
-                    <td class="valueColor">
-                        @if (Model.FinalInspection.SubmitDate == null)
-                        {
-                            @:N/A
-                        }
-                        else
-                        {
-                            @Convert.ToDateTime(Model.FinalInspection.SubmitDate).ToString("yyyy/MM/dd")
-                        }
-                    </td>
-                    <td>Reject Qty(pcs)</td>
-                    <td class="valueColor">@Model.FinalInspection.RejectQty</td>
-                    <td>Shipment Status</td>
-                    <td class="valueColor">@Model.FinalInspection.ShipmentStatus</td>
-                </tr>
-            </table>
+        <div style="width: 100%; display: flex; flex-direction: row; flex-wrap: wrap;">
+            <div style="width: 10%;">CFA</div>
+            <div style="width: 10%;">@Model.FinalInspection.CFA</div>
+            <div style="width: 10%;">Inpection Result</div>
+            <div style="width: 10%;">@Model.FinalInspection.InspectionResult</div>
+            <div style="width: 5%;">QC</div>
+            <div style="width: 15%;">
+                @Html.TextBoxFor(o => o.SignatureBy_QC, new { @readonly = "readonly", @style = "width:80%", @placeholder = "Click" })
+                <img src="~/Image/Icon/Signature.png" id="imgSignature_QC" style=" max-width: 10%;height:auto;" />
+            </div>
+            <div style="width: 5%;">Production</div>
+            <div style="width: 15%;">
+                @Html.TextBoxFor(o => o.SignatureBy_Production, new { @readonly = "readonly", @style = "width:80%", @placeholder = "Click" })
+                <img src="~/Image/Icon/Signature.png" id="imgSignature_Production" style=" max-width: 10%;height:auto;" />
+            </div>
+            <div style="width: 10%;"></div>
+            <div style="width: 10%;">
+                @if (Model.FinalInspection.InspectionResult == "On-going")
+                {
+                    <button type="button" onclick="GoOnInspect()" class="site-btn btn-red">Go On Inspect</button>
+                }
+            </div>
+
+            <div style="width: 10%;">Pass Qty(pcs)</div>
+            <div style="width: 10%;">@Model.FinalInspection.PassQty</div>
+            <div style="width: 10%;">Reject Qty(pcs)</div>
+            <div style="width: 10%;">@Model.FinalInspection.RejectQty</div>
+            <div style="width: 5%;">QC Manager</div>
+            <div style="width: 15%;">
+                @Html.TextBoxFor(o => o.SignatureBy_QCManager, new { @readonly = "readonly", @style = "width:80%", @placeholder = "Click" })
+                <img src="~/Image/Icon/Signature.png" id="imgSignature_QCManager" style=" max-width: 10%;height:auto;" />
+            </div>
+            <div style="width: 5%;">Production Mangaer</div>
+            <div style="width: 15%;">
+                @Html.TextBoxFor(o => o.SignatureBy_ProductionManager, new { @readonly = "readonly", @style = "width:80%", @placeholder = "Click" })
+                <img src="~/Image/Icon/Signature.png" id="imgSignature_ProductionManager" style=" max-width: 10%;height:auto;" />
+            </div>
+            <div style="width: 10%;"></div>
+            <div style="width: 10%;">
+                @if (Model.FinalInspection.InspectionResult != "On-going")
+                {
+                    <button type="button" onclick="SendMail()" class="site-btn btn-blue">Send Mail</button>
+                }
+            </div>
+
+            <div style="width: 10%;">Submit Date</div>
+            <div style="width: 10%;">
+                @if (Model.FinalInspection.SubmitDate == null)
+                {
+                    @:N/A
+                }
+                else
+                {
+                    @Convert.ToDateTime(Model.FinalInspection.SubmitDate).ToString("yyyy/MM/dd")
+                }
+            </div>
+            <div style="width: 10%;">Shipment Status</div>
+            <div style="width: 10%;">@Model.FinalInspection.ShipmentStatus</div>
+            <div style="width: 5%;">TSD</div>
+            <div style="width: 15%;">
+                @Html.TextBoxFor(o => o.SignatureBy_TSD, new { @readonly = "readonly", @style = "width:80%", @placeholder = "Click" })
+                <img src="~/Image/Icon/Signature.png" id="imgSignature_TSD" style=" max-width: 10%;height:auto;" />
+            </div>
+            <div style="width: 5%;"></div>
+            <div style="width: 15%; "></div>
+            <div style="width: 10%; ">
+            </div>
+            <div style="width: 10%;"></div>
+
         </div>
     </div>
 </div>
@@ -465,10 +441,61 @@
         </div>
     </div>
 </div>
+
+
+<dialog id="diaUserList" style="height:70vh;width:30vw;">
+
+    <button class="site-btn btn-red" id="btnDialogSave" onclick="SaveSignatureUserDialog()" jobTitle="">Save</button>
+    <button class="site-btn btn-blue" onclick="CloseSignatureUserDialog()">Close</button>
+
+    <table id="UserListTable" data-maintain-meta-data="true"></table>
+
+</dialog>
+
+
+<dialog id="diaSignature" style="height:70vh;width:70vw;">
+    <div style="width:100%;display:flex;flex-direction:row;">
+        <div style="width:20%">
+            <h3 class="h3" id="headJobTitle"></h3>
+            <input type="hidden" id="headJobTitleVal" />
+        </div>
+        <div style="width:10%">
+            <select id="SignatureUserList" onchange="SignatureUserListChange()" style="height: 100%; margin: 0;"></select>
+
+        </div>
+        <div style="width:10%">
+            <button class="site-btn btn-red" onclick="saveSignature()" style="height: 100%; margin: 0;">Save</button>
+
+        </div>
+        <div style="width:10%">
+            <button class="site-btn btn-blue" onclick="clearSignature()" style="height: 100%; margin: 0;">Clear</button>
+
+        </div>
+        <div style="width:10%">
+            <button class="site-btn btn-blue" onclick="CloseSignatureDialog()" style="height:100%;margin:0;">Close</button>
+
+        </div>
+    </div>
+    <div style="width:100%;height:1vh;">
+    </div>
+    <canvas></canvas>
+
+</dialog>
+
+<dialog id="diaSignatureMsg" class="swal2-show" style="padding: 20px; background: rgb(46, 46, 46); ">
+
+    <h2><span id="txtSignatureMsg" style="color:#d6d6d6;Font-Size:inherit">Success!!<span></span></span></h2>
+    <br />
+    <button id="btnSignatureMsgOK" onclick="CloseSignatureMsgDialog()" style="background-color: rgb(48, 133, 214); border-left-color: rgb(48, 133, 214); border-right-color: rgb(48, 133, 214); color: #d6d6d6;">OK</button>
+
+</dialog>
+
 @section FinalInspection_script
 {
     <script>
         var msg = new MessagerAlert();
+        let UserListTable = $("#UserListTable");
+
 
         $(function () {
             tabChange();
@@ -560,6 +587,76 @@
                 width: "70%",
                 dialogClass: "add-contact-box",
             });
+
+
+            $("#SignatureBy_QC").click(function () {
+                GeneratorUserList($(this).val());
+                SetBtnUserDialogSave('QC');
+            });
+            $("#SignatureBy_QCManager").click(function () {
+                GeneratorUserList($(this).val());
+                SetBtnUserDialogSave('QCManager');
+            });
+            $("#SignatureBy_Production").click(function () {
+                GeneratorUserList($(this).val());
+                SetBtnUserDialogSave('Production');
+            });
+            $("#SignatureBy_ProductionManager").click(function () {
+                GeneratorUserList($(this).val());
+                SetBtnUserDialogSave('ProductionManager');
+            });
+            $("#SignatureBy_TSD").click(function () {
+                GeneratorUserList($(this).val());
+                SetBtnUserDialogSave('TSD');
+            });
+
+
+            $("#imgSignature_QC").click(function () {
+                if ($("#SignatureBy_QC").val() != '') {
+                    $("#headJobTitle").text('QC');
+                    $("#headJobTitleVal").val('QC');
+
+                    SetSignatureUserList('QC');
+                    OpenSignatureDialog();
+                }
+            });
+            $("#imgSignature_QCManager").click(function () {
+                if ($("#SignatureBy_QCManager").val() != '') {
+                    $("#headJobTitle").text('QC Manager');
+                    $("#headJobTitleVal").val('QCManager');
+                    SetSignatureUserList('QCManager');
+                    OpenSignatureDialog();
+                }
+            });
+            $("#imgSignature_Production").click(function () {
+                if ($("#SignatureBy_Production").val() != '') {
+                    $("#headJobTitle").text('Production');
+                    $("#headJobTitleVal").val('Production');
+
+                    SetSignatureUserList('Production');
+                    OpenSignatureDialog();
+                }
+            });
+            $("#imgSignature_ProductionManager").click(function () {
+                if ($("#SignatureBy_ProductionManager").val() != '') {
+                    $("#headJobTitle").text('Production Manager');
+                    $("#headJobTitleVal").val('ProductionManager');
+
+                    SetSignatureUserList('ProductionManager');
+                    OpenSignatureDialog();
+                }
+            });
+            $("#imgSignature_TSD").click(function () {
+                if ($("#SignatureBy_TSD").val() != '') {
+                    $("#headJobTitle").text('TSD');
+                    $("#headJobTitleVal").val('TSD');
+
+                    SetSignatureUserList('TSD');
+                    OpenSignatureDialog();
+                }
+            });
+
+
         });
 
         function tabChange() {
@@ -588,10 +685,10 @@
             // Ukey = -1代表還沒有這筆Detail紀錄
             if (DetailUkey == -1) {
                 //msg.WithInfo("No Picture");
-                window.open('@Url.Action("DefectPicture", "Inspection")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+                window.open('@Url.Action("DefectPicture", "Inspection")?RowIndex=' + RowIndex, "Picture",  'toolbar=no,status=no,location=no,width=700,height=600');
             }
             else {
-                window.open('@Url.Action("DefectPicture", "Inspection")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+                window.open('@Url.Action("DefectPicture", "Inspection")?DetailUkey=' + DetailUkey, "Picture",  'toolbar=no,status=no,location=no,width=700,height=900');
             }
         }
 
@@ -599,20 +696,20 @@
 
             // Ukey = -1代表還沒有這筆Detail紀錄
             if (DetailUkey == -1) {
-                window.open('@Url.Action("BAPicture", "Inspection")?RowIndex=' + RowIndex, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+                window.open('@Url.Action("BAPicture", "Inspection")?RowIndex=' + RowIndex, "Picture",  'toolbar=no,status=no,location=no,width=700,height=600');
             }
             else {
-                window.open('@Url.Action("BAPicture", "Inspection")?DetailUkey=' + DetailUkey, "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+                window.open('@Url.Action("BAPicture", "Inspection")?DetailUkey=' + DetailUkey, "Picture",  'toolbar=no,status=no,location=no,width=700,height=600');
             }
         }
 
         function OpenOthersPicture() {
-            window.open('@Url.Action("OthersPicture", "Inspection")?callFrom=Query&FinalInspectionID=@Model.FinalInspection.ID', "Picture", config = 'toolbar=no,status=no,location=no,width=700,height=600');
+            window.open('@Url.Action("OthersPicture", "Inspection")?callFrom=Query&FinalInspectionID=@Model.FinalInspection.ID', "Picture",  'toolbar=no,status=no,location=no,width=700,height=600');
         }
 
         function ClickDownload() {
 
-            window.location.href = '@Url.Action("Download")';
+            window.location.href = '@Url.Action("Download")?FinalInspectionID='+'@Model.FinalInspection.ID';
 
         }
 
@@ -622,8 +719,9 @@
         }
 
         function SendMail() {
+            var url = '@Url.Action("SendMail")?FinalInspectionID='+'@Model.FinalInspection.ID';
             $.ajax({
-                url: "@Url.Action("SendMail")",
+                url: url,
                 type: 'POST',
                 dataType: "json",
                 async: false,
@@ -642,5 +740,334 @@
             });
 
         }
+
+        function OpenSignatureUserDialog() {
+
+            let infoModal = document.querySelector(`#diaUserList`);
+            infoModal.showModal();
+
+        }
+
+        function CloseSignatureUserDialog() {
+
+            let infoModal = document.querySelector(`#diaUserList`);
+            infoModal.close();
+        }
+
+        function GeneratorUserList(userIDs) {
+            var url = '@Url.Action("GetSignatureUserList")' + '?userIDs=' + userIDs;
+
+            var columns = [
+                {
+                    field: "Selected", title: "", searchable: false,checkbox:true,
+                },
+                {
+                    field: "UserID", title: "User ID"
+                },
+                {
+                    field: "UserName", title: "User Name"
+                },
+            ];
+            UserListTable.bootstrapTable('destroy').bootstrapTable({
+                toggle: "table",
+                url: url,
+                method: 'GET',
+                columns: columns,
+                search: true,
+
+            });
+            UserListTable.bootstrapTable('refreshOptions', { columns: columns, url: '' });
+            OpenSignatureUserDialog('');
+        }
+
+        function SetBtnUserDialogSave(jobTitle) {
+            $("#btnDialogSave").attr('jobTitle', jobTitle);
+        }
+
+        function SaveSignatureUserDialog() {
+            let jobTitle = $("#btnDialogSave").attr('jobTitle');
+            let finalInspectionID = '@Model.FinalInspection.ID';
+            let allData = UserListTable.bootstrapTable('getData', { useCurrentPage: false, includeHiddenRows: true, unfiltered: true });
+            let selectedUserIDs = [];
+            let selectedDatas = [];
+
+            $.map(allData, function (data, index, array) {
+                if (data.Selected === true) {
+                    data.FinalInspectionID = '@Model.FinalInspection.ID';
+                    data.JobTitle = jobTitle;
+                    selectedDatas.push(data);
+                    selectedUserIDs.push(data.UserID);
+                }
+            });
+
+            $.ajax({
+                url: "@Url.Action("PostSignatureUserList")",
+                type: 'POST',
+                dataType: "json",
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({ FinalInspectionID: finalInspectionID, JobTitle: jobTitle, allData: selectedDatas }),
+                async: false,
+                success: function (data) {
+
+                    if (data.Result) {
+                        var newUserIDs = selectedUserIDs.join(',');
+                        $("#SignatureBy_" + jobTitle).val(newUserIDs);
+                        CloseSignatureUserDialog();
+                    }
+                    else {
+                        CloseSignatureUserDialog();
+                        msg.WithError(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    CloseSignatureUserDialog();
+                    msg.WithError(xhr.responseText);
+                }
+            });
+        }
+
+
+
+        function OpenSignatureDialog() {
+            let infoModal = document.querySelector(`#diaSignature`);
+            infoModal.showModal();
+        }
+
+        function CloseSignatureDialog() {
+
+            let infoModal = document.querySelector(`#diaSignature`);
+            infoModal.close();
+            clearSignature();
+        }
+
+        function OpenSignatureMsgDialog(msg) {
+            $("#txtSignatureMsg").text(msg);
+            let infoModal = document.querySelector(`#diaSignatureMsg`);
+            infoModal.showModal();
+        }
+
+        function CloseSignatureMsgDialog() {
+
+            $("#txtSignatureMsg").text('');
+            let infoModal = document.querySelector(`#diaSignatureMsg`);
+            infoModal.close();
+        }
+
+
+        function SetSignatureUserList(jobTitle) {
+
+            let userIDs = $("#SignatureBy_" + jobTitle).val().split(',');
+            $("#SignatureUserList").empty();
+            $.map(userIDs, function (userID, index, array) {
+
+                $("#SignatureUserList").append(`<option value="${userID}">${userID}</option>`);
+            });
+            SignatureUserListChange();
+        }
+
+        function SignatureUserListChange() {
+            clearSignature();
+
+            let jobTitle = $("#headJobTitleVal").val();
+            let userID = $("#SignatureUserList").val();
+            GetSignature(jobTitle, userID);
+        }
+
+        function GetSignature(jobTitle, userID) {
+            let finalInspectionID = '@Model.FinalInspection.ID';
+
+            var param =
+            {
+                FinalInspectionID: finalInspectionID,
+                JobTitle: jobTitle,
+                UserID: userID
+            };
+            $.ajax({
+                url: "@Url.Action("GetSignature")",
+                type: 'POST',
+                dataType: "json",
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({ Req: param }),
+                async: false,
+                success: function (data) {
+
+                    if (data.Result) {
+                        var Signature_Base64 = data.Data.Signature_Base64;
+                        let image = new Image();
+                        image.src = Signature_Base64; // 替換成實際圖片source
+
+                        // 圖片載入完成後，再繪製到Canvas
+                        image.onload = function () {
+                            showPngData(image);
+                        }
+                    }
+                    else {
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    msg.WithError(xhr.responseText);
+                }
+            });
+        }
+
+        function InsertSignature(img) {
+
+            let finalInspectionID = '@Model.FinalInspection.ID';
+            let jobTitle = $("#headJobTitleVal").val();
+            let userID = $("#SignatureUserList").val();
+
+            var param =
+            {
+                FinalInspectionID: finalInspectionID,
+                JobTitle: jobTitle,
+                UserID: userID,
+                Signature: img
+            };
+            $.ajax({
+                url: "@Url.Action("InsertSignature")",
+                type: 'POST',
+                dataType: "json",
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({ Req: param }),
+                async: false,
+                success: function (data) {
+
+                    //CloseSignatureDialog();
+                    if (data.Result) {
+                        //msg.WithSuccess("Success!!");
+                        OpenSignatureMsgDialog("Success!!");
+                    }
+                    else {
+                        OpenSignatureMsgDialog(data.ErrorMessage);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    msg.WithError(xhr.responseText);
+                }
+            });
+        }
+        async function GetCanvasBase64(blob) {
+
+
+            var base64 = await convertFile(blob);
+            var img = base64.replace("data:image/jpg;base64,", "").replace("data:image/jpeg;base64,", "").replace("data:image/png;base64,", "");
+
+            InsertSignature(img);
+        }
+
+        // 使用FileReader讀取檔案，並且回傳Base64編碼後的source
+        function convertFile(file) {
+            return new Promise((resolve, reject) => {
+                // 建立FileReader物件
+                let reader = new FileReader()
+                // 註冊onload事件，取得result則resolve (會是一個Base64字串)
+                reader.onload = () => { resolve(reader.result) }
+                // 註冊onerror事件，若發生error則reject
+                reader.onerror = () => { reject(reader.error) }
+                // 讀取檔案
+                reader.readAsDataURL(file)
+            })
+        }
+
+        ////////////////
+
+
+        const config = {
+            //width: 400,
+            //height: 200,
+            width: $("#diaSignature").width() ,
+            height: $("#diaSignature").height() * 0.92,
+            lineWidth: 5,
+            strokeStyle: 'red',
+            lineCap: 'round',
+            lineJoin: 'round',
+        }
+
+        const canvas = document.querySelector('canvas')
+
+        //var sizeWidth = $("#diaSignature").width() * 0.99,
+        //    sizeHeight = $("#diaSignature").height() * 0.9;
+
+        //canvas.width = sizeWidth;
+        //canvas.height = sizeHeight;
+        //canvas.style.width = sizeWidth;
+        //canvas.style.height = sizeHeight;
+
+        canvas.width = config.width
+        canvas.height = config.height
+        canvas.style.width = config.width
+        canvas.style.height = config.height
+
+        canvas.style.border = '1px solid #000'
+        const ctx = canvas.getContext('2d')
+        ctx.fillStyle = 'transparent'
+        ctx.fillRect(0, 0, config.width, config.height);
+
+        const client = {
+            offsetX: 0,
+            offsetY: 0,
+            endX: 0,
+            endY: 0
+        }
+
+        const mobileStatus = (/Mobile|Android|iPhone/i.test(navigator.userAgent))
+
+        const init = event => {
+            const { offsetX, offsetY, pageX, pageY } = mobileStatus ? event.changedTouches[0] : event
+            client.offsetX = offsetX
+            client.offsetY = offsetY
+            client.endX = pageX - canvas.getBoundingClientRect().left;
+            client.endY = pageY - canvas.getBoundingClientRect().top;
+
+            ctx.beginPath()
+            ctx.lineWidth = config.lineWidth
+            ctx.strokeStyle = config.strokeStyle
+            ctx.lineCap = config.lineCap
+            ctx.lineJoin = config.lineJoin
+            ctx.moveTo(client.endX, client.endY)
+            window.addEventListener(mobileStatus ? "touchmove" : "mousemove", draw)
+        }
+
+        const draw = event => {
+            const { pageX, pageY } = mobileStatus ? event.changedTouches[0] : event
+            client.endX = pageX - canvas.getBoundingClientRect().left;
+            client.endY = pageY - canvas.getBoundingClientRect().top;
+
+            ctx.lineTo(client.endX, client.endY)
+            ctx.stroke()
+        }
+
+        const cloaseDraw = () => {
+            ctx.closePath()
+            window.removeEventListener(mobileStatus ? "touchmove" : "mousemove", draw)
+        }
+
+        const showPngData = (image) => {
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        }
+
+        window.addEventListener(mobileStatus ? "touchstart" : "mousedown", init)
+        window.addEventListener(mobileStatus ? "touchend" : "mouseup", cloaseDraw)
+
+        const clearSignature = () => {
+            ctx.clearRect(0, 0, config.width, config.height)
+        }
+
+        const saveSignature = () => {
+
+            canvas.toBlob(blob => {
+
+                //// 下載.png
+                //const date = Date.now().toString()
+                //const a = document.createElement('a')
+                //a.download = `${date}.png`
+                //a.href = URL.createObjectURL(blob)
+                //a.click()
+                //a.remove()
+
+                GetCanvasBase64(blob);
+            })
+        }
+        ////////////////
     </script>
 }

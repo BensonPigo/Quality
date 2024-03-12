@@ -5,10 +5,10 @@ namespace DatabaseObject.ProductionDB
     public class TypeSelection
     {
         [Required]
-        public int? VersionID { get; set; }
+        public int VersionID { get; set; }
 
         [Required]
-        public int? Seq { get; set; }
+        public int Seq { get; set; }
 
         [Required]
         [StringLength(50)]

@@ -6,20 +6,20 @@ namespace DatabaseObject.ManufacturingExecutionDB
     public class RFT_Inspection_Measurement
     {
         /// <summary></summary>
-        [Display(Name = "")]
-        public Int64? Ukey { get; set; }
+        
+        public long Ukey { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
-        public Int64? MeasurementUkey { get; set; }
+        
+        public long MeasurementUkey { get; set; }
 
         /// <summary></summary>
-        [Display(Name = "")]
-        public Int64? StyleUkey { get; set; }
+        
+        public long StyleUkey { get; set; }
 
         /// <summary>第幾次檢驗</summary>
         [Display(Name = "第幾次檢驗")]
-        public int? No { get; set; }
+        public int No { get; set; }
 
         /// <summary>代號</summary>
         [StringLength(20)]

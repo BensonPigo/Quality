@@ -10,6 +10,8 @@ using Library;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Ocsp;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
 using System;
@@ -22,8 +24,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
+
 //using static Sci.MyUtility;
 using static System.Net.Mime.MediaTypeNames;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -37,9 +42,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return new AgingHydrolysisTest_ViewModel()
             {
                 Request = new AgingHydrolysisTest_Request(),
-                MainData = new AgingHydrolysisTest_Main(),
+                MainData = new AgingHydrolysisTest_Main()
+                {
+                },
                 OrderID_Source = new List<System.Web.Mvc.SelectListItem>(),
                 Article_Source = new List<System.Web.Mvc.SelectListItem>(),
+                TimeUnit_Source = new List<System.Web.Mvc.SelectListItem>()
+                {
+                    new SelectListItem(){Text = "",Value=""},
+                    new SelectListItem(){Text = "Hour",Value="Hour"},
+                    new SelectListItem(){Text = "Day",Value="Day"}
+                },
                 MainList = new List<AgingHydrolysisTest_Main>(),
                 DetailList = new List<AgingHydrolysisTest_Detail>(),
             };
@@ -164,7 +177,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     SeasonID = Req.SeasonID,
                     StyleID = Req.StyleID,
                     Article = Req.Article,
-                    OrderID = Req.OrderID,
+                    //OrderID = Req.OrderID,
                     AgingHydrolysisTestID = Req.AgingHydrolysisTestID,
                 });
 
@@ -182,7 +195,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     model.OrderID_Source = new SetListItem().ItemListBinding(tmpList.Select(o => o.OrderID).Distinct().ToList());
 
                     // 若"有"傳入OrderID，則可以直接找出表頭表身明細
-                    if (!string.IsNullOrEmpty(Req.OrderID))
+                    if (!string.IsNullOrEmpty(Req.OrderID) && tmpList.Any(o => o.OrderID == Req.OrderID))
                     {
                         // 取得表頭資料
                         model.MainData = tmpList.Where(o => o.OrderID == Req.OrderID).FirstOrDefault();
@@ -493,12 +506,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public AgingHydrolysisTest_Detail_ViewModel GetReport(string ReportNo, bool isPDF)
+        public AgingHydrolysisTest_Detail_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             AgingHydrolysisTest_Detail_ViewModel result = new AgingHydrolysisTest_Detail_ViewModel();
 
             string basefileName = "AgingHydrolysisTest";
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+            string tmpName = string.Empty;
 
             Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
 
@@ -522,6 +536,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     result.ErrorMessage = "Report No. not found.";
                     result.Result = false;
                 }
+
+                tmpName = $"Accelerated Aging by Hydrolysis Test_{agingHydrolysisTest_Detail.Rows[0]["OrderID"]}_" +
+                $"{agingHydrolysisTest_Detail.Rows[0]["StyleID"]}_" +
+                $"{agingHydrolysisTest_Detail.Rows[0]["FabricRefNo"]}_" +
+                $"{agingHydrolysisTest_Detail.Rows[0]["FabricColor"]}_" +
+                $"{agingHydrolysisTest_Detail.Rows[0]["Result"]}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
 
                 if (reportDataSet.Tables.Count == 2)
                 {
@@ -663,10 +685,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Cells[14, 5] = agingHydrolysisTest_Detail_Mockup.Rows[3]["Comment"].ToString();
                 }
 
-                string fileName = $"AgingHydrolysisTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
+                //string tmpName = $"AgingHydrolysisTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
-                string filePdfName = $"AgingHydrolysisTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
+                string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
 
@@ -712,16 +741,33 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
         public SendMail_Result FailSendMail(string ReportNo, string TO, string CC)
         {
-            AgingHydrolysisTest_ViewModel main = this.GetMainPage(new AgingHydrolysisTest_Request()
+            _Provider = new AgingHydrolysisTest_Provider(Common.ManufacturingExecutionDataAccessLayer);
+
+            var detail = this.GetDetailPage(new AgingHydrolysisTest_Request() { ReportNo = ReportNo });
+            AgingHydrolysisTest_Main MainData = _Provider.GetMainList(new AgingHydrolysisTest_Request()
             {
-                ReportNo = ReportNo
-            });
-            AgingHydrolysisTest_Detail_ViewModel report = this.GetReport(ReportNo, false);
+                AgingHydrolysisTestID = detail.MainDetailData.AgingHydrolysisTestID,
+            }).FirstOrDefault();
+
+            string name = $"Accelerated Aging by Hydrolysis Test_{MainData.OrderID}_" +
+                $"{MainData.StyleID}_" +
+                $"{detail.MainDetailData.FabricRefNo}_" +
+                $"{detail.MainDetailData.FabricColor}_" +
+                $"{detail.MainDetailData.Result}_" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+            AgingHydrolysisTest_Detail_ViewModel report = this.GetReport(ReportNo, false, name);
             string mailBody = "";
             string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report.TempFileName) ;
             SendMail_Request sendMail_Request = new SendMail_Request
             {
-                Subject = "Accelerated Aging by Hydrolysis – Test Fail",
+                Subject = $"Accelerated Aging by Hydrolysis Test/{MainData.OrderID}/" +
+                $"{MainData.StyleID}/" +
+                $"{detail.MainDetailData.FabricRefNo}/" +
+                $"{detail.MainDetailData.FabricColor}/" +
+                $"{detail.MainDetailData.Result}/" +
+                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
+
                 To = TO,
                 CC = CC,
                 Body = mailBody,
@@ -729,9 +775,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 FileonServer = new List<string> { FileName },
                 IsShowAIComment = true,
                 AICommentType = "Accelerated Aging by Hydrolysis",
-                StyleID = main.MainData.StyleID,
-                SeasonID = main.MainData.SeasonID,
-                BrandID = main.MainData.BrandID,
+                StyleID = MainData.StyleID,
+                SeasonID = MainData.SeasonID,
+                BrandID = MainData.BrandID,
             };
 
             _MailService = new MailToolsService();
