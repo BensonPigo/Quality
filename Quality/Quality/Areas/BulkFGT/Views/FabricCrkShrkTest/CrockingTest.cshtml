@@ -798,12 +798,15 @@
     }
 
     function ToReport(IsToPDF) {
+
+        msg.WithInfoTimer("Report Generating...");
+
         $.ajax({
             url: "@Url.Action("Report_Crocking", "FabricCrkShrkTest", new { Area = "BulkFGT" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ ID: $('#ID').val(), IsToPDF: IsToPDF }),
-            async: false,
+            async: true,
             success: function (data) {
                 if (data.Result) {
                     window.location.href = data.reportPath;

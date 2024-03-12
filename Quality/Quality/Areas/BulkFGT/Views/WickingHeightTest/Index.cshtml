@@ -946,12 +946,14 @@
 
         $("#Excel").on("click", function () {
 
+            msg.WithInfoTimer("Report Generating...");
+
             $.ajax({
                 url: "@Url.Action("ToExcel")",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ ReportNo: $('#Main_ReportNo').val()}),
-                async: false,
+                async: true,
                 success: function (data) {
                     if (data.Result) {
                         window.location.href = data.reportPath;
@@ -968,12 +970,14 @@
 
         $("#PDF").on("click", function () {
 
+            msg.WithInfoTimer("Report Generating...");
+
             $.ajax({
                 url: "@Url.Action("ToPDF")",
                 type: 'POST',
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ ReportNo: $('#Main_ReportNo').val()}),
-                async: false,
+                async: true,
                 success: function (data) {
                     if (data.Result) {
                         window.location.href = data.reportPath;

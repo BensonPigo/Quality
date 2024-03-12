@@ -1053,12 +1053,15 @@
     }
 
     function ToReport() {
+
+        msg.WithInfoTimer("Report Generating...");
+
       $.ajax({
           url: "@Url.Action("Report", "PullingTest", new { Area = "BulkFGT" })",
           type: 'POST',
           contentType: "application/json; charset=utf-8",
           data: JSON.stringify({ ReportNo: $('#Detail_ReportNo').val() }),
-          async: false,
+          async: true,
           success: function (data) {
               if (data.Result) {
                   window.location.href = data.reportPath;

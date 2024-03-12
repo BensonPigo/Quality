@@ -300,12 +300,14 @@
             AuditDateEnd: $('#AuditDateEnd').val(),
         };
 
+        msg.WithInfoTimer("Report Generating...");
+
         $.ajax({
             url: "@Url.Action("DownloadTable", "Query", new { Area = "FinalInspection" })",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ model }),
-            async: false,
+            async: true,
             success: function (data) {
                 if (data.Result) {
                     window.location.href = data.reportPath;

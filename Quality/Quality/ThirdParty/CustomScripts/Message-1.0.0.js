@@ -23,6 +23,30 @@
                     agreeFunction();
                 });
         },
+        timerDialog: function (content, type, agreeFunction, note, millisecond, fontSize = 'inherit') {
+            swal({
+                title: '<span style="color:#d6d6d6;Font-Size:' + fontSize + '">' + content + '<span>',
+                html: transforHtml(note),
+                type: type,
+                background: '#2e2e2e',
+                timer: millisecond,
+                showConfirmButton: false,
+                //allowOutsideClick: false,
+                //allowEscapeKey: false,
+                //buttonsStyling: false,
+                //confirmButtonClass: "btn second",
+                //confirmButtonColor: "#6f94c9",
+                //confirmButtonText: "OK"
+            }).then(
+                function () {
+                    if (agreeFunction == null || typeof agreeFunction != 'function') {
+                        //console.log('agreeFunction is not function');
+                        return;
+                    }
+                    agreeFunction();
+                })
+                .catch(swal.noop);
+        },
         normalConfirm: function (content, agreeFunction, cancelFunction, note) {
             swal({
                 title: '<span style="color:#d6d6d6">' + content +'<span>',//content,
