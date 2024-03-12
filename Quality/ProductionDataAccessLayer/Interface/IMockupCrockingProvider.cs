@@ -14,10 +14,14 @@ namespace ProductionDataAccessLayer.Interface
 
         DataTable GetMockupCrockingFailMailContentData(string ReportNo);
 
-        int Create(MockupCrocking Item, string Mdivision, out string NewReportNo);
+        int CreateMockupCrocking(MockupCrocking Item, string Mdivision, out string NewReportNo);
 
-        void Update(MockupCrocking_ViewModel Item);
+        void UpdateMockupCrocking(MockupCrocking_ViewModel Item);
 
-        int Delete(MockupCrocking Item);
+        int DeleteMockupCrocking(MockupCrocking Item);
+        IList<MockupCrocking_Detail_ViewModel> GetMockupCrocking_Detail(MockupCrocking_Detail Item);
+
+        int CreateDetail(MockupCrocking_Detail Item);
+        int DeleteDetail(MockupCrocking_Detail Item);
     }
 }

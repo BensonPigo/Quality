@@ -17,6 +17,7 @@ using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Quality.Helper;
 using BusinessLogicLayer.Service;
+using System.Web;
 
 namespace Quality.Areas.BulkFGT.Controllers
 {
@@ -370,9 +371,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendMail(string ReportNo, string TO, string CC)
+        public JsonResult SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
-            SendMail_Result result = Service.SendMail(ReportNo, TO, CC);
+            SendMail_Result result = Service.SendMail(ReportNo, TO, CC, Subject, Body, Files);
             return Json(result);
         }
 

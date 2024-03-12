@@ -120,6 +120,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
                 return this.EditDate.HasValue ? $"{this.EditDate.Value.ToString("yyyy-MM-dd HH:mm:ss")}-{this.EditName}" : string.Empty;
             }
         }
+        public string MailSubject { get; set; }
 
     }
     public class DailyMoisture_Detail_Result : CompareBase

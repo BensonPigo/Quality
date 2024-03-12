@@ -19,6 +19,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.UI.WebControls;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -110,6 +111,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result = _AccessoryOvenWashProvider.GetOvenTest(Req);
                 result.ScaleData = _AccessoryOvenWashProvider.GetScaleData();
 
+                DataTable dt = _AccessoryOvenWashProvider.GetData_OvenDataTable(Req);
+                string Subject = $"Accessory Oven Test/{Req.POID}/" +
+                    $"{dt.Rows[0]["Style"]}/" +
+                    $"{dt.Rows[0]["Refno"]}/" +
+                    $"{dt.Rows[0]["Color"]}/" +
+                    $"{dt.Rows[0]["Oven Result"]}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                result.MailSubject = Subject;
                 result.Result = true;
             }
             catch (Exception ex)
@@ -184,7 +194,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public SendMail_Result SendOvenMail(Accessory_Oven Req)
+        public SendMail_Result SendOvenMail(Accessory_Oven Req, List<HttpPostedFileBase> Files)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -215,17 +225,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    FileUploader = Files,
                     IsShowAIComment = true,
                     AICommentType = "Accessory Oven & Wash Test",
                     OrderID = Req.POID,
 
                 };
 
+                if (!string.IsNullOrEmpty(Req.Subject))
+                {
+                    sendMail_Request.Subject = Req.Subject;
+                }
+
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-
-                string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, out System.Net.Mail.AlternateView plainView);
+                string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, Req.Body, out System.Net.Mail.AlternateView plainView);
 
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;
@@ -394,7 +409,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
         #endregion
 
-
         #region Wash
         public Accessory_Wash GetWashTest(Accessory_Wash Req)
         {
@@ -410,6 +424,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 result = _AccessoryOvenWashProvider.GetWashTest(Req);
                 result.ScaleData = _AccessoryOvenWashProvider.GetScaleData();
+
+                DataTable dt = _AccessoryOvenWashProvider.GetData_WashDataTable(Req);
+                string Subject = $"Accessory Wash Test/{Req.POID}/" +
+                    $"{dt.Rows[0]["Style"]}/" +
+                    $"{dt.Rows[0]["Refno"]}/" +
+                    $"{dt.Rows[0]["Color"]}/" +
+                    $"{dt.Rows[0]["Wash Result"]}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                result.MailSubject = Subject;
 
                 result.Result = true;
             }
@@ -488,7 +512,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return result;
         }
-        public SendMail_Result SendWashMail(Accessory_Wash Req)
+        public SendMail_Result SendWashMail(Accessory_Wash Req, List<HttpPostedFileBase> Files)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -517,16 +541,21 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    FileUploader = Files,
                     IsShowAIComment = true,
                     AICommentType = "Accessory Oven & Wash Test",
                     OrderID = Req.POID,
                 };
 
+                if (!string.IsNullOrEmpty(Req.Subject))
+                {
+                    sendMail_Request.Subject = Req.Subject;
+                }
+
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-
-                string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, out System.Net.Mail.AlternateView plainView);
+                string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, Req.Body, out System.Net.Mail.AlternateView plainView);
 
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;
@@ -559,13 +588,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
-                //DataTable dtOvenDetail = _AccessoryOvenWashProvider.GetOvenTestDataTable(new Accessory_Oven() 
-                //{ 
-                //    AIR_LaboratoryID = Convert.ToInt64( AIR_LaboratoryID),
-                //    POID = POID,
-                //    Seq1 = Seq1,
-                //    Seq2 = Seq2,
-                //});
 
                 Model = _AccessoryOvenWashProvider.GetWashTestExcel(new Accessory_Wash()
                 {
@@ -722,6 +744,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result.WoolScale = string.IsNullOrEmpty(result.WoolScale) ? "4-5" : result.WoolScale;
                 result.ScaleData = _AccessoryOvenWashProvider.GetScaleData();
 
+                DataTable dt = _AccessoryOvenWashProvider.GetData_WashingFastnessDataTable(Req);
+
+                string Subject = $"Accessory Washing Fastness Test_" +
+                        $"{Req.POID}_" +
+                        $"{dt.Rows[0]["Style"]}_" +
+                        $"{dt.Rows[0]["Refno"]}_" +
+                        $"{dt.Rows[0]["Color"]}_" +
+                        $"{dt.Rows[0]["Washing Fastness Result"]}_" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                result.MailSubject = Subject;
                 result.Result = true;
             }
             catch (Exception ex)
@@ -799,7 +832,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return result;
         }
-        public SendMail_Result SendWashingFastnessMail(Accessory_WashingFastness Req)
+        public SendMail_Result SendWashingFastnessMail(Accessory_WashingFastness Req, List<HttpPostedFileBase> Files)
         {
 
             SendMail_Result result = new SendMail_Result();
@@ -834,15 +867,21 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    FileUploader = Files,
                     IsShowAIComment = true,
                     AICommentType = "Accessory Oven & Wash Test",
                     OrderID = Req.POID,
                 };
 
+                if (!string.IsNullOrEmpty(Req.Subject))
+                {
+                    sendMail_Request.Subject = Req.Subject;
+                }
+
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, out AlternateView plainView);
+                string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, Req.Body, out AlternateView plainView);
 
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;

@@ -27,7 +27,6 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
     /// </history>
     public class MockupWashProvider : SQLDAL, IMockupWashProvider
     {
-        private IMockupWashDetailProvider _MockupWashDetailProvider;
         #region 底層連線
         public MockupWashProvider(string ConString) : base(ConString) { }
         public MockupWashProvider(SQLDataTransaction tra) : base(tra) { }
@@ -85,7 +84,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             return ExecuteList<MockupWash>(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public int Create(MockupWash Item, string Mdivision, out string NewReportNo)
+        public int CreateMockupWash(MockupWash Item, string Mdivision, out string NewReportNo)
         {
             NewReportNo = GetID(Mdivision + "WA", "MockupWash", DateTime.Today, 2, "ReportNo");
             StringBuilder SbSql = new StringBuilder();
@@ -189,7 +188,7 @@ END
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public void Update(MockupWash_ViewModel Item)
+        public void UpdateMockupWash(MockupWash_ViewModel Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -280,8 +279,7 @@ end
             objParameter.Add("@Type", DbType.String, HttpUtility.HtmlDecode(Item.Type) ?? string.Empty);
             objParameter.Add("@ReportNo", DbType.String, HttpUtility.HtmlDecode(Item.ReportNo));
 
-            _MockupWashDetailProvider = new MockupWashDetailProvider(Common.ProductionDataAccessLayer);
-            var oldWashData = _MockupWashDetailProvider.GetMockupWash_Detail(new MockupWash_Detail() { ReportNo = Item.ReportNo }).ToList();
+            var oldWashData = this.GetMockupWash_Detail(new MockupWash_Detail() { ReportNo = Item.ReportNo }).ToList();
 
             List<MockupWash_Detail_ViewModel> needUpdateDetailList =
                 PublicClass.CompareListValue<MockupWash_Detail_ViewModel>(
@@ -384,7 +382,7 @@ WHERE UKey = @Ukey
             }
         }
 
-        public int Delete(MockupWash Item)
+        public int DeleteMockupWash(MockupWash Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -577,5 +575,95 @@ where m.ReportNo = @ReportNo
             return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), objParameter);
         }
         #endregion
+
+
+        public int CreateDetail(MockupWash_Detail Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("INSERT INTO [MockupWash_Detail]" + Environment.NewLine);
+            SbSql.Append("(" + Environment.NewLine);
+            SbSql.Append("         ReportNo" + Environment.NewLine);
+            SbSql.Append("        ,TypeofPrint" + Environment.NewLine);
+            SbSql.Append("        ,Design" + Environment.NewLine);
+            SbSql.Append("        ,ArtworkColor" + Environment.NewLine);
+            SbSql.Append("        ,FabricRefNo" + Environment.NewLine);
+            SbSql.Append("        ,AccessoryRefno" + Environment.NewLine);
+            SbSql.Append("        ,FabricColor" + Environment.NewLine);
+            SbSql.Append("        ,Result" + Environment.NewLine);
+            SbSql.Append("        ,Remark" + Environment.NewLine);
+            SbSql.Append("        ,EditName" + Environment.NewLine);
+            SbSql.Append("        ,EditDate" + Environment.NewLine);
+            SbSql.Append(")" + Environment.NewLine);
+            SbSql.Append("VALUES" + Environment.NewLine);
+            SbSql.Append("(" + Environment.NewLine);
+            SbSql.Append("         @ReportNo"); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            SbSql.Append("        ,@TypeofPrint"); objParameter.Add("@TypeofPrint", DbType.String, Item.TypeofPrint ?? string.Empty);
+            SbSql.Append("        ,@Design"); objParameter.Add("@Design", DbType.String, Item.Design ?? string.Empty);
+            SbSql.Append("        ,@ArtworkColor"); objParameter.Add("@ArtworkColor", DbType.String, Item.ArtworkColor ?? string.Empty);
+            SbSql.Append("        ,@FabricRefNo"); objParameter.Add("@FabricRefNo", DbType.String, Item.FabricRefNo ?? string.Empty);
+            SbSql.Append("        ,@AccessoryRefno"); objParameter.Add("@AccessoryRefno", DbType.String, Item.AccessoryRefno ?? string.Empty);
+            SbSql.Append("        ,@FabricColor"); objParameter.Add("@FabricColor", DbType.String, Item.FabricColor ?? string.Empty);
+            SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result ?? string.Empty);
+            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark ?? string.Empty);
+            SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName ?? string.Empty);
+            SbSql.Append("        ,GETDATE()");
+            SbSql.Append(")" + Environment.NewLine);
+
+            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+
+        public int DeleteDetail(MockupWash_Detail Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("DELETE FROM [MockupWash_Detail]" + Environment.NewLine);
+            if (string.IsNullOrEmpty(Item.ReportNo))
+            {
+                SbSql.Append("Where Ukey = @Ukey" + Environment.NewLine);
+                objParameter.Add("@Ukey", Item.Ukey);
+            }
+            else
+            {
+                SbSql.Append("Where ReportNo = @ReportNo" + Environment.NewLine);
+                objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            }
+
+            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+
+        public IList<MockupWash_Detail_ViewModel> GetMockupWash_Detail(MockupWash_Detail Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append(@"
+SELECT
+         md.ReportNo
+        ,md.Ukey
+		,md.TypeofPrint
+        ,md.Design
+        ,md.ArtworkColor
+        ,md.AccessoryRefno
+        ,md.FabricRefNo
+        ,md.FabricColor
+        ,md.Result
+        ,md.Remark
+        ,md.EditName
+        ,md.EditDate
+		,ArtworkColorName = (select stuff((select concat(';', Name) from Color WITH(NOLOCK) where ID in (select Data from SplitString(md.ArtworkColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
+        ,FabricColorName = (select stuff((select concat(';', Name) from Color WITH(NOLOCK) where ID in (select Data from SplitString(md.FabricColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
+		,LastUpdate = iif(isnull(md.EditName, '') <> '', Concat(md.EditName, '-' + Format(md.EditDate,'yyyy/MM/dd HH:mm:ss')), Format(md.EditDate,'yyyy/MM/dd HH:mm:ss'))
+FROM MockupWash_Detail md WITH(NOLOCK)
+inner join MockupWash m WITH(NOLOCK) on m.ReportNo = md.ReportNo
+Where 1=1
+");
+            if (!string.IsNullOrEmpty(Item.ReportNo))
+            {
+                SbSql.Append("And md.ReportNo = @ReportNo" + Environment.NewLine);
+                objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            }
+
+            return ExecuteList<MockupWash_Detail_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
+        }
     }
 }

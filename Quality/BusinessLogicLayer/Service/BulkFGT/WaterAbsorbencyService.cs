@@ -11,6 +11,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Web;
 using System.Web.UI.WebControls;
 
 namespace BusinessLogicLayer.Service.BulkFGT
@@ -117,6 +118,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         ReportNo = model.Main.ReportNo
                     });
 
+                    string Subject = $"Water Absorbency Test/{model.Main.OrderID}/" +
+                        $"{model.Main.StyleID}/" +
+                        $"{model.Main.FabricRefNo}/" +
+                        $"{model.Main.FabricColor}/" +
+                        $"{model.Main.Result}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                    model.Main.MailSubject = Subject;
                     model.Result = true;
                 }
                 else
@@ -566,7 +575,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             _Provider = new WaterAbsorbencyProvider(Common.ManufacturingExecutionDataAccessLayer);
 
@@ -594,13 +603,19 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Body = mailBody,
                 //alternateView = plainView,
                 FileonServer = new List<string> { FileName },
+                FileUploader = Files,
                 IsShowAIComment = true,
             };
+
+            if (!string.IsNullOrEmpty(Subject))
+            {
+                sendMail_Request.Subject = Subject;
+            }
 
             _MailService = new MailToolsService();
             string comment = _MailService.GetAICommet(sendMail_Request);
             string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+            sendMail_Request.Body = Body + Environment.NewLine + sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
 
             return MailTools.SendMail(sendMail_Request);
         }

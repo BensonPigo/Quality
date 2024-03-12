@@ -19,6 +19,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.UI.WebControls;
 using Excel = Microsoft.Office.Interop.Excel;
 using Style = DatabaseObject.ProductionDB.Style;
@@ -339,6 +340,16 @@ namespace BusinessLogicLayer.Service
 
                 fabricCrkShrkTestCrocking_Result.ScaleIDs = _ScaleProvider.Get().Select(s => s.ID).ToList();
 
+                DataTable dtResult = _FabricCrkShrkTestProvider.GetCrockingFailMailContentData(ID);
+                string Subject = $"Fabric Crocking Test/{fabricCrkShrkTestCrocking_Result.Crocking_Main.POID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Refno"]}/" +
+                        $"{dtResult.Rows[0]["Color"]}/" +
+                        $"{dtResult.Rows[0]["Crocking Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                fabricCrkShrkTestCrocking_Result.Crocking_Main.MailSubject = Subject;
+
                 fabricCrkShrkTestCrocking_Result.Result = true;
             }
             catch (Exception ex)
@@ -365,6 +376,15 @@ namespace BusinessLogicLayer.Service
 
                 fabricCrkShrkTestHeat_Result.ID = ID;
 
+                DataTable dtResult = _FabricCrkShrkTestProvider.GetHeatFailMailContentData(ID);
+                string Subject = $"Fabric Heat Test/{fabricCrkShrkTestHeat_Result.Heat_Main.POID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Refno"]}/" +
+                        $"{dtResult.Rows[0]["Color"]}/" +
+                        $"{dtResult.Rows[0]["Heat Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                fabricCrkShrkTestHeat_Result.Heat_Main.MailSubject = Subject;
                 fabricCrkShrkTestHeat_Result.Result = true;
             }
             catch (Exception ex)
@@ -390,6 +410,16 @@ namespace BusinessLogicLayer.Service
                 fabricCrkShrkTestIron_Result.Iron_Detail = _FabricCrkShrkTestProvider.GetFabricIronTest_Detail(ID);
 
                 fabricCrkShrkTestIron_Result.ID = ID;
+
+                DataTable dtResult = _FabricCrkShrkTestProvider.GetIronFailMailContentData(ID);
+                string Subject = $"Fabric Iron Test/{fabricCrkShrkTestIron_Result.Iron_Main.POID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Refno"]}/" +
+                        $"{dtResult.Rows[0]["Color"]}/" +
+                        $"{dtResult.Rows[0]["Iron Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                fabricCrkShrkTestIron_Result.Iron_Main.MailSubject = Subject;
 
                 fabricCrkShrkTestIron_Result.Result = true;
             }
@@ -419,6 +449,16 @@ namespace BusinessLogicLayer.Service
                 fabricCrkShrkTestWash_Result.ID = ID;
 
                 fabricCrkShrkTestWash_Result.Result = true;
+
+                DataTable dtResult = _FabricCrkShrkTestProvider.GetWashFailMailContentData(ID);
+                string Subject = $"Fabric Wash Test/{fabricCrkShrkTestWash_Result.Wash_Main.POID}/" +
+                       $"{dtResult.Rows[0]["Style"]}/" +
+                       $"{dtResult.Rows[0]["Refno"]}/" +
+                       $"{dtResult.Rows[0]["Color"]}/" +
+                       $"{dtResult.Rows[0]["Wash Result"]}/" +
+                       $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                fabricCrkShrkTestWash_Result.Wash_Main.MailSubject = Subject;
             }
             catch (Exception ex)
             {
@@ -1999,7 +2039,7 @@ namespace BusinessLogicLayer.Service
             #endregion
         }
 
-        public SendMail_Result SendHeatFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID)
+        public SendMail_Result SendHeatFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -2028,15 +2068,21 @@ namespace BusinessLogicLayer.Service
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    FileUploader = Files,
                     IsShowAIComment = true,
                     AICommentType = "Fabric Crocking & Shrinkage Test",
                     OrderID = OrderID,
                 };
 
+                if (!string.IsNullOrEmpty(Subject))
+                {
+                    sendMail_Request.Subject = Subject;
+                }
+
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, Body, out AlternateView plainView);
 
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;
@@ -2052,7 +2098,7 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
-        public SendMail_Result SendIronFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID)
+        public SendMail_Result SendIronFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -2081,15 +2127,21 @@ namespace BusinessLogicLayer.Service
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    FileUploader = Files,
                     IsShowAIComment = true,
                     AICommentType = "Fabric Crocking & Shrinkage Test",
                     OrderID = OrderID,
                 };
 
+                if (!string.IsNullOrEmpty(Subject))
+                {
+                    sendMail_Request.Subject = Subject;
+                }
+
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, Body, out AlternateView plainView);
 
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;
@@ -2105,7 +2157,7 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
-        public SendMail_Result SendWashFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID)
+        public SendMail_Result SendWashFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -2134,15 +2186,21 @@ namespace BusinessLogicLayer.Service
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    FileUploader = Files,
                     IsShowAIComment = true,
                     AICommentType = "Fabric Crocking & Shrinkage Test",
                     OrderID = OrderID,
                 };
 
+                if (!string.IsNullOrEmpty(Subject))
+                {
+                    sendMail_Request.Subject = Subject;
+                }
+
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, Body, out AlternateView plainView);
 
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;
@@ -2158,7 +2216,7 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
-        public SendMail_Result SendCrockingFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID)
+        public SendMail_Result SendCrockingFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -2188,15 +2246,21 @@ namespace BusinessLogicLayer.Service
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    FileUploader = Files,
                     IsShowAIComment = true,
                     AICommentType = "Fabric Crocking & Shrinkage Test",
                     OrderID = OrderID,
                 };
 
+                if (!string.IsNullOrEmpty(Subject))
+                {
+                    sendMail_Request.Subject = Subject;
+                }
+
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out AlternateView plainView);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, Body, out AlternateView plainView);
 
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;

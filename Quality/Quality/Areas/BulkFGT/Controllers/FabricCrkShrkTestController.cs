@@ -286,11 +286,11 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult CrockingSendMail(long ID, string TO, string CC, string OrderID)
+        public JsonResult CrockingSendMail(long ID, string TO, string CC, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             this.CheckSession();
 
-            SendMail_Result result = _FabricCrkShrkTest_Service.SendCrockingFailResultMail(TO, CC, ID, false, OrderID);
+            SendMail_Result result = _FabricCrkShrkTest_Service.SendCrockingFailResultMail(TO, CC, ID, false, OrderID, Subject, Body, Files);
             return Json(result);
         }
         #endregion
@@ -475,11 +475,11 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult HeatSendMail(long ID, string TO, string CC, string OrderID)
+        public JsonResult HeatSendMail(long ID, string TO, string CC, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             this.CheckSession();
 
-            SendMail_Result result = _FabricCrkShrkTest_Service.SendHeatFailResultMail(TO, CC, ID, false, OrderID);
+            SendMail_Result result = _FabricCrkShrkTest_Service.SendHeatFailResultMail(TO, CC, ID, false, OrderID, Subject, Body, Files);
             return Json(result);
         }
         #endregion
@@ -654,7 +654,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         [SessionAuthorizeAttribute]
         public JsonResult FailMail_Iron(long ID, string TO, string CC, string OrderID)
         {
-            SendMail_Result result = _FabricCrkShrkTest_Service.SendIronFailResultMail(TO, CC, ID, false, OrderID);
+            SendMail_Result result = _FabricCrkShrkTest_Service.SendIronFailResultMail(TO, CC, ID, false, OrderID, string.Empty, string.Empty, null);
             return Json(result);
         }
 
@@ -670,11 +670,11 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult IronSendMail(long ID, string TO, string CC, string OrderID)
+        public JsonResult IronSendMail(long ID, string TO, string CC, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             this.CheckSession();
 
-            SendMail_Result result = _FabricCrkShrkTest_Service.SendIronFailResultMail(TO, CC, ID, false, OrderID);
+            SendMail_Result result = _FabricCrkShrkTest_Service.SendIronFailResultMail(TO, CC, ID, false, OrderID, Subject, Body, Files);
             return Json(result);
         }
         #endregion
@@ -876,9 +876,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult WashSendMail(long ID, string TO, string CC, string OrderID)
+        public JsonResult WashSendMail(long ID, string TO, string CC, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
-            SendMail_Result result = _FabricCrkShrkTest_Service.SendWashFailResultMail(TO, CC, ID, false, OrderID);
+            SendMail_Result result = _FabricCrkShrkTest_Service.SendWashFailResultMail(TO, CC, ID, false, OrderID, Subject, Body, Files);
             return Json(result);
         }
         #endregion

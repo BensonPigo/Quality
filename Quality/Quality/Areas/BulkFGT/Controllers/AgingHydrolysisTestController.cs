@@ -301,9 +301,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult FailMail(string ReportNo, string TO, string CC)
+        public JsonResult FailMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
-            SendMail_Result result = _service.FailSendMail(ReportNo, TO, CC);
+            SendMail_Result result = _service.FailSendMail(ReportNo, TO, CC, Subject, Body, Files);
             return Json(result);
         }
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace BusinessLogicLayer.Interface
 {
@@ -24,7 +25,7 @@ namespace BusinessLogicLayer.Interface
 
         BaseResult EncodeFabricCrkShrkTestCrockingDetail(long ID, string userID, out string testResult);
 
-        SendMail_Result SendCrockingFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID);
+        SendMail_Result SendCrockingFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files);
 
         BaseResult AmendFabricCrkShrkTestCrockingDetail(long ID);
 
@@ -38,7 +39,7 @@ namespace BusinessLogicLayer.Interface
         BaseResult SaveFabricCrkShrkTestHeatDetail(FabricCrkShrkTestHeat_Result fabricCrkShrkTestHeat_Result, string userID);
 
         BaseResult EncodeFabricCrkShrkTestHeatDetail(long ID, string userID, out string ovenTestResult);
-        SendMail_Result SendHeatFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID);
+        SendMail_Result SendHeatFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files);
         BaseResult AmendFabricCrkShrkTestHeatDetail(long ID);
 
         BaseResult ToReport_Heat(long ID, out string excelFileName, string AssignedFineName = "");
@@ -49,7 +50,7 @@ namespace BusinessLogicLayer.Interface
         BaseResult SaveFabricCrkShrkTestIronDetail(FabricCrkShrkTestIron_Result fabricCrkShrkTestIron_Result, string userID);
 
         BaseResult EncodeFabricCrkShrkTestIronDetail(long ID, string userID, out string ovenTestResult);
-        SendMail_Result SendIronFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID);
+        SendMail_Result SendIronFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files);
         BaseResult AmendFabricCrkShrkTestIronDetail(long ID);
 
         BaseResult ToReport_Iron(long ID, out string excelFileName, string AssignedFineName = "");
@@ -61,7 +62,7 @@ namespace BusinessLogicLayer.Interface
 
         BaseResult EncodeFabricCrkShrkTestWashDetail(long ID, string userID, out string testResult);
 
-        SendMail_Result SendWashFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID);
+        SendMail_Result SendWashFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files);
 
         BaseResult AmendFabricCrkShrkTestWashDetail(long ID);
 

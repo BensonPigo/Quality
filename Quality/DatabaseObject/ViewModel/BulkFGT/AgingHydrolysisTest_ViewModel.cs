@@ -81,6 +81,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public long AgingHydrolysisTestID { get; set; }
         public string ReportNo { get; set; }
         public string MaterialType { get; set; }
+        public string MailSubject { get; set; }
         public DateTime? BuyerDelivery { get; set; }
         public string BuyerDeliveryText
         {

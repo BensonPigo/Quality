@@ -3,6 +3,7 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel;
 using System.Collections.Generic;
+using System.Web;
 
 namespace BusinessLogicLayer.Interface.BulkFGT
 {
@@ -19,7 +20,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         BaseResult SaveFabricOvenTestDetail(FabricOvenTest_Detail_Result fabricOvenTest_Detail_Result, string userID);
 
         BaseResult EncodeFabricOvenTestDetail(string poID, string TestNo, out string ovenTestResult);
-        SendMail_Result SendMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest);
+        SendMail_Result SendMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest, string Subject, string Body, List<HttpPostedFileBase> Files);
 
         BaseResult AmendFabricOvenTestDetail(string poID, string TestNo);
 

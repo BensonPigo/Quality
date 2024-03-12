@@ -57,6 +57,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
         [Display(Name = "報表電子簽章圖檔完整路徑")]
         public byte[] Signature { get; set; }
+        public string MailSubject { get; set; }
 
         public MockupWash_Request Request { get; set; }
 

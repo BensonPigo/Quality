@@ -151,6 +151,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string TestStandard { get; set; }
         public string Result { get; set; }
         public string Status { get; set; }
+        public string MailSubject { get; set; }
 
         /// <summary>
         /// User Encode日期，系統寫入

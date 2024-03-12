@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using static BusinessLogicLayer.Service.BulkFGT.FabricColorFastness_Service;
 using static MICS.DataAccessLayer.Provider.MSSQL.ColorFastnessDetailProvider;
 
@@ -31,7 +32,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         Fabric_ColorFastness_Detail_ViewModel Encode_ColorFastness(string ID, DetailStatus status, string UserID);
 
-        BaseResult SentMail(string POID, string ID, string TestNo, string ToAddress, string CCAddress);
+        BaseResult SentMail(string POID, string ID, string TestNo, string ToAddress, string CCAddress, string Subject, string Body, List<HttpPostedFileBase> Files);
 
         Fabric_ColorFastness_Detail_ViewModel ToReport(string ID, bool ToPDF, string AssignedFineName = "");        
 

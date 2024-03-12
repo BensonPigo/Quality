@@ -20,6 +20,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.UI.WebControls;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -139,6 +140,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 waterFastness_Detail_Result = _WaterFastnessProvider.GetWaterFastness_Detail(poID, TestNo, BrandID);
 
                 waterFastness_Detail_Result.ScaleIDs = _ScaleProvider.Get().Select(s => s.ID).ToList();
+
+                if (!string.IsNullOrEmpty(TestNo))
+                {
+                    DataTable dtResult = _WaterFastnessProvider.GetFailMailContentData(poID, TestNo);
+                    string Subject = $"Water Fastness Test/{poID}/" +
+                            $"{dtResult.Rows[0]["Style"]}/" +
+                            $"{dtResult.Rows[0]["Article"]}/" +
+                            $"{dtResult.Rows[0]["Result"]}/" +
+                            $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                    waterFastness_Detail_Result.Main.MailSubject = Subject;
+                }
 
                 return waterFastness_Detail_Result;
             }
@@ -334,7 +347,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return baseResult;
         }
 
-        public SendMail_Result SendMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest)
+        public SendMail_Result SendMail(string toAddress, string ccAddress, string poID, string TestNo, bool isTest, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             SendMail_Result result = new SendMail_Result();
             try
@@ -363,15 +376,21 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    FileUploader = Files,
                     IsShowAIComment = true,
                     AICommentType = "Water Fastness Test",
                     OrderID = poID,
                 };
 
+                if (!string.IsNullOrEmpty(Subject))
+                {
+                    sendMail_Request.Subject = Subject;
+                }
+
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, out System.Net.Mail.AlternateView plainView);
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, comment, buyReadyDate, Body, out System.Net.Mail.AlternateView plainView);
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;
 

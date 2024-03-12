@@ -633,9 +633,21 @@ insert into PerspirationFastness(POID, TestNo, InspDate, Article, Status, Inspec
 select  [PerspirationFastnessID] = ID, TestNo
 from @PerspirationFastnessID
 
-insert into SciPMSFile_PerspirationFastness(ID, TestBeforePicture, TestAfterPicture)
-        values(
-(select ID from @PerspirationFastnessID) , @TestBeforePicture, @TestAfterPicture)
+if not exists(
+    select 1 from SciPMSFile_PerspirationFastness where ID = (select ID from @PerspirationFastnessID)
+)
+begin
+    insert into SciPMSFile_PerspirationFastness(ID, TestBeforePicture, TestAfterPicture)
+            values(
+    (select ID from @PerspirationFastnessID) , @TestBeforePicture, @TestAfterPicture)
+end
+else
+begin
+    update SciPMSFile_PerspirationFastness
+    set TestBeforePicture = @TestBeforePicture ,TestAfterPicture = @TestAfterPicture
+    where ID = (select ID from @PerspirationFastnessID)
+end
+
 
 COMMIT TRAN
 ";

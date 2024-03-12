@@ -136,6 +136,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public int WashCycles { get; set; }
 
 
+        public string MailSubject { get; set; }
 
         public string Remark { get; set; }
         public string Result { get; set; }

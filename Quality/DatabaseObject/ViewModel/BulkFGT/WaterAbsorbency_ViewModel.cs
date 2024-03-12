@@ -94,6 +94,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public byte[] TestBeforeWashPicture { get; set; }
         public byte[] TestAfterPicture { get; set; }
 
+        public string MailSubject { get; set; }
         public string AddName { get; set; }
         public DateTime? AddDate { get; set; }
         public string CreateBy
