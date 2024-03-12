@@ -19,8 +19,7 @@
 
 <style>
     .DataTable {
-        width: 100%
-        ;
+        width: 100%;
         font-size: 1rem;
         font-weight: bold;
         border: solid 1px black;
@@ -56,21 +55,23 @@
             <td>
                 @Html.TextBoxFor(m => m.To, new { @style = "width:100%;" })
             </td>
+            <td rowspan="2">
+                <input type="button" id="btnGroup" name="name" style="width:100%;" value="Group" />
+            </td>
         </tr>
         <tr>
             <td>
                 CC
             </td>
             <td>
-                @Html.TextBoxFor(m => m.CC, new { @style = "width:87%;" })
-                <input type="button" id="btnGroup" name="name" style="width:12%;" value="Group" />
+                @Html.TextBoxFor(m => m.CC, new { @style = "width:100%;" })
             </td>
         </tr>
         <tr>
             <td>
                 Subject
             </td>
-            <td>
+            <td colspan="2">
                 @Html.TextBoxFor(m => m.Subject, new { @style = "width:100%;" })
             </td>
         </tr>
@@ -78,7 +79,7 @@
             <td>
                 Other Content
             </td>
-            <td>
+            <td colspan="2">
                 @Html.TextBoxFor(m => m.Body, new { @style = "width:100%;" })
             </td>
         </tr>
@@ -86,7 +87,7 @@
             <td>
                 Other Attachment
             </td>
-            <td>
+            <td colspan="2">
                 @for (int i = 0; i < Model.FileonServer.Count; i++)
                 {
                     @Html.DisplayFor(model => Model.FileonServer[i])
@@ -97,7 +98,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2" style="vertical-align: middle; text-align: center;">
+            <td colspan="3" style="vertical-align: middle; text-align: center;">
                 <input type="button" id="btnSend" value="Send" />
                 <input class="sendMailExit" type="button" value="Exit" />
             </td>
@@ -114,7 +115,7 @@
         });
 
         $("#btnGroup").click(function () {
-            FailMail();
+            MailGroup();
         });
 
         $("#btnSend").click(function () {
@@ -143,7 +144,7 @@
 
     });
 
-    function FailMail() {
+    function MailGroup() {
         var para = "?Title=Group&Type=BulkFGT&ExitReload=False";
 
         window.open('@Url.Action("TestFailMailList", "PublicWindow",new { Area=""})' + para, 'Mail List', config = 'toolbar=no,status=no,location=no,width=650,height=750');
@@ -162,6 +163,7 @@
         });
 
         if (to != "") {
+            $("#To").val(to);
             $("#CC").val(cc);
         }
     }

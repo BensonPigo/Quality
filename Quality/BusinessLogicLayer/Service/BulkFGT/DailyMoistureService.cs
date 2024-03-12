@@ -72,7 +72,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 string Subject = $"Daily Moisture Test/{model.Main.OrderID}/" +
                     $"{model.Main.StyleID}/" +
-                    $"{model.Main.Line}/" +
+                    $"Line {model.Main.Line}/" +
                     $"{model.Main.Result}/" +
                     $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
@@ -416,7 +416,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             DailyMoisture_ViewModel model = this.GetDailyMoisture(new DailyMoisture_Request() { ReportNo = ReportNo });
             string name = $"Daily Moisture Test_{model.Main.OrderID}_" +
                     $"{model.Main.StyleID}_" +
-                    $"{model.Main.Line}_" +
+                    $"Line {model.Main.Line}_" +
                     $"{model.Main.Result}_" +
                     $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
@@ -427,7 +427,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 Subject = $"Daily Moisture Test/{model.Main.OrderID}/" +
                     $"{model.Main.StyleID}/" +
-                    $"{model.Main.Line}/" +
+                    $"Line {model.Main.Line}/" +
                     $"{model.Main.Result}/" +
                     $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
 
