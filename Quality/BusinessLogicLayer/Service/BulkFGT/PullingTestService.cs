@@ -15,6 +15,7 @@ using System.IO;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+using System.Web;
 using System.Web.UI.WebControls;
 
 namespace BusinessLogicLayer.Service.BulkFGT
@@ -40,7 +41,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result.Result = false;
                 result.ErrorMessage = ex.Message;
             }
-            
+
             return result;
         }
 
@@ -53,6 +54,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 result.Detail = _PullingTestProvider.GetData(ReportNo);
+                System.Data.DataTable dt = _PullingTestProvider.GetData_DataTable(ReportNo);
+                string Subject = $"Pulling Test/{dt.Rows[0]["POID"]}/" +
+                        $"{dt.Rows[0]["StyleID"]}/" +
+                        $"{dt.Rows[0]["Article"]}/" +
+                        $"{dt.Rows[0]["Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                result.Detail.MailSubject = Subject;
                 result.Result = true;
             }
             catch (Exception ex)
@@ -183,7 +191,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
 
 
-        public SendMail_Result SendMail(string ReportNo, string ToAddress, string CcAddress)
+        public SendMail_Result SendMail(string ReportNo, string ToAddress, string CcAddress, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
 
             SendMail_Result result = new SendMail_Result();
@@ -221,6 +229,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     //Body = mailBody,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    FileUploader = Files,
                     IsShowAIComment = true,
                     AICommentType = "Pulling test for Snap/Button/Rivet",
                     StyleID = dt.Rows[0]["StyleID"].ToString(),
@@ -231,7 +240,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(sendMail_Request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-                string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, out AlternateView plainView);
+                string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, Body, out AlternateView plainView);
 
                 sendMail_Request.Body = mailBody;
                 sendMail_Request.alternateView = plainView;
@@ -300,7 +309,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Worksheet worksheet = excelApp.Sheets[1];
 
                 worksheet.Cells[2, 2] = model.ReportNo;
-                worksheet.Cells[2, 4] = DateTime.Now.ToString("yyyy/MM/dd");    
+                worksheet.Cells[2, 4] = DateTime.Now.ToString("yyyy/MM/dd");
                 worksheet.Cells[3, 2] = model.POID;
                 worksheet.Cells[3, 4] = model.TestDateText;
                 worksheet.Cells[4, 2] = model.SeasonID;

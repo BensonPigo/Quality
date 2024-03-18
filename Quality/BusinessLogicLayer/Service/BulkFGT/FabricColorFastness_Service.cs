@@ -17,8 +17,10 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.UI.WebControls;
 using static MICS.DataAccessLayer.Provider.MSSQL.ColorFastnessDetailProvider;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -131,10 +133,19 @@ namespace BusinessLogicLayer.Service.BulkFGT
         public Fabric_ColorFastness_Detail_ViewModel GetDetailBody(string ID)
         {
             _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(Common.ProductionDataAccessLayer);
+            _IColorFastnessProvider = new ColorFastnessProvider(Common.ProductionDataAccessLayer);
             Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
             try
             {
                 result = _IColorFastnessDetailProvider.Get_DetailBody(ID);
+
+                DataTable dtContent = _IColorFastnessProvider.Get_Mail_Content(result.Main.POID, ID, result.Main.TestNo.ToString());
+                string Subject = $"Washing Fastness Test /{dtContent.Rows[0]["ID"]}/" +
+                    $"{dtContent.Rows[0]["StyleID"]}/" +
+                    $"{dtContent.Rows[0]["Article"]}/" +
+                    $"{dtContent.Rows[0]["Result"]}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                result.Main.MailSubject = Subject;
             }
             catch (Exception ex)
             {
@@ -305,7 +316,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public BaseResult SentMail(string POID, string ID, string TestNo, string ToAddress, string CCAddress)
+        public BaseResult SentMail(string POID, string ID, string TestNo, string ToAddress, string CCAddress, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             BaseResult result = new BaseResult();
             _IColorFastnessProvider = new ColorFastnessProvider(Common.ProductionDataAccessLayer);
@@ -326,7 +337,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         $"{dtContent.Rows[0]["Result"]}_" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-                Fabric_ColorFastness_Detail_ViewModel ColorFastnessDetailView = ToReport(ID, false , AssignedFineName: name);
+                Fabric_ColorFastness_Detail_ViewModel ColorFastnessDetailView = ToReport(ID, false, AssignedFineName: name);
                 string FileName = ColorFastnessDetailView.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", ColorFastnessDetailView.reportPath) : string.Empty;
                 SendMail_Request request = new SendMail_Request()
                 {
@@ -341,15 +352,21 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     //Body = strHtml,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    FileUploader = Files,
                     IsShowAIComment = true,
                     AICommentType = "Washing Fastness",
                     OrderID = POID,
                 };
 
+                if (!string.IsNullOrEmpty(Subject))
+                {
+                    request.Subject = Subject;
+                }
+
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(request);
-                string strHtml = MailTools.DataTableChangeHtml(dtContent, comment, buyReadyDate, out System.Net.Mail.AlternateView plainView);
+                string strHtml = MailTools.DataTableChangeHtml(dtContent, comment, buyReadyDate, Body, out System.Net.Mail.AlternateView plainView);
 
                 request.Body = strHtml;
                 request.alternateView = plainView;
@@ -482,7 +499,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             // 圖片
             Excel.Worksheet worksheet4 = excel.ActiveWorkbook.Worksheets[4];
-            nowRow = 17 + (dataList.Count * (dataList[0].BrandID == "U.ARMOUR" ? 2 :6)); 
+            nowRow = 17 + (dataList.Count * (dataList[0].BrandID == "U.ARMOUR" ? 2 : 6));
             foreach (ColorFastness_Excel item in dataList)
             {
                 Excel.Range rngToCopy = worksheet4.get_Range("A1:H42");
@@ -492,15 +509,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Excel.Range cellBefore = worksheet.Cells[nowRow + 23, 1];
                 if (dataList[0].TestBeforePicture != null)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestBeforePicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);                    
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left , cellBefore.Top , 200, 300);
+                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestBeforePicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left, cellBefore.Top, 200, 300);
                 }
 
                 Excel.Range cellAfter = worksheet.Cells[nowRow + 23, 5];
                 if (dataList[0].TestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestAfterPicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left , cellAfter.Top , 200, 300);
+                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left, cellAfter.Top, 200, 300);
                 }
 
                 nowRow = nowRow + 42;

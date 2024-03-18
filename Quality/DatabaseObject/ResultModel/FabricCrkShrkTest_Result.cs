@@ -118,6 +118,7 @@ namespace DatabaseObject.ResultModel
         public bool CrockingEncdoe { get; set; }
         public byte[] CrockingTestBeforePicture { get; set; }
         public byte[] CrockingTestAfterPicture { get; set; }
+        public string MailSubject { get; set; }
     }
 
     public class Crocking_Excel
@@ -221,6 +222,7 @@ namespace DatabaseObject.ResultModel
         public bool IronEncode { get; set; }
         public byte[] IronTestBeforePicture { get; set; }
         public byte[] IronTestAfterPicture { get; set; }
+        public string MailSubject { get; set; }
     }
     public class FabricCrkShrkTestHeat_Main
     {
@@ -251,6 +253,7 @@ namespace DatabaseObject.ResultModel
         public bool HeatEncode { get; set; }
         public byte[] HeatTestBeforePicture { get; set; }
         public byte[] HeatTestAfterPicture { get; set; }
+        public string MailSubject { get; set; }
     }
 
     public class FabricCrkShrkTestHeat_Detail : CompareBase
@@ -340,6 +343,7 @@ namespace DatabaseObject.ResultModel
         public bool WashEncode { get; set; }
         public byte[] WashTestBeforePicture { get; set; }
         public byte[] WashTestAfterPicture { get; set; }
+        public string MailSubject { get; set; }
     }
 
     public class FabricCrkShrkTestWash_Detail : CompareBase

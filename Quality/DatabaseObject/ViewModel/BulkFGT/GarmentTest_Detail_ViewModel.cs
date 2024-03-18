@@ -61,5 +61,6 @@ namespace DatabaseObject.ViewModel
         public string SeamBreakageAIComment { get; set; }
 
         public string OdourAIComment { get; set; }
+        public string MailSubject { get; set; }
     }
 }

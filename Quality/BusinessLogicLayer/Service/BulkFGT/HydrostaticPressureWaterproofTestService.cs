@@ -21,6 +21,7 @@ using DatabaseObject.ResultModel;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using System.Net.Mail;
 using System.Web.UI.WebControls;
+using System.Web;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -174,7 +175,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         };
                         model.Article_Source.Add(Article);
                     }
-
+                    string Subject = $"Hydrostatic Pressure Waterproof Test/{model.Main.OrderID}/" +
+                         $"{model.Main.StyleID}/" +
+                         $"{model.Main.FabricRefNo}/" +
+                         $"{model.Main.FabricColor}/" +
+                         $"{model.Main.Result}/" +
+                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                    model.Main.MailSubject = Subject;
 
                     model.Result = true;
                 }
@@ -319,7 +326,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     bool HasAsReceivedFail = Req.DetailList.Where(o => o.AsReceivedResult == "Fail").Any();
                     bool HasAfterWashFail = Req.DetailList.Where(o => o.AfterWashResult == "Fail").Any();
-                    Req.Main.Result = HasAsReceivedFail  || HasAfterWashFail ? "Fail" : "Pass";
+                    Req.Main.Result = HasAsReceivedFail || HasAfterWashFail ? "Fail" : "Pass";
                 }
                 else
                 {
@@ -693,7 +700,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
 
 
-        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             _Provider = new HydrostaticPressureWaterproofTestProvider(Common.ManufacturingExecutionDataAccessLayer);
 
@@ -722,13 +729,19 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Body = mailBody,
                 //alternateView = plainView,
                 FileonServer = new List<string> { FileName },
+                FileUploader = Files,
                 IsShowAIComment = true,
             };
+
+            if (!string.IsNullOrEmpty(Subject))
+            {
+                sendMail_Request.Subject = Subject;
+            }
 
             _MailService = new MailToolsService();
             string comment = _MailService.GetAICommet(sendMail_Request);
             string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+            sendMail_Request.Body = Body + Environment.NewLine + sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
 
             return MailTools.SendMail(sendMail_Request);
         }

@@ -225,9 +225,21 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendOvenMail(Accessory_Oven Req)
+        public JsonResult SendOvenMail(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, string To, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
-            SendMail_Result result = _Service.SendOvenMail(Req);
+            Accessory_Oven Req = new Accessory_Oven()
+            {
+                AIR_LaboratoryID = Convert.ToInt64(AIR_LaboratoryID),
+                POID = POID,
+                Seq1 = Seq1,
+                Seq2 = Seq2,
+                ToAddress = To,
+                CcAddress = CC,
+                Subject = Subject,
+                Body = Body,
+            };
+
+            SendMail_Result result = _Service.SendOvenMail(Req, Files);
             return Json(result);
         }
 
@@ -237,7 +249,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             BaseResult result = null;
             string FileName = string.Empty;
-            
+
             result = _Service.OvenTestExcel(AIR_LaboratoryID, POID, Seq1, Seq2, IsToPDF, out FileName);
 
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
@@ -376,9 +388,21 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendWashMail(Accessory_Wash Req)
+        public JsonResult SendWashMail(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, string To, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
-            SendMail_Result result = _Service.SendWashMail(Req);
+            Accessory_Wash Req = new Accessory_Wash()
+            {
+                AIR_LaboratoryID = Convert.ToInt64(AIR_LaboratoryID),
+                POID = POID,
+                Seq1 = Seq1,
+                Seq2 = Seq2,
+                ToAddress = To,
+                CcAddress = CC,
+                Subject = Subject,
+                Body = Body,
+            };
+
+            SendMail_Result result = _Service.SendWashMail(Req, Files);
             return Json(result);
         }
 
@@ -527,9 +551,21 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendWashingFastnessMail(Accessory_WashingFastness Req)
+        public JsonResult SendWashingFastnessMail(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, string To, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
-            SendMail_Result result = _Service.SendWashingFastnessMail(Req);
+            Accessory_WashingFastness Req = new Accessory_WashingFastness()
+            {
+                AIR_LaboratoryID = Convert.ToInt64(AIR_LaboratoryID),
+                POID = POID,
+                Seq1 = Seq1,
+                Seq2 = Seq2,
+                ToAddress = To,
+                CcAddress = CC,
+                Subject = Subject,
+                Body = Body,
+            };
+
+            SendMail_Result result = _Service.SendWashingFastnessMail(Req, Files);
             return Json(result);
         }
 

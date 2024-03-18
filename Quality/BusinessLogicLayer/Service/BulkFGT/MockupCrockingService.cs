@@ -20,6 +20,7 @@ using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Web.Mvc;
 using System.Windows;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BusinessLogicLayer.Service
@@ -27,7 +28,6 @@ namespace BusinessLogicLayer.Service
     public class MockupCrockingService : IMockupCrockingService
     {
         private IMockupCrockingProvider _MockupCrockingProvider;
-        private IMockupCrockingDetailProvider _MockupCrockingDetailProvider;
         private IStyleArtworkProvider _IStyleArtworkProvider;
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
@@ -36,27 +36,34 @@ namespace BusinessLogicLayer.Service
         public MockupCrocking_ViewModel GetMockupCrocking(MockupCrocking_Request MockupCrocking)
         {
             MockupCrocking.Type = "B";
-            MockupCrocking_ViewModel mockupCrocking_model = new MockupCrocking_ViewModel();
-            mockupCrocking_model.Request = MockupCrocking;
+            MockupCrocking_ViewModel model = new MockupCrocking_ViewModel();
+            model.Request = MockupCrocking;
             try
             {
                 _MockupCrockingProvider = new MockupCrockingProvider(Common.ProductionDataAccessLayer);
-                _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(Common.ProductionDataAccessLayer);
-                mockupCrocking_model = _MockupCrockingProvider.GetMockupCrocking(MockupCrocking, istop1: true).ToList().FirstOrDefault();
-                if (mockupCrocking_model != null)
+
+                model = _MockupCrockingProvider.GetMockupCrocking(MockupCrocking, istop1: true).ToList().FirstOrDefault();
+                if (model != null)
                 {
-                    mockupCrocking_model.ReportNo_Source = _MockupCrockingProvider.GetMockupCrockingReportNoList(MockupCrocking).Select(s => s.ReportNo).ToList();
-                    MockupCrocking_Detail mockupCrocking_Detail = new MockupCrocking_Detail() { ReportNo = mockupCrocking_model.ReportNo };
-                    mockupCrocking_model.MockupCrocking_Detail = _MockupCrockingDetailProvider.GetMockupCrocking_Detail(mockupCrocking_Detail).ToList();
+                    model.ReportNo_Source = _MockupCrockingProvider.GetMockupCrockingReportNoList(MockupCrocking).Select(s => s.ReportNo).ToList();
+                    MockupCrocking_Detail mockupCrocking_Detail = new MockupCrocking_Detail() { ReportNo = model.ReportNo };
+                    model.MockupCrocking_Detail = _MockupCrockingProvider.GetMockupCrocking_Detail(mockupCrocking_Detail).ToList();
+
+                    model.MailSubject = $"Mockup Crocking /{model.POID}/" +
+                    $"{model.StyleID}/" +
+                    $"{model.Article}/" +
+                    $"{model.Result}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
                 }
+
             }
             catch (Exception ex)
             {
-                mockupCrocking_model.ErrorMessage = ex.Message.Replace("'", string.Empty);
-                mockupCrocking_model.ReturnResult = false;
+                model.ErrorMessage = ex.Message.Replace("'", string.Empty);
+                model.ReturnResult = false;
             }
 
-            return mockupCrocking_model;
+            return model;
         }
 
         public List<SelectListItem> GetArtworkTypeID(StyleArtwork_Request Request)
@@ -294,35 +301,34 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult Create(MockupCrocking_ViewModel MockupCrocking, string Mdivision, string userid, out string NewReportNo)
+        public BaseResult Create(MockupCrocking_ViewModel model, string Mdivision, string userid, out string NewReportNo)
         {
             NewReportNo = string.Empty;
-            MockupCrocking.Type = "B";
-            MockupCrocking.AddName = userid;
+            model.Type = "B";
+            model.AddName = userid;
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);
-            _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(_ISQLDataTransaction);
             int count;
             try
             {
-                if (MockupCrocking.MockupCrocking_Detail != null && MockupCrocking.MockupCrocking_Detail.Count > 0)
+                if (model.MockupCrocking_Detail != null && model.MockupCrocking_Detail.Count > 0)
                 {
-                    if (MockupCrocking.MockupCrocking_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
+                    if (model.MockupCrocking_Detail.Any(a => a.Result.ToUpper() == "Fail".ToUpper()))
                     {
-                        MockupCrocking.Result = "Fail";
+                        model.Result = "Fail";
                     }
                     else
                     {
-                        MockupCrocking.Result = "Pass";
+                        model.Result = "Pass";
                     }
                 }
                 else
                 {
-                    MockupCrocking.Result = string.Empty;
+                    model.Result = string.Empty;
                 }
 
-                count = _MockupCrockingProvider.Create(MockupCrocking, Mdivision, out NewReportNo);
+                count = _MockupCrockingProvider.CreateMockupCrocking(model, Mdivision, out NewReportNo);
                 if (count == 0)
                 {
                     result.Result = false;
@@ -330,14 +336,14 @@ namespace BusinessLogicLayer.Service
                     return result;
                 }
 
-                MockupCrocking.ReportNo = NewReportNo;
-                if (MockupCrocking.MockupCrocking_Detail != null)
+                model.ReportNo = NewReportNo;
+                if (model.MockupCrocking_Detail != null)
                 {
-                    foreach (var MockupCrocking_Detail in MockupCrocking.MockupCrocking_Detail)
+                    foreach (var MockupCrocking_Detail in model.MockupCrocking_Detail)
                     {
                         MockupCrocking_Detail.EditName = userid;
-                        MockupCrocking_Detail.ReportNo = MockupCrocking.ReportNo;
-                        count = _MockupCrockingDetailProvider.Create(MockupCrocking_Detail);
+                        MockupCrocking_Detail.ReportNo = model.ReportNo;
+                        count = _MockupCrockingProvider.CreateDetail(MockupCrocking_Detail);
                         if (count == 0)
                         {
                             result.Result = false;
@@ -393,7 +399,7 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                _MockupCrockingProvider.Update(MockupCrocking);
+                _MockupCrockingProvider.UpdateMockupCrocking(MockupCrocking);
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }
@@ -413,11 +419,10 @@ namespace BusinessLogicLayer.Service
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
             _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);
-            _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(_ISQLDataTransaction);
             try
             {
-                _MockupCrockingProvider.Delete(MockupCrocking);
-                _MockupCrockingDetailProvider.Delete(new MockupCrocking_Detail_ViewModel() { ReportNo = MockupCrocking.ReportNo });
+                _MockupCrockingProvider.DeleteMockupCrocking(MockupCrocking);
+                _MockupCrockingProvider.DeleteDetail(new MockupCrocking_Detail_ViewModel() { ReportNo = MockupCrocking.ReportNo });
                 result.Result = true;
                 _ISQLDataTransaction.Commit();
             }
@@ -436,13 +441,13 @@ namespace BusinessLogicLayer.Service
         {
             BaseResult result = new BaseResult();
             SQLDataTransaction _ISQLDataTransaction = new SQLDataTransaction(Common.ProductionDataAccessLayer);
-            _MockupCrockingDetailProvider = new MockupCrockingDetailProvider(_ISQLDataTransaction);
+            _MockupCrockingProvider = new MockupCrockingProvider(_ISQLDataTransaction);
             try
             {
                 foreach (var MockupCrocking_Detail in MockupCrockingDetail)
                 {
                     MockupCrocking_Detail.ReportNo = null;
-                    _MockupCrockingDetailProvider.Delete(MockupCrocking_Detail);
+                    _MockupCrockingProvider.DeleteDetail(MockupCrocking_Detail);
                 }
 
                 result.Result = true;
@@ -487,6 +492,7 @@ namespace BusinessLogicLayer.Service
                 //Body = mailBody,
                 //alternateView = plainView,
                 FileonServer = new List<string> { FileName },
+                FileUploader = mail_Request.Files,
                 IsShowAIComment = true,
                 AICommentType = "Mockup Crocking Test",
                 StyleID = model.StyleID,
@@ -494,10 +500,15 @@ namespace BusinessLogicLayer.Service
                 BrandID = model.BrandID,
             };
 
+            if (!string.IsNullOrEmpty(mail_Request.Subject))
+            {
+                sendMail_Request.Subject = mail_Request.Subject;
+            }
+
             _MailService = new MailToolsService();
             string comment = _MailService.GetAICommet(sendMail_Request);
             string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-            string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, out AlternateView plainView);
+            string mailBody = MailTools.DataTableChangeHtml(dt, comment, buyReadyDate, mail_Request.Body, out AlternateView plainView);
 
             sendMail_Request.Body = mailBody;
             sendMail_Request.alternateView = plainView;

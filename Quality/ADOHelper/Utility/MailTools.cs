@@ -142,7 +142,7 @@ namespace ADOHelper.Utility
             return sendMail_Result;
         }
 
-        public static string DataTableChangeHtml(DataTable dt,string aiCiomment, string buyReadyDateComment, out AlternateView plainView)
+        public static string DataTableChangeHtml(DataTable dt,string aiCiomment, string buyReadyDateComment, string UserDesc, out AlternateView plainView)
         {
             plainView = null;
             int dtlen = dt.AsEnumerable().Where(dr => dr.Table.Columns.Contains("TestBeforePicture")
@@ -160,6 +160,13 @@ namespace ADOHelper.Utility
 ";
 
             html += "<body> ";
+
+            if (!string.IsNullOrEmpty(UserDesc))
+            {
+                html += @"</br> ";
+                html += $@"<p>{UserDesc}</p>";
+            }
+
             html += "<table class='tg'> ";
             html += "<thead><tr bgcolor=\"#FFDEA1\" > ";
             for (int i = 0; i <= dt.Columns.Count - 1; i++)

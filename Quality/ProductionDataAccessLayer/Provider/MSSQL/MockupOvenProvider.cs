@@ -18,64 +18,15 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 {
     public class MockupOvenProvider : SQLDAL, IMockupOvenProvider
     {
-        private IMockupOvenDetailProvider _MockupOvenDetailProvider;
+        //private IMockupOvenDetailProvider _MockupOvenDetailProvider;
         #region 底層連線
         public MockupOvenProvider(string ConString) : base(ConString) { }
         public MockupOvenProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
         #region CRUD Base
-        public IList<MockupOven> Get(MockupOven Item)
-        {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("SELECT" + Environment.NewLine);
-            SbSql.Append("         ReportNo" + Environment.NewLine);
-            SbSql.Append("        ,POID" + Environment.NewLine);
-            SbSql.Append("        ,StyleID" + Environment.NewLine);
-            SbSql.Append("        ,SeasonID" + Environment.NewLine);
-            SbSql.Append("        ,BrandID" + Environment.NewLine);
-            SbSql.Append("        ,Article" + Environment.NewLine);
-            SbSql.Append("        ,ArtworkTypeID" + Environment.NewLine);
-            SbSql.Append("        ,Remark" + Environment.NewLine);
-            SbSql.Append("        ,T1Subcon" + Environment.NewLine);
-            SbSql.Append("        ,T2Supplier" + Environment.NewLine);
-            SbSql.Append("        ,TestDate" + Environment.NewLine);
-            SbSql.Append("        ,ReceivedDate" + Environment.NewLine);
-            SbSql.Append("        ,ReleasedDate" + Environment.NewLine);
-            SbSql.Append("        ,Result" + Environment.NewLine);
-            SbSql.Append("        ,Technician" + Environment.NewLine);
-            SbSql.Append("        ,MR" + Environment.NewLine);
-            SbSql.Append("        ,AddDate" + Environment.NewLine);
-            SbSql.Append("        ,AddName" + Environment.NewLine);
-            SbSql.Append("        ,EditDate" + Environment.NewLine);
-            SbSql.Append("        ,EditName" + Environment.NewLine);
-            SbSql.Append("        ,TestTemperature" + Environment.NewLine);
-            SbSql.Append("        ,TestTime" + Environment.NewLine);
-            SbSql.Append("        ,HTPlate" + Environment.NewLine);
-            SbSql.Append("        ,HTFlim" + Environment.NewLine);
-            SbSql.Append("        ,HTTime" + Environment.NewLine);
-            SbSql.Append("        ,HTPressure" + Environment.NewLine);
-            SbSql.Append("        ,HTPellOff" + Environment.NewLine);
-            SbSql.Append("        ,HT2ndPressnoreverse" + Environment.NewLine);
-            SbSql.Append("        ,HT2ndPressreversed" + Environment.NewLine);
-            SbSql.Append("        ,HTCoolingTime" + Environment.NewLine);
-            SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
-            SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
-            SbSql.Append("        ,Type" + Environment.NewLine);
-            SbSql.Append("FROM [MockupOven] WITH(NOLOCK)" + Environment.NewLine);
 
-            SbSql.Append("Where 1 = 1" + Environment.NewLine);
-            if (!string.IsNullOrEmpty(Item.ReportNo))
-            {
-                SbSql.Append("And ReportNo = @ReportNo" + Environment.NewLine);
-                objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
-            }
-
-            return ExecuteList<MockupOven>(CommandType.Text, SbSql.ToString(), objParameter);
-        }
-
-        public int Create(MockupOven Item, string Mdivision, out string NewReportNo)
+        public int CreateMockupOven(MockupOven Item, string Mdivision, out string NewReportNo)
         {
             NewReportNo = GetID(Mdivision + "OV", "MockupOven", DateTime.Today, 2, "ReportNo");
             StringBuilder SbSql = new StringBuilder();
@@ -178,7 +129,7 @@ END
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
 
-        public void Update(MockupOven_ViewModel Item)
+        public void UpdateMockupOven(MockupOven_ViewModel Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -263,8 +214,8 @@ end
 
             objParameter.Add("@ReportNo", DbType.String, HttpUtility.HtmlDecode(Item.ReportNo));
 
-            _MockupOvenDetailProvider = new MockupOvenDetailProvider(Common.ProductionDataAccessLayer);
-            var oldOvenData = _MockupOvenDetailProvider.GetMockupOven_Detail(new MockupOven_Detail() { ReportNo = Item.ReportNo }).ToList();
+            //_MockupOvenDetailProvider = new MockupOvenDetailProvider(Common.ProductionDataAccessLayer);
+            var oldOvenData = this.GetMockupOven_Detail(new MockupOven_Detail() { ReportNo = Item.ReportNo }).ToList();
 
             List<MockupOven_Detail_ViewModel> needUpdateDetailList =
                 PublicClass.CompareListValue<MockupOven_Detail_ViewModel>(
@@ -388,7 +339,7 @@ WHERE UKey = @Ukey
             }
         }
 
-        public int Delete(MockupOven Item)
+        public int DeleteMockupOven(MockupOven Item)
         {
             StringBuilder SbSql = new StringBuilder();
             SQLParameterCollection objParameter = new SQLParameterCollection();
@@ -578,5 +529,108 @@ where m.ReportNo = @ReportNo
             return ExecuteDataTableByServiceConn(CommandType.Text, SbSql.ToString(), objParameter);
         }
         #endregion
+
+
+        public int CreateDetail(MockupOven_Detail Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("INSERT INTO [MockupOven_Detail]" + Environment.NewLine);
+            SbSql.Append("(" + Environment.NewLine);
+            SbSql.Append("         ReportNo" + Environment.NewLine);
+            SbSql.Append("        ,TypeofPrint" + Environment.NewLine);
+            SbSql.Append("        ,Design" + Environment.NewLine);
+            SbSql.Append("        ,ArtworkColor" + Environment.NewLine);
+            SbSql.Append("        ,FabricRefNo" + Environment.NewLine);
+            SbSql.Append("        ,AccessoryRefno" + Environment.NewLine);
+            SbSql.Append("        ,FabricColor" + Environment.NewLine);
+            SbSql.Append("        ,Result" + Environment.NewLine);
+            SbSql.Append("        ,ChangeScale" + Environment.NewLine);
+            SbSql.Append("        ,ResultChange" + Environment.NewLine);
+            SbSql.Append("        ,StainingScale" + Environment.NewLine);
+            SbSql.Append("        ,ResultStain" + Environment.NewLine);
+            SbSql.Append("        ,Remark" + Environment.NewLine);
+            SbSql.Append("        ,EditName" + Environment.NewLine);
+            SbSql.Append("        ,EditDate" + Environment.NewLine);
+            SbSql.Append(")" + Environment.NewLine);
+            SbSql.Append("VALUES" + Environment.NewLine);
+            SbSql.Append("(" + Environment.NewLine);
+            SbSql.Append("         @ReportNo"); objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            SbSql.Append("        ,@TypeofPrint"); objParameter.Add("@TypeofPrint", DbType.String, Item.TypeofPrint ?? string.Empty);
+            SbSql.Append("        ,@Design"); objParameter.Add("@Design", DbType.String, Item.Design ?? string.Empty);
+            SbSql.Append("        ,@ArtworkColor"); objParameter.Add("@ArtworkColor", DbType.String, Item.ArtworkColor ?? string.Empty);
+            SbSql.Append("        ,@FabricRefNo"); objParameter.Add("@FabricRefNo", DbType.String, Item.FabricRefNo ?? string.Empty);
+            SbSql.Append("        ,@AccessoryRefno"); objParameter.Add("@AccessoryRefno", DbType.String, Item.AccessoryRefno ?? string.Empty);
+            SbSql.Append("        ,@FabricColor"); objParameter.Add("@FabricColor", DbType.String, Item.FabricColor ?? string.Empty);
+            SbSql.Append("        ,@Result"); objParameter.Add("@Result", DbType.String, Item.Result ?? string.Empty);
+            SbSql.Append("        ,@ChangeScale"); objParameter.Add("@ChangeScale", DbType.String, Item.ChangeScale ?? string.Empty);
+            SbSql.Append("        ,@ResultChange"); objParameter.Add("@ResultChange", DbType.String, Item.ResultChange ?? string.Empty);
+            SbSql.Append("        ,@StainingScale"); objParameter.Add("@StainingScale", DbType.String, Item.StainingScale ?? string.Empty);
+            SbSql.Append("        ,@ResultStain"); objParameter.Add("@ResultStain", DbType.String, Item.ResultStain ?? string.Empty);
+            SbSql.Append("        ,@Remark"); objParameter.Add("@Remark", DbType.String, Item.Remark ?? string.Empty);
+            SbSql.Append("        ,@EditName"); objParameter.Add("@EditName", DbType.String, Item.EditName ?? string.Empty);
+            SbSql.Append("        ,GETDATE()");
+            SbSql.Append(")" + Environment.NewLine);
+
+            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+
+
+        public int DeleteDetail(MockupOven_Detail Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append("DELETE FROM [MockupOven_Detail]" + Environment.NewLine);
+            if (string.IsNullOrEmpty(Item.ReportNo))
+            {
+                SbSql.Append("Where Ukey = @Ukey" + Environment.NewLine);
+                objParameter.Add("@Ukey", Item.Ukey);
+            }
+            else
+            {
+                SbSql.Append("Where ReportNo = @ReportNo" + Environment.NewLine);
+                objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            }
+
+            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+        }
+
+        public IList<MockupOven_Detail_ViewModel> GetMockupOven_Detail(MockupOven_Detail Item)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            SbSql.Append(@"
+SELECT
+         md.ReportNo
+        ,md.Ukey
+		,md.TypeofPrint
+        ,md.Design
+        ,md.ArtworkColor
+        ,md.AccessoryRefno
+        ,md.FabricRefNo
+        ,md.FabricColor
+        ,md.Result
+        ,md.ChangeScale
+        ,md.ResultChange
+        ,md.StainingScale
+        ,md.ResultStain
+        ,md.Remark
+        ,md.EditName
+        ,md.EditDate
+		,ArtworkColorName = (select stuff((select concat(';', Name) from Color WITH(NOLOCK) where ID in (select Data from SplitString(md.ArtworkColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
+        ,FabricColorName = (select stuff((select concat(';', Name) from Color WITH(NOLOCK) where ID in (select Data from SplitString(md.FabricColor,';')) and BrandID = m.BrandID for xml path('')),1,1,''))
+		,LastUpdate = iif(isnull(md.EditName, '') <> '', Concat(md.EditName, '-' + Format(md.EditDate,'yyyy/MM/dd HH:mm:ss')), Format(md.EditDate,'yyyy/MM/dd HH:mm:ss'))
+FROM MockupOven_Detail md WITH(NOLOCK)
+inner join MockupOven m WITH(NOLOCK) on m.ReportNo = md.ReportNo
+Where 1=1
+");
+            if (!string.IsNullOrEmpty(Item.ReportNo))
+            {
+                SbSql.Append("And md.ReportNo = @ReportNo" + Environment.NewLine);
+                objParameter.Add("@ReportNo", DbType.String, Item.ReportNo);
+            }
+
+            return ExecuteList<MockupOven_Detail_ViewModel>(CommandType.Text, SbSql.ToString(), objParameter);
+        }
     }
 }

@@ -92,8 +92,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
             }
 
         }
-
-
+        public string MailSubject { get; set; }
         public byte[] TestBeforePicture { get; set; }
         public byte[] TestAfterPicture { get; set; }
 

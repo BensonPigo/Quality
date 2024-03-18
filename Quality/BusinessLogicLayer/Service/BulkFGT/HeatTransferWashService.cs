@@ -25,6 +25,8 @@ using DatabaseObject.ResultModel;
 using Library;
 using System.Web.UI.WebControls;
 using static Ict.Win.Design.DateTimeConverter;
+using System.Web;
+using System.Xml.Linq;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -239,6 +241,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     });
                     model.Details = _Provider.GetDetailData(ReportNoList.FirstOrDefault().Value).ToList();
                 }
+
+                string Subject = $"Daily Heat Transfer Wash Test/{model.Main.OrderID}/" +
+                        $"{model.Main.StyleID}/" +
+                        $"{model.Main.Article}/" +
+                        $"{model.Main.Result}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                model.Main.MailSubject = Subject;
                 model.ReportNo_Source = ReportNoList;
                 model.Request.ReportNo = model.Main.ReportNo;
                 model.Request.BrandID = model.Main.BrandID;
@@ -558,7 +567,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public SendMail_Result SendMail(string ReportNo, string TO, string CC)
+        public SendMail_Result SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             _Provider = new HeatTransferWashProvider(Common.ManufacturingExecutionDataAccessLayer);
 
@@ -587,13 +596,20 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Body = mailBody,
                 //alternateView = plainView,
                 FileonServer = new List<string> { FileName },
+                FileUploader = Files,
                 IsShowAIComment = true,
             };
+
+            if (!string.IsNullOrEmpty(Subject))
+            {
+                sendMail_Request.Subject = Subject;
+            }
 
             _MailService = new MailToolsService();
             string comment = _MailService.GetAICommet(sendMail_Request);
             string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            sendMail_Request.Body = Body + Environment.NewLine + sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
 
             return MailTools.SendMail(sendMail_Request);
         }

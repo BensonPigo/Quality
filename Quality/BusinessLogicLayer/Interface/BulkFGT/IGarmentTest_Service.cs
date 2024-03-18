@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using static BusinessLogicLayer.Service.BulkFGT.GarmentTest_Service;
 
 namespace BusinessLogicLayer.Interface.BulkFGT
@@ -59,7 +60,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 
         GarmentTest_Detail_Result Encode_Detail(string ID, string No, DetailStatus status);
 
-        GarmentTest_Result SentMail(string ID, string No, List<Quality_MailGroup> mailGroups);
+        GarmentTest_Result SentMail(string ID, string No, List<Quality_MailGroup> mailGroups, string Subject, string Body, List<HttpPostedFileBase> Files);
 
         GarmentTest_Detail_Result ToReport(string ID, string No, ReportType type, bool IsToPDF, bool test = false, string AssignedFineName = "");
         GarmentTest_ViewModel Import_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem);

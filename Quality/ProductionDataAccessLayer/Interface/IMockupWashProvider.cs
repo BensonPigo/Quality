@@ -14,10 +14,14 @@ namespace ProductionDataAccessLayer.Interface
 
         DataTable GetMockupWashFailMailContentData(string ReportNo);
 
-        int Create(MockupWash Item, string Mdivision, out string NewReportNo);
+        int CreateMockupWash(MockupWash Item, string Mdivision, out string NewReportNo);
 
-        void Update(MockupWash_ViewModel Item);
+        void UpdateMockupWash(MockupWash_ViewModel Item);
 
-        int Delete(MockupWash Item);
+        int DeleteMockupWash(MockupWash Item);
+
+        int CreateDetail(MockupWash_Detail Item);
+        int DeleteDetail(MockupWash_Detail Item);
+        IList<MockupWash_Detail_ViewModel> GetMockupWash_Detail(MockupWash_Detail Item);
     }
 }

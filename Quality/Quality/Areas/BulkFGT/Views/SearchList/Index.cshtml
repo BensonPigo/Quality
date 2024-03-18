@@ -120,7 +120,7 @@
         <div style="height:15vh;">
             @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @class = "", @name = "SearchFrom", @onsubmit = "return checkvalue(this.submitted)", @id = "SearchFrom" }))
             {
-                    <table style="width:100%;">
+                    <table>
                         <tr>
                             <td>
                                 <label class="FindLab">Brand</label>
@@ -178,25 +178,25 @@
                                 <label>Received Date</label>
                             </td>
                             <td colspan="2">
-                                @Html.TextBox("ReceivedDate_sText", Model.ReceivedDate_sText, new { @style = "width:9vw", @class = "date-picker specialUse" })
+                                @Html.TextBox("ReceivedDate_sText", Model.ReceivedDate_sText, new { @style = "width:8vw", @class = "date-picker specialUse" })
                                 <label>~</label>
-                                @Html.TextBox("ReceivedDate_eText", Model.ReceivedDate_eText, new { @style = "width:9vw", @class = "date-picker specialUse" })
+                                @Html.TextBox("ReceivedDate_eText", Model.ReceivedDate_eText, new { @style = "width:8vw", @class = "date-picker specialUse" })
                             </td>
                             <td>
                                 <label>Report Date</label>
                             </td>
                             <td colspan="2">
-                                @Html.TextBox("ReportDate_sText", Model.ReportDate_sText, new { @style = "width:9vw", @class = "date-picker specialUse" })
+                                @Html.TextBox("ReportDate_sText", Model.ReportDate_sText, new { @style = "width:8vw", @class = "date-picker specialUse" })
                                 <label>~</label>
-                                @Html.TextBox("ReportDate_eText", Model.ReportDate_eText, new { @style = "width:9vw", @class = "date-picker specialUse" })
+                                @Html.TextBox("ReportDate_eText", Model.ReportDate_eText, new { @style = "width:8vw", @class = "date-picker specialUse" })
                             </td>
                             <td>
                                 <label>Arrived W/H Date</label>
                             </td>
                             <td colspan="4">
-                                @Html.TextBox("WhseArrival_sText", Model.WhseArrival_sText, new { @style = "width:9vw", @class = "date-picker" })
+                                @Html.TextBox("WhseArrival_sText", Model.WhseArrival_sText, new { @style = "width:8vw", @class = "date-picker" })
                                 <label>~</label>
-                                @Html.TextBox("WhseArrival_eText", Model.WhseArrival_eText, new { @style = "width:9vw", @class = "date-picker" })
+                                @Html.TextBox("WhseArrival_eText", Model.WhseArrival_eText, new { @style = "width:8vw", @class = "date-picker" })
                             </td>
                         </tr>
                     </table>

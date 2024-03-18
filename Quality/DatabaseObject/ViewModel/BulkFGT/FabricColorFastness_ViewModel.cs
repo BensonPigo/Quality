@@ -146,6 +146,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Name { get; set; }
 
         public string InspectionName { get; set; }
+        public string MailSubject { get; set; }
 
         public BaseResult baseResult { get; set; }
     }

@@ -353,9 +353,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
-        public JsonResult SendMail(string ReportNo, string TO, string CC)
+        public JsonResult SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
-            SendMail_Result result = _Service.SendMail(ReportNo, TO, CC);
+            SendMail_Result result = _Service.SendMail(ReportNo, TO, CC, Subject, Body, Files);
             return Json(result);
         }
     }

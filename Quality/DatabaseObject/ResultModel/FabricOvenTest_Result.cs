@@ -65,6 +65,7 @@ namespace DatabaseObject.ResultModel
         public string Status { get; set; }
         public byte[] TestBeforePicture { get; set; }
         public byte[] TestAfterPicture { get; set; }
+        public string MailSubject { get; set; }
     }
 
     public class FabricOvenTest_Detail_Detail : CompareBase

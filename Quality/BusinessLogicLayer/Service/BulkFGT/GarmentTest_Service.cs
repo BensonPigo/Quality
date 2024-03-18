@@ -25,6 +25,7 @@ using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Web.Razor.Editor;
 using System.Runtime.InteropServices.ComTypes;
+using System.Web;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -579,7 +580,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public GarmentTest_Result SentMail(string ID, string No, List<Quality_MailGroup> mailGroups)
+        public GarmentTest_Result SentMail(string ID, string No, List<Quality_MailGroup> mailGroups, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             GarmentTest_Result result = new GarmentTest_Result();
             string ToAddress = string.Empty;
@@ -637,6 +638,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     //Body = strHtml,
                     //alternateView = plainView,
                     FileonServer = new List<string> { FileName },
+                    FileUploader = Files,
                     IsShowAIComment = true,
                     AICommentType = aICommentType,
                     StyleID = dtContent.Rows[0]["StyleID"].ToString(),
@@ -644,10 +646,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     BrandID = dtContent.Rows[0]["BrandID"].ToString(),
                 };
 
+
+                if (!string.IsNullOrEmpty(Subject))
+                {
+                    request.Subject = Subject;
+                }
+
                 _MailService = new MailToolsService();
                 string comment = _MailService.GetAICommet(request);
                 string buyReadyDate = _MailService.GetBuyReadyDate(request);
-                string mailBody = MailTools.DataTableChangeHtml(dtContent, comment, buyReadyDate, out AlternateView plainView);
+                string mailBody = MailTools.DataTableChangeHtml(dtContent, comment, buyReadyDate, Body, out AlternateView plainView);
+
                 request.Body = mailBody;
                 request.alternateView = plainView;
 
@@ -732,6 +741,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         ID = result.garmentTest.ID
                     }).ToList();
 
+                foreach (var detail in result.garmentTest_Details)
+                {
+                    DataTable dtContent = _IGarmentTestDetailProvider.Get_Mail_Content(result.garmentTest.ID.ToString(), detail.No.ToString());
+
+                    string Subject = $"Garment Test/{dtContent.Rows[0]["OrderID"]}/" +
+                    $"{dtContent.Rows[0]["StyleID"]}/" +
+                    $"{dtContent.Rows[0]["Article"]}/" +
+                    $"{dtContent.Rows[0]["Result"]}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                    detail.MailSubject = Subject;
+                }
 
                 bool chk = CheckOrderID(result.garmentTest.OrderID, result.garmentTest.BrandID, result.garmentTest.SeasonID, result.garmentTest.StyleID);
                 if (chk)

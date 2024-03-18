@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 
 namespace DatabaseObject.ViewModel.BulkFGT
@@ -104,6 +105,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
         public bool OvenEncode { get; set; }
 
+        public string MailSubject { get; set; }
 
         public Byte[] OvenTestBeforePicture { get; set; }
         public Byte[] OvenTestAfterPicture { get; set; }
@@ -139,6 +141,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         // Result = Fail時，要收信的人
         public string ToAddress { get; set; }
         public string CcAddress { get; set; }
+        public string Subject { get; set; }
+        public string Body { get; set; }
     }
 
     public class Accessory_OvenExcel : Accessory_Oven
@@ -186,6 +190,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string EditName { get; set; }
 
         public bool WashEncode { get; set; }
+        public string MailSubject { get; set; }
 
         public bool Result { get; set; } = true;
         public string ErrorMessage
@@ -292,6 +297,9 @@ namespace DatabaseObject.ViewModel.BulkFGT
         // Result = Fail時，要收信的人
         public string ToAddress { get; set; }
         public string CcAddress { get; set; }
+        public string Subject { get; set; }
+        public string Body { get; set; }
+        public List<HttpPostedFileBase> Files { get; set; }
     }
 
     public class Accessory_WashExcel : Accessory_Wash
@@ -349,9 +357,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string CrossStainingScale { get; set; }
         public string ResultCrossStaining { get; set; }
         public string EditName { get; set; }
-
-        //public bool WashEncode { get; set; }
-
+        public string MailSubject { get; set; }
         public bool Result { get; set; } = true;
         public string ErrorMessage { get; set; }
 
@@ -447,6 +453,9 @@ namespace DatabaseObject.ViewModel.BulkFGT
         // Result = Fail時，要收信的人
         public string ToAddress { get; set; }
         public string CcAddress { get; set; }
+        public string Subject { get; set; }
+        public string Body { get; set; }
+        public List<HttpPostedFileBase> Files { get; set; }
     }
 
     public class Accessory_WashingFastnessExcel : Accessory_WashingFastness

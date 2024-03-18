@@ -263,14 +263,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { result.Result, result.ErrorMessage, ovenTestResult });  
         }
 
-        //[HttpPost]
-        //[SessionAuthorizeAttribute]
-        //public JsonResult FailMail(string ID, string No, string TO, string CC)
-        //{
-        //    SendMail_Result result = _FabricOvenTestService.SendFailResultMail(TO, CC, ID, No, false);
-        //    return Json(result);
-        //}
-
         [HttpPost]
         [SessionAuthorizeAttribute]
         public JsonResult Amend_Detail(string POID, string TestNo)
@@ -301,25 +293,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult SendMail(string ID, string No, string TO, string CC)
+        public JsonResult SendMail(string POID, string No, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
-            SendMail_Result result = _FabricOvenTestService.SendMail(TO, CC, ID, No, false);
-            return Json(result);
-
-            //this.CheckSession();
-
-            //BaseResult result = null;
-            //string FileName = string.Empty;
-
-            //result = _FabricOvenTestService.ToPdfFabricOvenTestDetail(ID, No, out FileName, false);
-
-            //if (!result.Result)
-            //{
-            //    result.ErrorMessage = result.ErrorMessage.ToString();
-            //}
-            //string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-
-            //return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, reportPath = reportPath, FileName = FileName });
-        }
+            SendMail_Result result = _FabricOvenTestService.SendMail(TO, CC, POID, No, false, Subject, Body, Files);
+            return Json(result);}
     }
 }

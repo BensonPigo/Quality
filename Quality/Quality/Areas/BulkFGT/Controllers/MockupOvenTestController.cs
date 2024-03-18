@@ -248,6 +248,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 };
             }
 
+            Req.MailSubject = model.MailSubject;
             Req.Result = model.Result;
             Req.MRName = model.MRName;
             Req.MRMail = model.MRMail;
@@ -523,13 +524,16 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [SessionAuthorizeAttribute]
         [HttpPost]
-        public JsonResult SendMail(string ReportNo, string TO, string CC)
+        public JsonResult SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             MockupFailMail_Request mail = new MockupFailMail_Request()
             {
                 ReportNo = ReportNo,
                 To = TO,
                 CC = CC,
+                Subject = Subject,
+                Body = Body,
+                Files = Files,
             };
 
             SendMail_Result result = _MockupOvenService.SendMail(mail);

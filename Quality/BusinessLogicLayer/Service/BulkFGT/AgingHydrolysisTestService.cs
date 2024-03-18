@@ -23,6 +23,7 @@ using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
 
@@ -403,6 +404,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         {
                             // 其餘則使用宣告時預設的四筆
                         }
+
+                        string Subject = $"Accelerated Aging by Hydrolysis Test_{model.MainDetailData.OrderID}_" +
+                            $"{model.MainDetailData.StyleID}_" +
+                            $"{model.MainDetailData.FabricRefNo}_" +
+                            $"{model.MainDetailData.FabricColor}_" +
+                            $"{model.MainDetailData.Result}_" +
+                            $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                        model.MainDetailData.MailSubject = Subject;
                     }
 
                 }
@@ -739,7 +749,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        public SendMail_Result FailSendMail(string ReportNo, string TO, string CC)
+        public SendMail_Result FailSendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             _Provider = new AgingHydrolysisTest_Provider(Common.ManufacturingExecutionDataAccessLayer);
 
@@ -762,17 +772,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
             SendMail_Request sendMail_Request = new SendMail_Request
             {
                 Subject = $"Accelerated Aging by Hydrolysis Test/{MainData.OrderID}/" +
-                $"{MainData.StyleID}/" +
-                $"{detail.MainDetailData.FabricRefNo}/" +
-                $"{detail.MainDetailData.FabricColor}/" +
-                $"{detail.MainDetailData.Result}/" +
-                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
-
+                    $"{MainData.StyleID}/" +
+                    $"{detail.MainDetailData.FabricRefNo}/" +
+                    $"{detail.MainDetailData.FabricColor}/" +
+                    $"{detail.MainDetailData.Result}/" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}",
                 To = TO,
                 CC = CC,
                 Body = mailBody,
                 //alternateView = plainView,
                 FileonServer = new List<string> { FileName },
+                FileUploader = Files,
                 IsShowAIComment = true,
                 AICommentType = "Accelerated Aging by Hydrolysis",
                 StyleID = MainData.StyleID,
@@ -780,10 +790,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 BrandID = MainData.BrandID,
             };
 
+            if (!string.IsNullOrEmpty(Subject))
+            {
+                sendMail_Request.Subject = Subject;
+            }
+
             _MailService = new MailToolsService();
             string comment = _MailService.GetAICommet(sendMail_Request);
             string buyReadyDate = _MailService.GetBuyReadyDate(sendMail_Request);
-            sendMail_Request.Body = sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
+
+            sendMail_Request.Body = Body + Environment.NewLine + sendMail_Request.Body + Environment.NewLine + comment + Environment.NewLine + buyReadyDate;
 
             return MailTools.SendMail(sendMail_Request);
         }
