@@ -5,6 +5,7 @@ using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
+using Microsoft.IdentityModel.Tokens;
 using MICS.DataAccessLayer.Interface;
 using MICS.DataAccessLayer.Provider.MSSQL;
 using Org.BouncyCastle.Ocsp;
@@ -139,13 +140,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 result = _IColorFastnessDetailProvider.Get_DetailBody(ID);
 
-                DataTable dtContent = _IColorFastnessProvider.Get_Mail_Content(result.Main.POID, ID, result.Main.TestNo.ToString());
-                string Subject = $"Washing Fastness Test /{dtContent.Rows[0]["ID"]}/" +
-                    $"{dtContent.Rows[0]["StyleID"]}/" +
-                    $"{dtContent.Rows[0]["Article"]}/" +
-                    $"{dtContent.Rows[0]["Result"]}/" +
-                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
-                result.Main.MailSubject = Subject;
+                if (result.Main.TestNo > 0)
+                {
+                    DataTable dtContent = _IColorFastnessProvider.Get_Mail_Content(result.Main.POID, ID, result.Main.TestNo.ToString());
+                    string Subject = $"Washing Fastness Test /{dtContent.Rows[0]["ID"]}/" +
+                        $"{dtContent.Rows[0]["StyleID"]}/" +
+                        $"{dtContent.Rows[0]["Article"]}/" +
+                        $"{dtContent.Rows[0]["Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                    result.Main.MailSubject = Subject;
+                }
             }
             catch (Exception ex)
             {
