@@ -538,7 +538,7 @@ exec UpdateInspPercent 'LabOven',@poID
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@poID", poID);
-            listPar.Add("@TestNo", TestNo);
+            listPar.Add("@TestNo", string.IsNullOrEmpty(TestNo) ? "0" : TestNo);
 
             string sqlGetData = @"
 select  [SP#] = ov.POID,

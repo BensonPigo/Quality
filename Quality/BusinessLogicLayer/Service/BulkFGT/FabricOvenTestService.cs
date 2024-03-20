@@ -137,14 +137,19 @@ namespace BusinessLogicLayer.Service
 
                 fabricOvenTest_Detail_Result.ScaleIDs = _ScaleProvider.Get().Select(s => s.ID).ToList();
 
-                DataTable dtResult = _FabricOvenTestProvider.GetFailMailContentData(poID, TestNo);
-                string Subject = $"Fabric Oven Test/{poID}/" +
-                $"{dtResult.Rows[0]["Style"]}/" +
-                $"{dtResult.Rows[0]["Article"]}/" +
-                $"{dtResult.Rows[0]["Result"]}/" +
-                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-                fabricOvenTest_Detail_Result.Main.MailSubject = Subject;
+                if (!string.IsNullOrEmpty(TestNo))
+                {
+                    DataTable dtResult = _FabricOvenTestProvider.GetFailMailContentData(poID, TestNo);
+                    string Subject = $"Fabric Oven Test/{poID}/" +
+                        $"{dtResult.Rows[0]["Style"]}/" +
+                        $"{dtResult.Rows[0]["Article"]}/" +
+                        $"{dtResult.Rows[0]["Result"]}/" +
+                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                    fabricOvenTest_Detail_Result.Main.MailSubject = Subject;
+                }
+
 
                 return fabricOvenTest_Detail_Result;
             }
