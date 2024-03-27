@@ -50,7 +50,15 @@ namespace BusinessLogicLayer.Service
                 result.InspectionTimes = finalInspection.InspectionTimes.ToString();
                 result.BrandID = finalInspection.BrandID;
                 result.ReInspection = finalInspection.ReInspection;
-
+                result.IsFollowAQL = finalInspection.IsFollowAQL;
+                if (result.IsFollowAQL)
+                {
+                    result.AqlInputType = "Auto";
+                }
+                else
+                {
+                    result.AqlInputType = "Manual";
+                }
 
                 // AQL使用規則判斷，若有Pro則使用Pro，沒有的話則使用原規則
                 if (finalInspection.AcceptableQualityLevelsProUkey != 0)
@@ -131,7 +139,11 @@ namespace BusinessLogicLayer.Service
 
         public Setting GetSettingForInspection(string CustPONO, List<string> listOrderID, string FactoryID, string UserID, string BrandID)
         {
-            Setting result = new Setting();
+            Setting result = new Setting()
+            {
+                IsFollowAQL = true,
+                AqlInputType = "Auto",
+            };
             try
             {
                 _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -413,9 +425,18 @@ namespace BusinessLogicLayer.Service
                             return result;
                         }
 
-                        setting.SampleSize = AQLResult.First().SampleSize;
-                        setting.AcceptQty = AQLResult.First().AcceptedQty;
-                        setting.AcceptableQualityLevelsUkey = AQLResult.First().Ukey.ToString();
+                        if (setting.AqlInputType == "Auto")
+                        {
+                            setting.IsFollowAQL = true;
+                            setting.SampleSize = AQLResult.First().SampleSize;
+                            setting.AcceptQty = AQLResult.First().AcceptedQty;
+                            setting.AcceptableQualityLevelsUkey = AQLResult.First().Ukey.ToString();
+                        }
+                        else
+                        {
+                            setting.IsFollowAQL = false;
+                            setting.AcceptableQualityLevelsUkey = AQLResult.First().Ukey.ToString();
+                        }
                     }
                     else
                     {
