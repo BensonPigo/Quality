@@ -1797,16 +1797,18 @@
             var aQLPlan = $('#AQLPlan').val();
 
             if (aqlInputType == 'Auto') {
+                $('#AQLPlan').prop('disabled', false);
                 $('#SampleSize').prop('disabled', true);
                 $('#AcceptQty').prop('disabled', true);
                 $('#RejectQty').prop('disabled', true);
             }
-            else if (aqlInputType == 'Manual' && aQLPlan == "100% Inspection") {
-                $('#SampleSize').prop('disabled', true);
-                $('#AcceptQty').prop('disabled', true);
-                $('#RejectQty').prop('disabled', true);
-            }
+            //else if (aqlInputType == 'Manual' && aQLPlan == "100% Inspection") {
+            //    $('#SampleSize').prop('disabled', true);
+            //    $('#AcceptQty').prop('disabled', true);
+            //    $('#RejectQty').prop('disabled', true);
+            //}
             else if (aqlInputType == 'Manual') {
+                $('#AQLPlan').prop('disabled', true);
 
                 $('#SampleSize').prop('disabled', false);
                 $('#AcceptQty').prop('disabled', false);
