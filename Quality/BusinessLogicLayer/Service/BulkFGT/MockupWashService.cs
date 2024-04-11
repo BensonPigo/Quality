@@ -343,6 +343,12 @@ namespace BusinessLogicLayer.Service
                     tmpName = AssignedFineName;
                 }
 
+                char[] invalidChars = Path.GetInvalidFileNameChars();
+
+                foreach (char invalidChar in invalidChars)
+                {
+                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
+                }
                 string filexlsx = tmpName + ".xlsx";
                 string fileNamePDF = tmpName + ".pdf";
 

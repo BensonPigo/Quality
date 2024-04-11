@@ -604,6 +604,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     tmpName = AssignedFineName;
                 }
 
+                char[] invalidChars = Path.GetInvalidFileNameChars();
+
+                foreach (char invalidChar in invalidChars)
+                {
+                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
+                }
                 string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 

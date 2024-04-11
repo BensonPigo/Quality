@@ -368,6 +368,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     tmpName = AssignedFineName;
                 }
+                char[] invalidChars = Path.GetInvalidFileNameChars();
+
+                foreach (char invalidChar in invalidChars)
+                {
+                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
+                }
 
                 string excelFileName = $"{tmpName}.xlsx";
                 string pdfFileName = $"{tmpName}.pdf";
