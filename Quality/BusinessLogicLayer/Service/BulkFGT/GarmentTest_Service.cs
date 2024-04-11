@@ -1005,6 +1005,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 $"{(all_Data.Detail.Result == "P" ? "Pass" : "Fail")}_" +
                 $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+
             switch (type)
             {
                 case ReportType.Wash_Test_2018:
@@ -2539,6 +2541,11 @@ and t.GarmentTest=1
                             typeName = AssignedFineName;
                         }
 
+
+                        foreach (char invalidChar in invalidChars)
+                        {
+                            typeName = typeName.Replace(invalidChar.ToString(), "");
+                        }
                         string filexlsx_2018 = typeName + ".xlsx";
                         string fileNamePDF_2018 = typeName + ".pdf";
 
@@ -2759,6 +2766,11 @@ and t.GarmentTest=1
                     if (!string.IsNullOrWhiteSpace(AssignedFineName))
                     {
                         typeName = AssignedFineName;
+                    }
+
+                    foreach (char invalidChar in invalidChars)
+                    {
+                        typeName = typeName.Replace(invalidChar.ToString(), "");
                     }
 
                     string filexlsx_2020 = typeName + ".xlsx";
@@ -3025,6 +3037,10 @@ and t.GarmentTest=1
                         typeName = AssignedFineName;
                     }
 
+                    foreach (char invalidChar in invalidChars)
+                    {
+                        typeName = typeName.Replace(invalidChar.ToString(), "");
+                    }
                     string filexlsx_Physical = typeName + ".xlsx";
                     string fileNamePDF_Physical = typeName + ".pdf";
 
