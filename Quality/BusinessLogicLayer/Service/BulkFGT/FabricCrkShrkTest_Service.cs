@@ -564,14 +564,14 @@ namespace BusinessLogicLayer.Service
 
                 _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
 
-                if (fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestBeforePicture == null)
+                if (fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestPicture1 == null)
                 {
-                    fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestBeforePicture = new byte[0];
+                    fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestPicture1 = new byte[0];
                 }
 
-                if (fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestAfterPicture == null)
+                if (fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestPicture2 == null)
                 {
-                    fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestAfterPicture = new byte[0];
+                    fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestPicture2 = new byte[0];
                 }
 
                 _FabricCrkShrkTestProvider.UpdateFabricCrockingTestDetail(fabricCrkShrkTestCrocking_Result, userID);
@@ -916,7 +916,7 @@ namespace BusinessLogicLayer.Service
 
 
 
-        public BaseResult ToReport_Heat(long ID, out string excelFileName, string AssignedFineName = "")
+        public BaseResult ToReport_Heat(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "")
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -1054,11 +1054,32 @@ namespace BusinessLogicLayer.Service
                     tmpName = tmpName.Replace(invalidChar.ToString(), "");
                 }
 
-                excelFileName = $"{tmpName}.xlsx";
-                string filepath = Path.Combine(baseFilePath, "TMP", excelFileName);
+                string filexlsx = tmpName + ".xlsx";
+                string fileNamePDF = tmpName + ".pdf";
+
+                string filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
+                string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
+
 
                 Excel.Workbook workbook = excel.ActiveWorkbook;
                 workbook.SaveAs(filepath);
+
+                excelFileName = filexlsx;
+
+                if (IsPDF)
+                {
+                    if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                    {
+                        excelFileName = fileNamePDF;
+                        result.Result = true;
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Convert To PDF Fail";
+                        result.Result = false;
+                    }
+
+                }
 
                 workbook.Close();
                 excel.Quit();
@@ -1075,7 +1096,7 @@ namespace BusinessLogicLayer.Service
             return result;
 
         }
-        public BaseResult ToReport_Iron(long ID, out string excelFileName, string AssignedFineName = "")
+        public BaseResult ToReport_Iron(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "")
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -1213,11 +1234,32 @@ namespace BusinessLogicLayer.Service
                     tmpName = tmpName.Replace(invalidChar.ToString(), "");
                 }
 
-                excelFileName = $"{tmpName}.xlsx";
-                string filepath = Path.Combine(baseFilePath, "TMP", excelFileName);
+                string filexlsx = tmpName + ".xlsx";
+                string fileNamePDF = tmpName + ".pdf";
+
+                string filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
+                string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
+
 
                 Excel.Workbook workbook = excel.ActiveWorkbook;
                 workbook.SaveAs(filepath);
+
+                excelFileName = filexlsx;
+
+                if (IsPDF)
+                {
+                    if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                    {
+                        excelFileName = fileNamePDF;
+                        result.Result = true;
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Convert To PDF Fail";
+                        result.Result = false;
+                    }
+
+                }
 
                 workbook.Close();
                 excel.Quit();
@@ -1234,7 +1276,7 @@ namespace BusinessLogicLayer.Service
             return result;
 
         }
-        public BaseResult ToReport_Wash(long ID, out string excelFileName, string AssignedFineName = "")
+        public BaseResult ToReport_Wash(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "")
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -1411,12 +1453,32 @@ namespace BusinessLogicLayer.Service
                 {
                     tmpName = tmpName.Replace(invalidChar.ToString(), "");
                 }
-                excelFileName = $"{tmpName}.xlsx";
+                string filexlsx = tmpName + ".xlsx";
+                string fileNamePDF = tmpName + ".pdf";
 
-                string filepath = Path.Combine(baseFilePath, "TMP", excelFileName);
+                string filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
+                string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
+
 
                 Excel.Workbook workbook = excel.ActiveWorkbook;
                 workbook.SaveAs(filepath);
+
+                excelFileName = filexlsx;
+
+                if (IsPDF)
+                {
+                    if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                    {
+                        excelFileName = fileNamePDF;
+                        result.Result = true;
+                    }
+                    else
+                    {
+                        result.ErrorMessage = "Convert To PDF Fail";
+                        result.Result = false;
+                    }
+
+                }
 
                 workbook.Close();
                 excel.Quit();
@@ -1485,16 +1547,16 @@ namespace BusinessLogicLayer.Service
 
             #region 添加圖片
             Excel.Range cellBeforePicture = worksheet.Cells[46, 1];
-            if (dataList_Head.FirstOrDefault().CrockingTestBeforePicture != null)
+            if (dataList_Head.FirstOrDefault().CrockingTestPicture1 != null)
             {
-                string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestBeforePicture, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
+                string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestPicture1, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                 worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
             }
 
             Excel.Range cellAfterPicture = worksheet.Cells[46, 5];
-            if (dataList_Head.FirstOrDefault().CrockingTestAfterPicture != null)
+            if (dataList_Head.FirstOrDefault().CrockingTestPicture2 != null)
             {
-                string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestAfterPicture, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
+                string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestPicture2, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                 worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 323, 255);
             }
             #endregion
@@ -2077,7 +2139,7 @@ namespace BusinessLogicLayer.Service
                         $"{dtResult.Rows[0]["Heat Result"]}_" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-                BaseResult baseResult = ToReport_Heat(ID, out string excelFileName, name);
+                BaseResult baseResult = ToReport_Heat(ID, true, out string excelFileName, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
@@ -2136,7 +2198,7 @@ namespace BusinessLogicLayer.Service
                         $"{dtResult.Rows[0]["Iron Result"]}_" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-                BaseResult baseResult = ToReport_Iron(ID, out string excelFileName, name);
+                BaseResult baseResult = ToReport_Iron(ID, true, out string excelFileName, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
@@ -2195,7 +2257,7 @@ namespace BusinessLogicLayer.Service
                         $"{dtResult.Rows[0]["Wash Result"]}_" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-                BaseResult baseResult = ToReport_Wash(ID, out string excelFileName, name);
+                BaseResult baseResult = ToReport_Wash(ID, true, out string excelFileName, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {

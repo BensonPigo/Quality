@@ -242,8 +242,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
             Result.MDivisionID = this.MDivisionID;
 
-            Result.Crocking_Main.CrockingTestBeforePicture = Result.Crocking_Main.CrockingTestBeforePicture == null ? null : ImageHelper.ImageCompress(Result.Crocking_Main.CrockingTestBeforePicture);
-            Result.Crocking_Main.CrockingTestAfterPicture = Result.Crocking_Main.CrockingTestAfterPicture == null ? null : ImageHelper.ImageCompress(Result.Crocking_Main.CrockingTestAfterPicture);
+            Result.Crocking_Main.CrockingTestPicture1 = Result.Crocking_Main.CrockingTestPicture1 == null ? null : ImageHelper.ImageCompress(Result.Crocking_Main.CrockingTestPicture1);
+            Result.Crocking_Main.CrockingTestPicture2 = Result.Crocking_Main.CrockingTestPicture2 == null ? null : ImageHelper.ImageCompress(Result.Crocking_Main.CrockingTestPicture2);
 
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestCrockingDetail(Result, this.UserID);
             if (saveResult.Result)
@@ -465,10 +465,10 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult Report_Heat(long ID)
+        public JsonResult Report_Heat(long ID, bool IsToPDF)
         {
             BaseResult result;
-            result = _FabricCrkShrkTest_Service.ToReport_Heat(ID, out string FileName);
+            result = _FabricCrkShrkTest_Service.ToReport_Heat(ID, IsToPDF, out string FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
@@ -660,10 +660,10 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult Report_Iron(long ID)
+        public JsonResult Report_Iron(long ID, bool IsToPDF)
         {
             BaseResult result;
-            result = _FabricCrkShrkTest_Service.ToReport_Iron(ID, out string FileName);
+            result = _FabricCrkShrkTest_Service.ToReport_Iron(ID, IsToPDF, out string FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
@@ -866,10 +866,10 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult Report_Wash(long ID)
+        public JsonResult Report_Wash(long ID, bool IsToPDF)
         {
             BaseResult result;
-            result = _FabricCrkShrkTest_Service.ToReport_Wash(ID, out string FileName);
+            result = _FabricCrkShrkTest_Service.ToReport_Wash(ID, IsToPDF, out string FileName);
             string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }

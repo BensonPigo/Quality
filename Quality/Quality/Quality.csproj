@@ -1057,6 +1057,7 @@
     <Content Include="Views\PublicWindow\MulitipleFabricRefNoList.cshtml" />
     <Content Include="Views\PublicWindow\FinalInspectionCFAList.cshtml" />
     <Content Include="Views\PublicWindow\AllReceivingDetailList.cshtml" />
+    <Content Include="Views\PublicWindow\FabricCrockingPictureList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -274,8 +274,10 @@ select	[POID] = f.POID,
         [DescDetail] = fab.DescDetail,
         [CrockingRemark] = fl.CrockingRemark,
         [CrockingEncdoe] = fl.CrockingEncode,
-        [CrockingTestBeforePicture] = (select top 1 CrockingTestBeforePicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID ),
-        [CrockingTestAfterPicture] = (select top 1 CrockingTestAfterPicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID )
+        [CrockingTestPicture1] = (select top 1 CrockingTestPicture1 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID ),
+        [CrockingTestPicture2] = (select top 1 CrockingTestPicture2 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID ),
+        [CrockingTestPicture3] = (select top 1 CrockingTestPicture3 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID ),
+        [CrockingTestPicture4] = (select top 1 CrockingTestPicture4 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID )
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
@@ -355,8 +357,10 @@ select	SubmitDate = fl.CrockingDate
 		,fd.ResultWet_Weft
 		,fd.Remark
 		,fd.Inspector
-		,CrockingTestBeforePicture = (select top 1 CrockingTestBeforePicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
-        ,CrockingTestAfterPicture = (select top 1 CrockingTestAfterPicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
+		,CrockingTestPicture1 = (select top 1 CrockingTestPicture1 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
+        ,CrockingTestPicture2 = (select top 1 CrockingTestPicture2 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
+		,CrockingTestPicture3 = (select top 1 CrockingTestPicture3 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
+        ,CrockingTestPicture4 = (select top 1 CrockingTestPicture4 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
 		,f.ID
         ,fl.ReportNo
 from FIR f with (nolock)
@@ -392,8 +396,10 @@ select fl.ReportNo
 	,SCIRefno_Color = f.SCIRefno + ' ' + pc.SpecValue
 	,Color = pc.SpecValue
 	,Inspector = LabTech.Val
-	,CrockingTestBeforePicture = (select top 1 CrockingTestBeforePicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
-    ,CrockingTestAfterPicture = (select top 1 CrockingTestAfterPicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
+	,CrockingTestPicture1 = (select top 1 CrockingTestPicture1 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
+    ,CrockingTestPicture2 = (select top 1 CrockingTestPicture2 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
+	,CrockingTestPicture3 = (select top 1 CrockingTestPicture3 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
+    ,CrockingTestPicture4 = (select top 1 CrockingTestPicture4 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
 from FIR_Laboratory fl
 inner join Orders o with (nolock) on o.ID = fl.POID
 inner join FIR f with (nolock) on f.ID = fl.ID
@@ -473,8 +479,10 @@ where   BrandID = (select BrandID from orders with (nolock) where ID = (select P
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@ID", fabricCrkShrkTestCrocking_Result.ID);
             listPar.Add("@CrockingRemark", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingRemark);
-            listPar.Add("@CrockingTestBeforePicture", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestBeforePicture);
-            listPar.Add("@CrockingTestAfterPicture", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestAfterPicture);
+            listPar.Add("@CrockingTestPicture1", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestPicture1);
+            listPar.Add("@CrockingTestPicture2", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestPicture2);
+            listPar.Add("@CrockingTestPicture3", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestPicture3);
+            listPar.Add("@CrockingTestPicture4", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestPicture4);
 
             string sqlUpdateCrocking = @"
 SET XACT_ABORT ON
@@ -484,14 +492,16 @@ where   ID = @ID
 
 if exists( select 1 from SciPMSFile_FIR_Laboratory where   ID = @ID )
 begin
-    update  SciPMSFile_FIR_Laboratory set  CrockingTestBeforePicture = @CrockingTestBeforePicture,
-                                CrockingTestAfterPicture = @CrockingTestAfterPicture
+    update  SciPMSFile_FIR_Laboratory set  CrockingTestPicture1 = @CrockingTestPicture1,
+                                CrockingTestPicture2 = @CrockingTestPicture2,
+                                CrockingTestPicture3 = @CrockingTestPicture3,
+                                CrockingTestPicture4 = @CrockingTestPicture4
     where   ID = @ID 
 END
 else
 begin
-    insert into SciPMSFile_FIR_Laboratory (ID  ,CrockingTestBeforePicture  ,CrockingTestAfterPicture)
-    VALUES(@ID  ,@CrockingTestBeforePicture  ,@CrockingTestAfterPicture )
+    insert into SciPMSFile_FIR_Laboratory (ID  ,CrockingTestPicture1  ,CrockingTestPicture2  ,CrockingTestPicture3  ,CrockingTestPicture4)
+    VALUES(@ID  ,@CrockingTestPicture1  ,@CrockingTestPicture2  ,@CrockingTestPicture3  ,@CrockingTestPicture4)
 end
 ";
 

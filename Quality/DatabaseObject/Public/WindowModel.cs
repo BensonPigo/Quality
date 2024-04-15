@@ -177,6 +177,14 @@ namespace DatabaseObject.Public
         public byte[] TestBackSideBeforePicture { get; set; }
         public byte[] TestBackSideAfterPicture { get; set; }
     }
+    public class Window_FabricCrocking
+    {
+        public string ReportNo { get; set; }
+        public byte[] CrockingTestPicture1 { get; set; }
+        public byte[] CrockingTestPicture2 { get; set; }
+        public byte[] CrockingTestPicture3 { get; set; }
+        public byte[] CrockingTestPicture4 { get; set; }
+    }
     public class Window_SinglePicture
     {
 
