@@ -965,7 +965,7 @@ namespace BusinessLogicLayer.Service
             List<SentPivot88Result> sentPivot88Results = new List<SentPivot88Result>();
 
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-            GetPivot88Json(pivotTransferRequest.InspectionID);
+
             switch (pivotTransferRequest.InspectionType)
             {
                 case "FinalInspection":
@@ -1104,7 +1104,7 @@ namespace BusinessLogicLayer.Service
                 {
                     AutomationErrMsg automationErrMsg = new AutomationErrMsg();
                     automationErrMsg.suppID = StaticPivot88.SuppID;
-                    automationErrMsg.moduleName = StaticPivot88.ModuleNameFinalInsp;
+                    automationErrMsg.moduleName = pivotTransferRequest.InspectionType;
                     automationErrMsg.apiThread = StaticPivot88.APIThreadFinalInsp;
                     automationErrMsg.errorMsg = errorMsg;
                     automationErrMsg.json = postBody;
