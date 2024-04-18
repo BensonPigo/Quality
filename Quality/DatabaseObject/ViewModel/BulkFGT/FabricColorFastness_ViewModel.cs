@@ -262,6 +262,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
     {
         public string ReportNo { get; set; }
         public DateTime? SubmitDate { get; set; }
+        public DateTime? InspDate { get; set; }
         public string SeasonID { get; set; }
         public string BrandID { get; set; }
         public string StyleID { get; set; }

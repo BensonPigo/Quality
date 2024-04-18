@@ -933,15 +933,6 @@
     <Content Include="XLT\FabricCrockingTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="XLT\FabricCrockingTestPDF.xltx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="XLT\FabricCrockingTestPDFWeftWarp.xltx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="XLT\FabricCrockingTestWeftWarp.xltx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="XLT\FabricHeatTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1058,6 +1049,12 @@
     <Content Include="Views\PublicWindow\FinalInspectionCFAList.cshtml" />
     <Content Include="Views\PublicWindow\AllReceivingDetailList.cshtml" />
     <Content Include="Views\PublicWindow\FabricCrockingPictureList.cshtml" />
+    <Content Include="XLT\FabricCrockingTest_ByBrand_A.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricCrockingTest_ByBrand_B.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -396,6 +396,7 @@ select fl.ReportNo
 	,SCIRefno_Color = f.SCIRefno + ' ' + pc.SpecValue
 	,Color = pc.SpecValue
 	,Inspector = LabTech.Val
+    ,Remark = fl.CrockingRemark
 	,CrockingTestPicture1 = (select top 1 CrockingTestPicture1 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
     ,CrockingTestPicture2 = (select top 1 CrockingTestPicture2 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
 	,CrockingTestPicture3 = (select top 1 CrockingTestPicture3 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
