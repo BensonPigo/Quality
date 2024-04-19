@@ -1026,6 +1026,10 @@
                     $("#AQLPlan").val('100% Inspection');
                     $("#AqlInputType").change();
                     $("#AQLPlan").change();
+                    $('#AQLPlan').prop('disabled', true);
+                }
+                else {
+                    $("#AQLPlan").removeAttr("disabled");
                 }
 
                 if ($("#AQLPlan").val() == "100% Inspection") {
