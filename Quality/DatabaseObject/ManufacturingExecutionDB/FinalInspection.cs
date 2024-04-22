@@ -232,7 +232,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         public string FGPT { get; set; }
 
         public bool ISFD { get; set; }
-
+        public bool IsFollowAQL { get; set; }
         public long MeasurementAQLUkey { get; set; }
         public int MeasurementSampleSize { get; set; }
         public int MeasurementAcceptQty { get; set; }

@@ -199,20 +199,19 @@
             <div style="width:50%;height:39vh;">
                 <div class="col-auto"><h2 class="sub_title">AQL Plan</h2></div>
                 <table class="col-auto table_div" style="margin-left: 4em;">
+                    <tr>
+                        <td><label>Input Type</label></td>
+                        <td>
+                            @Html.DropDownListFor(o => o.AqlInputType, Model.AqlInputTypeList, null, new { @class = "form-control", @onchange = "onAqlInputTypeChange(this.value)" })
+
+                        </td>
+                    </tr>
                     @if (Model.BrandID.ToUpper() != "MOODY")
                     {
                         <tr>
                             <td><label>AQL Plan</label></td>
                             <td>
-                                @if (AQLPlanDisabled || Model.AQLPlan == null)
-                                {
-                                    @Html.DropDownListFor(o => o.AQLPlan, Model.AQLPlanList, null, new { @class = "form-control", @disabled = "@disabled" })
-                                }
-                                else
-                                {
-                                    @Html.DropDownListFor(o => o.AQLPlan, Model.AQLPlanList, null, new { @class = "form-control" })
-                                }
-
+                                @Html.DropDownListFor(o => o.AQLPlan, Model.AQLPlanList, null, new { @class = "form-control" })
                             </td>
                         </tr>
                         <tr>
@@ -296,36 +295,7 @@
                                 }
                             </td>
                         </tr>
-                        @*<tr>
-                                <td><label>Accepted Qty</label></td>
-                                <td>
-                                    <input id="AcceptQty1" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
-                                </td>
-                                <td><label style="font-weight: bold">Reject Qty</label></td>
-                                <td>
-                                    <input id="RejectQty1" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label>Accepted Qty</label></td>
-                                <td>
-                                    <input id="AcceptQty2" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
-                                </td>
-                                <td><label style="font-weight: bold">Reject Qty</label></td>
-                                <td>
-                                    <input id="RejectQty2" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label>Accepted Qty</label></td>
-                                <td>
-                                    <input id="AcceptQty3" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
-                                </td>
-                                <td><label style="font-weight: bold">Reject Qty</label></td>
-                                <td>
-                                    <input id="RejectQty3" class="form-control center-block" type="number" name="name" value="" style="width:49%;" />
-                                </td>
-                            </tr>*@
+
                     }
                 </table>
             </div>
@@ -788,7 +758,7 @@
                             }
 
 
-                            
+
                             // 根據Checkbox有沒有勾選，來調整input hidden的值。這個input才有Binding Model
                             $('[id^=Carton_Select_]').each(function () {
 
@@ -923,28 +893,6 @@
                 },
             });
 
-            $("#InspectionStage").change(function () {
-
-                var brandID = '@Model.BrandID';
-                if (brandID == 'ADIDAS') {
-                    if ($(this).val() == "Final" || $(this).val() == "3rd Party") {
-                        $("#AQLPlan").attr("disabled", false);
-                        $("#AQLProPlan").attr("disabled", false);
-                    }
-                    else {
-                        $("#AQLPlan").val("");
-                        $("#AQLPlan").attr("disabled", true);
-                        //$("#AQLProPlan").val("");
-                        $("#AQLProPlan").attr("disabled", true);
-                    }
-                }
-                else {
-                    $("#AQLPlan").attr("disabled", false);
-                    $("#AQLProPlan").attr("disabled", false);
-
-                }
-            });
-
             // AQLPlan選單變化事件
             $("#AQLPlan").change(function () {
                 var aql = $(this).val()
@@ -979,6 +927,7 @@
                         }
                     })
                     $("#AcceptQty").removeAttr("max");
+                    sampleQtyEnableChange();
                 }
                 else {
                     // 若是100% Inspection，則AJAX回去取資料，SampleSize帶入左邊Select PO的Total Available Qty數量，RejectQty一律是AcceptQty+1
@@ -988,24 +937,23 @@
                     $("#RejectQty").val(1);
 
                     $("#AcceptQty").attr("max", TotalAvailableQty);
+                    sampleQtyEnableChange();
                 }
             });
 
             //Accept Qty欄位變更事件
             $("#AcceptQty").change(function () {
                 var thisVal = parseInt($(this).val());
+                var SamplePlanQty = parseInt($("#SampleSize").val());
 
-                if ($("#AQLPlan").val() == "100% Inspection") {
-                    var SamplePlanQty = parseInt($("#SampleSize").val());
-
-                    if (thisVal > SamplePlanQty) {
-                        $(this).val(SamplePlanQty);
-                        thisVal = SamplePlanQty;
-                    }
+                if (thisVal > SamplePlanQty) {
+                    $(this).val(SamplePlanQty);
+                    thisVal = SamplePlanQty;
                 }
+
+                $(this).val(thisVal);
                 $("#RejectQty").val(thisVal + 1);
             });
-
 
             // AQLProPlan選單變化事件
             $("#AQLProPlan").change(function () {
@@ -1048,27 +996,42 @@
                 }
             });
 
-
-            $("#InspectionStage").change();
-
-            //$("#AQLPlan").change();
-
-            //$("#AQLProPlan").change();
+            sampleQtyEnableChange();
         });
 
         // Selected PO異動Available Qty時。自動加總到下方的「Total Available Qty」、右方的「AQL Plan」
         function Cacu_AvailableQty() {
 
             var total = 0;
+            var brandID = $("#BrandID").val();
+
+            // ISP20240279 REI較特殊，<= 12件時AQL Plan幫他直接帶100%
+            var auto100inspection = false;
+
             for (var key in Order_AvailableQty) {
                 total = total + parseInt(Order_AvailableQty[key]);
             }
 
             $("#totalAvailableQty").text(total);
 
+            if (brandID == 'REI' && 0 < total && total <= 12) {
+                auto100inspection = true;
+            }
+
             //同步到AQL
 
-            if ($("#BrandID").val() != 'MOODY') {
+            if (brandID != 'MOODY') {
+                if (auto100inspection) {
+                    $("#AqlInputType").val('Auto');
+                    $("#AQLPlan").val('100% Inspection');
+                    $("#AqlInputType").change();
+                    $("#AQLPlan").change();
+                    $('#AQLPlan').prop('disabled', true);
+                }
+                else {
+                    $("#AQLPlan").removeAttr("disabled");
+                }
+
                 if ($("#AQLPlan").val() == "100% Inspection") {
                     $("#SampleSize").val(total);
                     $("#AcceptQty").val(0);
@@ -1085,8 +1048,6 @@
             else {
                 $("#AQLProPlan").change();
             }
-
-
         }
 
         function GetSewingLineList(sewingLineID) {
@@ -1321,7 +1282,6 @@
             NonLoading();
         }
 
-
         function open_SewingLine(pkey) {
             var findValue = pkey.split(',');
             var line = findValue[0];
@@ -1426,6 +1386,7 @@
                 '<tr><td>Metal Contaminate:</td><td style=" text-align: right;">' + metalContaminateQty + '</td></tr>'+
                 '</table>';
         }
+
         function AvailableQtyChk(max, value) {
             if (value == "") {
                 value = 0;
@@ -1441,42 +1402,27 @@
             return value;
         }
 
+        function onAqlInputTypeChange(value) {
+            currentAqlInputType = value;
+
+            sampleQtyEnableChange();
+
+            // Auto需要依據AQL清單設定數值
+            if (currentAqlInputType == 'Auto') {
+                $("#AQLPlan").change();
+            }
+
+            // Manual 先清空後隨意填隨意填
+            if (currentAqlInputType == 'Manual') {
+                $('#AQLPlan').val('');
+                $("#SampleSize").val(0);
+                $("#AcceptQty").val(0);
+                $("#RejectQty").val(0);
+            }
+        }
+
         function onInspectionStageChange(value) {
             var brandID = '@Model.BrandID';
-
-            if (brandID == 'ADIDAS') {
-                //選擇 Final或3rd Party時，會把[AQL Plan]變成可編輯，而[Sample Plan Qty]唯讀
-                if (value == "Final" || value == "3rd Party") {
-                    $('#SampleSize').prop('disabled', true);
-                    $('#AcceptQty').prop('disabled', true);
-                    $('#RejectQty').prop('disabled', true);
-                }
-
-                //選擇Inline或Stagger時，會把[AQL Plan]變成唯讀並將內容變為空白，而[Sample Plan Qty]可編輯"
-                if (value == "Inline" || value == "Stagger") {
-                    $('#SampleSize').prop('disabled', false);
-                    $('#AcceptQty').prop('disabled', false);
-                    $('#RejectQty').prop('disabled', false);
-                }
-
-            }
-            else {
-
-                //選擇 Final或3rd Party時，會把[AQL Plan]變成可編輯，而[Sample Plan Qty]唯讀
-                if (value == "Final" || value == "3rd Party" || value == "Inline" || value == "Stagger") {
-                    $('#SampleSize').prop('disabled', true);
-                    $('#AcceptQty').prop('disabled', true);
-                    $('#RejectQty').prop('disabled', true);
-                }
-
-                ////選擇Inline或Stagger時，會把[AQL Plan]變成唯讀並將內容變為空白，而[Sample Plan Qty]可編輯"
-                //if (value == "Inline" || value == "Stagger") {
-                //    $('#SampleSize').prop('disabled', false);
-                //    $('#AcceptQty').prop('disabled', false);
-                //    $('#RejectQty').prop('disabled', false);
-                //}
-
-            }
 
             currentStage = value;
 
@@ -1667,24 +1613,31 @@
 
         function onSampleSizeChange(value) {
             // 不可大於 [Total Available Qty]
-            if ($("#SampleSize").prop("disabled") == false) {
-                var totalavailableQtyValue = parseInt($("#totalAvailableQty").text());
-                var sampleSizeValue = parseInt(value);
 
-                if (sampleSizeValue > totalavailableQtyValue) {
-                    msg.WithError("[Sample Plan Qty] can not great than [Total Available Qty]");
-                    $("#SampleSize").val(0);
-                    return false;
-                }
+            var totalavailableQtyValue = parseInt($("#totalAvailableQty").text());
+            var sampleSizeValue = parseInt(value);
+
+            if (sampleSizeValue > totalavailableQtyValue) {
+                msg.WithError("[Sample Plan Qty] can not great than [Total Available Qty]");
+                $("#SampleSize").val(0);
+                return false;
             }
+            else {
+                $("#SampleSize").val(sampleSizeValue);
+            }
+
             return true;
         }
 
         function checkSubmitValue() {
 
-            if (onSampleSizeChange(document.getElementById("InspectionStage").value) == false) {
+            if (onSampleSizeChange($("#SampleSize").val()) == false) {
                 return false;
             }
+
+            $('#SampleSize').prop('disabled', false);
+            $('#AcceptQty').prop('disabled', false);
+            $('#RejectQty').prop('disabled', false);
 
             //保存前檢查[Basic]部分都有輸入，若沒有則顯示
             if ($("#InspectionStage").val() == "" || $("#AuditDate").val() == "") {
@@ -1788,6 +1741,30 @@
                     NonLoading();
                     return false;
                 }
+            }
+        }
+
+        function sampleQtyEnableChange() {
+            var aqlInputType = $('#AqlInputType').val();
+            var aQLPlan = $('#AQLPlan').val();
+
+            if (aqlInputType == 'Auto') {
+                $('#AQLPlan').prop('disabled', false);
+                $('#SampleSize').prop('disabled', true);
+                $('#AcceptQty').prop('disabled', true);
+                $('#RejectQty').prop('disabled', true);
+            }
+            //else if (aqlInputType == 'Manual' && aQLPlan == "100% Inspection") {
+            //    $('#SampleSize').prop('disabled', true);
+            //    $('#AcceptQty').prop('disabled', true);
+            //    $('#RejectQty').prop('disabled', true);
+            //}
+            else if (aqlInputType == 'Manual') {
+                $('#AQLPlan').prop('disabled', true);
+
+                $('#SampleSize').prop('disabled', false);
+                $('#AcceptQty').prop('disabled', false);
+                //$('#RejectQty').prop('disabled', false);
             }
         }
     </script>
