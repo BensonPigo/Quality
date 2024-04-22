@@ -87,6 +87,7 @@ select  ID                             ,
         EditName                       ,
         EditDate                       ,
         ReInspection                       ,
+        IsFollowAQL,
         HasOtherImage = Cast(IIF(exists(select 1 from SciPMSFile_FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit),
         CheckFGPT                      ,
         [FGWT] = iif(a.InspectionStage = 'Final', ISNULL(g.WashResult, 'Lacking Test') , ''),
@@ -563,7 +564,8 @@ insert into FinalInspection(id                            ,
                             ReInspection                   ,
                             MeasurementAQLUkey,
                             MeasurementSampleSize,
-                            MeasurementAcceptQty
+                            MeasurementAcceptQty,
+                            IsFollowAQL                   
                         )
                 values(@FinalInspectionID                            ,
                        @CustPONO                          ,
@@ -617,7 +619,8 @@ insert into FinalInspection(id                            ,
 		                    where s.LotSize_Start=s.LotSize_Start AND t.LotSize_End=s.LotSize_End
 		                    and s.Ukey = @AcceptableQualityLevelsUkey
 	                    )
-                    ),0) 
+                    ),0),
+                    @IsFollowAQL          
                 )
 ;
 INSERT INTO FinalInspectionGeneral
@@ -647,7 +650,8 @@ set     InspectionStage = @InspectionStage                         ,
         InspectionStep = 'Insp-Setting',
         Shift = @Shift          ,
         Team = @Team,
-        ReInspection = @ReInspection,                  
+        ReInspection = @ReInspection,       
+        IsFollowAQL = @IsFollowAQL,                         
         EditName = @UserID                  ,
         EditDate= getdate(),
 
@@ -711,6 +715,7 @@ delete  FinalInspection_OrderCarton where ID = @FinalInspectionID
             objParameter.Add("@Team", setting.Team);
             objParameter.Add("@Shift", setting.Shift);
             objParameter.Add("@ReInspection", setting.ReInspection);
+            objParameter.Add("@IsFollowAQL", setting.IsFollowAQL);
 
             foreach (SelectedPO selectedPOItem in setting.SelectedPO)
             {

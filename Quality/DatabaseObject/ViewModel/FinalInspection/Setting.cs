@@ -27,6 +27,8 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string AQLPlanNotFinal { get; set; }
         public string AQLProPlan { get; set; }
         public bool ReInspection { get; set; }
+        public bool IsFollowAQL { get; set; }
+        public string AqlInputType { get; set; }
 
 
         public List<SelectSewing> SelectedSewing { get; set; }
@@ -61,7 +63,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
                         switch (item.InspectionLevels)
                         {
                             case "1":
-                                level = "Level I";                                
+                                level = "Level I";
                                 break;
                             case "2":
                                 level = "Level II";
@@ -163,6 +165,29 @@ namespace DatabaseObject.ViewModel.FinalInspection
                 {
                     return new List<SelectListItem>();
                 }
+            }
+
+        }
+
+        public List<SelectListItem> AqlInputTypeList
+        {
+            get
+            {
+                List<SelectListItem> rtn = new List<SelectListItem>()
+                {
+                    new SelectListItem()
+                    {
+                        Text = "Auto",
+                        Value =  "Auto",
+                    },
+                    new SelectListItem()
+                    {
+                        Text = "Manual",
+                        Value =  "Manual",
+                    }
+                };
+
+                return rtn;
             }
 
         }
