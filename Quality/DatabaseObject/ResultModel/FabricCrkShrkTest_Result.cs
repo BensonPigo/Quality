@@ -116,8 +116,10 @@ namespace DatabaseObject.ResultModel
             set => _CrockingRemark = value;
         }
         public bool CrockingEncdoe { get; set; }
-        public byte[] CrockingTestBeforePicture { get; set; }
-        public byte[] CrockingTestAfterPicture { get; set; }
+        public byte[] CrockingTestPicture1 { get; set; }
+        public byte[] CrockingTestPicture2 { get; set; }
+        public byte[] CrockingTestPicture3 { get; set; }
+        public byte[] CrockingTestPicture4 { get; set; }
         public string MailSubject { get; set; }
     }
 
@@ -146,8 +148,10 @@ namespace DatabaseObject.ResultModel
         public string ResultWet_Weft { get; set; }
         public string Remark { get; set; }
         public string Inspector { get; set; }
-        public Byte[] CrockingTestBeforePicture { get; set; }
-        public Byte[] CrockingTestAfterPicture { get; set; }
+        public Byte[] CrockingTestPicture1 { get; set; }
+        public Byte[] CrockingTestPicture2 { get; set; }
+        public Byte[] CrockingTestPicture3 { get; set; }
+        public Byte[] CrockingTestPicture4 { get; set; }
 
     }
 

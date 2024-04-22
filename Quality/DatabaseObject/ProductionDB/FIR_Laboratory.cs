@@ -108,13 +108,21 @@ namespace DatabaseObject.ProductionDB
         
         public string WashInspector { get; set; }
 
-        /// <summary>摩擦測試前的照片</summary>
-        [Display(Name = "摩擦測試前的照片")]
-        public Byte[] CrockingTestBeforePicture { get; set; }
+        /// <summary>摩擦測試照片1</summary>
+        [Display(Name = "摩擦測試照片1")]
+        public Byte[] CrockingTestPicture1 { get; set; }
 
-        /// <summary>摩擦測試後的照片</summary>
-        [Display(Name = "摩擦測試後的照片")]
-        public Byte[] CrockingTestAfterPicture { get; set; }
+        /// <summary>摩擦測試照片2</summary>
+        [Display(Name = "摩擦測試照片2")]
+        public Byte[] CrockingTestPicture2 { get; set; }
+
+        /// <summary>摩擦測試照片3</summary>
+        [Display(Name = "摩擦測試照片3")]
+        public Byte[] CrockingTestPicture3 { get; set; }
+
+        /// <summary>摩擦測試照片4</summary>
+        [Display(Name = "摩擦測試照片4")]
+        public Byte[] CrockingTestPicture4 { get; set; }
 
         /// <summary>烘箱測試前的照片</summary>
         [Display(Name = "烘箱測試前的照片")]

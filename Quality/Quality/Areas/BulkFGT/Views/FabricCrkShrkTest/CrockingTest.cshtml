@@ -250,8 +250,10 @@
                                     @if (Model != null)
                                     {
                                         @Html.HiddenFor(o => o.ID)
-                                        @Html.HiddenFor(o => o.Crocking_Main.CrockingTestBeforePicture)
-                                        @Html.HiddenFor(o => o.Crocking_Main.CrockingTestAfterPicture)
+                                        @Html.HiddenFor(o => o.Crocking_Main.CrockingTestPicture1)
+                                        @Html.HiddenFor(o => o.Crocking_Main.CrockingTestPicture2)
+                                        @Html.HiddenFor(o => o.Crocking_Main.CrockingTestPicture3)
+                                        @Html.HiddenFor(o => o.Crocking_Main.CrockingTestPicture4)
                                     }
 
                                     <tr>
@@ -705,13 +707,17 @@
         $('#Picture').on('click', function () {
             var para = "?Title=" + $('.page-header span').html() + "&EditMode=" + EditMode;
             para += "&" + "Table=FIR_Laboratory";
-            para += "&" + "TargetBeforeColumn=Crocking_Main_CrockingTestBeforePicture";
-            para += "&" + "TargetAfterColumn=Crocking_Main_CrockingTestAfterPicture";
-            para += "&" + "BeforeColumn=CrockingTestBeforePicture";
-            para += "&" + "AfterColumn=CrockingTestAfterPicture";
+            para += "&" + "Target1Column=Crocking_Main_CrockingTestPicture1";
+            para += "&" + "Target2Column=Crocking_Main_CrockingTestPicture2";
+            para += "&" + "Target3Column=Crocking_Main_CrockingTestPicture3";
+            para += "&" + "Target4Column=Crocking_Main_CrockingTestPicture4";
+            para += "&" + "CrockingTestPicture1=CrockingTestPicture1";
+            para += "&" + "CrockingTestPicture2=CrockingTestPicture2";
+            para += "&" + "CrockingTestPicture3=CrockingTestPicture3";
+            para += "&" + "CrockingTestPicture4=CrockingTestPicture4";
             para += "&" + "PKey_1=ID";
             para += "&" + "PKey_1_Val=" + $('#ID').val();
-            window.open('@Url.Action("PictureList", "PublicWindow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1024,height=750');
+            window.open('@Url.Action("FabricCrockingPictureList", "PublicWindow",new { Area=""})' + para, 'Picture List', config = 'toolbar=no,status=no,location=no,width=1260,height=750');
         });
 
         $('#New').on('click', function () {
@@ -1087,8 +1093,10 @@
         $("#Crocking_Detail_" + targetID + "__Name").val(data.Name + ' Ext.' + data.ExtNo);
     }
 
-    function GetPicture(data) {
-        $('#Crocking_Main_CrockingTestBeforePicture').val(data.BeforePicture.replace("data:image/png;base64,", ""));
-        $('#Crocking_Main_CrockingTestAfterPicture').val(data.AfterPicture.replace("data:image/png;base64,", ""));
+    function GetFabricCrockingPicture(data) {
+        $('#Crocking_Main_CrockingTestPicture1').val(data.CrockingTestPicture1.replace("data:image/png;base64,", ""));
+        $('#Crocking_Main_CrockingTestPicture2').val(data.CrockingTestPicture2.replace("data:image/png;base64,", ""));
+        $('#Crocking_Main_CrockingTestPicture3').val(data.CrockingTestPicture3.replace("data:image/png;base64,", ""));
+        $('#Crocking_Main_CrockingTestPicture4').val(data.CrockingTestPicture4.replace("data:image/png;base64,", ""));
     }
 </script>

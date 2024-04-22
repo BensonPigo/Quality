@@ -150,6 +150,7 @@ select [ReportNo] = c.ID
         ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) where pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo)
         ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) where pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo)
 		,[Checkby] = isnull(pEdit.Name, pAdd.Name)
+        ,c.InspDate
 from ColorFastness_Detail cd WITH(NOLOCK)
 left join ColorFastness c WITH(NOLOCK) on c.ID =  cd.ID
 left join Orders o WITH(NOLOCK) on o.ID=c.POID
