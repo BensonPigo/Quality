@@ -60,8 +60,10 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,CrockingInspector"+ Environment.NewLine);
             SbSql.Append("        ,HeatInspector"+ Environment.NewLine);
             SbSql.Append("        ,WashInspector"+ Environment.NewLine);
-            SbSql.Append("        ,CrockingTestBeforePicture"+ Environment.NewLine);
-            SbSql.Append("        ,CrockingTestAfterPicture"+ Environment.NewLine);
+            SbSql.Append("        ,CrockingTestPicture1" + Environment.NewLine);
+            SbSql.Append("        ,CrockingTestPicture2" + Environment.NewLine);
+            SbSql.Append("        ,CrockingTestPicture3" + Environment.NewLine);
+            SbSql.Append("        ,CrockingTestPicture4" + Environment.NewLine);
             SbSql.Append("        ,HeatTestBeforePicture"+ Environment.NewLine);
             SbSql.Append("        ,HeatTestAfterPicture"+ Environment.NewLine);
             SbSql.Append("        ,WashTestBeforePicture"+ Environment.NewLine);
@@ -116,8 +118,10 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,CrockingInspector"+ Environment.NewLine);
             SbSql.Append("        ,HeatInspector"+ Environment.NewLine);
             SbSql.Append("        ,WashInspector"+ Environment.NewLine);
-            SbSql.Append("        ,CrockingTestBeforePicture"+ Environment.NewLine);
-            SbSql.Append("        ,CrockingTestAfterPicture"+ Environment.NewLine);
+            SbSql.Append("        ,CrockingTestPicture1" + Environment.NewLine);
+            SbSql.Append("        ,CrockingTestPicture2" + Environment.NewLine);
+            SbSql.Append("        ,CrockingTestPicture3" + Environment.NewLine);
+            SbSql.Append("        ,CrockingTestPicture4" + Environment.NewLine);
             SbSql.Append("        ,HeatTestBeforePicture"+ Environment.NewLine);
             SbSql.Append("        ,HeatTestAfterPicture"+ Environment.NewLine);
             SbSql.Append("        ,WashTestBeforePicture"+ Environment.NewLine);
@@ -151,8 +155,10 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,@CrockingInspector"); objParameter.Add("@CrockingInspector", DbType.String, Item.CrockingInspector);
             SbSql.Append("        ,@HeatInspector"); objParameter.Add("@HeatInspector", DbType.String, Item.HeatInspector);
             SbSql.Append("        ,@WashInspector"); objParameter.Add("@WashInspector", DbType.String, Item.WashInspector);
-            SbSql.Append("        ,@CrockingTestBeforePicture"); objParameter.Add("@CrockingTestBeforePicture", DbType.String, Item.CrockingTestBeforePicture);
-            SbSql.Append("        ,@CrockingTestAfterPicture"); objParameter.Add("@CrockingTestAfterPicture", DbType.String, Item.CrockingTestAfterPicture);
+            SbSql.Append("        ,@CrockingTestPicture1"); objParameter.Add("@CrockingTestPicture1", DbType.String, Item.CrockingTestPicture1);
+            SbSql.Append("        ,@CrockingTestPicture2"); objParameter.Add("@CrockingTestPicture2", DbType.String, Item.CrockingTestPicture2);
+            SbSql.Append("        ,@CrockingTestPicture3"); objParameter.Add("@CrockingTestPicture3", DbType.String, Item.CrockingTestPicture3);
+            SbSql.Append("        ,@CrockingTestPicture4"); objParameter.Add("@CrockingTestPicture4", DbType.String, Item.CrockingTestPicture4);
             SbSql.Append("        ,@HeatTestBeforePicture"); objParameter.Add("@HeatTestBeforePicture", DbType.String, Item.HeatTestBeforePicture);
             SbSql.Append("        ,@HeatTestAfterPicture"); objParameter.Add("@HeatTestAfterPicture", DbType.String, Item.HeatTestAfterPicture);
             SbSql.Append("        ,@WashTestBeforePicture"); objParameter.Add("@WashTestBeforePicture", DbType.String, Item.WashTestBeforePicture);
@@ -208,8 +214,12 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             if (Item.CrockingInspector != null) { SbSql.Append(",CrockingInspector=@CrockingInspector"+ Environment.NewLine); objParameter.Add("@CrockingInspector", DbType.String, Item.CrockingInspector);}
             if (Item.HeatInspector != null) { SbSql.Append(",HeatInspector=@HeatInspector"+ Environment.NewLine); objParameter.Add("@HeatInspector", DbType.String, Item.HeatInspector);}
             if (Item.WashInspector != null) { SbSql.Append(",WashInspector=@WashInspector"+ Environment.NewLine); objParameter.Add("@WashInspector", DbType.String, Item.WashInspector);}
-            if (Item.CrockingTestBeforePicture != null) { SbSql.Append(",CrockingTestBeforePicture=@CrockingTestBeforePicture"+ Environment.NewLine); objParameter.Add("@CrockingTestBeforePicture", DbType.String, Item.CrockingTestBeforePicture);}
-            if (Item.CrockingTestAfterPicture != null) { SbSql.Append(",CrockingTestAfterPicture=@CrockingTestAfterPicture"+ Environment.NewLine); objParameter.Add("@CrockingTestAfterPicture", DbType.String, Item.CrockingTestAfterPicture);}
+            if (Item.CrockingTestPicture1 != null) { SbSql.Append(",CrockingTestPicture1=@CrockingTestPicture1" + Environment.NewLine); objParameter.Add("@CrockingTestPicture1", DbType.String, Item.CrockingTestPicture1);}
+            if (Item.CrockingTestPicture2 != null) { SbSql.Append(",CrockingTestPicture2=@CrockingTestPicture2" + Environment.NewLine); objParameter.Add("@CrockingTestPicture2", DbType.String, Item.CrockingTestPicture2);}
+            if (Item.CrockingTestPicture1 != null) { SbSql.Append(",CrockingTestPicture3=@CrockingTestPicture3" + Environment.NewLine); objParameter.Add("@CrockingTestPicture3", DbType.String, Item.CrockingTestPicture3); }
+            if (Item.CrockingTestPicture2 != null) { SbSql.Append(",CrockingTestPicture4=@CrockingTestPicture4" + Environment.NewLine); objParameter.Add("@CrockingTestPicture4", DbType.String, Item.CrockingTestPicture4); }
+
+
             if (Item.HeatTestBeforePicture != null) { SbSql.Append(",HeatTestBeforePicture=@HeatTestBeforePicture"+ Environment.NewLine); objParameter.Add("@HeatTestBeforePicture", DbType.String, Item.HeatTestBeforePicture);}
             if (Item.HeatTestAfterPicture != null) { SbSql.Append(",HeatTestAfterPicture=@HeatTestAfterPicture"+ Environment.NewLine); objParameter.Add("@HeatTestAfterPicture", DbType.String, Item.HeatTestAfterPicture);}
             if (Item.WashTestBeforePicture != null) { SbSql.Append(",WashTestBeforePicture=@WashTestBeforePicture"+ Environment.NewLine); objParameter.Add("@WashTestBeforePicture", DbType.String, Item.WashTestBeforePicture);}

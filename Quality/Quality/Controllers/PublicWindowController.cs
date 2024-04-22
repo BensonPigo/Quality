@@ -581,6 +581,18 @@ namespace Quality.Controllers
             ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
             return View(model);
         }
+        public ActionResult FabricCrockingPictureList(string Title, bool EditMode, string TargetID, string ReportNo)
+        {
+            var model = _PublicWindowService.Get_FabricCrockingPicture(ReportNo);
+            ViewData["Title"] = Title;
+            ViewData["EditMode"] = EditMode;
+            ViewData["CrockingTestPicture1"] = "CrockingTestPicture1";
+            ViewData["CrockingTestPicture2"] = "CrockingTestPicture2";
+            ViewData["CrockingTestPicture3"] = "CrockingTestPicture3";
+            ViewData["CrockingTestPicture4"] = "CrockingTestPicture4";
+            ViewData["TargetID"] = TargetID == null ? string.Empty : TargetID;
+            return View(model);
+        }
         public ActionResult TestFailMailList(string Title, string FactoryID, string Type, string TargetID, bool ExitReload = true)
         {
             var model = _PublicWindowService.Get_TestFailMail(FactoryID, Type, string.Empty);

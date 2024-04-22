@@ -417,7 +417,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
             worksheet.Cells[2, 3] = dataList[0].ReportNo;
             worksheet.Cells[3, 3] = dataList[0].SubmitDate.HasValue ? dataList[0].SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-            worksheet.Cells[3, 8] = DateTime.Now.ToString("yyyy/MM/dd");
+            worksheet.Cells[3, 8] = dataList[0].InspDate.HasValue ? dataList[0].InspDate.Value.ToString("yyyy/MM/dd") : string.Empty;
             worksheet.Cells[4, 3] = dataList[0].SeasonID;
             worksheet.Cells[4, 8] = dataList[0].BrandID;
             worksheet.Cells[5, 3] = dataList[0].StyleID;

@@ -1,0 +1,484 @@
+﻿@using DatabaseObject.Public
+
+@{
+    Layout = null;
+    string title = ViewData["Title"] == null ? "Picture" : ViewData["Title"].ToString();
+    string EditMode = ViewData["EditMode"] == null ? "EditMode" : ViewData["EditMode"].ToString();
+
+    string TargetID = ViewData["TargetID"] == null ? string.Empty : ViewData["TargetID"].ToString();
+
+    string CrockingTestPicture1 = "Crocking_Main_" + (ViewData["CrockingTestPicture1"] == null ? string.Empty : ViewData["CrockingTestPicture1"].ToString());
+    string CrockingTestPicture2 = "Crocking_Main_" + (ViewData["CrockingTestPicture2"] == null ? string.Empty : ViewData["CrockingTestPicture2"].ToString());
+    string CrockingTestPicture3 = "Crocking_Main_" + (ViewData["CrockingTestPicture3"] == null ? string.Empty : ViewData["CrockingTestPicture3"].ToString());
+    string CrockingTestPicture4 = "Crocking_Main_" + (ViewData["CrockingTestPicture4"] == null ? string.Empty : ViewData["CrockingTestPicture4"].ToString());
+}
+
+@model Window_FabricCrocking
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+<link href="~/ThirdParty/SciCustom/css/style.css" rel="stylesheet" />
+<style>
+
+    ul {
+        padding: 0;
+    }
+
+    li {
+        list-style-type: none;
+        border: 1px solid black;
+        padding: 2px;
+    }
+
+    td {
+        border-style: ridge;
+    }
+
+    .leftDiv {
+        width: 45%;
+        height: 90%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    #cont {
+        width: 100%;
+        height: 60vw;
+        overflow:scroll
+    }
+
+    .outerDiv {
+        width: 45%;
+        height: 100%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    .grayDiv {
+        width: 100%;
+        height: 4vh;
+        background-color: lightgray;
+        text-align: center;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+
+
+    #loading {
+        position: fixed;
+        top: 50%;
+        left: 40%;
+        transform: translate(-50%, -50%);
+        border: 20px solid #f3f3f3;
+        border-top: 20px solid #ff8000;
+        border-radius: 50%;
+        width: 200px;
+        height: 200px;
+        animation: spin 2s linear infinite;
+    }
+</style>
+<br />
+<header>
+    <h3 style="width:85%;float:left;margin:0">@title</h3>
+    <input id="btnKeep" type="button" value="Keep" />
+    <input id="btnExit" type="button" value="Exit" />
+</header>
+<br />
+
+<div id="cont">
+    <div class="outerDiv" style="margin-right:2%;">
+        <div class="grayDiv">
+            <h2 style="width: 70%; float: left; padding-top: 5px">Picture 1</h2>
+            <input type="file" id="Picture1Upload" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+            <img id="Picture1UploadIcon" class="pointer uploadIcon" style="height: 90%; vertical-align: top;margin-right:5px;" src="~/Image/Icon/Upload.png" />
+            <img Type="Picture1Upload" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+            <img id="Picture1Del" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+
+        </div>
+        @{
+            var Picture1Image = Model.CrockingTestPicture1 is null ? new byte[1] : Model.CrockingTestPicture1;
+            var base64_Picture1 = Convert.ToBase64String(Picture1Image);
+            var imgSrc_Picture1 = String.Format("data:image/png;base64,{0}", base64_Picture1);
+
+            var Picture2Image = Model.CrockingTestPicture2 is null ? new byte[1] : Model.CrockingTestPicture2;
+            var base64_Picture2 = Convert.ToBase64String(Picture2Image);
+            var imgSrc_Picture2 = String.Format("data:image/png;base64,{0}", base64_Picture2);
+
+            var Picture3Image = Model.CrockingTestPicture3 is null ? new byte[1] : Model.CrockingTestPicture3;
+            var base64_Picture3 = Convert.ToBase64String(Picture3Image);
+            var imgSrc_Picture3 = String.Format("data:image/png;base64,{0}", base64_Picture3);
+
+            var Picture4Image = Model.CrockingTestPicture4 is null ? new byte[1] : Model.CrockingTestPicture4;
+            var base64_Picture4 = Convert.ToBase64String(Picture4Image);
+            var imgSrc_Picture4 = String.Format("data:image/png;base64,{0}", base64_Picture4);
+        }
+        @if (Picture1Image[0] != 0)
+        {
+            <img id="Picture1Pic" Type="Picture1" style="width:100%;" src="@imgSrc_Picture1" />
+            <img id="OriPicture1Pic" style="width:100%;display:none;" src="@imgSrc_Picture1" />
+        }
+        else
+        {
+            <img id="Picture1Pic" Type="Picture1" style="width:100%;" />
+            <img id="OriPicture1Pic" style="width:100%;display:none;" />
+        }
+    </div>
+
+    <div class="outerDiv">
+        <div class="grayDiv">
+            <h2 style="width: 70%; float: left; padding-top: 5px">Picture 2</h2>
+            <input type="file" id="Picture2Upload" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+            <img id="Picture2UploadIcon" class="pointer uploadIcon" style="height: 90%; vertical-align: top;margin-right:5px;" src="~/Image/Icon/Upload.png" />
+            <img Type="Picture2" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+            <img id="Picture2Del" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+        </div>
+        @if (Picture2Image[0] != 0)
+        {
+            <img id="Picture2Pic" style="width:100%;" src="@imgSrc_Picture2" />
+            <img id="OriPicture2Pic" style="width:100%;display:none;" src="@imgSrc_Picture2" />
+        }
+        else
+        {
+            <img id="Picture2Pic" style="width:100%;" />
+            <img id="OriPicture2Pic" style="width:100%;display:none;" />
+        }
+
+    </div>
+
+    <div class="outerDiv">
+        <div class="grayDiv">
+            <h2 style="width: 70%; float: left; padding-top: 5px">Picture 3</h2>
+            <input type="file" id="Picture3Upload" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+            <img id="Picture3UploadIcon" class="pointer uploadIcon" style="height: 90%; vertical-align: top;margin-right:5px;" src="~/Image/Icon/Upload.png" />
+            <img Type="Picture3" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+            <img id="Picture3Del" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+        </div>
+        @if (Picture3Image[0] != 0)
+        {
+            <img id="Picture3Pic" style="width:100%;" src="@imgSrc_Picture3" />
+            <img id="OriPicture3Pic" style="width:100%;display:none;" src="@imgSrc_Picture3" />
+        }
+        else
+        {
+            <img id="Picture3Pic" style="width:100%;" />
+            <img id="OriPicture3Pic" style="width:100%;display:none;" />
+        }
+
+    </div>
+
+    <div class="outerDiv">
+        <div class="grayDiv">
+            <h2 style="width: 70%; float: left; padding-top: 5px">Picture 4</h2>
+            <input type="file" id="Picture4Upload" name="name" accept=".png, .jpg, .jpeg" value="UP" style="display:none;" />
+            <img id="Picture4UploadIcon" class="pointer uploadIcon" style="height: 90%; vertical-align: top;margin-right:5px;" src="~/Image/Icon/Upload.png" />
+            <img Type="Picture4" class="OpenCamera pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Camera.png" />
+            <img id="Picture4Del" class="pointer" style="height:80%;padding-top:5px" src="~/Image/Icon/Delete.png" />
+        </div>
+        @if (Picture4Image[0] != 0)
+        {
+            <img id="Picture4Pic" style="width:100%;" src="@imgSrc_Picture4" />
+            <img id="OriPicture4Pic" style="width:100%;display:none;" src="@imgSrc_Picture4" />
+        }
+        else
+        {
+            <img id="Picture4Pic" style="width:100%;" />
+            <img id="OriPicture4Pic" style="width:100%;display:none;" />
+        }
+
+    </div>
+</div>
+
+<div id="loading" style="display:none;"></div>
+
+@{
+    Html.RenderPartial("ScreenShot");
+}
+
+<script>
+
+    var ID_List = [];
+    var Name_List = [];
+    $(function () {
+
+        // 找出父頁面的照片
+        const CurrentPicture1 = window.opener.document.querySelector("#@CrockingTestPicture1");
+        const CurrentPicture2 = window.opener.document.querySelector("#@CrockingTestPicture2");
+        const CurrentPicture3= window.opener.document.querySelector("#@CrockingTestPicture3");
+        const CurrentPicture4= window.opener.document.querySelector("#@CrockingTestPicture4");
+
+        //如果父頁面有照片，則顯示父頁面照片，如果沒有則顯示DB的照片
+
+        // Picture1
+        if (CurrentPicture1 != null && CurrentPicture1.value != '' && CurrentPicture1.value != 'System.Byte[]') {
+            var before = document.querySelector("#Picture1Pic");
+            before.src = 'data:image/png;base64,' + CurrentPicture1.value;
+        }
+
+        //Picture2
+        if (CurrentPicture2 != null && CurrentPicture2.value != '' && CurrentPicture2.value != 'System.Byte[]') {
+            var after = document.querySelector("#Picture2Pic");
+            after.src = 'data:image/png;base64,' + CurrentPicture2.value;
+        }
+
+        // Picture3
+        if (CurrentPicture3 != null && CurrentPicture3.value != '' && CurrentPicture3.value != 'System.Byte[]') {
+            var after = document.querySelector("#Picture3Pic");
+            after.src = 'data:image/png;base64,' + CurrentPicture3.value;
+        }
+
+        // Picture4
+        if (CurrentPicture4 != null && CurrentPicture4.value != '' && CurrentPicture4.value != 'System.Byte[]') {
+            var after = document.querySelector("#Picture4Pic");
+            after.src = 'data:image/png;base64,' + CurrentPicture4.value;
+        }
+
+        // Screenshot Exit
+        $('#btnScreenshotExit').on('click', function () {
+            StopScreen();
+            $('#Screenshot').addClass("display-None");
+        });
+
+
+        $("#btnKeep").click(async function () {
+            var Picture1Pic = document.querySelector("#Picture1Pic").src.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+            var Picture2Pic = document.querySelector("#Picture2Pic").src.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+            var Picture3Pic = document.querySelector("#Picture3Pic").src.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+            var Picture4Pic = document.querySelector("#Picture4Pic").src.replace("data:image/jpg;base64,", "data:image/png;base64,").replace("data:image/jpeg;base64,", "data:image/png;base64,");
+
+            var Picture = {
+                CrockingTestPicture1: Picture1Pic,
+                CrockingTestPicture2: Picture2Pic,
+                CrockingTestPicture3: Picture3Pic,
+                CrockingTestPicture4: Picture4Pic,
+            }
+
+            window.opener.GetFabricCrockingPicture(Picture);
+            window.close();
+        });
+
+
+        $("#btnExit").click(function () {
+            window.close();
+        });
+
+
+        $("#Picture1UploadIcon").click(function () {
+
+            $("#Picture1Upload").click();
+        });
+
+        $("#Picture2UploadIcon").click(function () {
+
+            $("#Picture2Upload").click();
+        });
+
+        $("#Picture3UploadIcon").click(function () {
+
+            $("#Picture3Upload").click();
+        });
+
+        $("#Picture4UploadIcon").click(function () {
+
+            $("#Picture4Upload").click();
+        });
+
+        Picture1Upload.onchange = async evt => {
+            $('#loading').show();
+            const file = evt.target.files[0];
+            if (file) {
+                const compressedBase64 = await compressImage(file);
+                $('#Picture1Pic').attr('src', compressedBase64);
+                $('#loading').hide();
+            }
+        }
+
+        Picture2Upload.onchange = async evt => {
+            $('#loading').show();
+            const file = evt.target.files[0];
+            if (file) {
+                const compressedBase64 = await compressImage(file);
+                $('#Picture2Pic').attr('src', compressedBase64);
+                $('#loading').hide();
+            }
+        }
+
+        Picture3Upload.onchange = async evt => {
+            $('#loading').show();
+            const file = evt.target.files[0];
+            if (file) {
+                const compressedBase64 = await compressImage(file);
+                $('#Picture3Pic').attr('src', compressedBase64);
+                $('#loading').hide();
+            }
+        }
+
+        Picture4Upload.onchange = async evt => {
+            $('#loading').show();
+            const file = evt.target.files[0];
+            if (file) {
+                const compressedBase64 = await compressImage(file);
+                $('#Picture4Pic').attr('src', compressedBase64);
+                $('#loading').hide();
+            }
+        }
+
+        $("#Picture1Del").click(function () {
+
+            // DB的圖檔
+            const Ori = document.querySelector("#OriPicture1Pic");
+
+            // User拍下的圖片
+            const Setting = document.querySelector("#Picture1Pic");
+
+
+            document.querySelector("#Picture1Pic").removeAttribute('src');
+        });
+
+        $("#Picture2Del").click(function () {
+
+            // DB的圖檔
+            const Ori = document.querySelector("#OriPicture2Pic");
+
+            // User拍下的圖片
+            const Setting = document.querySelector("#Picture2Pic");
+
+            document.querySelector("#Picture2Pic").removeAttribute('src');
+            // 如果User沒拍，則刪除原本的
+        });
+
+        $("#Picture3Del").click(function () {
+
+            // DB的圖檔
+            const Ori = document.querySelector("#OriPicture3Pic");
+
+            // User拍下的圖片
+            const Setting = document.querySelector("#Picture3Pic");
+
+            document.querySelector("#Picture3Pic").removeAttribute('src');
+            // 如果User沒拍，則刪除原本的
+        });
+
+        $("#Picture4Del").click(function () {
+
+            // DB的圖檔
+            const Ori = document.querySelector("#OriPicture4Pic");
+
+            // User拍下的圖片
+            const Setting = document.querySelector("#Picture4Pic");
+
+            document.querySelector("#Picture4Pic").removeAttribute('src');
+            // 如果User沒拍，則刪除原本的
+        });
+
+        CamInit();
+
+
+        if ('@EditMode' == 'False') {
+            $("#Picture1Del, #Picture2Del, #Picture3Del ,#Picture4Del , .OpenCamera ,.uploadIcon").hide();
+        }
+    });
+
+    function CamInit() {
+        $('.OpenCamera').on('click', function () {
+
+            if ('@EditMode' == 'True') {
+                var Type = $(this).attr('Type');
+                var sentID = "Picture1Pic";
+                switch (Type) {
+                    case "Picture1Pic":
+                        sentID = "Picture1Pic";
+                        break;
+                    case "Picture2ePic":
+                        sentID = "Picture2Pic";
+                        break;
+                    case "Picture3Pic":
+                        sentID = "Picture3Pic";
+                    case "Picture4Pic":
+                        sentID = "Picture4Pic";
+                        break;
+                }
+
+                $('#Screenshot').removeClass("display-None");
+                Screenshot(sentID);
+            }
+        });
+    }
+
+    function convertFile(file) {
+        return new Promise((resolve, reject) => {
+            // 建立FileReader物件
+            let reader = new FileReader()
+            // 註冊onload事件，取得result則resolve (會是一個Base64字串)
+            reader.onload = () => { resolve(reader.result) }
+            // 註冊onerror事件，若發生error則reject
+            reader.onerror = () => { reject(reader.error) }
+            // 讀取檔案
+            reader.readAsDataURL(file)
+        })
+    }
+
+    async function compressImage(imageFile) {
+        const MAX_FILE_SIZE = 500 * 1024; // 最大檔案大小為 500KB
+        const MAX_COMPRESSION_TRIES = 20; // 最大壓縮次數
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        let resizedFile = imageFile;
+        let compressionTries = 0;
+
+        while (resizedFile.size > MAX_FILE_SIZE && compressionTries < MAX_COMPRESSION_TRIES) {
+            compressionTries++;
+            const reader = new FileReader();
+            const img = new Image();
+            reader.readAsDataURL(resizedFile);
+            resizedFile = await new Promise((resolve) => {
+                reader.onload = function (event) {
+                    img.src = event.target.result;
+                    img.onload = function () {
+                        const originalWidth = img.width;
+                        const originalHeight = img.height;
+                        const resizingFactor = 0.8;
+                        const canvasWidth = originalWidth * resizingFactor;
+                        const canvasHeight = originalHeight * resizingFactor;
+                        canvas.width = canvasWidth;
+                        canvas.height = canvasHeight;
+
+                        context.clearRect(0, 0, canvasWidth, canvasHeight);
+                        context.drawImage(
+                            img,
+                            0,
+                            0,
+                            originalWidth * resizingFactor,
+                            originalHeight * resizingFactor
+                        );
+
+                        canvas.toBlob(
+                            (blob) => {
+                                if (blob) {
+                                    resolve(blob);
+                                } else {
+                                    resolve(imageFile);
+                                }
+                            },
+                            "image/png",
+                            0.8
+                        );
+                    };
+                };
+            });
+        }
+
+        const base64 = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(resizedFile);
+            reader.onload = function () {
+                resolve(reader.result);
+            };
+        });
+
+        return base64;
+    }
+
+</script>

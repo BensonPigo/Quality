@@ -1044,6 +1044,22 @@ Where ReportNo = @ReportNo
             return ExecuteList<Window_RandomTumblePillingTest>(CommandType.Text, SbSql.ToString(), paras);
         }
 
+        public IList<Window_FabricCrocking> Get_FabricCrockingPicture(string ReportNo)
+        {
+            StringBuilder SbSql = new StringBuilder();
+            SQLParameterCollection paras = new SQLParameterCollection();
+
+            SbSql.Append($@"
+select *
+From PMSFile.dbo.FIR_Laboratory  WITH(NOLOCK)
+Where ID = @ID
+");
+            paras.Add("@ID ", ReportNo);
+
+            return ExecuteList<Window_FabricCrocking>(CommandType.Text, SbSql.ToString(), paras);
+        }
+
+
         public IList<Window_SinglePicture> Get_SinglePicture(string Table, string ColumnName, string PKey_1, string PKey_2, string PKey_3, string PKey_4, string PKey_1_Val, string PKey_2_Val, string PKey_3_Val, string PKey_4_Val)
         {
             StringBuilder SbSql = new StringBuilder();
