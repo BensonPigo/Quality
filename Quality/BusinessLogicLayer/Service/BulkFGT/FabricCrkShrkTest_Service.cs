@@ -1535,7 +1535,7 @@ namespace BusinessLogicLayer.Service
                 case "ADIDAS":
                     basefileName = "FabricCrockingTest_ByBrand_A";
                     break;
-                case "UA":
+                case "U.ARMOUR":
                     basefileName = "FabricCrockingTest_ByBrand_A";
                     break;
                 case "NIKE":
