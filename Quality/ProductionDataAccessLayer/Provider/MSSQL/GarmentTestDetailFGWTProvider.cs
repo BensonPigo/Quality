@@ -37,6 +37,8 @@ select
 ,[LocationText]= CASE WHEN Location='B' THEN 'Bottom'
 						WHEN Location='T' THEN 'Top'
 						WHEN Location='S' THEN 'Top+Bottom'
+						WHEN Location='I' THEN 'Inner'
+						WHEN Location='O' THEN 'Outer'
 						ELSE ''
 					END
 ,[Type]
@@ -89,7 +91,11 @@ outer apply(
 			or f.Type = 'spirality: Garment - in percentage (average) (Top Method A)'
 			or f.Type = 'spirality: Garment - in percentage (average) (Top Method B)' 
 			or f.Type = 'spirality: Garment - in percentage (average) (Bottom Method A)'
-			or f.Type = 'spirality: Garment - in percentage (average) (Bottom Method B)' then 1
+			or f.Type = 'spirality: Garment - in percentage (average) (Bottom Method B)' 
+			or f.Type = 'spirality: Garment - in percentage (average) (Inner Method A)'
+			or f.Type = 'spirality: Garment - in percentage (average) (Inner Method B)' 
+			or f.Type = 'spirality: Garment - in percentage (average) (Outer Method A)'
+			or f.Type = 'spirality: Garment - in percentage (average) (Outer Method B)' then 1
 			else 0 end) as bit)
 )IsInPercentage
 where ID = @ID
@@ -163,27 +169,19 @@ SELECT locations = STUFF(
             List<GarmentTest_Detail_FGWT> fGWTs = new List<GarmentTest_Detail_FGWT>();
             bool containsT = locations.Contains("T");
             bool containsB = locations.Contains("B");
+            bool containsTandB = containsT && containsB;
+            bool containsI = locations.Contains("I");
+            bool containsO = locations.Contains("O");
 
             // 若只有B則寫入Bottom的項目+ALL的項目，若只有T則寫入TOP的項目+ALL的項目，若有B和T則寫入Top+ Bottom的項目+ALL的項目
             // 若為Hand只寫入第88項
             if (washType == "Hand" && source.MtlTypeID != "WOVEN")
             {
-                fGWTs = GetDefaultFGWT(false, false, false, source.MtlTypeID, washType, source.FabricationType, fibresType);
+                fGWTs = GetDefaultFGWT(containsT, containsB, containsTandB, containsI, containsO, source.MtlTypeID, washType, source.FabricationType, fibresType);
             }
             else
             {
-                if (containsT && containsB)
-                {
-                    fGWTs = GetDefaultFGWT(false, false, true, source.MtlTypeID, washType, source.FabricationType, fibresType);
-                }
-                else if (containsT)
-                {
-                    fGWTs = GetDefaultFGWT(containsT, false, false, source.MtlTypeID, washType, source.FabricationType, fibresType);
-                }
-                else
-                {
-                    fGWTs = GetDefaultFGWT(false, containsB, false, source.MtlTypeID, washType, source.FabricationType, fibresType);
-                }
+                fGWTs = GetDefaultFGWT(containsT, containsB, containsTandB, containsI, containsO, source.MtlTypeID, washType, source.FabricationType, fibresType);
             }
 
             long garmentTest_Detail_ID = source.ID;
@@ -208,6 +206,12 @@ SELECT locations = STUFF(
                         break;
                     case "Top+Bottom":
                         location = "S";
+                        break;
+                    case "Inner":
+                        location = "I";
+                        break;
+                    case "Outer":
+                        location = "O";
                         break;
                     default:
                         break;
@@ -413,6 +417,38 @@ inner join Garment_Detail_Spirality s on t.ID= s.ID and t.No = s.No
 and s.Location = 'B'
 where t.ID = @ID and t.No = @No
 and t.Type = 'spirality: Garment - in percentage (average) (Bottom Method B)'
+
+update t
+set t.Shrinkage = s.MethodA
+from GarmentTest_Detail_FGWT t
+inner join Garment_Detail_Spirality s on t.ID= s.ID and t.No = s.No
+and s.Location = 'I'
+where t.ID = @ID and t.No = @No
+and t.Type = 'spirality: Garment - in percentage (average) (Inner Method A)'
+
+update t
+set t.Shrinkage = s.MethodB
+from GarmentTest_Detail_FGWT t
+inner join Garment_Detail_Spirality s on t.ID= s.ID and t.No = s.No
+and s.Location ='I'
+where t.ID = @ID and t.No = @No
+and t.Type = 'spirality: Garment - in percentage (average) (Inner Method B)'
+
+update t
+set t.Shrinkage = s.MethodA
+from GarmentTest_Detail_FGWT t
+inner join Garment_Detail_Spirality s on t.ID= s.ID and t.No = s.No
+and s.Location = 'O'
+where t.ID = @ID and t.No = @No
+and t.Type = 'spirality: Garment - in percentage (average) (Outer Method A)'
+
+update t
+set t.Shrinkage = s.MethodB
+from GarmentTest_Detail_FGWT t
+inner join Garment_Detail_Spirality s on t.ID= s.ID and t.No = s.No
+and s.Location ='O'
+where t.ID = @ID and t.No = @No
+and t.Type = 'spirality: Garment - in percentage (average) (Outer Method B)'
 ";
             ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter);
         }
@@ -448,6 +484,20 @@ update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodA"]} where id = {dr["I
 update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodB"]} where id = {dr["ID"]} and No = {dr["No"]} and type = 'spirality: Garment - in percentage (average) (Bottom Method B)'
 ";
                     }
+                    else if (dr["Location"].ToString().ToLower() == "i")
+                    {
+                        strResut += $@"
+update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodA"]} where id = {dr["ID"]} and No = {dr["No"]} and type = 'spirality: Garment - in percentage (average) (Inner Method A)'
+update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodB"]} where id = {dr["ID"]} and No = {dr["No"]} and type = 'spirality: Garment - in percentage (average) (Inner Method B)'
+";
+                    }
+                    else if (dr["Location"].ToString().ToLower() == "o")
+                    {
+                        strResut += $@"
+update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodA"]} where id = {dr["ID"]} and No = {dr["No"]} and type = 'spirality: Garment - in percentage (average) (Outer Method A)'
+update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodB"]} where id = {dr["ID"]} and No = {dr["No"]} and type = 'spirality: Garment - in percentage (average) (Outer Method B)'
+";
+                    }
                 }
             }
 
@@ -465,7 +515,7 @@ update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodB"]} where id = {dr["I
         /// <param name="fibresType">fibresType</param>
         /// <param name="isAll">>是否All</param>
         /// <returns>預設清單</returns>
-        public List<GarmentTest_Detail_FGWT> GetDefaultFGWT(bool isTop, bool isBottom, bool isTop_Bottom, string mtlTypeID, string washType, string FabricationType, string fibresType, bool isAll = true)
+        public List<GarmentTest_Detail_FGWT> GetDefaultFGWT(bool isTop, bool isBottom, bool isTop_Bottom, bool isInner, bool isOuter, string mtlTypeID, string washType, string FabricationType, string fibresType, bool isAll = true)
         {
             string sqlWhere = string.Empty;
 
@@ -518,7 +568,7 @@ update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodB"]} where id = {dr["I
                 }
             }
 
-            if (isAll || isBottom || isTop || isTop_Bottom)
+            if (isAll || isBottom || isTop || isTop_Bottom || isInner || isOuter)
             {
                 List<string> listLocation = new List<string>();
 
@@ -542,6 +592,16 @@ update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodB"]} where id = {dr["I
                     listLocation.Add("'S'");
                 }
 
+                if (isInner)
+                {
+                    listLocation.Add("'I'");
+                }
+
+                if (isOuter)
+                {
+                    listLocation.Add("'O'");
+                }
+
                 sqlWhere += $" and a.Location in ({listLocation.JoinToString(",")}) ";
             }
 
@@ -557,6 +617,8 @@ select distinct a.Seq
 		,[Location] = case when a.Location = 'T' then 'Top'
                           when a.Location = 'B' then 'Bottom'
                           when a.Location = 'S' then 'Top+Bottom'
+                          when a.Location = 'I' then 'Inner'
+                          when a.Location = 'O' then 'Outer'
                           else '' end
 		,a.ReportType
         ,a.SystemType
@@ -590,6 +652,8 @@ select distinct a.Seq
 		,[Location] = case when a.Location = 'T' then 'Top'
                           when a.Location = 'B' then 'Bottom'
                           when a.Location = 'S' then 'Top+Bottom'
+                          when a.Location = 'I' then 'Inner'
+                          when a.Location = 'O' then 'Outer'
                           else '' end
 		,a.ReportType
         ,a.SystemType
@@ -618,6 +682,8 @@ select distinct a.Seq
 		,[Location] = case when a.Location = 'T' then 'Top'
                           when a.Location = 'B' then 'Bottom'
                           when a.Location = 'S' then 'Top+Bottom'
+                          when a.Location = 'I' then 'Inner'
+                          when a.Location = 'O' then 'Outer'
                           else '' end
 		,a.ReportType
         ,a.SystemType

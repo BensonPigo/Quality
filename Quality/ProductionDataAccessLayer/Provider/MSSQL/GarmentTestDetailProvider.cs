@@ -289,6 +289,10 @@ select distinct
           or (Type = 'spirality: Garment - in percentage (average) (Top Method B)')
           or (Type = 'spirality: Garment - in percentage (average) (Bottom Method A)')
           or (Type = 'spirality: Garment - in percentage (average) (Bottom Method B)')
+          or (Type = 'spirality: Garment - in percentage (average) (Inner Method A)')
+          or (Type = 'spirality: Garment - in percentage (average) (Inner Method B)')
+          or (Type = 'spirality: Garment - in percentage (average) (Outer Method A)')
+          or (Type = 'spirality: Garment - in percentage (average) (Outer Method B)')
    ,( IIF( TestDetail = '%' OR TestDetail = 'Range%'   
    -- % 為ISP20201331舊資料、Range% 為ISP20201606加上的新資料，兩者都視作百分比
       ---- 百分比 判斷方式
@@ -631,6 +635,10 @@ select s1.*,Result =
           or (Type = 'spirality: Garment - in percentage (average) (Top Method B)')
           or (Type = 'spirality: Garment - in percentage (average) (Bottom Method A)')
           or (Type = 'spirality: Garment - in percentage (average) (Bottom Method B)')
+          or (Type = 'spirality: Garment - in percentage (average) (Inner Method A)')
+          or (Type = 'spirality: Garment - in percentage (average) (Inner Method B)')
+          or (Type = 'spirality: Garment - in percentage (average) (Outer Method A)')
+          or (Type = 'spirality: Garment - in percentage (average) (Outer Method B)')
    ,( IIF( TestDetail = '%' OR TestDetail = 'Range%'   
    -- % 為ISP20201331舊資料、Range% 為ISP20201606加上的新資料，兩者都視作百分比
       ---- 百分比 判斷方式
