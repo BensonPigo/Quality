@@ -77,6 +77,7 @@ UPDATE [dbo].[Garment_Detail_Spirality]
       ,[MethodB] = @MethodB{idx}
 WHERE id = @ID{idx} and No = @No{idx} and Location = @Location{idx}
 " + Environment.NewLine;
+                idx++;
             }
 
             return Convert.ToInt32(ExecuteNonQuery(CommandType.Text, sqlcmd, objParameter)) > 0;

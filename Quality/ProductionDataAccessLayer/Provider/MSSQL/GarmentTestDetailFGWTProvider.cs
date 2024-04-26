@@ -351,20 +351,6 @@ INSERT INTO GarmentTest_Detail_FGWT
                 		gf.[Shrinkage]	= @Shrinkage{idx},
                 		gf.[Scale]	= IIF( (gf.TestDetail = 'grade' OR gf.TestDetail ='pass/fail' ) AND @Scale{idx} IS NULL , '', @Scale{idx})
                 from GarmentTest_Detail_FGWT gf WITH(NOLOCK)
-                outer apply (
-                	select distinct
-                		[Location] = iif (slC.cnt > 1, 'S', sl.Location)
-                	from GarmentTest g WITH(NOLOCK)
-                	inner join Style s WITH(NOLOCK) on g.StyleID = s.ID and g.BrandID = s.BrandID and g.SeasonID = s.SeasonID
-                	inner join Style_Location sl WITH(NOLOCK) on s.Ukey = sl.StyleUkey
-                	outer apply (
-                		select cnt = count(*)
-                		from Style_Location sl  WITH(NOLOCK)
-                		where s.Ukey = sl.StyleUkey
-                		and sl.Location in ('B', 'T')
-                	)slC
-                	where gf.ID = g.ID
-                )sl 
                 where gf.ID = @ID{idx} and gf.No = @No{idx} and gf.Location = @Location{idx} and gf.Type = @Type{idx}
 
                 " + Environment.NewLine;

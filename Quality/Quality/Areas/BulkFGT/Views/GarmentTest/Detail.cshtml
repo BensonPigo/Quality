@@ -475,35 +475,35 @@
                                             {
                                                 KeyToFgwt = string.Empty;
                                             }
-                                            else if (Model.Shrinkages[i].Type == "a) Front rise")
+                                            else if (Model.Shrinkages[i].Type == "a) Front rise" || Model.Shrinkages[i].Type == "a) length of necktape")
                                             {
                                                 KeyToFgwt = "a)";
                                             }
-                                            else if (Model.Shrinkages[i].Type == "b) Length of side seam" || Model.Shrinkages[i].Type == "b) Back rise")
+                                            else if (Model.Shrinkages[i].Type == "b) Length of side seam" || Model.Shrinkages[i].Type == "b) Back rise" || Model.Shrinkages[i].Type == "b) length armhole to bottom hem")
                                             {
                                                 KeyToFgwt = "b)";
                                             }
-                                            else if (Model.Shrinkages[i].Type == "c) Length of front" || Model.Shrinkages[i].Type == "c) Inseam or crotch width (if inseam less then 3)")
+                                            else if (string.Equals(Model.Shrinkages[i].Type, "c) Length of front", StringComparison.OrdinalIgnoreCase) || Model.Shrinkages[i].Type == "c) Inseam or crotch width (if inseam less then 3)")
                                             {
                                                 KeyToFgwt = "c)";
                                             }
-                                            else if (Model.Shrinkages[i].Type == "d) Length of center-back" || Model.Shrinkages[i].Type == "d) Waistband width")
+                                            else if (Model.Shrinkages[i].Type == "d) Length of center-back" || Model.Shrinkages[i].Type == "d) Waistband width" || Model.Shrinkages[i].Type == "d) length of centre back")
                                             {
                                                 KeyToFgwt = "d)";
                                             }
-                                            else if (Model.Shrinkages[i].Type == "e) Length of underarm seam" || Model.Shrinkages[i].Type == "e) Leg opening")
+                                            else if (Model.Shrinkages[i].Type == "e) Length of underarm seam" || Model.Shrinkages[i].Type == "e) length of underarm" || Model.Shrinkages[i].Type == "e) Leg opening")
                                             {
                                                 KeyToFgwt = "e)";
                                             }
-                                            else if (Model.Shrinkages[i].Type == "f) Across back width" || Model.Shrinkages[i].Type == "f) Knee width")
+                                            else if (Model.Shrinkages[i].Type == "f) Across back width" || Model.Shrinkages[i].Type == "f) Knee width" || Model.Shrinkages[i].Type == "f) width across back")
                                             {
                                                 KeyToFgwt = "f)";
                                             }
-                                            else if (Model.Shrinkages[i].Type == "g1) Chest width")
+                                            else if (Model.Shrinkages[i].Type == "g1) Chest width" || Model.Shrinkages[i].Type == "g1) width below centre back neck (average) (Chest Width)")
                                             {
                                                 KeyToFgwt = "g1)";
                                             }
-                                            else if (Model.Shrinkages[i].Type == "g2) Hem opening")
+                                            else if (Model.Shrinkages[i].Type == "g2) Hem opening" || Model.Shrinkages[i].Type == "g2) width below centre back neck (average) (Hem Opening)")
                                             {
                                                 KeyToFgwt = "g2)";
                                             }
@@ -511,11 +511,11 @@
                                             {
                                                 KeyToFgwt = "g)";
                                             }
-                                            else if (Model.Shrinkages[i].Type == "h) Sleeve width")
+                                            else if (Model.Shrinkages[i].Type == "h) Sleeve width" || Model.Shrinkages[i].Type == "h) width of sleeve")
                                             {
                                                 KeyToFgwt = "h)";
                                             }
-                                            else if (Model.Shrinkages[i].Type == "i) Sleeve opening or cuff width")
+                                            else if (Model.Shrinkages[i].Type == "i) Sleeve opening or cuff width" || Model.Shrinkages[i].Type == "i) width of sleeve bottom/cuff bottom")
                                             {
                                                 KeyToFgwt = "i)";
                                             }
@@ -768,6 +768,12 @@
                                             case "S":
                                                 Location = "Top+Bottom";
                                                 break;
+                                            case "I":
+                                                Location = "Inner";
+                                                break;
+                                            case "O":
+                                                Location = "Outer";
+                                                break;
                                         };
 
                                         bool bolWash = Model.FGWT[i].EditType.Equals("1");
@@ -778,7 +784,7 @@
                                         {
                                             KeyToShrinkage = string.Empty;
                                         }
-                                        else if (Model.FGWT[i].SystemType == "a) length of front leg")
+                                        else if (Model.FGWT[i].SystemType == "a) length of front leg" || Model.FGWT[i].SystemType == "a) length of necktape")
                                         {
                                             KeyToShrinkage = "a)";
                                         }
