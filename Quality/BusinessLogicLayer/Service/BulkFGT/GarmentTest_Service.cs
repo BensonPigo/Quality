@@ -1144,14 +1144,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             #region 照片
                             if (all_Data.Detail.TestBeforePicture != null)
                             {
-                                Excel.Range cell = worksheet.Cells[82, 2];
+                                Excel.Range cell = worksheet.Cells[94, 2];
                                 string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestBeforePicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                                 worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 328, 247);
                             }
 
                             if (all_Data.Detail.TestAfterPicture != null)
                             {
-                                Excel.Range cell = worksheet.Cells[82, 7];
+                                Excel.Range cell = worksheet.Cells[94, 7];
                                 string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestAfterPicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                                 worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 300, 248);
                             }
@@ -1173,11 +1173,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                             if ((MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("P") || ApperanceAccepted) && !ApperanceRejected)
                             {
-                                worksheet.Cells[77, 4] = "V";
+                                worksheet.Cells[87, 4] = "V";
                             }
                             else if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("F") || ApperanceRejected)
                             {
-                                worksheet.Cells[77, 6] = "V";
+                                worksheet.Cells[87, 6] = "V";
                             }
 
                             #endregion
@@ -1217,8 +1217,8 @@ and t.GarmentTest=1
                                     }
 
                                     // Name
-                                    worksheet.Cells[78, 9] = technicianName;
-                                    Excel.Range cell = worksheet.Cells[76, 9];
+                                    worksheet.Cells[88, 9] = technicianName;
+                                    Excel.Range cell = worksheet.Cells[86, 9];
 
                                     using (MemoryStream ms = new MemoryStream(imgData))
                                     {
@@ -1229,452 +1229,482 @@ and t.GarmentTest=1
                                 }
                                 else
                                 {
-                                    worksheet.Cells[78, 9] = MyUtility.Convert.GetString(all_Data.Detail.GarmentTest_Detail_Inspector);
+                                    worksheet.Cells[88, 9] = MyUtility.Convert.GetString(all_Data.Detail.GarmentTest_Detail_Inspector);
                                 }
                             }
 
                             // ToExcel
                             if (!IsToPDF)
                             {
-                                worksheet.Cells[74, 8] = string.Empty;
+                                worksheet.Cells[84, 8] = string.Empty;
                             }
                             #endregion
 
                             #region After Wash Appearance Check list
                             string tmpAR;
 
-                            worksheet.Cells[65, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Type).First());
+                            worksheet.Cells[75, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Type).First());
 
-                            worksheet.get_Range("65:65", Type.Missing).Rows.AutoFit();
+                            worksheet.get_Range("75:75", Type.Missing).Rows.AutoFit();
 
                             // 大約21個字換行
                             int widhthBase = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Type).First()).Length / 20;
 
-                            worksheet.get_Range("65:65", Type.Missing).RowHeight = widhthBase == 0 ? 28 : 28 * widhthBase;
+                            worksheet.get_Range("75:75", Type.Missing).RowHeight = widhthBase == 0 ? 28 : 28 * widhthBase;
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[65, 4] = "V";
+                                worksheet.Cells[75, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[65, 5] = "V";
+                                worksheet.Cells[75, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[65, 4] = tmpAR;
+                                worksheet.Cells[75, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[65, 6] = "V";
+                                worksheet.Cells[75, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[65, 7] = "V";
+                                worksheet.Cells[75, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[65, 6] = tmpAR;
+                                worksheet.Cells[75, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[65, 8] = "V";
+                                worksheet.Cells[75, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[65, 9] = "V";
+                                worksheet.Cells[75, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[65, 8] = tmpAR;
+                                worksheet.Cells[75, 8] = tmpAR;
                             }
 
                             string strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 65, strComment);
-                            worksheet.Cells[65, 10] = strComment;
+                            this.RowHeight(worksheet, 75, strComment);
+                            worksheet.Cells[75, 10] = strComment;
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[65, 4] = "V";
+                                worksheet.Cells[75, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[65, 5] = "V";
+                                worksheet.Cells[75, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[65, 4] = tmpAR;
+                                worksheet.Cells[75, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[66, 6] = "V";
+                                worksheet.Cells[76, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[66, 7] = "V";
+                                worksheet.Cells[76, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[66, 6] = tmpAR;
+                                worksheet.Cells[76, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[66, 8] = "V";
+                                worksheet.Cells[76, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[66, 9] = "V";
+                                worksheet.Cells[76, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[66, 8] = tmpAR;
+                                worksheet.Cells[76, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 66, strComment);
-                            worksheet.Cells[66, 10] = strComment;
+                            this.RowHeight(worksheet, 76, strComment);
+                            worksheet.Cells[76, 10] = strComment;
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[67, 4] = "V";
+                                worksheet.Cells[77, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[67, 5] = "V";
+                                worksheet.Cells[77, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[67, 4] = tmpAR;
+                                worksheet.Cells[77, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[67, 6] = "V";
+                                worksheet.Cells[77, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[67, 7] = "V";
+                                worksheet.Cells[77, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[67, 6] = tmpAR;
+                                worksheet.Cells[77, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[67, 8] = "V";
+                                worksheet.Cells[77, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[67, 9] = "V";
+                                worksheet.Cells[77, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[66, 8] = tmpAR;
+                                worksheet.Cells[76, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 67, strComment);
-                            worksheet.Cells[67, 10] = strComment;
+                            this.RowHeight(worksheet, 77, strComment);
+                            worksheet.Cells[77, 10] = strComment;
 
-                            worksheet.Cells[68, 3] = all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Type).First().ToString(); // type;
+                            worksheet.Cells[78, 3] = all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Type).First().ToString(); // type;
 
                             // 大約21個字換行
                             int widhthBase2 = all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Type).First().ToString().Length / 20;
 
-                            worksheet.get_Range("68:68", Type.Missing).RowHeight = widhthBase2 == 0 ? 28 : 28 * widhthBase2;
+                            worksheet.get_Range("78:78", Type.Missing).RowHeight = widhthBase2 == 0 ? 28 : 28 * widhthBase2;
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[68, 4] = "V";
+                                worksheet.Cells[78, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[68, 5] = "V";
+                                worksheet.Cells[78, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[68, 4] = tmpAR;
+                                worksheet.Cells[78, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[68, 6] = "V";
+                                worksheet.Cells[78, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[68, 7] = "V";
+                                worksheet.Cells[78, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[68, 6] = tmpAR;
+                                worksheet.Cells[78, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[68, 8] = "V";
+                                worksheet.Cells[78, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[68, 9] = "V";
+                                worksheet.Cells[78, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[68, 8] = tmpAR;
+                                worksheet.Cells[78, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 68, strComment);
-                            worksheet.Cells[68, 10] = strComment;
+                            this.RowHeight(worksheet, 78, strComment);
+                            worksheet.Cells[78, 10] = strComment;
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[69, 4] = "V";
+                                worksheet.Cells[79, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[69, 5] = "V";
+                                worksheet.Cells[79, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[69, 4] = tmpAR;
+                                worksheet.Cells[79, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[69, 6] = "V";
+                                worksheet.Cells[79, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[69, 7] = "V";
+                                worksheet.Cells[79, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[69, 6] = tmpAR;
+                                worksheet.Cells[79, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[69, 8] = "V";
+                                worksheet.Cells[79, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[69, 9] = "V";
+                                worksheet.Cells[79, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[69, 8] = tmpAR;
+                                worksheet.Cells[79, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 69, strComment);
-                            worksheet.Cells[69, 10] = strComment;
+                            this.RowHeight(worksheet, 79, strComment);
+                            worksheet.Cells[79, 10] = strComment;
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[70, 4] = "V";
+                                worksheet.Cells[80, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[70, 5] = "V";
+                                worksheet.Cells[80, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[70, 4] = tmpAR;
+                                worksheet.Cells[80, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[70, 6] = "V";
+                                worksheet.Cells[80, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[70, 7] = "V";
+                                worksheet.Cells[80, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[70, 6] = tmpAR;
+                                worksheet.Cells[80, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[70, 8] = "V";
+                                worksheet.Cells[80, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[70, 9] = "V";
+                                worksheet.Cells[80, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[70, 8] = tmpAR;
+                                worksheet.Cells[80, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 70, strComment);
-                            worksheet.Cells[70, 10] = strComment;
+                            this.RowHeight(worksheet, 80, strComment);
+                            worksheet.Cells[80, 10] = strComment;
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[71, 4] = "V";
+                                worksheet.Cells[81, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[71, 5] = "V";
+                                worksheet.Cells[81, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[71, 4] = tmpAR;
+                                worksheet.Cells[81, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[71, 6] = "V";
+                                worksheet.Cells[81, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[71, 7] = "V";
+                                worksheet.Cells[81, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[71, 6] = tmpAR;
+                                worksheet.Cells[81, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[71, 8] = "V";
+                                worksheet.Cells[81, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[71, 9] = "V";
+                                worksheet.Cells[81, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[71, 8] = tmpAR;
+                                worksheet.Cells[81, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 71, strComment);
-                            worksheet.Cells[71, 10] = strComment;
+                            this.RowHeight(worksheet, 81, strComment);
+                            worksheet.Cells[81, 10] = strComment;
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[72, 4] = "V";
+                                worksheet.Cells[82, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[72, 5] = "V";
+                                worksheet.Cells[82, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[72, 4] = tmpAR;
+                                worksheet.Cells[82, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[72, 6] = "V";
+                                worksheet.Cells[82, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[72, 7] = "V";
+                                worksheet.Cells[82, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[72, 6] = tmpAR;
+                                worksheet.Cells[82, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[72, 8] = "V";
+                                worksheet.Cells[82, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[72, 9] = "V";
+                                worksheet.Cells[82, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[72, 8] = tmpAR;
+                                worksheet.Cells[82, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 72, strComment);
-                            worksheet.Cells[72, 10] = strComment;
+                            this.RowHeight(worksheet, 82, strComment);
+                            worksheet.Cells[82, 10] = strComment;
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(9)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[73, 4] = "V";
+                                worksheet.Cells[83, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[73, 5] = "V";
+                                worksheet.Cells[83, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[73, 4] = tmpAR;
+                                worksheet.Cells[83, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(9)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[73, 6] = "V";
+                                worksheet.Cells[83, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[73, 7] = "V";
+                                worksheet.Cells[83, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[73, 6] = tmpAR;
+                                worksheet.Cells[83, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(9)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[73, 8] = "V";
+                                worksheet.Cells[83, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[73, 9] = "V";
+                                worksheet.Cells[83, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[73, 8] = tmpAR;
+                                worksheet.Cells[83, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(9)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 73, strComment);
-                            worksheet.Cells[73, 10] = strComment;
+                            this.RowHeight(worksheet, 83, strComment);
+                            worksheet.Cells[83, 10] = strComment;
                             #endregion
 
                             #region Spirality
+
+                            if (all_Data.Spiralities.Where(x => x.Location.EqualString("O")).Any())
+                            {
+                                var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("O")).First();
+                                worksheet.Cells[68, 6] = dr.MethodA;
+                                worksheet.Cells[69, 6] = dr.MethodB;
+                                worksheet.Cells[70, 6] = dr.CM;
+                            }
+                            else
+                            {
+                                Excel.Range rng = worksheet.get_Range("A66:A70", Type.Missing).EntireRow;
+                                rng.Select();
+                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                Marshal.ReleaseComObject(rng);
+                            }
+
+                            if (all_Data.Spiralities.Where(x => x.Location.EqualString("I")).Any())
+                            {
+                                var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("I")).First();
+                                worksheet.Cells[63, 6] = dr.MethodA;
+                                worksheet.Cells[64, 6] = dr.MethodB;
+                                worksheet.Cells[65, 6] = dr.CM;
+                            }
+                            else
+                            {
+                                Excel.Range rng = worksheet.get_Range("A61:A65", Type.Missing).EntireRow;
+                                rng.Select();
+                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                Marshal.ReleaseComObject(rng);
+                            }
 
                             if (all_Data.Spiralities.Where(x => x.Location.EqualString("B")).Any())
                             {
@@ -1856,20 +1886,20 @@ and t.GarmentTest=1
                             #region 照片
                             if (all_Data.Detail.TestBeforePicture != null)
                             {
-                                Excel.Range cell = worksheet.Cells[82, 2];
+                                Excel.Range cell = worksheet.Cells[94, 2];
                                 string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestBeforePicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                                 worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 328, 247);
                             }
 
                             if (all_Data.Detail.TestAfterPicture != null)
                             {
-                                Excel.Range cell = worksheet.Cells[82, 7];
+                                Excel.Range cell = worksheet.Cells[94, 7];
                                 string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestAfterPicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
                                 worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 300, 248);
                             }
                             #endregion
 
-                            worksheet.get_Range("66:66", Type.Missing).Delete();
+                            worksheet.get_Range("76:76", Type.Missing).Delete();
 
                             #region 最下面 Signature
 
@@ -1888,11 +1918,11 @@ and t.GarmentTest=1
 
                             if ((MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("P") || ApperanceAccepted) && !ApperanceRejected)
                             {
-                                worksheet.Cells[76, 4] = "V";
+                                worksheet.Cells[86, 4] = "V";
                             }
                             else if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("F") || ApperanceRejected)
                             {
-                                worksheet.Cells[76, 6] = "V";
+                                worksheet.Cells[86, 6] = "V";
                             }
                             #endregion
 
@@ -1931,8 +1961,8 @@ and t.GarmentTest=1
                                     }
 
                                     // Name
-                                    worksheet.Cells[79, 9] = technicianName;
-                                    Excel.Range cellNew = worksheet.Cells[76, 9];
+                                    worksheet.Cells[89, 9] = technicianName;
+                                    Excel.Range cellNew = worksheet.Cells[86, 9];
                                     using (MemoryStream ms = new MemoryStream(imgData))
                                     {
                                         Image img = Image.FromStream(ms);
@@ -1943,427 +1973,457 @@ and t.GarmentTest=1
                                 }
                                 else
                                 {
-                                    worksheet.Cells[76, 9] = MyUtility.Convert.GetString(all_Data.Detail.GarmentTest_Detail_Inspector);
+                                    worksheet.Cells[86, 9] = MyUtility.Convert.GetString(all_Data.Detail.GarmentTest_Detail_Inspector);
                                 }
                             }
 
                             if (!IsToPDF)
                             {
-                                worksheet.Cells[74, 8] = string.Empty;
+                                worksheet.Cells[84, 8] = string.Empty;
                             }
                             #endregion
 
                             #region After Wash Appearance Check list
                             string tmpAR;
 
-                            worksheet.Cells[65, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Type).First());
-                            worksheet.get_Range("65:65", Type.Missing).Rows.AutoFit();
+                            worksheet.Cells[75, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Type).First());
+                            worksheet.get_Range("75:75", Type.Missing).Rows.AutoFit();
 
                             // 大約21個字換行
                             int widhthBase = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Type).First()).ToString().Length / 20;
 
-                            worksheet.get_Range("65:65", Type.Missing).RowHeight = widhthBase == 0 ? 28 : 28 * widhthBase;
+                            worksheet.get_Range("75:75", Type.Missing).RowHeight = widhthBase == 0 ? 28 : 28 * widhthBase;
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[65, 4] = "V";
+                                worksheet.Cells[75, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[65, 5] = "V";
+                                worksheet.Cells[75, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[65, 4] = tmpAR;
+                                worksheet.Cells[75, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[65, 6] = "V";
+                                worksheet.Cells[75, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[65, 7] = "V";
+                                worksheet.Cells[75, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[65, 6] = tmpAR;
+                                worksheet.Cells[75, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[65, 8] = "V";
+                                worksheet.Cells[75, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[65, 9] = "V";
+                                worksheet.Cells[75, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[65, 8] = tmpAR;
+                                worksheet.Cells[75, 8] = tmpAR;
                             }
 
                             string strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 65, strComment);
-                            worksheet.Cells[65, 10] = strComment;
+                            this.RowHeight(worksheet, 75, strComment);
+                            worksheet.Cells[75, 10] = strComment;
 
-                            worksheet.Cells[66, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Type).First());
+                            worksheet.Cells[76, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Type).First());
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[66, 4] = "V";
+                                worksheet.Cells[76, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[66, 5] = "V";
+                                worksheet.Cells[76, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[66, 4] = tmpAR;
+                                worksheet.Cells[76, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[66, 6] = "V";
+                                worksheet.Cells[76, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[66, 7] = "V";
+                                worksheet.Cells[76, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[66, 6] = tmpAR;
+                                worksheet.Cells[76, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[66, 8] = "V";
+                                worksheet.Cells[76, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[66, 9] = "V";
+                                worksheet.Cells[76, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[66, 8] = tmpAR;
+                                worksheet.Cells[76, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 66, strComment);
-                            worksheet.Cells[66, 10] = strComment;
+                            this.RowHeight(worksheet, 76, strComment);
+                            worksheet.Cells[76, 10] = strComment;
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash1).First());
 
-                            worksheet.Cells[67, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Type).First()).ToString(); // type;
+                            worksheet.Cells[77, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Type).First()).ToString(); // type;
 
                             // 大約21個字換行
                             int widhthBase2 = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Type).First()).ToString().Length / 20;
 
-                            worksheet.get_Range("67:67", Type.Missing).RowHeight = widhthBase2 == 0 ? 28 : 28 * widhthBase2;
+                            worksheet.get_Range("77:77", Type.Missing).RowHeight = widhthBase2 == 0 ? 28 : 28 * widhthBase2;
 
                             if ((
-                                    worksheet.get_Range("65:65", Type.Missing).RowHeight
-                                    + worksheet.get_Range("66:66", Type.Missing).RowHeight
-                                    + worksheet.get_Range("67:67", Type.Missing).RowHeight) < 81)
+                                    worksheet.get_Range("75:75", Type.Missing).RowHeight
+                                    + worksheet.get_Range("76:76", Type.Missing).RowHeight
+                                    + worksheet.get_Range("77:77", Type.Missing).RowHeight) < 81)
                             {
-                                worksheet.get_Range("65:65", Type.Missing).RowHeight = worksheet.get_Range("65:65", Type.Missing).RowHeight > 28 ? worksheet.get_Range("65:65", Type.Missing).RowHeight : 28;
-                                worksheet.get_Range("66:66", Type.Missing).RowHeight = 28;
-                                worksheet.get_Range("67:67", Type.Missing).RowHeight = worksheet.get_Range("67:67", Type.Missing).RowHeight > 28 ? worksheet.get_Range("67:67", Type.Missing).RowHeight : 28;
+                                worksheet.get_Range("75:75", Type.Missing).RowHeight = worksheet.get_Range("75:75", Type.Missing).RowHeight > 28 ? worksheet.get_Range("75:75", Type.Missing).RowHeight : 28;
+                                worksheet.get_Range("76:76", Type.Missing).RowHeight = 28;
+                                worksheet.get_Range("77:77", Type.Missing).RowHeight = worksheet.get_Range("77:77", Type.Missing).RowHeight > 28 ? worksheet.get_Range("77:77", Type.Missing).RowHeight : 28;
                             }
 
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[67, 4] = "V";
+                                worksheet.Cells[77, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[67, 5] = "V";
+                                worksheet.Cells[77, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[67, 4] = tmpAR;
+                                worksheet.Cells[77, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[67, 6] = "V";
+                                worksheet.Cells[77, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[67, 7] = "V";
+                                worksheet.Cells[77, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[67, 6] = tmpAR;
+                                worksheet.Cells[77, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[67, 8] = "V";
+                                worksheet.Cells[77, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[67, 9] = "V";
+                                worksheet.Cells[77, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[67, 8] = tmpAR;
+                                worksheet.Cells[77, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 67, strComment);
-                            worksheet.Cells[67, 10] = strComment;
+                            this.RowHeight(worksheet, 77, strComment);
+                            worksheet.Cells[77, 10] = strComment;
 
-                            worksheet.Cells[68, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Type).First());
+                            worksheet.Cells[78, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Type).First());
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[68, 4] = "V";
+                                worksheet.Cells[78, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[68, 5] = "V";
+                                worksheet.Cells[78, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[68, 4] = tmpAR;
+                                worksheet.Cells[78, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[68, 6] = "V";
+                                worksheet.Cells[78, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[68, 7] = "V";
+                                worksheet.Cells[78, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[68, 6] = tmpAR;
+                                worksheet.Cells[78, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[68, 8] = "V";
+                                worksheet.Cells[78, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[68, 9] = "V";
+                                worksheet.Cells[78, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[68, 8] = tmpAR;
+                                worksheet.Cells[78, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 68, strComment);
-                            worksheet.Cells[68, 10] = strComment;
+                            this.RowHeight(worksheet, 78, strComment);
+                            worksheet.Cells[78, 10] = strComment;
 
-                            worksheet.Cells[69, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Type).First());
+                            worksheet.Cells[79, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Type).First());
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[69, 4] = "V";
+                                worksheet.Cells[79, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[69, 5] = "V";
+                                worksheet.Cells[79, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[69, 4] = tmpAR;
+                                worksheet.Cells[79, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[69, 6] = "V";
+                                worksheet.Cells[79, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[69, 7] = "V";
+                                worksheet.Cells[79, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[69, 6] = tmpAR;
+                                worksheet.Cells[79, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[69, 8] = "V";
+                                worksheet.Cells[79, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[69, 9] = "V";
+                                worksheet.Cells[79, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[69, 8] = tmpAR;
+                                worksheet.Cells[79, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 69, strComment);
-                            worksheet.Cells[69, 10] = strComment;
+                            this.RowHeight(worksheet, 79, strComment);
+                            worksheet.Cells[79, 10] = strComment;
 
-                            worksheet.Cells[70, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Type).First());
+                            worksheet.Cells[80, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Type).First());
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[70, 4] = "V";
+                                worksheet.Cells[80, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[70, 5] = "V";
+                                worksheet.Cells[80, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[70, 4] = tmpAR;
+                                worksheet.Cells[80, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[70, 6] = "V";
+                                worksheet.Cells[80, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[70, 7] = "V";
+                                worksheet.Cells[80, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[70, 6] = tmpAR;
+                                worksheet.Cells[80, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[70, 8] = "V";
+                                worksheet.Cells[80, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[70, 9] = "V";
+                                worksheet.Cells[80, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[70, 8] = tmpAR;
+                                worksheet.Cells[80, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 70, strComment);
-                            worksheet.Cells[70, 10] = strComment;
+                            this.RowHeight(worksheet, 80, strComment);
+                            worksheet.Cells[80, 10] = strComment;
 
-                            worksheet.Cells[71, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Type).First());
+                            worksheet.Cells[81, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Type).First());
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[71, 4] = "V";
+                                worksheet.Cells[81, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[71, 5] = "V";
+                                worksheet.Cells[81, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[71, 4] = tmpAR;
+                                worksheet.Cells[81, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[71, 6] = "V";
+                                worksheet.Cells[81, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[71, 7] = "V";
+                                worksheet.Cells[81, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[71, 6] = tmpAR;
+                                worksheet.Cells[81, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[71, 8] = "V";
+                                worksheet.Cells[81, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[71, 9] = "V";
+                                worksheet.Cells[81, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[71, 8] = tmpAR;
+                                worksheet.Cells[81, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 71, strComment);
-                            worksheet.Cells[71, 10] = strComment;
+                            this.RowHeight(worksheet, 81, strComment);
+                            worksheet.Cells[81, 10] = strComment;
 
-                            worksheet.Cells[72, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Type).First());
+                            worksheet.Cells[82, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Type).First());
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash1).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[72, 4] = "V";
+                                worksheet.Cells[82, 4] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[72, 5] = "V";
+                                worksheet.Cells[82, 5] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[72, 4] = tmpAR;
+                                worksheet.Cells[82, 4] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash2).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[72, 6] = "V";
+                                worksheet.Cells[82, 6] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[72, 7] = "V";
+                                worksheet.Cells[82, 7] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[72, 6] = tmpAR;
+                                worksheet.Cells[82, 6] = tmpAR;
                             }
 
                             tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash3).First());
                             if (tmpAR.EqualString("Accepted"))
                             {
-                                worksheet.Cells[72, 8] = "V";
+                                worksheet.Cells[82, 8] = "V";
                             }
                             else if (tmpAR.EqualString("Rejected"))
                             {
-                                worksheet.Cells[72, 9] = "V";
+                                worksheet.Cells[82, 9] = "V";
                             }
                             else
                             {
-                                worksheet.Cells[72, 8] = tmpAR;
+                                worksheet.Cells[82, 8] = tmpAR;
                             }
 
                             strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 72, strComment);
-                            worksheet.Cells[72, 10] = strComment;
+                            this.RowHeight(worksheet, 82, strComment);
+                            worksheet.Cells[82, 10] = strComment;
 
                             #endregion
 
                             #region Spirality
+                            if (all_Data.Spiralities.Where(x => x.Location.EqualString("O")).Any())
+                            {
+                                var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("O")).First();
+                                worksheet.Cells[68, 6] = dr.MethodA;
+                                worksheet.Cells[69, 6] = dr.MethodB;
+                                worksheet.Cells[70, 6] = dr.CM;
+                            }
+                            else
+                            {
+                                Excel.Range rng = worksheet.get_Range("A66:A70", Type.Missing).EntireRow;
+                                rng.Select();
+                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                Marshal.ReleaseComObject(rng);
+                            }
+
+                            if (all_Data.Spiralities.Where(x => x.Location.EqualString("I")).Any())
+                            {
+                                var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("I")).First();
+                                worksheet.Cells[63, 6] = dr.MethodA;
+                                worksheet.Cells[64, 6] = dr.MethodB;
+                                worksheet.Cells[65, 6] = dr.CM;
+                            }
+                            else
+                            {
+                                Excel.Range rng = worksheet.get_Range("A61:A65", Type.Missing).EntireRow;
+                                rng.Select();
+                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                Marshal.ReleaseComObject(rng);
+                            }
+
                             if (all_Data.Spiralities.Where(x => x.Location.EqualString("B")).Any())
                             {
                                 var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("B")).First();
