@@ -36,5 +36,6 @@ namespace DatabaseObject.ViewModel
         public string Sender { get; set; }
 
         public string SendDate { get; set; }
+        public bool IsSkirt { get; set; }
     }
 }
