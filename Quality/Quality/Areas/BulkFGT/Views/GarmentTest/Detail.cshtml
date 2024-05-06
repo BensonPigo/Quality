@@ -331,8 +331,8 @@
                                                     </select>
                                                 }
                                                 else
-                                                {                                                    
-                                                    @Html.TextBoxFor(o=>o.Detail.Temperature,"",new { @type="number", @onchange = "value=IntCheck(value)" })
+                                                {
+                                                    @Html.TextBoxFor(o => o.Detail.Temperature, "", new { @type = "number", @onchange = "value=IntCheck(value)" })
                                                 }
                                             </td>
                                             <td><h4>Fabric Composition</h4></td>
@@ -345,7 +345,7 @@
                                                 <select id="Detail_FabricationType" name="Detail.FabricationType">
                                                     @foreach (var item in Model.FabricationType_Source)
                                                     {
-                                                        /*             
+                                                        /*
                                                         (1) 是KINT的時候，才可以選Rib
                                                         (2) 是KINT且LineDry的時候，才可以選Wool
                                                         (3) 是WOVEN的時候，才可以選Elastane
@@ -479,13 +479,33 @@
                                             {
                                                 KeyToFgwt = "a)";
                                             }
+                                            else if (string.Equals(Model.Shrinkages[i].Type, "a1) Length of center front", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                KeyToFgwt = "skirt a1)";
+                                            }
+                                            else if (string.Equals(Model.Shrinkages[i].Type, "a2) Length of center back", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                KeyToFgwt = "skirt a2)";
+                                            }
                                             else if (Model.Shrinkages[i].Type == "b) Length of side seam" || Model.Shrinkages[i].Type == "b) Back rise" || Model.Shrinkages[i].Type == "b) length armhole to bottom hem")
                                             {
                                                 KeyToFgwt = "b)";
                                             }
+                                            else if (string.Equals(Model.Shrinkages[i].Type, "b) Waistband width", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                KeyToFgwt = "skirt b)";
+                                            }
                                             else if (string.Equals(Model.Shrinkages[i].Type, "c) Length of front", StringComparison.OrdinalIgnoreCase) || Model.Shrinkages[i].Type == "c) Inseam or crotch width (if inseam less then 3)")
                                             {
                                                 KeyToFgwt = "c)";
+                                            }
+                                            else if (string.Equals(Model.Shrinkages[i].Type, "c1) Hip width", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                KeyToFgwt = "skirt c1)";
+                                            }
+                                            else if (string.Equals(Model.Shrinkages[i].Type, "c2) Hem opening", StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                KeyToFgwt = "skirt c2)";
                                             }
                                             else if (Model.Shrinkages[i].Type == "d) Length of center-back" || Model.Shrinkages[i].Type == "d) Waistband width" || Model.Shrinkages[i].Type == "d) length of centre back")
                                             {
@@ -788,13 +808,33 @@
                                         {
                                             KeyToShrinkage = "a)";
                                         }
+                                        else if (string.Equals(Model.FGWT[i].SystemType, "skirt a1) length from waist to bottom hem (center front)", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            KeyToShrinkage = "skirt a1)";
+                                        }
+                                        else if (string.Equals(Model.FGWT[i].SystemType, "skirt a2) length from waist to bottom hem (center back)", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            KeyToShrinkage = "skirt a2)";
+                                        }
                                         else if (Model.FGWT[i].SystemType == "b) length armhole to bottom hem" || Model.FGWT[i].SystemType == "b) length of back leg")
                                         {
                                             KeyToShrinkage = "b)";
                                         }
+                                        else if (string.Equals(Model.FGWT[i].SystemType, "skirt b) width at waistband", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            KeyToShrinkage = "skirt b)";
+                                        }
                                         else if (Model.FGWT[i].SystemType == "c) length of inside leg" || Model.FGWT[i].SystemType == "c) length of front")
                                         {
                                             KeyToShrinkage = "c)";
+                                        }
+                                        else if (string.Equals(Model.FGWT[i].SystemType, "skirt c1) width below top/bottom edge of waistband (average) (Hip width)", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            KeyToShrinkage = "skirt c1)";
+                                        }
+                                        else if (string.Equals(Model.FGWT[i].SystemType, "skirt c2) width below top/bottom edge of waistband (average) (Hem opening)", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            KeyToShrinkage = "skirt c2)";
                                         }
                                         else if (Model.FGWT[i].SystemType == "d) length of centre back" || Model.FGWT[i].SystemType == "d) width at waist")
                                         {
