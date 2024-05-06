@@ -1138,6 +1138,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                         worksheet.get_Range("14:14", Type.Missing).RowHeight = 15.75 * rowCtn;
 
+                        if (all_Data.Main.IsSkirt)
+                        {
+                            worksheet.Cells[44, 3] = "SKIRT";
+                        }
+
                         #region 舊資料
                         if (!IsNewData)
                         {

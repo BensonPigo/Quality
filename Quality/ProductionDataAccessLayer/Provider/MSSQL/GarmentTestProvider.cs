@@ -101,6 +101,7 @@ select g.ID
 ,[GarmentTestAddName] = CONCAT(g.AddName,'-',CreatBy.Name,'',g.AddDate)
 ,[GarmentTestEditName] = CONCAT(g.EditName,'-',EditBy.Name,'',g.EditDate)
 ,g.AddName,g.EditName
+,IsSkirt = IsSkirt.Val
 from GarmentTest g WITH(NOLOCK)
 left join Pass1 CreatBy WITH(NOLOCK) on CreatBy.ID = g.AddName
 left join Pass1 EditBy WITH(NOLOCK) on EditBy.ID = g.EditName
@@ -155,6 +156,16 @@ outer apply(
 	AND a.SeasonID >= '23'
 	AND a.BrandID IN ('ADIDAS','REEBOK')
 )WashName
+OUTER APPLY(
+	SELECT Val = cast(IIF( EXISTS(
+		select 1
+		from Style s  
+		inner join Style_Location sl with(nolock) on sl.styleukey = s.ukey
+		inner join Reason r on r.ID = s.ApparelType and r.ReasonTypeID ='Style_Apparel_Type'
+		where sl.Location='B' AND r.Name ='Skirt'
+		AND s.id = g.StyleID and s.BrandID = g.BrandID and s.SeasonID = g.SeasonID
+		),1,0) as bit)
+)IsSkirt
 where 1=1
 ";
             if (!string.IsNullOrEmpty(filter.MDivisionid))
@@ -287,6 +298,23 @@ begin
 		where t1.BrandID = @BrandID
 		and t1.LocationGroup = 'TB'
 	end
+    else if @location_combo = 'B' AND EXISTS(  ----如果Location = 'B'，請根據Style來判斷是裙子還是褲子
+            select 1 --gt.*
+            from GarmentTest gt 
+            INNER join style s on s.id = gt.StyleID and s.BrandID = gt.BrandID and s.SeasonID = gt.SeasonID
+            inner join Reason r on r.ID = s.ApparelType and r.ReasonTypeID ='Style_Apparel_Type'
+            where  r.Name ='Skirt'
+            and gt.ID = @ID
+        )
+    begin
+		INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
+		select  @ID,@NO, t2.Location, t1.Type, t1.Seq
+		from GarmentTestShrinkage t1  WITH(NOLOCK)
+		inner join  #Location_S t2 on t1.Location = t2.Location
+		where t1.BrandID = @BrandID
+		and t1.LocationGroup = 'B'
+        and t1.Category='Skirt'
+    end
 	else
 	begin
 		INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
@@ -561,6 +589,7 @@ values(
     ,'Non'
 )
 
+delete from {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTest_Detail where ID=@ID and No=@MaxNo +1
 insert into  {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTest_Detail(ID,No)
 values(@ID, @MaxNo +1)
 ";
