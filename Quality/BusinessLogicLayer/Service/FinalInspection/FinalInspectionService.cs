@@ -625,7 +625,7 @@ namespace BusinessLogicLayer.Service
             new
             {
                 sku_number = string.IsNullOrEmpty(s["SizeCode"].ToString()) ? s["Article"] : $"{s["Article"]}_{s["SizeCode"]}",
-                qty_to_inspect = s["ShipQty"]
+                qty_to_inspect = s["ShipQty"].ToInt() == 0 ? 1 : s["ShipQty"]
             }
             );
 
