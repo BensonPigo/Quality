@@ -2703,7 +2703,7 @@ where   IsExportToP88 = 0 and
         InspectionReport.CustPONO <> '' and
         (AddDate >= @EOLInlineFromDateTransferToP88 or EditDate >= @EOLInlineFromDateTransferToP88) and
         exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InspectionReport.CustPONO and o.BrandID in ('Adidas'))
-
+        and exists(select 1 from pass1 p with (nolock) where p.ID = InspectionReport.QC and p.Pivot88UserName !='')
 ";
             if (!string.IsNullOrEmpty(inspectionID))
             {
@@ -2759,8 +2759,7 @@ where   IsExportToP88 = 0 and
         CustPONO <> '' and
         (AddDate >= @EOLInlineFromDateTransferToP88 or EditDate >= @EOLInlineFromDateTransferToP88) and
         exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = InlineInspectionReport.CustPONO and o.BrandID in ('Adidas'))
-
-
+        and exists(select 1 from pass1 p with (nolock) where p.ID = InlineInspectionReport.QC and p.Pivot88UserName !='')
 ";
             if (!string.IsNullOrEmpty(inspectionID))
             {
