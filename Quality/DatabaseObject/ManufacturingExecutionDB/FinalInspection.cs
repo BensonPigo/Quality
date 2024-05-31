@@ -313,6 +313,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
                     result.Add("IsAdditionalHantage", this.finalInspectionCheckList.IsAdditionalHantage);
                     result.Add("IsUPCStickierHantage", this.finalInspectionCheckList.IsUPCStickierHantage);
                     result.Add("IsGS1128Label", this.finalInspectionCheckList.IsGS1128Label);
+                    result.Add("IsSecuritytag", this.finalInspectionCheckList.IsSecuritytag);
 
                 }
 

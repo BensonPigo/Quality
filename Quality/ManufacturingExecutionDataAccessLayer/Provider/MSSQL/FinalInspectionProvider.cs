@@ -942,7 +942,7 @@ WHERE FinalInspectionID = @FinalInspectionID
             objParameter.Add("@IsAdditionalHantage", CheckList.IsAdditionalHantage);
             objParameter.Add("@IsUPCStickierHantage", CheckList.IsUPCStickierHantage);
             objParameter.Add("@IsGS1128Label", CheckList.IsGS1128Label);
-
+            objParameter.Add("@IsSecuritytag", CheckList.IsSecuritytag);
 
             string sqlInsertFinalInspection_Moisture = @"
 UPDATE dbo.FinalInspectionCheckList
@@ -989,6 +989,7 @@ UPDATE dbo.FinalInspectionCheckList
       ,IsAdditionalHantage = @IsAdditionalHantage
       ,IsUPCStickierHantage = @IsUPCStickierHantage
       ,IsGS1128Label = @IsGS1128Label
+      ,IsSecuritytag = @IsSecuritytag
 WHERE FinalInspectionID = @FinalInspectionID
 ";
             ExecuteNonQuery(CommandType.Text, sqlInsertFinalInspection_Moisture, objParameter);
@@ -2561,7 +2562,7 @@ SELECT IsCloseShade      ,IsHandfeel      ,IsAppearance      ,IsPrintEmbDecorati
       ,Is8FlagLabel      ,IsAdditionalLabel      ,IsIdLabel      ,IsMainLabel      ,IsSizeLabel      ,IsCareContentLabel      ,IsBrandLabel      ,IsBlueSignLabel
       ,IsLotLabel      ,IsSecurityLabel      ,IsSpecialLabel      ,IsVIDLabel      ,IsCNC      ,IsWovenlabel      ,IsTSize      ,IsCCLayout      ,IsShippingMark
       ,IsPolytagMarking      ,IsColorSizeQty      ,IsHangtag      ,IsJokerTag      ,IsWWMT      ,IsChinaCIT      ,IsPolybagSticker      ,IsUCCSticker
-      ,IsPESheetMicropak      ,IsAdditionalHantage      ,IsUPCStickierHantage      ,IsGS1128Label
+      ,IsPESheetMicropak      ,IsAdditionalHantage      ,IsUPCStickierHantage      ,IsGS1128Label     ,IsSecuritytag
 FROM FinalInspectionCheckList with (nolock) where FinalInspectionID = @ID 
 
 select	distinct
