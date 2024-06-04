@@ -969,7 +969,22 @@ namespace BusinessLogicLayer.Service
             List<SentPivot88Result> sentPivot88Results = new List<SentPivot88Result>();
 
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-            string sqlP88Empty =string.Empty;
+            string sqlP88Empty = @"
+declare @EOLInlineFromDateTransferToP88 date = (select EOLInlineFromDateTransferToP88 from system)
+
+select No = rank() over(order by [QC ID]),a.[QC ID] 
+from
+(
+	select  distinct [QC ID] = t.QC 
+	from {0} t with (nolock)
+	inner join pass1 p on p.id= t.qc
+	where  IsExportToP88 = 0 
+	and t.CustPONO <> '' 
+	and (t.AddDate >= @EOLInlineFromDateTransferToP88 or t.EditDate >= @EOLInlineFromDateTransferToP88) 
+	and exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = t.CustPONO and o.BrandID in ('Adidas'))
+	and p.Pivot88UserName = ''
+) a
+";
 
             switch (pivotTransferRequest.InspectionType)
             {
@@ -978,29 +993,11 @@ namespace BusinessLogicLayer.Service
                     break;
                 case "InlineInspection":
                     listInspectionID = _FinalInspectionProvider.GetPivot88InlineInspectionID(pivotTransferRequest.InspectionID);
-                    sqlP88Empty = @"
-select No = rank() over(order by [QC ID]),a.[QC ID] 
-from
-(
-	select distinct [QC ID] = i.QC 
-	from InlineInspectionReport i
-	inner join pass1 p on p.id= i.qc
-	where p.Pivot88UserName =''
-) a
-";
+                    sqlP88Empty = string.Format(sqlP88Empty, "InlineInspectionReport");
                     break;
                 case "EndlineInspection":
                     listInspectionID = _FinalInspectionProvider.GetPivot88EndLineInspectionID(pivotTransferRequest.InspectionID);
-                    sqlP88Empty = @"
-select No = rank() over(order by [QC ID]),a.[QC ID] 
-from
-(
-	select distinct [QC ID] = i.QC 
-	from InspectionReport i
-	inner join pass1 p on p.id= i.qc
-	where p.Pivot88UserName =''
-) a
-";
+                    sqlP88Empty = string.Format(sqlP88Empty, "InspectionReport");
                     break;
                 default:
                     break;
@@ -1023,8 +1020,6 @@ from
 
                     Subject = dtMailto.Rows[0]["Subject"].ToString(),
                     Body = mailBody,
-                    //dtMailto.Rows[0]["Content"].ToString(),
-                    //alternateView = plainView,
                 };
 
                 // ToAddress 是空的就不寄出去
