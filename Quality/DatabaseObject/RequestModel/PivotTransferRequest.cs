@@ -10,7 +10,10 @@ namespace DatabaseObject.RequestModel
     public class PivotTransferRequest
     {
         public string InspectionType { get; set; }
+
         public string InspectionID { get; set; } = string.Empty;
+
+        public bool IsFromERP { get; set; } = false;
 
         public string BaseUri { get; set; }
 

@@ -1004,29 +1004,33 @@ from
                     break;
             }
 
-            // QC沒建立P88Name就發信mailto= 402; by ISP20240517
-            SQLParameterCollection parameter = new SQLParameterCollection();
-            DataTable dtMailto = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from mailto where ID='402'", parameter);
-            if (dtMailto != null && dtMailto.Rows.Count > 0)
+            // 從排程執行才發信,從ERP(MES)上執行就不發信
+            if (pivotTransferRequest.IsFromERP == false)
             {
-                DataTable dtResult = SQLDAL.ExecuteDataTable(CommandType.Text, sqlP88Empty, parameter);
-                string strDesc = pivotTransferRequest.InspectionType == "InlineInspection" ? @"<p> Inline Create P88 account </p>" : "<p> Endline Create P88 account </p>";
-
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, string.Empty, string.Empty, strDesc + Environment.NewLine + dtMailto.Rows[0]["Content"].ToString(), out System.Net.Mail.AlternateView plainView);
-
-                SendMail_Request sendMail_Request = new SendMail_Request()
+                // QC沒建立P88Name就發信mailto= 402; by ISP20240517
+                SQLParameterCollection parameter = new SQLParameterCollection();
+                DataTable dtMailto = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from mailto where ID='402'", parameter);
+                if (dtMailto != null && dtMailto.Rows.Count > 0)
                 {
-                    To = dtMailto.Rows[0]["toAddress"].ToString(),
-                    CC = dtMailto.Rows[0]["ccAddress"].ToString(),
+                    DataTable dtResult = SQLDAL.ExecuteDataTable(CommandType.Text, sqlP88Empty, parameter);
+                    string strDesc = pivotTransferRequest.InspectionType == "InlineInspection" ? @"<p> Inline Create P88 account </p>" : "<p> Endline Create P88 account </p>";
 
-                    Subject = dtMailto.Rows[0]["Subject"].ToString(),
-                    Body = mailBody,
-                };
+                    string mailBody = MailTools.DataTableChangeHtml(dtResult, string.Empty, string.Empty, strDesc + Environment.NewLine + dtMailto.Rows[0]["Content"].ToString(), out System.Net.Mail.AlternateView plainView);
 
-                // ToAddress 是空的就不寄出去
-                if (!sendMail_Request.To.IsNullOrEmpty())
-                {
-                    MailTools.SendMail(sendMail_Request);
+                    SendMail_Request sendMail_Request = new SendMail_Request()
+                    {
+                        To = dtMailto.Rows[0]["toAddress"].ToString(),
+                        CC = dtMailto.Rows[0]["ccAddress"].ToString(),
+
+                        Subject = dtMailto.Rows[0]["Subject"].ToString(),
+                        Body = mailBody,
+                    };
+
+                    // ToAddress 是空的就不寄出去
+                    if (!sendMail_Request.To.IsNullOrEmpty())
+                    {
+                        MailTools.SendMail(sendMail_Request);
+                    }
                 }
             }
 
