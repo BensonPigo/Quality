@@ -1000,6 +1000,7 @@ from
                     sqlP88Empty = string.Format(sqlP88Empty, "InspectionReport");
                     break;
                 default:
+                    sqlP88Empty = string.Format(sqlP88Empty, "InspectionReport");
                     break;
             }
 
