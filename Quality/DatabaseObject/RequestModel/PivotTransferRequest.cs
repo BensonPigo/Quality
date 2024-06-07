@@ -13,8 +13,6 @@ namespace DatabaseObject.RequestModel
 
         public string InspectionID { get; set; } = string.Empty;
 
-        public bool IsFromERP { get; set; } = false;
-
         public string BaseUri { get; set; }
 
         public string RequestUri { get; set; }

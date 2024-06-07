@@ -1005,7 +1005,7 @@ from
             }
 
             // 從排程執行才發信,從ERP(MES)上執行就不發信
-            if (pivotTransferRequest.IsFromERP == false)
+            if (pivotTransferRequest.InspectionID.IsNullOrEmpty())
             {
                 // QC沒建立P88Name就發信mailto= 402; by ISP20240517
                 SQLParameterCollection parameter = new SQLParameterCollection();
