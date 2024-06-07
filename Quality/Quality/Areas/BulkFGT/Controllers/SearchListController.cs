@@ -17,6 +17,7 @@ namespace Quality.Areas.BulkFGT.Controllers
     public class SearchListController : BaseController
     {
         private ISearchListService _SearchListService;
+        private bool check = false;
 
         public SearchListController()
         {
@@ -31,7 +32,8 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             this.CheckSession();
 
-            List<SelectListItem> data = _SearchListService.GetTypeDatasource(this.UserID);
+            var check = Convert.ToBoolean(Request.QueryString["check"]);
+            List<SelectListItem> data = _SearchListService.GetTypeDatasource(this.UserID, check);
             SearchList_ViewModel model = new SearchList_ViewModel()
             {
                 TypeDatasource = data,
@@ -89,7 +91,18 @@ namespace Quality.Areas.BulkFGT.Controllers
                 return RedirectToAction("Index");
             }
 
-            List<SelectListItem> data = _SearchListService.GetTypeDatasource(this.UserID);
+            List<SelectListItem> data;
+
+            if (Req.SPNO != string.Empty && Req.SPNO != null)
+            {
+                data = _SearchListService.GetTypeDatasource(this.UserID, true);
+                this.check = true;
+            }
+            else
+            {
+                data = _SearchListService.GetTypeDatasource(this.UserID, false);
+                this.check = false;
+            }
 
             Req.MDivisionID = this.MDivisionID;
             // Query
@@ -104,7 +117,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             TempData["ModelSearchList"] = Req;
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { check = this.check });
         }
 
         private bool CheckInput(SearchList_ViewModel Req)
@@ -115,6 +128,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             if (!string.IsNullOrEmpty(Req.StyleID)) n++;
             if (!string.IsNullOrEmpty(Req.Article)) n++;
             if (!string.IsNullOrEmpty(Req.Line)) n++;
+            if (!string.IsNullOrEmpty(Req.SPNO)) n++;
             if (!string.IsNullOrEmpty(Req.ReceivedDate_sText) && !string.IsNullOrEmpty(Req.ReceivedDate_eText)) n++;
             if (!string.IsNullOrEmpty(Req.ReportDate_sText) && !string.IsNullOrEmpty(Req.ReportDate_eText)) n++;
             if (!string.IsNullOrEmpty(Req.WhseArrival_sText) && !string.IsNullOrEmpty(Req.WhseArrival_eText)) n++;

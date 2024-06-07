@@ -11,7 +11,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 {
     public interface ISearchListProvider
     {
-        IList<SelectListItem> GetTypeDatasource(string Pass1ID);
+        IList<SelectListItem> GetTypeDatasource(string Pass1ID, bool check);
         IList<SearchList_Result> Get_SearchList(SearchList_ViewModel Req);
     }
 }

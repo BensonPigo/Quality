@@ -161,13 +161,19 @@
                                 <label class="FindLab" for="TypeSP">Type</label>
                             </td>
                             <td colspan="2">
-                                @Html.DropDownListFor(o => o.Type, Model.TypeDatasource)
+                                @Html.DropDownListFor(o => o.Type, Model.TypeDatasource, new { id = "myDropdown" })
                             </td>
                             <td>
-                                <label class="FindLab" >Line</label>
+                                <label class="FindLab">Line</label>
                             </td>
-                            <td colspan="6">
+                            <td colspan="2">
                                 @Html.TextBoxFor(o => o.Line, new { @value = Model.Line, @style = "width:9vw" })
+                            </td>
+                            <td>
+                                <label class="FindLab">SP</label>
+                            </td>
+                            <td colspan="3">
+                                @Html.TextBoxFor(o => o.SPNO, new { @value = Model.SPNO, @style = "width:9vw", @class = "myTextBox" })
                             </td>
                             <td style="padding: 0vw;">
                                 <input type="button" class="site-btn btn-gy font1rem Black" style="width: 7vw;" name="action:ToExcel" id="btnExcel" value="To Excel" />
@@ -730,6 +736,35 @@
         return n;
     }
 
+
+    $(document).ready(function () {
+        $('.myTextBox').blur(function () {
+            typeChange();
+        });
+    });
+
+    function typeChange() {
+        var dropdown = document.getElementById("myDropdown");
+        var option = document.createElement("option");
+        option.text = "All Type Testing";
+        option.value = "All Type Testing";
+
+        if ($("#SPNO").val() != "" && dropdown.textContent.indexOf("All Type Testing") === -1) {
+            dropdown.add(option);
+        }
+
+        if ($("#SPNO").val() == "")
+        {
+            var dropdown = document.getElementById("myDropdown");
+            var options = dropdown.getElementsByTagName("option");
+
+            for (var i = 0; i < options.length; i++) {
+                if (options[i].text.indexOf("All Type Testing") !== -1) {
+                    dropdown.remove(i);
+                }
+            }
+        }
+    }
 
 </script>
 
