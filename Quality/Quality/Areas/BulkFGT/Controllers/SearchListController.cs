@@ -17,6 +17,7 @@ namespace Quality.Areas.BulkFGT.Controllers
     public class SearchListController : BaseController
     {
         private ISearchListService _SearchListService;
+        private bool check = false;
 
         public SearchListController()
         {
@@ -31,7 +32,8 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             this.CheckSession();
 
-            List<SelectListItem> data = _SearchListService.GetTypeDatasource(this.UserID);
+            var check = Convert.ToBoolean(Request.QueryString["check"]);
+            List<SelectListItem> data = _SearchListService.GetTypeDatasource(this.UserID, check);
             SearchList_ViewModel model = new SearchList_ViewModel()
             {
                 TypeDatasource = data,
@@ -82,14 +84,25 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             // 必填條件
-            if (!CheckInput(Req))
+            if (Req.SPNO == string.Empty && !CheckInput(Req))
             {
                 Req.ErrorMessage = $@"msg.WithInfo(""Does not include Type, two conditions must be selected. "");";
                 TempData["ModelSearchList"] = Req;
                 return RedirectToAction("Index");
             }
 
-            List<SelectListItem> data = _SearchListService.GetTypeDatasource(this.UserID);
+            List<SelectListItem> data;
+
+            if (Req.SPNO != string.Empty && Req.SPNO != null)
+            {
+                data = _SearchListService.GetTypeDatasource(this.UserID, true);
+                this.check = true;
+            }
+            else
+            {
+                data = _SearchListService.GetTypeDatasource(this.UserID, false);
+                this.check = false;
+            }
 
             Req.MDivisionID = this.MDivisionID;
             // Query
@@ -104,7 +117,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             TempData["ModelSearchList"] = Req;
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { check = this.check });
         }
 
         private bool CheckInput(SearchList_ViewModel Req)

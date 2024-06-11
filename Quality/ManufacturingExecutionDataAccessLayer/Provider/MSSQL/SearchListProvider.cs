@@ -9,19 +9,24 @@ using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ViewModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using System.Web.Mvc;
+using DatabaseObject.ProductionDB;
 
 namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
     public class SearchListProvider : SQLDAL , ISearchListProvider
     {
+
         #region 底層連線
         public SearchListProvider(string conString) : base(conString) { }
         public SearchListProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
-        public IList<SelectListItem> GetTypeDatasource(string Pass1ID)
+        public IList<SelectListItem> GetTypeDatasource(string Pass1ID, bool check)
         {
-            string SbSql = $@"
+            string SbSql;
+            if (!check)
+            {
+                SbSql = $@"
 -- select Text = '', Value = ''
 -- UNION
 select Text = IIF(md.FunctionName IS NOt NULL , md.FunctionName,m.FunctionName)
@@ -35,6 +40,30 @@ where ModuleName='Bulk FGT'
 and FunctionSeq not in (10,20)
 and p.ID='{Pass1ID}'
 ";
+            }
+            else
+            {
+                SbSql = $@"
+-- select Text = '', Value = ''
+-- UNION
+select Text = IIF(md.FunctionName IS NOt NULL , md.FunctionName,m.FunctionName)
+	 , Value = IIF(md.FunctionName IS NOt NULL , md.FunctionName,m.FunctionName)
+	 , ROW_NUMBER() OVER (ORDER BY md.FunctionName) AS RowNumber
+from Quality_Pass1 p WITH(NOLOCK)
+inner join Quality_Position pp WITH(NOLOCK) on p.Position=pp.ID
+inner join Quality_Pass2 p2 WITH(NOLOCK) on p2.PositionID=pp.ID 
+inner join Quality_Menu m WITH(NOLOCK) on m.ID=p2.MenuID
+left join Quality_Menu_detail md WITH(NOLOCK) on md.ID=m.ID AND md.Type=p.BulkFGT_Brand
+where ModuleName='Bulk FGT'
+and FunctionSeq not in (10,20)
+and p.ID='SCIMIS'
+Union
+Select Text = 'All Type Testing',
+value = 'All Type Testing',
+RowNumber = 99
+Order by RowNumber
+";
+            }
             return ExecuteList<SelectListItem>(CommandType.Text, SbSql, new SQLParameterCollection());
         }
 
@@ -47,7 +76,7 @@ and p.ID='{Pass1ID}'
                 { "@StyleID", DbType.String, Req.StyleID },
                 { "@Article", DbType.String, Req.Article },
                 { "@MDivisionID", DbType.String, Req.MDivisionID },
-
+                { "@SPNO", DbType.String, Req.SPNO },
                 { "@ReceivedDate_s", DbType.Date, Req.ReceivedDate_s },
                 { "@ReceivedDate_e", DbType.Date, Req.ReceivedDate_e },
                 { "@ReportDate_s", DbType.Date, Req.ReportDate_s },
@@ -81,6 +110,10 @@ outer apply (
             {
                 where += "AND o.SeasonID = @SeasonID ";
             }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                where += "AND o.ID = @SPNO ";
+            }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
                 where += "AND o.StyleID = @StyleID ";
@@ -94,6 +127,45 @@ outer apply (
                 where += " AND @WhseArrival_e >= e.WhseArrival ";
             }
 
+            string start = $@"
+DECLARE @IsRRLR as bit = 0
+
+----取得AIComment
+select  ad.Type,ad.IsRRLR,ad.Comment
+INTO #AIComment
+from ExtendServer.ManufacturingExecution.dbo.AIComment_Detail ad
+where ad.AICommentUkey in (
+	select Ukey from ExtendServer.ManufacturingExecution.dbo.AIComment where FunctionName='QualityWeb'
+)
+and ad.Type ='Water Fastness Test'
+
+select TOP 1 @IsRRLR = isRRLR from #AIComment
+
+----取得 存在RR/LR的ReportNo
+select DISTINCT w.ReportNo
+INTO #RRLR_ACH
+from WaterFastness w WITH (NOLOCK) 
+inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
+inner join Style s ON s.ID = o.StyleID and s.BrandID=o.BrandID and s.SeasonID = o.SeasonID
+inner join Style_RRLR_Report srr on s.Ukey=srr.StyleUkey
+{sqlWhseArrival}
+WHERE w.Result='Fail'
+and RRRemark like '%ACH%'
+{where}
+
+----取得 存在RR/LR的LR的ReportNo
+select DISTINCT w.ReportNo
+INTO #RRLR_CF
+from WaterFastness w WITH (NOLOCK) 
+inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
+inner join Style s ON s.ID = o.StyleID and s.BrandID=o.BrandID and s.SeasonID = o.SeasonID
+inner join Style_RRLR_Report srr on s.Ukey=srr.StyleUkey
+{sqlWhseArrival}
+WHERE w.Result='Fail'
+and RRRemark like '%CF%'
+{where}
+";
+
             string type1 = $@"
 
 select Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
@@ -103,6 +175,7 @@ select Type = 'Fabric Crocking & Shrinkage Test (504, 405)'
 		, o.BrandID
 		, o.SeasonID
 		, Article = ''
+		, line = ''
 		, Artwork = ''
 		, [Result] = f_Result.Result
 		, [TestDate] = f_TestDate.TestDate
@@ -175,6 +248,10 @@ outer apply (
             {
                 where += "AND g.SeasonID = @SeasonID ";
             }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                where += "AND g.OrderID = @SPNO ";
+            }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
                 where += "AND g.StyleID = @StyleID ";
@@ -200,6 +277,7 @@ select  Type = 'Garment Test (450, 451, 701, 710)'
 		, BrandID
 		, SeasonID
 		, Article
+        , Line = ''
 		, Artwork = ''
 		, Result= IIF(gd.Result='P','Pass', IIF(gd.Result='F','Fail',''))
 		, TestDate = gd.InspDate
@@ -247,6 +325,10 @@ outer apply (
             {
                 where += "AND SeasonID = @SeasonID ";
             }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                where += "AND m.PoID = @SPNO ";
+            }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
                 where += "AND StyleID = @StyleID ";
@@ -288,6 +370,7 @@ select DISTINCT  Type = 'Mockup Crocking Test  (504)'
 		, m.BrandID
 		, m.SeasonID
 		, m.Article
+        , Line = ''
 		, Artwork = m.ArtworkTypeID
 		, m.Result
 		, m.TestDate 
@@ -330,6 +413,10 @@ outer apply (
             {
                 where += "AND m.SeasonID = @SeasonID ";
             }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                where += "AND m.POID = @SPNO ";
+            }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
                 where += "AND m.StyleID = @StyleID ";
@@ -371,6 +458,7 @@ select DISTINCT Type = 'Mockup Oven Test (514)'
 	, m.BrandID
 	, m.SeasonID
 	, m.Article
+    , Line = ''
 	, [Artwork] = m.ArtworkTypeID
 	, m.Result
 	, m.TestDate
@@ -410,6 +498,10 @@ outer apply (
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
                 where += "AND m.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                where += "AND m.POID = @SPNO ";
             }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
@@ -452,6 +544,7 @@ select DISTINCT Type = 'Mockup Wash Test (701)'
 	, m.BrandID
 	, m.SeasonID
 	, m.Article
+    , line = ''
 	, [Artwork] = m.ArtworkTypeID
 	, m.Result
 	, m.TestDate
@@ -490,6 +583,10 @@ outer apply (
             {
                 where += "AND o.SeasonID = @SeasonID ";
             }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                where += "AND o.ID = @SPNO ";
+            }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
                 where += "AND o.StyleID = @StyleID ";
@@ -515,6 +612,7 @@ select DISTINCT Type= 'Fabric Oven Test (515)'
 		, o.BrandID
 		, o.SeasonID
 		, f.Article  
+        , line = ''
 		, Artwork = ''
 		, Result = f.Result
 		, TestDate = f.InspDate
@@ -556,6 +654,10 @@ outer apply (
             {
                 where += "AND o.SeasonID = @SeasonID ";
             }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                where += "AND o.ID = @SPNO ";
+            }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
                 where += "AND o.StyleID = @StyleID ";
@@ -581,6 +683,7 @@ select DISTINCT Type= 'Washing Fastness (501)'
 		, o.BrandID
 		, o.SeasonID
 		, f.Article 
+        , line = ''  
 		, Artwork = ''
 		, Result = f.Result
 		, TestDate = f.InspDate
@@ -621,6 +724,10 @@ outer apply (
             {
                 where += "AND o.SeasonID = @SeasonID ";
             }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                where += "AND o.ID = @SPNO ";
+            }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
                 where += "AND o.StyleID = @StyleID ";
@@ -642,6 +749,7 @@ select Type = 'Accessory Oven & Wash Test (515, 701)'
 		, o.BrandID
 		, o.SeasonID
 		, Article = ''
+        , Line = ''
 		, [Artwork] = ''
 		, [Result] = f_Result.Result
 		, [TestDate] = f_TestDate.TestDate
@@ -708,6 +816,10 @@ outer apply (
             {
                 where += "AND m.SeasonID = @SeasonID ";
             }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                where += "AND m.POID = @SPNO ";
+            }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
                 where += "AND m.StyleID = @StyleID ";
@@ -733,6 +845,7 @@ select DISTINCT Type = 'Pulling test for Snap/Botton/Rivet (437)'
 	, m.BrandID
 	, m.SeasonID
 	, m.Article
+    , line = ''
 	, [Artwork] = ''
 	, m.Result
 	, m.TestDate
@@ -772,6 +885,10 @@ outer apply (
             {
                 where += "AND o.SeasonID = @SeasonID ";
             }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                where += "AND o.ID = @SPNO ";
+            }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
                 where += "AND o.StyleID = @StyleID ";
@@ -789,48 +906,7 @@ outer apply (
                 where += " AND @WhseArrival_e >= e.WhseArrival ";
             }
 
-            tmptable = $@"----Search List查詢
-DECLARE @IsRRLR as bit = 0
-
-----取得AIComment
-select  ad.Type,ad.IsRRLR,ad.Comment
-INTO #AIComment
-from ExtendServer.ManufacturingExecution.dbo.AIComment_Detail ad
-where ad.AICommentUkey in (
-	select Ukey from ExtendServer.ManufacturingExecution.dbo.AIComment where FunctionName='QualityWeb'
-)
-and ad.Type ='Water Fastness Test'
-
-select TOP 1 @IsRRLR = isRRLR from #AIComment
-
-----取得 存在RR/LR的ReportNo
-select DISTINCT w.ReportNo
-INTO #RRLR_ACH
-from WaterFastness w WITH (NOLOCK) 
-inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
-inner join Style s ON s.ID = o.StyleID and s.BrandID=o.BrandID and s.SeasonID = o.SeasonID
-inner join Style_RRLR_Report srr on s.Ukey=srr.StyleUkey
-{sqlWhseArrival}
-WHERE w.Result='Fail'
-and RRRemark like '%ACH%'
-{where}
-
-----取得 存在RR/LR的LR的ReportNo
-select DISTINCT w.ReportNo
-INTO #RRLR_CF
-from WaterFastness w WITH (NOLOCK) 
-inner join Orders o WITH(NOLOCK) ON o.ID = w.POID
-inner join Style s ON s.ID = o.StyleID and s.BrandID=o.BrandID and s.SeasonID = o.SeasonID
-inner join Style_RRLR_Report srr on s.Ukey=srr.StyleUkey
-{sqlWhseArrival}
-WHERE w.Result='Fail'
-and RRRemark like '%CF%'
-{where}
-";
-
             string type11 = $@"
-{tmptable}
-
 select DISTINCT Type= 'Water Fastness Test(503)'
         , w.ReportNo
 		, OrderID = w.POID
@@ -838,6 +914,7 @@ select DISTINCT Type= 'Water Fastness Test(503)'
 		, o.BrandID
 		, o.SeasonID
 		, Article 
+        , Line = ''
 		, Artwork = ''
 		, w.Result
 		, TestDate = w.InspDate
@@ -865,8 +942,6 @@ outer apply(
 {sqlWhseArrival}
 WHERE w.Result <> ''
 {where}
-
-drop table #AIComment,#RRLR_ACH,#RRLR_CF
 ";
 
             // 重置
@@ -894,6 +969,10 @@ outer apply (
             {
                 where += "AND o.SeasonID = @SeasonID ";
             }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                where += "AND o.ID = @SPNO ";
+            }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
                 where += "AND o.StyleID = @StyleID ";
@@ -919,6 +998,7 @@ select DISTINCT Type= 'Perspiration Fastness (502)'
 		, o.BrandID
 		, o.SeasonID
 		, Article 
+        , line = ''
 		, Artwork = ''
 		, w.Result
 		, TestDate = w.InspDate
@@ -948,6 +1028,10 @@ WHERE w.Result <> ''
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
                 where += "AND h.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                where += "AND h.OrderID = @SPNO ";
             }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
@@ -1025,6 +1109,10 @@ outer apply (
             {
                 where += "AND h.SeasonID = @SeasonID ";
             }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                where += "AND h.OrderID = @SPNO ";
+            }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
                 where += "AND h.StyleID = @StyleID ";
@@ -1101,7 +1189,7 @@ select Type= 'Accelerated Aging by Hydrolysis (461)'
 	, ReceivedDate = a.ReceivedDate
 	, ReportDate = a.ReportDate
     , AddName = ISNULL(mp.Name, pp.Name)
-
+    , ''
 from [ExtendServer].ManufacturingExecution.dbo.AgingHydrolysisTest_Detail a
 inner join [ExtendServer].ManufacturingExecution.dbo.AgingHydrolysisTest b on b.ID = a.AgingHydrolysisTestID
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
@@ -1115,6 +1203,10 @@ WHERE a.Result <> ''
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
                 type15 += "AND SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                type15 += "AND b.OrderID = @SPNO ";
             }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
@@ -1162,6 +1254,7 @@ select Type= 'Phenolic Yellowing Test (510)'
 	, ReceivedDate = a.SubmitDate
 	, ReportDate = a.ReportDate
     , AddName = ISNULL(ma.Name, pa.Name)
+    , ''
 from [ExtendServer].ManufacturingExecution.dbo.PhenolicYellowTest a WITH (NOLOCK) 
 left join Production.dbo.Pass1 pa on a.AddName = pa.ID
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 ma on a.AddName = ma.ID
@@ -1174,6 +1267,10 @@ WHERE a.Result <> '' AND　ａ.ReportDate IS NOT NULL
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
                 type16 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                type16 += "AND a.OrderID = @SPNO ";
             }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
@@ -1221,7 +1318,7 @@ select Type= 'Saliva Fastness Test (519)'
 	, ReceivedDate = a.SubmitDate
 	, ReportDate = a.ReportDate
     , AddName = ISNULL(mp.Name, pp.Name)
-
+    , ''
 from [ExtendServer].ManufacturingExecution.dbo.SalivaFastnessTest a
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
@@ -1234,6 +1331,10 @@ WHERE a.Result <> ''
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
                 type17 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                type17 += "AND a.OrderID = @SPNO ";
             }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
@@ -1281,7 +1382,7 @@ select Type= 'T-Peel Strength Test (438)'
 	, ReceivedDate = a.SubmitDate
 	, ReportDate = a.ReportDate
     , AddName = ISNULL(mp.Name, pp.Name)
-
+    , ''
 from [ExtendServer].ManufacturingExecution.dbo.TPeelStrengthTest a
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
@@ -1294,6 +1395,10 @@ WHERE a.Result <> ''
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
                 type18 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                type18 += "AND a.OrderID = @SPNO ";
             }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
@@ -1341,6 +1446,7 @@ select Type= 'Hydrostatic Pressure Waterproof Test (602)'
     , ReceivedDate = a.SubmitDate
     , ReportDate = a.ReportDate
     , AddName = ISNULL(mp.Name, pp.Name)
+    , ''
 from [ExtendServer].ManufacturingExecution.dbo.HydrostaticPressureWaterproofTest a
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
@@ -1354,6 +1460,10 @@ WHERE a.ReportDate IS NOT NULL
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
                 type19 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                type19 += "AND a.OrderID = @SPNO ";
             }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
@@ -1400,6 +1510,7 @@ select Type= 'Martindale Pilling Test (452)'
     , ReceivedDate = a.SubmitDate
     , ReportDate = a.ReportDate
     , AddName = ISNULL(mp.Name, pp.Name)
+    , ''
 from [ExtendServer].ManufacturingExecution.dbo.MartindalePillingTest a
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
@@ -1412,6 +1523,10 @@ WHERE a.ReportDate IS NOT NULL
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
                 type20 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                type20 += "AND a.OrderID = @SPNO ";
             }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
@@ -1458,7 +1573,7 @@ select Type= 'Random Tumble Pilling Test (407)'
     , ReceivedDate = a.SubmitDate
     , ReportDate = a.ReportDate
     , AddName = ISNULL(mp.Name, pp.Name)
-
+    , ''
 from [ExtendServer].ManufacturingExecution.dbo.RandomTumblePillingTest a
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
@@ -1471,6 +1586,10 @@ WHERE a.ReportDate IS NOT NULL
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
                 type21 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                type21 += "AND a.OrderID = @SPNO ";
             }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
@@ -1517,6 +1636,7 @@ select Type= 'Residue/Ageing Test for Sticker (434)'
 	, ReceivedDate = a.SubmitDate
 	, ReportDate = a.ReportDate
     , AddName = ISNULL(mp.Name, pp.Name)
+    , ''     
 from [ExtendServer].ManufacturingExecution.dbo.StickerTest a
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
@@ -1530,6 +1650,10 @@ WHERE a.ReportDate IS NOT NULL
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
                 type22 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                type22 += "AND a.OrderID = @SPNO ";
             }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
@@ -1576,6 +1700,7 @@ select Type= 'Water Absorbency Test (604)'
     , ReceivedDate = a.SubmitDate
     , ReportDate = a.ReportDate
     , AddName = ISNULL(mp.Name, pp.Name)
+    , ''
 from [ExtendServer].ManufacturingExecution.dbo.WaterAbsorbencyTest a
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
@@ -1588,6 +1713,10 @@ WHERE a.ReportDate IS NOT NULL
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
                 type23 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                type23 += "AND a.OrderID = @SPNO ";
             }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
@@ -1627,13 +1756,14 @@ select Type= 'Evaporation Rate Test (617)'
     , a.BrandID
     , a.SeasonID
     , a.Article
-    , Line = ''
+    , line = ''
     , Artwork = ''
     , a.Result  
     , TestDate = Cast( NULL as date)
     , ReceivedDate = a.SubmitDate
     , ReportDate = a.ReportDate
     , AddName = ISNULL(mp.Name, pp.Name)
+    , ''
 from [ExtendServer].ManufacturingExecution.dbo.EvaporationRateTest a
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
@@ -1646,6 +1776,10 @@ WHERE a.ReportDate IS NOT NULL
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
                 type24 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                type24 += "AND a.OrderID = @SPNO ";
             }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
@@ -1685,13 +1819,14 @@ select Type= 'Wicking Height Test (616)'
     , a.BrandID
     , a.SeasonID
     , a.Article
-    , Line = ''
+    , line = ''
     , Artwork = ''
     , a.Result  
     , TestDate = Cast( NULL as date)
     , ReceivedDate = a.SubmitDate
     , ReportDate = a.ReportDate
     , AddName = ISNULL(mp.Name, pp.Name)
+    , AIComment = ''
 from [ExtendServer].ManufacturingExecution.dbo.WickingHeightTest a
 left join [ExtendServer].ManufacturingExecution.dbo.Pass1 mp on a.EditName = mp.ID
 left join Pass1 pp on a.EditName = pp.ID
@@ -1704,6 +1839,10 @@ WHERE a.ReportDate IS NOT NULL
             if (!string.IsNullOrEmpty(Req.SeasonID))
             {
                 type25 += "AND a.SeasonID = @SeasonID ";
+            }
+            if (!string.IsNullOrEmpty(Req.SPNO))
+            {
+                type25 += "AND a.OrderID = @SPNO ";
             }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
@@ -1733,6 +1872,8 @@ WHERE a.ReportDate IS NOT NULL
             }
 
             #endregion
+
+            string end = @"drop table #AIComment,#RRLR_ACH,#RRLR_CF";
 
             switch (Req.Type)
             {
@@ -1764,7 +1905,9 @@ WHERE a.ReportDate IS NOT NULL
                     SbSql.Append(type9);
                     break;
                 case string a when a.Contains("Water Fastness Test"):
+                    SbSql.Append(start);
                     SbSql.Append(type11);
+                    SbSql.Append(end);
                     break;
                 case string a when a.Contains("Perspiration Fastness Test"):
                     SbSql.Append(type12);
@@ -1810,6 +1953,7 @@ WHERE a.ReportDate IS NOT NULL
                     break;
                 default:
                     SbSql.Append(
+                        start + " " +
                         type1 + " union all " + 
                         type2 + " union all " +
                         type3 + " union all " +
@@ -1833,7 +1977,7 @@ WHERE a.ReportDate IS NOT NULL
                         type22 + " union all " +
                         type23 + " union all " +
                         type24 + " union all " +
-                        type25);
+                        type25 + " " + end);
                     break;
             }
 
