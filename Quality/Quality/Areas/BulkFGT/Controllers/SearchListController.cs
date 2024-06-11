@@ -84,7 +84,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             // 必填條件
-            if (!CheckInput(Req))
+            if (Req.SPNO == string.Empty && !CheckInput(Req))
             {
                 Req.ErrorMessage = $@"msg.WithInfo(""Does not include Type, two conditions must be selected. "");";
                 TempData["ModelSearchList"] = Req;
@@ -128,7 +128,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             if (!string.IsNullOrEmpty(Req.StyleID)) n++;
             if (!string.IsNullOrEmpty(Req.Article)) n++;
             if (!string.IsNullOrEmpty(Req.Line)) n++;
-            if (!string.IsNullOrEmpty(Req.SPNO)) n++;
             if (!string.IsNullOrEmpty(Req.ReceivedDate_sText) && !string.IsNullOrEmpty(Req.ReceivedDate_eText)) n++;
             if (!string.IsNullOrEmpty(Req.ReportDate_sText) && !string.IsNullOrEmpty(Req.ReportDate_eText)) n++;
             if (!string.IsNullOrEmpty(Req.WhseArrival_sText) && !string.IsNullOrEmpty(Req.WhseArrival_eText)) n++;

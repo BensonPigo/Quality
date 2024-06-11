@@ -713,7 +713,7 @@
     function checkvalue(buttonName) {
 
         if (buttonName =="Query") {
-            if (checkReq() < 2) {
+            if ($("#SPNO").val() == "" && checkReq() < 2) {
                 var msgContent = "Does not include Type, two conditions must be selected. ";
                 msg.WithError(msgContent);
                 return false;
@@ -729,7 +729,6 @@
         if ($("#SeasonID").val() != "") n++;
         if ($("#StyleID").val() != "") n++;
         if ($("#Article").val() != "") n++;
-        if ($("#SPNO").val() != "") n++;
         if ($("#Line").val() != "") n++;
         if ($("#ReceivedDate_sText").attr('disabled') == undefined && $("#ReceivedDate_sText").val() != "" && $("#ReceivedDate_eText").val() != "") n++;
         if ($("#ReportDate_sText").attr('disabled') == undefined &&$("#ReportDate_sText").val() != "" && $("#ReportDate_eText").val() != "") n++;
