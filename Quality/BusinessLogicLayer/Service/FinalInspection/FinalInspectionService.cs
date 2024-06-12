@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using BusinessLogicLayer.Interface;
 using DatabaseObject;
@@ -20,6 +19,11 @@ using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using ToolKit;
 using static PmsWebApiUtility20.WebApiTool;
+using ADOHelper.Template.MSSQL;
+using ADOHelper.Utility;
+using System.Reflection.Emit;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Policy;
 
 namespace BusinessLogicLayer.Service
 {
@@ -965,6 +969,22 @@ namespace BusinessLogicLayer.Service
             List<SentPivot88Result> sentPivot88Results = new List<SentPivot88Result>();
 
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            string sqlP88Empty = @"
+declare @EOLInlineFromDateTransferToP88 date = (select EOLInlineFromDateTransferToP88 from system)
+
+select No = rank() over(order by [QC ID]),a.[QC ID] 
+from
+(
+	select  distinct [QC ID] = t.QC 
+	from {0} t with (nolock)
+	inner join pass1 p on p.id= t.qc
+	where  IsExportToP88 = 0 
+	and t.CustPONO <> '' 
+	and (t.AddDate >= @EOLInlineFromDateTransferToP88 or t.EditDate >= @EOLInlineFromDateTransferToP88) 
+	and exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = t.CustPONO and o.BrandID in ('Adidas'))
+	and p.Pivot88UserName = ''
+) a
+";
 
             switch (pivotTransferRequest.InspectionType)
             {
@@ -973,12 +993,45 @@ namespace BusinessLogicLayer.Service
                     break;
                 case "InlineInspection":
                     listInspectionID = _FinalInspectionProvider.GetPivot88InlineInspectionID(pivotTransferRequest.InspectionID);
+                    sqlP88Empty = string.Format(sqlP88Empty, "InlineInspectionReport");
                     break;
                 case "EndlineInspection":
                     listInspectionID = _FinalInspectionProvider.GetPivot88EndLineInspectionID(pivotTransferRequest.InspectionID);
+                    sqlP88Empty = string.Format(sqlP88Empty, "InspectionReport");
                     break;
                 default:
+                    sqlP88Empty = string.Format(sqlP88Empty, "InspectionReport");
                     break;
+            }
+
+            // 從排程執行才發信,從ERP(MES)上執行就不發信
+            if (pivotTransferRequest.InspectionID.IsNullOrEmpty())
+            {
+                // QC沒建立P88Name就發信mailto= 402; by ISP20240517
+                SQLParameterCollection parameter = new SQLParameterCollection();
+                DataTable dtMailto = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from mailto where ID='402'", parameter);
+                if (dtMailto != null && dtMailto.Rows.Count > 0)
+                {
+                    DataTable dtResult = SQLDAL.ExecuteDataTable(CommandType.Text, sqlP88Empty, parameter);
+                    string strDesc = pivotTransferRequest.InspectionType == "InlineInspection" ? @"<p> Inline Create P88 account </p>" : "<p> Endline Create P88 account </p>";
+
+                    string mailBody = MailTools.DataTableChangeHtml(dtResult, string.Empty, string.Empty, strDesc + Environment.NewLine + dtMailto.Rows[0]["Content"].ToString(), out System.Net.Mail.AlternateView plainView);
+
+                    SendMail_Request sendMail_Request = new SendMail_Request()
+                    {
+                        To = dtMailto.Rows[0]["toAddress"].ToString(),
+                        CC = dtMailto.Rows[0]["ccAddress"].ToString(),
+
+                        Subject = dtMailto.Rows[0]["Subject"].ToString(),
+                        Body = mailBody,
+                    };
+
+                    // ToAddress 是空的就不寄出去
+                    if (!sendMail_Request.To.IsNullOrEmpty())
+                    {
+                        MailTools.SendMail(sendMail_Request);
+                    }
+                }
             }
 
             if (listInspectionID.Count == 0)
@@ -988,7 +1041,6 @@ namespace BusinessLogicLayer.Service
 
             sentPivot88Results = listInspectionID.Select(inspectionID =>
             {
-
                 bool isSuccess = true;
                 string errorMsg = string.Empty;
                 string postBody = string.Empty;
