@@ -2,6 +2,7 @@
 using DatabaseObject.ViewModel.BulkFGT;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
+using Org.BouncyCastle.Ocsp;
 using Sci;
 using System;
 using System.Collections.Generic;
@@ -20,13 +21,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
     {
         private ISearchListProvider SearchListProvider;
 
-        public List<SelectListItem> GetTypeDatasource(string Pass1ID)
+        public List<SelectListItem> GetTypeDatasource(string Pass1ID, bool check)
         {
             List<SelectListItem> result = new List<SelectListItem>();
             try
             {
                 SearchListProvider = new SearchListProvider(Common.ManufacturingExecutionDataAccessLayer);
-                result = SearchListProvider.GetTypeDatasource(Pass1ID).ToList();
+                result = SearchListProvider.GetTypeDatasource(Pass1ID, check).ToList();
             }
             catch (Exception ex)
             {

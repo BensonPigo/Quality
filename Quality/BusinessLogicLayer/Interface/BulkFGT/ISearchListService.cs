@@ -10,7 +10,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
 {
     public interface ISearchListService
     {
-        List<SelectListItem> GetTypeDatasource(string Pass1ID);
+        List<SelectListItem> GetTypeDatasource(string Pass1ID, bool check);
         SearchList_ViewModel Get_SearchList(SearchList_ViewModel Req);
         SearchList_ViewModel ToExcel(SearchList_ViewModel Req);
     }

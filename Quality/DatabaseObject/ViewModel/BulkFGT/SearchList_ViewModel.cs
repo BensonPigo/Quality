@@ -14,6 +14,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Type { get; set; }
         public string Line { get; set; }
         public string TempFileName { get; set; }
+        public string SPNO { get; set; }
+
         public DateTime? ReceivedDate_s
         {
             get
@@ -85,6 +87,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Artwork { get; set; }
         public string Result { get; set; }
         public string Line { get; set; }
+        public string SPNO { get; set; }
         public string AddName { get; set; }
 
         public string AIComment { get; set; }
