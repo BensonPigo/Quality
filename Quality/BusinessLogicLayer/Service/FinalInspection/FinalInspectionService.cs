@@ -963,20 +963,21 @@ namespace BusinessLogicLayer.Service
             return sentPivot88Results;
         }
 
-        public List<SentPivot88Result> SentPivot88(PivotTransferRequest pivotTransferRequest)
+        private void Pivot88UserEmptyNotice(string checkTable, string inspectionID)
         {
-            List<string> listInspectionID = new List<string>();
-            List<SentPivot88Result> sentPivot88Results = new List<SentPivot88Result>();
+            if (!inspectionID.IsNullOrEmpty())
+            {
+                return;
+            }
 
-            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-            string sqlP88Empty = @"
+            string sqlP88UserEmpty = $@"
 declare @EOLInlineFromDateTransferToP88 date = (select EOLInlineFromDateTransferToP88 from system)
 
 select No = rank() over(order by [QC ID]),a.[QC ID] 
 from
 (
 	select  distinct [QC ID] = t.QC 
-	from {0} t with (nolock)
+	from {checkTable} t with (nolock)
 	inner join pass1 p on p.id= t.qc
 	where  IsExportToP88 = 0 
 	and t.CustPONO <> '' 
@@ -985,6 +986,40 @@ from
 	and p.Pivot88UserName = ''
 ) a
 ";
+            // QC沒建立P88Name就發信mailto= 402; by ISP20240517
+            SQLParameterCollection parameter = new SQLParameterCollection();
+            DataTable dtMailto = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from mailto where ID='402'", parameter);
+            if (dtMailto != null && dtMailto.Rows.Count > 0)
+            {
+                DataTable dtResult = SQLDAL.ExecuteDataTable(CommandType.Text, sqlP88UserEmpty, parameter);
+                string strDesc = checkTable == "InlineInspectionReport" ? @"<p> Inline Create P88 account </p>" : "<p> Endline Create P88 account </p>";
+
+                string mailBody = MailTools.DataTableChangeHtml(dtResult, string.Empty, string.Empty, strDesc + Environment.NewLine + dtMailto.Rows[0]["Content"].ToString(), out System.Net.Mail.AlternateView plainView);
+
+                SendMail_Request sendMail_Request = new SendMail_Request()
+                {
+                    To = dtMailto.Rows[0]["toAddress"].ToString(),
+                    CC = dtMailto.Rows[0]["ccAddress"].ToString(),
+
+                    Subject = dtMailto.Rows[0]["Subject"].ToString(),
+                    Body = mailBody,
+                };
+
+                // ToAddress 是空的就不寄出去
+                if (!sendMail_Request.To.IsNullOrEmpty())
+                {
+                    MailTools.SendMail(sendMail_Request);
+                }
+            }
+        }
+
+        public List<SentPivot88Result> SentPivot88(PivotTransferRequest pivotTransferRequest)
+        {
+            List<string> listInspectionID = new List<string>();
+            List<SentPivot88Result> sentPivot88Results = new List<SentPivot88Result>();
+
+            _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
+            
 
             switch (pivotTransferRequest.InspectionType)
             {
@@ -993,45 +1028,14 @@ from
                     break;
                 case "InlineInspection":
                     listInspectionID = _FinalInspectionProvider.GetPivot88InlineInspectionID(pivotTransferRequest.InspectionID);
-                    sqlP88Empty = string.Format(sqlP88Empty, "InlineInspectionReport");
+                    this.Pivot88UserEmptyNotice("InlineInspectionReport", pivotTransferRequest.InspectionID);
                     break;
                 case "EndlineInspection":
                     listInspectionID = _FinalInspectionProvider.GetPivot88EndLineInspectionID(pivotTransferRequest.InspectionID);
-                    sqlP88Empty = string.Format(sqlP88Empty, "InspectionReport");
+                    this.Pivot88UserEmptyNotice("InspectionReport", pivotTransferRequest.InspectionID);
                     break;
                 default:
-                    sqlP88Empty = string.Format(sqlP88Empty, "InspectionReport");
                     break;
-            }
-
-            // 從排程執行才發信,從ERP(MES)上執行就不發信
-            if (pivotTransferRequest.InspectionID.IsNullOrEmpty())
-            {
-                // QC沒建立P88Name就發信mailto= 402; by ISP20240517
-                SQLParameterCollection parameter = new SQLParameterCollection();
-                DataTable dtMailto = SQLDAL.ExecuteDataTable(CommandType.Text, "select * from mailto where ID='402'", parameter);
-                if (dtMailto != null && dtMailto.Rows.Count > 0)
-                {
-                    DataTable dtResult = SQLDAL.ExecuteDataTable(CommandType.Text, sqlP88Empty, parameter);
-                    string strDesc = pivotTransferRequest.InspectionType == "InlineInspection" ? @"<p> Inline Create P88 account </p>" : "<p> Endline Create P88 account </p>";
-
-                    string mailBody = MailTools.DataTableChangeHtml(dtResult, string.Empty, string.Empty, strDesc + Environment.NewLine + dtMailto.Rows[0]["Content"].ToString(), out System.Net.Mail.AlternateView plainView);
-
-                    SendMail_Request sendMail_Request = new SendMail_Request()
-                    {
-                        To = dtMailto.Rows[0]["toAddress"].ToString(),
-                        CC = dtMailto.Rows[0]["ccAddress"].ToString(),
-
-                        Subject = dtMailto.Rows[0]["Subject"].ToString(),
-                        Body = mailBody,
-                    };
-
-                    // ToAddress 是空的就不寄出去
-                    if (!sendMail_Request.To.IsNullOrEmpty())
-                    {
-                        MailTools.SendMail(sendMail_Request);
-                    }
-                }
             }
 
             if (listInspectionID.Count == 0)
