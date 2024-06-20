@@ -62,6 +62,7 @@
     .detail_Head {
         width: 95%;
     }
+
     input[type=text] {
         width: 10vw;
     }
@@ -86,28 +87,34 @@
             <div class="inner-scroll" style="float:left">
 
                 <div>
-                    @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @class = "", @name = "SearchFrom",@onsubmit="return checkForm(this);", @id = "SearchFrom" }))
+                    @using (Html.BeginForm("Query", ViewContext.RouteData.GetRequiredString("Controller"), FormMethod.Post, new { @class = "", @name = "SearchFrom", @onsubmit = "return checkForm(this);", @id = "SearchFrom" }))
                     {
                         <div>
                             <label class="QueryLab">SP#</label>
                             <input type="text" name="OrderID" id="txtOrderID" />
                             &nbsp;&nbsp;
-                            <label class="QueryLab">Style</label>
-                            <input type="text" name="StyleID" id="txtStyle" />
-                            &nbsp;&nbsp;
                             <label class="QueryLab">Brand</label>
-                            <input type="text" name="BrandID" id="txtBrand" />
+                            <input type="text" name="BrandID" id="BrandID" />
+                            <input id="btnBrandID" onclick="OpenWindow('BrandID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
                             <label class="QueryLab">Season</label>
-                            <input type="text" name="SeasonID" id="txtSeason" />
-                             &nbsp;&nbsp;
-                            <label class="QueryLab">InspectionDate</label>
-                            <input type="text" name="InspectionDateStart" id="txtInspectionDateStart" class="date-picker"/>~
-                            <input type="text" name="InspectionDateEnd" id="txtInspectionDateEnd" class="date-picker"/>
+                            <input type="text" name="SeasonID" id="SeasonID" />
+                            <input id="btnSeason" onclick="OpenWindow('SeasonID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                            &nbsp;&nbsp;
+                            <label class="QueryLab">Style</label>
+                            <input type="text" name="StyleID" id="StyleID" />
+                            <input id="btnStyleID" onclick="OpenWindow('StyleID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                             &nbsp;&nbsp;
                             <input type="submit" name="name" id="btnQuery" value="Query" />
                             &nbsp;&nbsp;
                             <input type="button" class="btn-yellow" name="toexcel" id="btnToExcel" value="To Excel" />
+                            <br />
+                            <br />
+                            &nbsp;&nbsp;
+                            <label class="QueryLab">InspectionDate</label>
+                            <input type="text" name="InspectionDateStart" id="txtInspectionDateStart" class="date-picker" />~
+                            <input type="text" name="InspectionDateEnd" id="txtInspectionDateEnd" class="date-picker" />
+                            &nbsp;&nbsp;
                         </div>
                     }
                 </div>
@@ -176,9 +183,9 @@
     var EditMode = false;
 
     $(function () {
+        QueryButtonBind();
 
-        
-        @Html.Raw(Model.ErrorMessage);   
+        @Html.Raw(Model.ErrorMessage);
 
         $('#myTable').DataTable({
             "pageLength": 20,
@@ -186,16 +193,104 @@
             }
         });
 
-        $("#btnToExcel").click(function () {            
+        $("#btnToExcel").click(function () {
             location.href = '@Url.Action("ExcelExport")';
         });
     });
 
     function checkForm(obj) {
-        if ($("#txtOrderID").val() == "" & $("#txtStyle").val() == "" & $("#txtInspectionDateStart").val() == "" & $("#txtInspectionDateEnd").val() == "") {
+        if ($("#txtOrderID").val() == "" & $("#StyleID").val() == "" & $("#txtInspectionDateStart").val() == "" & $("#txtInspectionDateEnd").val() == "") {
             msg.WithError("SP#、Style or Inspection Date Cannot be Empty");
             return false;
         }
     }
 
+
+    function QueryButtonBind() {
+        $("#BrandID").blur(function () {
+            $.ajax({
+                url: "@Url.Action("BrandList", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#BrandID").val('');
+                        msg.WithError('Brand Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#SeasonID").blur(function () {
+            var BrandID = $('#BrandID').val();
+            $.ajax({
+                url: "@Url.Action("SeasonList", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#SeasonID").val('');
+                        msg.WithError('Season Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#StyleID").blur(function () {
+            var BrandID = $('#BrandID').val();
+            var SeasonID = $('#SeasonID').val();
+            $.ajax({
+                url: "@Url.Action("StyleList", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#StyleID").val('');
+                        msg.WithError('Style Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    }
+
+    function OpenWindow(WindowType) {
+        if (WindowType == "BrandID") {
+            window.open('@Url.Action("BrandList", "PublicWindow",new { Area=""})', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        if (WindowType == "SeasonID") {
+            window.open(`@Url.Action("SeasonList", "PublicWindow",new { Area=""})?BrandID=${$("#BrandID").val()}`, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        if (WindowType == "StyleID") {
+            var para = "?BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val();
+            window.open('@Url.Action("StyleList", "PublicWindow",new { Area=""})' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+    }
+
+    function GetBrandList(BrandID) {
+        $("#BrandID").val(BrandID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+    function GetSeasonList(SeasonID) {
+        $("#SeasonID").val(SeasonID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+    function GetStyleList(StyleID) {
+        $("#StyleID").val(StyleID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
 </script>

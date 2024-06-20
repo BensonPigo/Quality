@@ -264,11 +264,12 @@ select	InspectionLevels ,
 		Ukey			 ,
 		Junk			 ,
 		AQLType			 ,
-		AcceptedQty
+		AcceptedQty      ,
+        BrandID
 from SciProduction_AcceptableQualityLevels WITH(NOLOCK)
-where AQLType in (1,1.5,2.5) and InspectionLevels = '1' and AcceptedQty is not null 
+where Category = ''and AcceptedQty is not null 
 AND LotSize_Start <= @OrderQty AND @OrderQty <= LotSize_End
-order by AQLType , InspectionLevels
+order by BrandID,AQLType , InspectionLevels
 ";
             para.Add("@OrderID", OrderID);
             return ExecuteList<AcceptableQualityLevels>(CommandType.Text, sqlGetData, para);

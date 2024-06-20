@@ -101,7 +101,7 @@ namespace DatabaseObject.ViewModel.SampleRFT
 
     public class InspectionBySP_Setting
     {
-        public long ID { get; set; }        
+        public long ID { get; set; }
         public string OrderStyleUnit { get; set; }
         #region Basic
         public string InspectionStage { get; set; } = string.Empty;
@@ -140,9 +140,9 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string BrandID { get; set; }
         public string Article { get; set; }
         public string ComboType { get; set; }
-        
+
         public string FactoryID { get; set; }
-        public string Model { get; set; }        
+        public string Model { get; set; }
         public string SampleStage { get; set; }
         public int OrderQty { get; set; }
 
@@ -164,13 +164,67 @@ namespace DatabaseObject.ViewModel.SampleRFT
             };
         public List<SelectListItem> SewingLineList { get; set; }
         public List<SelectListItem> QC_InChargeList { get; set; }
-        public List<SelectListItem> AQLPlanList { get; set; } = new List<SelectListItem>()
+        public List<SelectListItem> AQLPlanList
+        {
+            get
             {
-                new SelectListItem(){Text="",Value=""},
-                new SelectListItem(){Text="1.0 Level",Value="1.0 Level"},
-                new SelectListItem(){Text="1.5 Level",Value="1.5 Level"},
-                new SelectListItem(){Text="2.5 Level",Value="2.5 Level"},
-            };
+                if (this.AcceptableQualityLevels != null)
+                {
+                    List<SelectListItem> rtn = new List<SelectListItem>()
+                    {
+                        new SelectListItem()
+                        {
+                            Text = string.Empty,
+                            Value = string.Empty,
+                        }
+                    };
+
+                    foreach (var item in this.AcceptableQualityLevels.Select(o => new { o.AQLType, o.InspectionLevels }).Distinct())
+                    {
+                        string aqlType = item.AQLType.ToString();
+                        string level = string.Empty;
+                        switch (item.InspectionLevels)
+                        {
+                            case "1":
+                                level = "Level I";
+                                break;
+                            case "2":
+                                level = "Level II";
+                                break;
+                            case "3":
+                                level = "Level III";
+                                break;
+                            case "4":
+                                level = "Level IV";
+                                break;
+                            case "5":
+                                level = "Level V";
+                                break;
+                            case "S-4":
+                                level = "Level S-4";
+                                break;
+                            case "100% Inspection":
+                                aqlType = "100% Inspection";
+                                level = "";
+                                break;
+                            default:
+                                break;
+                        }
+                        rtn.Add(new SelectListItem()
+                        {
+                            Text = string.IsNullOrEmpty(level) ? $@"{aqlType}" : $@"{aqlType} {level}",
+                            Value = string.IsNullOrEmpty(level) ? $@"{aqlType}" : $@"{aqlType} {level}",
+                        });
+
+                    }
+                    return rtn;
+                }
+                else
+                {
+                    return new List<SelectListItem>();
+                }
+            }
+        }
         public List<SelectSewing> SelectedSewing { get; set; }
         public List<Select_QC_InCharge> Select_QC_InCharge { get; set; }
         public List<AcceptableQualityLevels> AcceptableQualityLevels { get; set; }
@@ -394,12 +448,12 @@ namespace DatabaseObject.ViewModel.SampleRFT
         public string OrderID { get; set; }
         public string Article { get; set; }
         public string Size { get; set; }
-        public string FrontImageName 
-        { 
-            get 
+        public string FrontImageName
+        {
+            get
             {
                 return $"{this.OrderID}_{this.Article}_{this.Size}_Front.png";
-            } 
+            }
         }
         public string LeftImageName
         {

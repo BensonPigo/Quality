@@ -63,11 +63,12 @@ namespace BusinessLogicLayer.Service.SampleRFT
                             {
                                 continue;
                             }
+                            dr[item] = dr[item] ?? "0";
 
-                            if (dr[item.ToString()].ToString().Contains("-"))
+                            if (dr[item].ToString().Contains("-") || dr["Tol(+)"].ToString().Contains("/") || dr["Tol(-)"].ToString().Contains("/") || dr[item].ToString().Contains("/"))
                             {
                                 string num;
-                                string d = dr[item.ToString()].ToString().Replace("-", string.Empty);
+                                string d = dr[item].ToString().Replace("-", string.Empty);
                                 num = _IMeasurementProvider.Get_CalculateSizeSpec(d, dr["Tol(-)"].ToString()).Rows[0]["value"].ToString();
                                 bolCal = num.Contains("-") && !string.IsNullOrEmpty(dr[item.ToString()].ToString());
                             }
