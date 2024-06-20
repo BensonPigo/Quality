@@ -272,7 +272,7 @@ INSERT INTO PullingTest
            ,StyleType)
 VALUES(    
             (   ---流水號處理
-                select REPLACE( @ReportNo ,'%','') + ISNULL(REPLICATE('0',4-len( CAST( CAST( RIGHT( max(ReportNo),3) as int) + 1 as varchar) ))+ CAST( CAST( RIGHT( max(ReportNo),3) as int) + 1 as varchar),'0001')
+                select REPLACE( @ReportNo ,'%','') + ISNULL(REPLICATE('0',4-len( CAST( CAST( RIGHT( max(ReportNo),4) as int) + 1 as varchar) ))+ CAST( CAST( RIGHT( max(ReportNo),4) as int) + 1 as varchar),'0001')
                 from PullingTest WITH(NOLOCK)
                 where ReportNo LIKE @ReportNo
             )
