@@ -173,7 +173,7 @@
                                 <label class="FindLab">SP</label>
                             </td>
                             <td colspan="3">
-                                @Html.TextBoxFor(o => o.SPNO, new { @value = Model.SPNO, @style = "width:9vw", @class = "txtOrderID" })
+                                @Html.TextBoxFor(o => o.SPNO, new { @value = Model.SPNO, @style = "width:9vw"})
                             </td>
                             <td style="padding: 0vw;">
                                 <input type="button" class="site-btn btn-gy font1rem Black" style="width: 7vw;" name="action:ToExcel" id="btnExcel" value="To Excel" />
@@ -531,12 +531,24 @@
 
 
         $("#btnExcel").click(function () {
+            if (!checkvalue('ToExcel')) {
+                return;
+            }
+
             var Req = {
                 BrandID: $('#BrandID').val(),
                 SeasonID: $('#SeasonID').val(),
                 StyleID: $('#StyleID').val(),
                 Article: $('#Article').val(),
-                Type: $('#Type').val(),
+                Type: $('#txtTypeID').val(),
+                SPNO: $('#SPNO').val(),
+                Line: $('#Line').val(),
+                ReceivedDate_sText: $('#ReceivedDate_sText').val(),
+                ReceivedDate_eText: $('#ReceivedDate_eText').val(),
+                ReportDate_sText: $('#ReportDate_sText').val(),
+                ReportDate_eText: $('#ReportDate_eText').val(),
+                WhseArrival_sText: $('#WhseArrival_sText').val(),
+                WhseArrival_eText: $('#WhseArrival_eText').val(),
             };
             $.ajax({
                 url: "@Url.Action("ToExcel", "SearchList", new { Area = "BulkFGT" })",
@@ -549,7 +561,7 @@
                         window.location.href = data.TempFileName;
                     }
                     else {
-                        msg.WithError(data.ErrMsg);
+                        msg.WithError(data.ErrorMessage);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -719,6 +731,14 @@
                 return false;
             }
         }
+        if (buttonName == "ToExcel") {
+
+            if ($("#SPNO").val() == "" && checkReq() < 2) {
+                var msgContent = "Does not include Type, two conditions must be selected. ";
+                msg.WithError(msgContent);
+                return false;
+            }
+        }
 
         return true;
     }
@@ -738,7 +758,7 @@
 
 
     $(document).ready(function () {
-        $('.txtOrderID').blur(function () {
+        $('#SPNO').blur(function () {
             typeChange();
         });
     });
