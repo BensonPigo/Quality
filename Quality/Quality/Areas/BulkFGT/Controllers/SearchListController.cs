@@ -142,8 +142,16 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             Req.MDivisionID = this.MDivisionID;
             SearchList_ViewModel result = _SearchListService.ToExcel(Req);
-            result.TempFileName = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
-            return Json(new { result.Result, result.ErrorMessage, result.TempFileName });
+
+            if (result.Result)
+            {
+                result.TempFileName = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
+                return Json(new { result.Result, result.ErrorMessage, result.TempFileName });
+            }
+            else
+            {
+                return Json(new { result.Result, ErrorMessage = "Data not found.", TempFileName = string.Empty});
+            }
             #region other
             /*
             try
