@@ -123,7 +123,18 @@ namespace BusinessLogicLayer.Service.SampleRFT
                     Result.InspectionStageList.RemoveAt(1);
                 }
 
-                Result.AcceptableQualityLevels = _Provider.GetAcceptableQualityLevelsForSetting(OrderID).ToList();
+                var allAql = _Provider.GetAcceptableQualityLevelsForSetting(OrderID).ToList();
+
+                // 品牌沒有指定的AQL，就取預設
+                if (allAql.Any(o=>o.BrandID == Result.BrandID))
+                {
+                    Result.AcceptableQualityLevels = allAql.Where(o => o.BrandID == Result.BrandID).ToList();
+                }
+                else
+                {
+                    Result.AcceptableQualityLevels = allAql.Where(o => o.BrandID == string.Empty).ToList();
+                }
+
                 Result.ExecuteResult = true;
             }
             catch (Exception ex)

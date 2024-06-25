@@ -52,12 +52,15 @@
         padding: 3px;
         box-sizing: border-box;
     }
+
     td {
         padding: 5px 5px 5px 5px;
     }
-    .readonly{
-        background-color:lightgray;
+
+    .readonly {
+        background-color: lightgray;
     }
+
     .button {
         width: 7vw;
     }
@@ -86,25 +89,11 @@
                         <div>
                             <table>
                                 <tr>
-                                        @{
-                                            isReadOnly = !(QueryType == "Style");
-                                        }
+                                    @{
+                                        isReadOnly = !(QueryType == "Style");
+                                    }
                                     <td>
-                                        @Html.RadioButtonFor(o=>o.QueryType, "Style", new { @ID= "TypeStyle", @class = "Radio" })
-                                    </td>
-                                    <td>
-                                        <label class="FindLab" for="TypeStyle">Style</label>
-                                    </td>
-                                    <td>
-                                        @if (isReadOnly)
-                                        {
-                                            @Html.TextBoxFor(o => o.StyleID, new { @value = Model.StyleID, @readonly = "readonly" })
-                                        }
-                                        else
-                                        {
-
-                                            @Html.TextBoxFor(o => o.StyleID, new { @value = Model.StyleID})
-                                        }
+                                        @Html.RadioButtonFor(o => o.QueryType, "Style", new { @ID = "TypeStyle", @class = "Radio" })
                                     </td>
                                     <td>
                                         <label class="FindLab">Brand</label>
@@ -116,7 +105,9 @@
                                         }
                                         else
                                         {
-                                            @Html.TextBoxFor(o => o.BrandID, new { @value = Model.BrandID })
+                                            @Html.TextBoxFor(o => o.BrandID, new { @value = Model.BrandID, @style = "width:9vw" })
+                                            <input id="btnBrandID" onclick="OpenWindow('BrandID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+
                                         }
                                     </td>
                                     <td>
@@ -129,11 +120,27 @@
                                         }
                                         else
                                         {
-                                            @Html.TextBoxFor(o => o.SeasonID, new { @value = Model.SeasonID })
+                                            @Html.TextBoxFor(o => o.SeasonID, new { @value = Model.SeasonID, @style = "width:9vw" })
+                                            <input id="btnSeasonID" onclick="OpenWindow('SeasonID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
                                         }
                                     </td>
                                     <td>
-                                        <input type="submit" class="button"  name="action:Query" id="btnFind" value="Find" />
+                                        <label class="FindLab" for="TypeStyle">Style</label>
+                                    </td>
+                                    <td>
+                                        @if (isReadOnly)
+                                        {
+                                            @Html.TextBoxFor(o => o.StyleID, new { @value = Model.StyleID, @readonly = "readonly" })
+                                        }
+                                        else
+                                        {
+
+                                            @Html.TextBoxFor(o => o.StyleID, new { @value = Model.StyleID, @style = "width:9vw" })
+                                            <input id="btnStyleID" onclick="OpenWindow('StyleID')" type="button" class="site-btn btn-blue" style="margin:0;border: 2px solid transparent;" name="" value="..." />
+                                        }
+                                    </td>
+                                    <td>
+                                        <input type="submit" class="button" name="action:Query" id="btnFind" value="Find" />
                                     </td>
                                 </tr>
                                 <tr>
@@ -171,7 +178,7 @@
                     }
                 </div>
                 <br />
-                <div>                    
+                <div>
                     <table id="myTable" class="table table-striped display" style="text-align:center">
                         <thead>
                             <tr class="row-name">
@@ -192,7 +199,7 @@
                                     @foreach (var stage in stageList)
                                     {
                                         var data = Model.DataList.Where(o => o.SampleStage == stage && o.CommentsCategory == category);
-                                        string comment = data.Any() ? data.FirstOrDefault().Comnments.Replace("<br>"," ") : string.Empty;
+                                        string comment = data.Any() ? data.FirstOrDefault().Comnments.Replace("<br>", " ") : string.Empty;
                                         <td>
                                             @comment
                                         </td>
@@ -220,6 +227,7 @@
         if ('@download' != '') {
             window.location.href = '@download';
         }
+        QueryButtonBind();
 
         @Html.Raw(Model.ErrorMessage);
 
@@ -235,8 +243,13 @@
                 $("#SampleStage").val("");
 
                 $("#BrandID").removeAttr("readonly");
+                $("#btnBrandID").removeAttr("disabled");
+
                 $("#SeasonID").removeAttr("readonly");
+                $("#btnSeasonID").removeAttr("disabled");
+
                 $("#StyleID").removeAttr("readonly");
+                $("#btnStyleID").removeAttr("disabled");
 
                 $("#OrderID").attr("readonly", "readonly");
             }
@@ -247,8 +260,13 @@
                 $("#OrderID").removeAttr("readonly");
 
                 $("#BrandID").attr("readonly", "readonly");
+                $("#btnBrandID").attr("disabled", "disabled");
+
                 $("#SeasonID").attr("readonly", "readonly");
+                $("#btnSeasonID").attr("disabled", "disabled");
+
                 $("#StyleID").attr("readonly", "readonly");
+                $("#btnStyleID").attr("disabled", "disabled");
             }
         });
 
@@ -256,7 +274,7 @@
         $("#OrderID").blur(function () {
 
             //選到SP#才需要查資料
-            if ($("#TypeSp").prop("checked")) {                
+            if ($("#TypeSp").prop("checked")) {
                 $.ajax({
                     url: '@Url.Action("GetOrderinfo")',
                     data: { OrderID: $(this).val() },
@@ -286,6 +304,92 @@
 
     });
 
+    function QueryButtonBind() {
+        $("#BrandID").blur(function () {
+            $.ajax({
+                url: "@Url.Action("BrandList", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#BrandID").val('');
+                        msg.WithError('Brand Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
 
+        $("#SeasonID").blur(function () {
+            var BrandID = $('#BrandID').val();
+            $.ajax({
+                url: "@Url.Action("SeasonList", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#SeasonID").val('');
+                        msg.WithError('Season Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $("#StyleID").blur(function () {
+            var BrandID = $('#BrandID').val();
+            var SeasonID = $('#SeasonID').val();
+            $.ajax({
+                url: "@Url.Action("StyleList", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ BrandID: BrandID, SeasonID: SeasonID, StyleID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#StyleID").val('');
+                        msg.WithError('Style Not Found');
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    }
+
+    function OpenWindow(WindowType) {
+        if (WindowType == "BrandID") {
+            window.open('@Url.Action("BrandList", "PublicWindow",new { Area=""})', WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        if (WindowType == "SeasonID") {
+            window.open(`@Url.Action("SeasonList", "PublicWindow",new { Area=""})?BrandID=${$("#BrandID").val()}`, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+        if (WindowType == "StyleID") {
+            var para = "?BrandID=" + $('#BrandID').val() + "&SeasonID=" + $('#SeasonID').val();
+            window.open('@Url.Action("StyleList", "PublicWindow",new { Area=""})' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=400,height=650');
+        }
+    }
+
+    function GetBrandList(BrandID) {
+        $("#BrandID").val(BrandID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+    function GetSeasonList(SeasonID) {
+        $("#SeasonID").val(SeasonID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
+    function GetStyleList(StyleID) {
+        $("#StyleID").val(StyleID);
+        // 在這邊取得開窗選擇的Brand，進行後續動作
+    }
 </script>
 
