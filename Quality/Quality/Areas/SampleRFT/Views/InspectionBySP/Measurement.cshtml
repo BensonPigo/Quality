@@ -493,107 +493,6 @@
         });
 
         ReloadData();
-
-        $(".iconPlus").click(function () {
-            var Keyidx = $(this).attr("KeyIdx");
-            var currentCol = $(`input[idx=ResultSizeSpec][KeyIdx=${Keyidx}]`);
-
-            if ($(currentCol).attr("readonly") == "readonly") {
-                return;
-            }
-
-            var tpye = $(currentCol).attr("type");
-            var oldValue = 0;
-
-            if (tpye == "number") {
-                if ($(currentCol).val() != '') {
-                    oldValue = parseFloat($(currentCol).val());
-                }
-                var newValue = oldValue + 1;
-                $(currentCol).val(newValue).change();
-            }
-            if (tpye == "text") {
-                var newValue = 0;
-                if ($(currentCol).val() != '') {
-
-                    //有分數，例如：1 1/2，把整數位獨立出來+1
-                    if ($(currentCol).val().split(' ').length == 2) {
-                        var interg = $(currentCol).val().split(' ')[0];
-                        var float = $(currentCol).val().split(' ')[1];
-                        var tmp = parseInt(interg) + 1;
-                        newValue = tmp + ` ${float}`;
-
-                    }
-                    else {
-                        // 其餘直接轉成整數
-                        oldValue = parseFloat($(currentCol).val());
-                        newValue = oldValue + 1;
-                    }
-
-                }
-                else {
-                    newValue = oldValue + 1;
-                }
-
-                $(currentCol).val(newValue).change();
-            }
-        });
-
-        $(".iconReduce").click(function () {
-            var Keyidx = $(this).attr("KeyIdx");
-            var currentCol = $(`input[idx=ResultSizeSpec][KeyIdx=${Keyidx}]`);
-
-            if ($(currentCol).attr("readonly") == "readonly") {
-                return;
-            }
-
-
-            var tpye = $(currentCol).attr("type");
-            var oldValue = 0;
-
-            if (tpye == "number") {
-
-                if ($(currentCol).val() != '') {
-                    oldValue = parseFloat($(currentCol).val());
-                }
-                var newValue = oldValue - 1;
-                $(currentCol).val(newValue).change();
-            }
-            if (tpye == "text") {
-
-                var newValue = 0;
-                if ($(currentCol).val() != '') {
-
-                    //有分數，例如：1 1/2，把整數位獨立出來-1
-                    if ($(currentCol).val().split(' ').length == 2) {
-                        var interg = $(currentCol).val().split(' ')[0];
-                        var float = $(currentCol).val().split(' ')[1];
-                        var tmp = parseInt(interg) - 1;
-
-                        // 若整數位<=1，新值直接歸0
-                        if (interg <= 1) {
-                            newValue = 0;
-                        }
-                        else {
-                            newValue = tmp + ` ${float}`;
-                        }
-
-                    }
-                    else {
-                        // 其餘直接轉成整數
-                        oldValue = parseFloat($(currentCol).val());
-                        newValue = oldValue - 1;
-                    }
-
-                }
-                else {
-                    newValue = oldValue - 1;
-                }
-
-                $(currentCol).val(newValue).change();
-
-            }
-        });
     });
 
 
@@ -620,7 +519,7 @@
             <th style="width:10vw"><p>Tol(+)</p></th>
             <th style="width:10vw"><p>Tol(-)</p></th>
             <th style="width:10vw"><p idx='SizeCode'>${dropSize.value}</p></th>
-            <th style="width:28vw"><button type="button" class="site-btn btn-blue" style="font-size:1rem;width:70%;" onclick="InputClear();">Clear</button></th>
+            <th style="width:28vw"><button type="button" class="site-btn btn-blue" style="font-size:1rem;width:70%;" onclick="ReloadData();">Clear</button></th>
             <th style="width:10vw"><p>Diff</p></th>
             </tr>`;
         }
@@ -638,16 +537,27 @@
 
             if (value.SizeSpec.indexOf('/') > -1) {
                 relsizeUnit = "INCH";
-                return false;
+                //return;
             }
             else if (value.SizeSpec.indexOf('.') > -1) {
                 relsizeUnit = "CM";
-                return false;
+                //return;
             }
         });
 
         $.each(items, function (index, value) {
             if (value.Size == dropSize.value) {
+
+                if (value.SizeSpec.indexOf('/') > -1) {
+                    relsizeUnit = "INCH";
+                }
+                else if (value.SizeSpec.indexOf('.') > -1) {
+                    relsizeUnit = "CM";
+                }
+
+                if (relsizeUnit != SizeUnit) {
+                    value.CanEdit = false;
+                }
 
                 var readonly = "";
                 var bgColor = "white";
@@ -666,10 +576,10 @@
 `;
 
                 if (relsizeUnit == "INCH") {
-                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='text' KeyIdx='" + KeyIdx + "' idx='ResultSizeSpec' placeholder= '__ __/__' style ='width:64%; height:3.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
+                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='text' KeyIdx='" + KeyIdx + "' idx='ResultSizeSpec' value='" + value.SizeSpec + "' placeholder= '__ __/__' style ='width:64%; height:3.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
                 }
                 else {
-                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='number' KeyIdx='" + KeyIdx + "' step='any' idx='ResultSizeSpec' style ='width:64%; height:2.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
+                    tbody += "<td  style ='vertical-align: middle;' class='" + bgColor + "'><img class='iconPlus' KeyIdx='" + KeyIdx + "' /><input type='number' KeyIdx='" + KeyIdx + "' step='any' idx='ResultSizeSpec' value='" + value.SizeSpec + "' style ='width:64%; height:2.5vh' class='" + bgColor + "' " + readonly + "><img KeyIdx='" + KeyIdx + "' class='iconReduce' /></td>";
                 }
 
                 tbody += "<td style ='vertical-align: middle;'><p style ='padding: 0.5vh' class='Diff'></p></td>";
@@ -698,8 +608,96 @@
                 return;
             }
 
-            // 計算Diff
-            if (standard.indexOf('/') > -1) {
+
+            var isFractional = false;
+            if (val.toString().indexOf('/') > -1 && val.toString().indexOf(".") > -1) {
+                // 同時存在小數和分數符號
+                $(this).val("");
+                $(this).parent().parent().children().find("p[class='Diff']").html('');
+                $(this).parent().parent().children().find("p[class='Diff']").parent().removeClass("bg-lightred");
+                return;
+            }
+            else if (val.toString().indexOf('/') > -1) {
+                // 只有分數符號
+                isFractional = true;
+            }
+            else if (val.toString().indexOf(".") > -1) {
+                // 只有小數符號
+                isFractional = false;
+            }
+
+            // 針對輸入的value進行約分
+            var vi = 0, vd = 0, vm = 0;
+
+            if (isFractional) {
+                // 是分數，檢查有沒有多餘符號
+                if (containsInvalidCharacters1(val)) {
+                    val = 0;
+                }
+                else {
+                    vi = val.substr(0, val.toString().indexOf(' '));
+                }
+            }
+            else {
+                // 是小數，檢查有沒有多餘符號
+                if (containsInvalidCharacters2(val)) {
+                    val = 0;
+                }
+                vi = val;
+            }
+
+            if (val == "" || val <= 0) {
+                $(this).val(val);
+                return;
+            }
+
+            if (vi == '') {
+                vi = 0;
+            }
+
+            if (val.toString().indexOf('/') > -1) {
+                vd = val.substr(val.toString().indexOf(' ') + 1, val.toString().indexOf('/') - 1 - val.toString().indexOf(' '));
+                vm = val.substr(val.toString().indexOf('/') + 1, val.length - 1 - val.toString().indexOf('/'));
+
+                vi = parseInt(vi);
+                vd = parseInt(vd);
+                vm = parseInt(vm);
+
+                // 分子大於分母
+                if (vd > vm && vm > 0) {
+                    vi = parseInt(vi + (vd / vm));
+                    vd = vd % vm;
+                }
+                else if (vd == vm && vm > 0) {
+                    vi = parseInt(vi + (vd / vm));
+                    vd = 0;
+                    vvm = 0;
+                }
+
+                if (vi > 0 && vd > 0 && vm > 0) {
+                    val = vi + ' ' + vd + '/' + vm;
+                }
+                else if (vd > 0 && vm > 0) {
+                    val = vd + '/' + vm;
+                }
+                else {
+                    val = vi;
+                }
+                $(this).val(val);
+            }
+            else {
+                vd = 1;
+                vm = 1;
+                vi = vi - 1;
+                var val = parseFloat(parseFloat(val).toFixed(4));
+                if (Number.isInteger(val)) {
+                    val = parseInt(val);
+                }
+                $(this).val(val);
+            }
+
+            // 計算Diff，根據小數或分數使用不同方式計算
+            if (standard.indexOf('/') > -1 || val.toString().indexOf('/') > -1 || tolh.toString().indexOf('/') > -1 || toll.toString().indexOf('/') > -1) {
                 if (standard.toString().indexOf('.') > -1) {
                     return;
                 }
@@ -735,6 +733,170 @@
             }
         });
 
+
+        $(".iconPlus").click(function () {
+            var Keyidx = $(this).attr("KeyIdx");
+            var currentCol = $(`input[idx=ResultSizeSpec][KeyIdx=${Keyidx}]`);
+
+            if ($(currentCol).attr("readonly") == "readonly") {
+                return;
+            }
+
+            var tpye = $(currentCol).attr("type");
+            var oldValue = 0;
+
+            if (tpye == "number") {
+                if ($(currentCol).val() != '') {
+                    oldValue = parseFloat($(currentCol).val());
+                }
+                var newValue = oldValue + 0.0625;
+                newValue = newValue.toFixed(4);
+                $(currentCol).val(newValue).change();
+            }
+            if (tpye == "text") {
+                var newValue = 0;
+                if ($(currentCol).val() != '') {
+
+                    // 有可能同一個Measurement表裡面會同時包含小數和分數，因此tpye == "text"不一定都是分數，還要再把小數拉出來額外運算
+                    if ($(currentCol).val().indexOf('.') > -1) {
+                        oldValue = parseFloat($(currentCol).val());
+                        var newValue = oldValue + 0.0625;
+                        newValue = newValue.toFixed(4);
+                        $(currentCol).val(newValue).change();
+                    }
+                    //有分數，例如：1 1/2，把分子獨立出來+1
+                    else if ($(currentCol).val().split(' ').length == 2) {
+                        var interg = $(currentCol).val().split(' ')[0];
+
+                        var float = $(currentCol).val().split(' ')[1];
+                        var numerator = float.split('/')[0];
+                        var denominator = float.split('/')[1];
+
+                        //var tmp = parseInt(numerator) + 1;
+                        var tmp = CacuFraction(float, '1/16', 'addition');
+                        //newValue = tmp + ` ${float}`;
+                        newValue = interg + ` ${tmp}`;
+                    }
+                    else {
+
+                        // 是否為純分數
+                        if ($(currentCol).val().split('/').length == 2) {
+
+                            var tmp = CacuFraction($(currentCol).val(), '1/16', 'addition');
+                            if (tmp == '0/1') {
+                                newValue = 0;
+                            }
+                            else {
+                                newValue = tmp;
+                            }
+                        }
+                        else {
+
+                            var tmp = CacuFraction($(currentCol).val() + '/1', '1/16', 'addition');
+                            newValue = tmp;
+                        }
+                    }
+
+                }
+                else {
+                    newValue = oldValue + 1;
+                }
+
+                $(currentCol).val(newValue).change();
+            }
+        });
+
+        $(".iconReduce").click(function () {
+            var Keyidx = $(this).attr("KeyIdx");
+            var currentCol = $(`input[idx=ResultSizeSpec][KeyIdx=${Keyidx}]`);
+
+            if ($(currentCol).attr("readonly") == "readonly") {
+                return;
+            }
+
+
+            var tpye = $(currentCol).attr("type");
+            var oldValue = 0;
+
+            if (tpye == "number") {
+
+                if ($(currentCol).val() != '') {
+                    oldValue = parseFloat($(currentCol).val());
+                }
+                var newValue = oldValue - 0.0625;
+                newValue = newValue.toFixed(4);
+                $(currentCol).val(newValue).change();
+            }
+            if (tpye == "text") {
+
+                var newValue = 0;
+                if ($(currentCol).val() != '') {
+
+                    // 有可能同一個Measurement表裡面會同時包含小數和分數，因此tpye == "text"不一定都是分數，還要再把小數拉出來額外運算
+                    if ($(currentCol).val().indexOf('.') > -1) {
+                        oldValue = parseFloat($(currentCol).val());
+                        var newValue = oldValue - 0.0625;
+                        newValue = newValue.toFixed(4);
+                        $(currentCol).val(newValue).change();
+                    }
+                    //有分數，例如：1 1/2，把整數位獨立出來-1
+                    else if ($(currentCol).val().split(' ').length == 2) {
+                        var interg = $(currentCol).val().split(' ')[0];
+                        var float = $(currentCol).val().split(' ')[1];
+
+                        var tmp = CacuFraction(float, '1/16', 'subtraction');
+                        //var tmp = parseInt(interg) - 1;
+
+                        // 整數、分數都是0
+                        if (parseInt(interg) == 0 && tmp == '0/1') {
+                            newValue = 0;
+                        }
+                        // 整數=0，分數!=0
+                        else if (parseInt(interg) == 0 && tmp != '0/1') {
+                            //newValue = 0;
+                            newValue = tmp;
+                        }
+                        // 整數!=0，分數=0
+                        else if (parseInt(interg) != 0 && tmp == '0/1') {
+                            //newValue = 0;
+                            newValue = parseInt(interg);
+                        }
+                        else {
+                            //newValue = tmp + ` ${float}`;
+                            newValue = interg + ` ${tmp}`;
+                        }
+
+                    }
+                    else {
+
+                        // 是否為純分數
+                        if ($(currentCol).val().split('/').length == 2) {
+
+                            var tmp = CacuFraction($(currentCol).val(), '1/16', 'subtraction');
+                            if (tmp == '0/1') {
+                                newValue = 0;
+                            }
+                            else {
+                                newValue = tmp;
+                            }
+                        }
+                        else {
+                            var tmp = CacuFraction($(currentCol).val() + '/1', '1/16', 'subtraction');
+                            newValue = tmp;
+                            // 其餘直接轉成整數
+                        }
+
+                    }
+
+                }
+                else {
+                    newValue = oldValue - 1;
+                }
+
+                $(currentCol).val(newValue).change();
+
+            }
+        });
     }
 
     // 傳入，OpenView 回傳的 Ajax 物件集合
@@ -782,7 +944,6 @@
             $(this).val('').change();
         });
     }
-
 
     function ChangeColor() {
         var unit = $('#ViewSizeUnit').val();
@@ -834,7 +995,7 @@
     }
 
     function cal(unit, standard, val, tolh, toll, obj) {
-        if (standard.indexOf('/') > -1) {
+        if (standard.indexOf('/') > -1 || val.indexOf('/') > -1 || tolh.indexOf('/') > -1 || toll.indexOf('/') > -1) {
             if (standard.indexOf('.') > -1) {
                 return;
             }
@@ -850,7 +1011,7 @@
                 obj.removeClass("red");
             }
         }
-        else {
+        else if (!isNaN(standard) && !isNaN(val)) {
             var sTolh = parseFloat(accAdd(standard, tolh));
             var sToll = parseFloat(accSubtr(standard, toll));
             if (sTolh >= val && val >= sToll) {
@@ -860,5 +1021,52 @@
                 obj.addClass("red");
             }
         }
+    }
+
+    function gcd(a, b) {
+        return b === 0 ? a : gcd(b, a % b);
+    }
+
+    function lcm(a, b) {
+        return (a * b) / gcd(a, b);
+    }
+
+    function CacuFraction(valA, valB, action) {
+        const [numA, denA] = valA.split('/').map(Number);
+        const [numB, denB] = valB.split('/').map(Number);
+
+        let resultNum, resultDen;
+
+        switch (action) {
+            case 'addition':
+                resultNum = numA * denB + numB * denA;
+                resultDen = denA * denB;
+                break;
+            case 'subtraction':
+                resultNum = numA * denB - numB * denA;
+                resultDen = denA * denB;
+                break;
+            default:
+                throw new Error('Invalid action. Use "addition" or "subtraction".');
+        }
+
+        const commonGCD = gcd(resultNum, resultDen);
+        resultNum /= commonGCD;
+        resultDen /= commonGCD;
+
+        return `${resultNum}/${resultDen}`;
+    }
+
+    // 檢查是否包含數字、/ 符號、空格以外的字元
+    function containsInvalidCharacters1(text) {
+        // 使用正则表达式检查是否包含数字、/ 以外的字符
+        const regex = /[^0-9\/\s]/;
+        return regex.test(text);
+    }
+
+    // 檢查是否包含數字、.符號以外的字元
+    function containsInvalidCharacters2(text) {
+        const regex = /[^0-9\.]/;
+        return regex.test(text);
     }
 </script>
