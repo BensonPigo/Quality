@@ -2502,53 +2502,78 @@ where img.{inspectionReportTable}ID = @ID
 declare @ID varchar(13) = @InspectionID
 
 
-Select	[AuditDate] = format(f.AuditDate, 'yyyy-MM-ddTHH:mm:ss'),
-		f.RejectQty,
-		f.InspectionResult,
-		[DefectQty] = (select isnull(sum(Qty), 0) from FinalInspection_Detail with (nolock) where ID = f.ID),
-		[AvailableQty] = (select sum(AvailableQty) from FinalInspection_Order with (nolock) where ID = f.ID),
-		f.SampleSize,
-		[InspectionLevel] = case when f.AcceptableQualityLevelsUkey = -1 then '100%inspection'
-                                 when OrderInfo.IsDestJP = 1 then 'Japan orders (AQL 1.0, Level II)'
-                                 else 'Regular orders (AQL 1.0, Level I)' end,
-		[InspectionResultID] = iif(f.InspectionResult = 'Pass', 1, 2),
-		[InspectionStatusID] = iif(f.InspectionResult = 'Pass', 3, 7),
-		f.SubmitDate,
-		[InspectionMinutes] = Round(DATEDIFF(SECOND, f.AddDate, f.EditDate) / 60.0, 0),
-		[CFA] = isnull((select Pivot88UserName from quality_pass1 with (nolock) where ID = f.CFA), ''),
-		OrderInfo.POQty,
-		[ETD_ETA] = format(OrderInfo.ETD_ETA, 'yyyy-MM-ddTHH:mm:ss'),
-		[CustPONO] = o.val,
-        OrderInfo.CustomerPo,
-        [ReportTypeID] = case when OrderInfo.IsDestJP = 1 then 25
-                            when f.AcceptableQualityLevelsUkey  = -1 then 26
-                            else 12 end,
-        [DateStarted] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.AddDate), 'yyyy-MM-ddTHH:mm:ss'),
-        [InspectionCompletedDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.EditDate), 'yyyy-MM-ddTHH:mm:ss'),
-        f.OthersRemark,
-        f.BAQty,
-        [MeasurementResult] = cast(iif(exists(select 1 from FinalInspection_Measurement fm with (nolock) where f.ID = fm.ID), 1, 0) as bit),
-        [MoistureResult] = case when exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID and fmo.Result = 'F') then 'fail'
-                                when not exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID) then 'na'
-                                else 'pass' end,
-        [MoistureComment] = SUBSTRING(MoistureComment.val, 1, 255)
-from FinalInspection f with (nolock)
+Select	
+    [AuditDate] = format(f.AuditDate, 'yyyy-MM-ddTHH:mm:ss'),
+    f.RejectQty,
+    f.InspectionResult,
+    [DefectQty] = (select isnull(sum(Qty), 0) from FinalInspection_Detail with (nolock) where ID = f.ID),
+    [AvailableQty] = (select sum(AvailableQty) from FinalInspection_Order with (nolock) where ID = f.ID),
+    f.SampleSize,
+    [InspectionLevel] = 
+        case 
+            when f.AcceptableQualityLevelsUkey = -1 then '100%inspection'
+            when OrderInfo.IsDestJP = 1 or AQL.InspectionLevels = 2 then 'Japan orders (AQL 1.0, Level II)'
+            else 'Regular orders (AQL 1.0, Level I)' 
+        end,
+    [InspectionResultID] = iif(f.InspectionResult = 'Pass', 1, 2),
+    [InspectionStatusID] = iif(f.InspectionResult = 'Pass', 3, 7),
+    f.SubmitDate,
+    [InspectionMinutes] = Round(DATEDIFF(SECOND, f.AddDate, f.EditDate) / 60.0, 0),
+    [CFA] = isnull((select Pivot88UserName from quality_pass1 with (nolock) where ID = f.CFA), ''),
+    OrderInfo.POQty,
+    [ETD_ETA] = format(OrderInfo.ETD_ETA, 'yyyy-MM-ddTHH:mm:ss'),
+    [CustPONO] = o.val,
+    OrderInfo.CustomerPo,
+    [ReportTypeID] = 
+        case 
+            when OrderInfo.IsDestJP = 1 or AQL.InspectionLevels = 2 then 25
+            when f.AcceptableQualityLevelsUkey = -1 then 26
+            else 12 
+        end,
+    [DateStarted] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.AddDate), 'yyyy-MM-ddTHH:mm:ss'),
+    [InspectionCompletedDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.EditDate), 'yyyy-MM-ddTHH:mm:ss'),
+    f.OthersRemark,
+    f.BAQty,
+    [MeasurementResult] = cast(iif(exists(select 1 from FinalInspection_Measurement fm with (nolock) where f.ID = fm.ID), 1, 0) as bit),
+    [MoistureResult] = 
+        case 
+            when exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID and fmo.Result = 'F') then 'fail'
+            when not exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID) then 'na'
+            else 'pass' 
+        end,
+    [MoistureComment] = SUBSTRING(MoistureComment.val, 1, 255)
+from 
+FinalInspection f with (nolock)
 cross join system
 outer apply (
-    SELECT val = Stuff((select distinct concat( ',',CustPONo) 
-                       from  FinalInspection_Order fo with (nolock) 
-                       inner join SciProduction_Orders o with (nolock) on fo.OrderID = o.ID
-                       where fo.ID = f.ID
-                       FOR XML PATH('')),1,1,'')
-)o
-outer apply (select	[POQty] = sum(o.Qty),
-					[ETD_ETA] = max(o.BuyerDelivery),
-                    [CustomerPo] = max(o.CustCDID),
-                    [IsDestJP] = max(iif(o.Dest = 'JP', 1, 0))
-				from Production.dbo.Orders o with (nolock)
-				where o.CustPONo = f.CustPONO) OrderInfo
-outer apply (SELECT [val] = Stuff((select concat( ';',Remark)   
-                from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID FOR XML PATH('')),1,1,'')) MoistureComment
+    SELECT val = Stuff((select distinct concat(',', CustPONo) 
+                        from FinalInspection_Order fo with (nolock) 
+                        inner join SciProduction_Orders o with (nolock) on fo.OrderID = o.ID
+                        where fo.ID = f.ID
+                        FOR XML PATH('')), 1, 1, '')
+) o
+outer apply (
+    select	
+        [POQty] = sum(o.Qty),
+        [ETD_ETA] = max(o.BuyerDelivery),
+        [CustomerPo] = max(o.CustCDID),
+        [IsDestJP] = max(iif(o.Dest = 'JP', 1, 0))
+    from Production.dbo.Orders o with (nolock)
+    where o.CustPONo = f.CustPONO
+) OrderInfo
+outer apply (
+    select 
+        [val] = Stuff((select concat(';', Remark)   
+                        from FinalInspection_Moisture fmo with (nolock) 
+                        where f.ID = fmo.ID 
+                        FOR XML PATH('')), 1, 1, '')
+) MoistureComment
+outer apply (
+    select 
+        InspectionLevels 
+    from SciProduction_AcceptableQualityLevels aql 
+    where aql.Ukey = f.AcceptableQualityLevelsUkey
+) AQL
 where f.ID = @ID 
 
 
