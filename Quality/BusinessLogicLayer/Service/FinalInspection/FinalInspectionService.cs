@@ -965,6 +965,7 @@ namespace BusinessLogicLayer.Service
 
         private void Pivot88UserEmptyNotice(string checkTable, string inspectionID)
         {
+            // 避免Endline/inline手動sent P88也發信的防呆(inspectionID是空的代表排程執行,要發信!)
             if (!inspectionID.IsNullOrEmpty())
             {
                 return;
@@ -998,6 +999,8 @@ from
             if (dtMailto != null && dtMailto.Rows.Count > 0)
             {
                 DataTable dtResult = SQLDAL.ExecuteDataTable(CommandType.Text, sqlP88UserEmpty, parameter);
+
+                // 沒資料代表不須發信提醒user設定P88
                 if (dtResult!= null && dtResult.Rows.Count > 0)
                 {
                     string strDesc = checkTable == "InlineInspectionReport" ? @"<p> Inline Create P88 account </p>" : "<p> Endline Create P88 account </p>";
