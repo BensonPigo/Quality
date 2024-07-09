@@ -970,6 +970,12 @@ namespace BusinessLogicLayer.Service
                 return;
             }
 
+            // 判斷當前日期是否在7~8點之間
+            if (DateTime.Now < DateTime.Today.AddHours(7) || DateTime.Now >= DateTime.Today.AddHours(8))
+            {
+                return;
+            }
+
             string sqlP88UserEmpty = $@"
 declare @EOLInlineFromDateTransferToP88 date = (select EOLInlineFromDateTransferToP88 from system)
 
@@ -992,23 +998,26 @@ from
             if (dtMailto != null && dtMailto.Rows.Count > 0)
             {
                 DataTable dtResult = SQLDAL.ExecuteDataTable(CommandType.Text, sqlP88UserEmpty, parameter);
-                string strDesc = checkTable == "InlineInspectionReport" ? @"<p> Inline Create P88 account </p>" : "<p> Endline Create P88 account </p>";
-
-                string mailBody = MailTools.DataTableChangeHtml(dtResult, string.Empty, string.Empty, strDesc + Environment.NewLine + dtMailto.Rows[0]["Content"].ToString(), out System.Net.Mail.AlternateView plainView);
-
-                SendMail_Request sendMail_Request = new SendMail_Request()
+                if (dtResult!= null && dtResult.Rows.Count > 0)
                 {
-                    To = dtMailto.Rows[0]["toAddress"].ToString(),
-                    CC = dtMailto.Rows[0]["ccAddress"].ToString(),
+                    string strDesc = checkTable == "InlineInspectionReport" ? @"<p> Inline Create P88 account </p>" : "<p> Endline Create P88 account </p>";
 
-                    Subject = dtMailto.Rows[0]["Subject"].ToString(),
-                    Body = mailBody,
-                };
+                    string mailBody = MailTools.DataTableChangeHtml(dtResult, string.Empty, string.Empty, strDesc + Environment.NewLine + dtMailto.Rows[0]["Content"].ToString(), out System.Net.Mail.AlternateView plainView);
 
-                // ToAddress 是空的就不寄出去
-                if (!sendMail_Request.To.IsNullOrEmpty())
-                {
-                    MailTools.SendMail(sendMail_Request);
+                    SendMail_Request sendMail_Request = new SendMail_Request()
+                    {
+                        To = dtMailto.Rows[0]["toAddress"].ToString(),
+                        CC = dtMailto.Rows[0]["ccAddress"].ToString(),
+
+                        Subject = dtMailto.Rows[0]["Subject"].ToString(),
+                        Body = mailBody,
+                    };
+
+                    // ToAddress 是空的就不寄出去
+                    if (!sendMail_Request.To.IsNullOrEmpty())
+                    {
+                        MailTools.SendMail(sendMail_Request);
+                    }
                 }
             }
         }
