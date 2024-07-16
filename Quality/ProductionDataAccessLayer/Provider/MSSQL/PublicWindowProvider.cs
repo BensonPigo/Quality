@@ -218,7 +218,14 @@ AND StyleUkey in (
 select DISTINCT oq.Article 
 from orders o
 inner join order_qty oq  ON  o.id = oq.id and oq.qty > 0 
-where o.POID = @POID
+where o.Category IN ('B','S','G')
+and o.POID = @POID
+UNION
+select DISTINCT oa.Article 
+from orders o
+inner join Order_Article oa  ON  o.id = oa.id
+where o.Category IN ('M','T')
+and o.POID = @POID
 
 ");
                 paras.Add("@POID", DbType.String, POID);
