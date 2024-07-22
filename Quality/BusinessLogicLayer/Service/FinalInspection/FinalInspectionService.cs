@@ -156,7 +156,7 @@ namespace BusinessLogicLayer.Service
 
             DataRow drFinalInspection = resultPivot88.Tables[0].Rows[0];
             DataRow drGeneral = resultPivot88.Tables[1].Rows[0];
-            DataRow drCheckList= resultPivot88.Tables[2].Rows[0];
+            DataRow drCheckList = resultPivot88.Tables[2].Rows[0];
             DataTable dtColor = resultPivot88.Tables[3];
             DataTable dtSizeArticle = resultPivot88.Tables[4];
             DataRow drStyleInfo = resultPivot88.Tables[5].Rows[0];
@@ -166,10 +166,16 @@ namespace BusinessLogicLayer.Service
 
             List<object> sections = new List<object>();
 
+            string projectCode = drFinalInspection["Customize5"] != null && drFinalInspection["Customize5"] != DBNull.Value && !string.IsNullOrEmpty(drFinalInspection["Customize5"].ToString()) ? "APPTRANS4M" : "APP";
+
+            string sku_number_SewingLine = drFinalInspection["Customize5"] != null && drFinalInspection["Customize5"] != DBNull.Value && !string.IsNullOrEmpty(drFinalInspection["Customize5"].ToString()) ? $"_{drFinalInspection["SewLine"]}" : string.Empty;
+
+            var custPono = drFinalInspection["Customize4"] != null && drFinalInspection["Customize4"] != DBNull.Value && !string.IsNullOrEmpty(drFinalInspection["Customize4"].ToString()) ? drFinalInspection["Customize4"] : drFinalInspection["CustPONO"];
+
             var listSku_number = dtSizeArticle.AsEnumerable().Select(s =>
             new
             {
-                sku_number = $"{s["Article"]}_{s["SizeCode"]}",
+                sku_number = $"{s["Article"]}_{s["SizeCode"]}{sku_number_SewingLine}",
                 qty_to_inspect = s["ShipQty"]
             }
             );
@@ -234,18 +240,9 @@ namespace BusinessLogicLayer.Service
                 inspection_method = "normal",
                 aql_minor = 4,
                 aql_major = 1,
-                aql_major_a = 0.4,
-                aql_major_b = 1.5,
                 aql_critical = 1,
-                //aql_minor = 0,
-                //aql_major = 0,
-                //aql_major_a = drFinalInspection["DefectQty"],
-                //aql_major_b = drFinalInspection["DefectQty"],
-                //aql_critical = 0,
                 max_minor_defects = 0,
                 max_major_defects = drFinalInspection["DefectQty"],
-                max_major_a_defects = drFinalInspection["DefectQty"],
-                max_major_b_defects = drFinalInspection["DefectQty"],
                 max_critical_defects = 0,
                 defects,
             });
@@ -280,7 +277,6 @@ namespace BusinessLogicLayer.Service
                     );
             }
 
-
             List<object> assignment_items = listSku_number.Select(
                 sku_number => new
                 {
@@ -294,14 +290,12 @@ namespace BusinessLogicLayer.Service
                     qty_to_inspect = sku_number.qty_to_inspect,
                     aql_minor = 4,
                     aql_major = 1,
-                    aql_major_a = 1,
-                    aql_major_b = 1,
                     aql_critical = 1,
                     supplier_booking_msg = DBNull.Value,
                     conclusion_remarks = drFinalInspection["OthersRemark"],
                     assignment = new
                     {
-                        report_type = new { id = drFinalInspection["ReportTypeID"] },
+                        report_type = new { name = drFinalInspection["ReportTypeID"] },
                         inspector = new { username = drFinalInspection["CFA"] },
                         date_inspection = drFinalInspection["AuditDate"],
                         inspection_level = drFinalInspection["InspectionLevel"],
@@ -319,17 +313,18 @@ namespace BusinessLogicLayer.Service
                         {
                             exporter = new
                             {
-                                id = drStyleInfo["BrandAreaID"],
                                 erp_business_id = drStyleInfo["BrandAreaCode"],
                             },
-                            po_number = drFinalInspection["CustPONO"],
+                            po_number = custPono,
                             customer_po = drFinalInspection["CustomerPo"],
                             importer = new
                             {
-                                id = 215,
                                 erp_business_id = "Adidas001",
                             },
-                            project = new { id = 2063 }
+                            project = new
+                            {
+                                project_code = projectCode
+                            }
                         },
                         sku = new
                         {
@@ -625,10 +620,17 @@ namespace BusinessLogicLayer.Service
 
             List<object> sections = new List<object>();
 
+
+            string projectCode = drInspection["Customize5"] != null && drInspection["Customize5"] != DBNull.Value && !string.IsNullOrEmpty(drInspection["Customize5"].ToString()) ? "APPTRANS4M" : "APP";
+
+            string sku_number_SewingLine = drInspection["Customize5"] != null && drInspection["Customize5"] != DBNull.Value && !string.IsNullOrEmpty(drInspection["Customize5"].ToString()) ? $"_{drInspection["SewLine"]}" : string.Empty;
+
+            var custPono = drInspection["Customize4"] != null && drInspection["Customize4"] != DBNull.Value && !string.IsNullOrEmpty(drInspection["Customize4"].ToString()) ? drInspection["Customize4"] : drInspection["CustPONO"];
+
             var listSku_number = dtSizeArticle.AsEnumerable().Select(s =>
             new
             {
-                sku_number = string.IsNullOrEmpty(s["SizeCode"].ToString()) ? s["Article"] : $"{s["Article"]}_{s["SizeCode"]}",
+                sku_number = string.IsNullOrEmpty(s["SizeCode"].ToString()) ? s["Article"] : $"{s["Article"]}_{s["SizeCode"]}{sku_number_SewingLine}",
                 qty_to_inspect = s["ShipQty"].ToInt() == 0 ? 1 : s["ShipQty"]
             }
             );
@@ -693,18 +695,9 @@ namespace BusinessLogicLayer.Service
                 inspection_method = "normal",
                 aql_minor = 4,
                 aql_major = 1.5,
-                aql_major_a = 1.5,
-                aql_major_b = 1.5,
                 aql_critical = 0.01,
-                //aql_minor = 0,
-                //aql_major = 0,
-                //aql_major_a = drFinalInspection["DefectQty"],
-                //aql_major_b = drFinalInspection["DefectQty"],
-                //aql_critical = 0,
                 max_minor_defects = 15,
                 max_major_defects = 15,
-                max_major_a_defects = 0,
-                max_major_b_defects = 0,
                 max_critical_defects = 15,
                 defects,
             });
@@ -746,14 +739,12 @@ namespace BusinessLogicLayer.Service
                     qty_to_inspect = sku_number.qty_to_inspect,
                     aql_minor = 4,
                     aql_major = 1.5,
-                    aql_major_a = 1.5,
-                    aql_major_b = 1.5,
                     aql_critical = 0.01,
                     supplier_booking_msg = "no comment",
                     conclusion_remarks = "no comment",
                     assignment = new
                     {
-                        report_type = new { id = inspectionType == "InlineInspection" ? 42 : 43 },
+                        report_type = new { name = inspectionType == "InlineInspection" ? "APP - Inline" : "APP - End of Line" },
                         inspector = new { username = drInspection["username"] },
                         date_inspection = drInspection["FirstInspectionDate"],
                         inspection_level = "100%inspection",
@@ -774,14 +765,17 @@ namespace BusinessLogicLayer.Service
                                 id = drStyleInfo["BrandAreaID"],
                                 erp_business_id = drStyleInfo["BrandAreaCode"],
                             },
-                            po_number = drInspection["CustPONO"],
+                            po_number = custPono,
                             customer_po = drInspection["CustCDID"],
                             importer = new
                             {
                                 id = 215,
                                 erp_business_id = "Adidas001",
                             },
-                            project = new { id = 2063 }
+                            project = new 
+                            {
+                                project_code = projectCode
+                            }
                         },
                         sku = new
                         {
@@ -1001,7 +995,7 @@ from
                 DataTable dtResult = SQLDAL.ExecuteDataTable(CommandType.Text, sqlP88UserEmpty, parameter);
 
                 // 沒資料代表不須發信提醒user設定P88
-                if (dtResult!= null && dtResult.Rows.Count > 0)
+                if (dtResult != null && dtResult.Rows.Count > 0)
                 {
                     string strDesc = checkTable == "InlineInspectionReport" ? @"<p> Inline Create P88 account </p>" : "<p> Endline Create P88 account </p>";
 
@@ -1031,7 +1025,7 @@ from
             List<SentPivot88Result> sentPivot88Results = new List<SentPivot88Result>();
 
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-            
+
 
             switch (pivotTransferRequest.InspectionType)
             {
@@ -1271,7 +1265,7 @@ from
         {
             _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-            List<FinalInspectionBasicGeneral> allStep = _FinalInspectionProvider.GetGeneralByBrand(FinalInspectionID, BrandID , InspectionStage);
+            List<FinalInspectionBasicGeneral> allStep = _FinalInspectionProvider.GetGeneralByBrand(FinalInspectionID, BrandID, InspectionStage);
 
             return allStep;
         }

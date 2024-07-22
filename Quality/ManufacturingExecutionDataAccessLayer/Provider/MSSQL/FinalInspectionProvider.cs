@@ -2042,6 +2042,7 @@ where   f.ID = @FinalInspectionID
 declare @StyleID varchar(15)
 declare @SeasonID varchar(10)
 declare @BrandID varchar(8)
+declare @Customize4 varchar(50)
 declare @Dest varchar(40)
 declare @spQty int
 
@@ -2052,6 +2053,7 @@ where   ID in (select OrderID from FinalInspection_Order with (nolock) where ID 
 select  @StyleID = o.StyleID,
         @SeasonID = o.SeasonID,
         @BrandID = o.BrandID,
+        @Customize4 = o.Customize4,
 		@Dest = IIF(o.VasShas=1,o.Dest + '-' + c.Alias, '')
 from    Production.dbo.Orders o with (nolock)
 left join Production.dbo.Country c on o.Dest=c.ID
@@ -2071,6 +2073,7 @@ select  [SP] = (SELECT Stuff((select concat( ',',OrderID)
         [StyleID] = @StyleID,
         [SeasonID] = @SeasonID,
         [BrandID] = @BrandID,
+        [Customize4] = @Customize4,
         [CFA] = ISNULL((select name from pass1 with (nolock) where ID = f.CFA),(select name from Production..pass1 with (nolock) where ID = f.CFA)),
         [TotalSPQty] = @spQty,
 		Dest = @Dest
@@ -2158,6 +2161,7 @@ select  ID,
         StyleID,
         SeasonID,
         BrandID,
+        Customize4,
         Qty
 into    #tmpOrders
 from    Production.dbo.Orders with (nolock)
@@ -2176,6 +2180,7 @@ select  [FinalInspectionID] = f.ID,
         [StyleID] = o.StyleID,
         [Season] = o.SeasonID,
         [BrandID] = o.BrandID,
+        o.Customize4,
         [Article] = (SELECT Stuff((select concat( ',',Article)   from #tmpOrderArticle where ID = fo.OrderID FOR XML PATH('')),1,1,'') ),
         [InspectionTimes] = cast(f.InspectionTimes as varchar),
         f.InspectionStage,
@@ -2235,6 +2240,7 @@ select top 200 [FinalInspectionID] = f.ID,
         [StyleID] = o.StyleID,
         [Season] = o.SeasonID,
         [BrandID] = o.BrandID,
+        o.Customize4,
         [Article] = (SELECT Stuff((select concat( ',',Article)   from #tmpOrderArticle where ID = fo.OrderID FOR XML PATH('')),1,1,'') ),
         [InspectionTimes] = cast(f.InspectionTimes as varchar),
         f.InspectionStage,
@@ -2360,6 +2366,8 @@ select  [FirstInspectionDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, 
         [username] = (select Pivot88UserName from pass1 where id = r.QC),
         [LastinspectionDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, r.LastinspectionDate), 'yyyy-MM-ddTHH:mm:ss'),
         [POQty] = orderInfo.Qty,
+        [Customize5] = OrderJoinString.Customize5,
+        [Customize4] = OrderJoinString.Customize4,
         [BuyerDelivery] = format(orderInfo.BuyerDelivery, 'yyyy-MM-ddTHH:mm:ss'),
         [Color] = Color.val,
         r.Shift,
@@ -2367,6 +2375,7 @@ select  [FirstInspectionDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, 
         [InspectionMinutes] = Round(DATEDIFF(SECOND, r.FirstInspectionDate, r.LastinspectionDate) / 60.0, 0),
         r.CustPONO,
         orderInfo.CustCDID,
+        OrderJoinString.SewLine,
         {dynamicCol}
 from {inspectionReportTable} r with (nolock)
 cross join system
@@ -2381,6 +2390,22 @@ outer apply(select  [Qty] = Sum(o.Qty),
                     [CustCDID] = max(o.CustCDID)
                     from Production.dbo.Orders o with (nolock) where o.CustPONO = r.CustPONO
             ) orderInfo
+outer apply (
+    SELECT  Customize4 = stuff((select distinct concat(',', o.Customize4) 
+                         from Production.dbo.Orders o with (nolock) 
+                         where o.CustPONO = r.CustPONO
+                         FOR XML PATH('')), 1, 1, '')
+            ,Customize5 = stuff((select distinct concat(',', o.Customize5) 
+                        from Production.dbo.Orders o with (nolock)
+                        where o.CustPONO = r.CustPONO
+                        FOR XML PATH('')), 1, 1, '')
+		    ,SewLine = (
+			    select TOP 1 i.Line
+                from Production.dbo.Orders o with (nolock) 
+			    inner join {inspectionTable} i with (nolock) on i.OrderID = o.ID
+                where o.CustPONO = r.CustPONO
+		)
+) OrderJoinString
 outer apply(SELECT val =  Stuff((select distinct concat( ',', oc.ColorID) 
                 from Production.dbo.Order_ColorCombo oc 
                 where oc.ID in (select POID from Production.dbo.Orders where id in (select OrderID from {inspectionReportTable}_Breakdown where {inspectionReportTable}ID = r.ID))
@@ -2522,13 +2547,15 @@ Select
     [CFA] = isnull((select Pivot88UserName from quality_pass1 with (nolock) where ID = f.CFA), ''),
     OrderInfo.POQty,
     [ETD_ETA] = format(OrderInfo.ETD_ETA, 'yyyy-MM-ddTHH:mm:ss'),
-    [CustPONO] = o.val,
+    [CustPONO] = OrderJoinString.CustPONO,
+    [Customize5] = OrderJoinString.Customize5,
+    [Customize4] = OrderJoinString.Customize4,
     OrderInfo.CustomerPo,
     [ReportTypeID] = 
         case 
-            when OrderInfo.IsDestJP = 1 or AQL.InspectionLevels = 2 then 25
-            when f.AcceptableQualityLevelsUkey = -1 then 26
-            else 12 
+            when OrderInfo.IsDestJP = 1 or AQL.InspectionLevels = 2 then 'APP - AQL Outbound - Japan orders'
+            when f.AcceptableQualityLevelsUkey = -1 then 'APP - AQL Outbound - 100% Inspection'
+            else 'APP - AQL Outbound - Regular orders' 
         end,
     [DateStarted] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.AddDate), 'yyyy-MM-ddTHH:mm:ss'),
     [InspectionCompletedDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.EditDate), 'yyyy-MM-ddTHH:mm:ss'),
@@ -2541,17 +2568,35 @@ Select
             when not exists (select 1 from FinalInspection_Moisture fmo with (nolock) where f.ID = fmo.ID) then 'na'
             else 'pass' 
         end,
-    [MoistureComment] = SUBSTRING(MoistureComment.val, 1, 255)
+    [MoistureComment] = SUBSTRING(MoistureComment.val, 1, 255),
+	OrderJoinString.SewLine
 from 
 FinalInspection f with (nolock)
 cross join system
 outer apply (
-    SELECT val = Stuff((select distinct concat(',', CustPONo) 
+    SELECT CustPONo = Stuff((select distinct concat(',', CustPONo) 
                         from FinalInspection_Order fo with (nolock) 
                         inner join SciProduction_Orders o with (nolock) on fo.OrderID = o.ID
                         where fo.ID = f.ID
                         FOR XML PATH('')), 1, 1, '')
-) o
+           ,Customize4 = Stuff((select distinct concat(',', o.Customize4) 
+                        from FinalInspection_Order fo with (nolock) 
+                        inner join SciProduction_Orders o with (nolock) on fo.OrderID = o.ID
+                        where fo.ID = f.ID
+                        FOR XML PATH('')), 1, 1, '')
+           ,Customize5 = Stuff((select distinct concat(',', o.Customize5) 
+                        from FinalInspection_Order fo with (nolock) 
+                        inner join SciProduction_Orders o with (nolock) on fo.OrderID = o.ID
+                        where fo.ID = f.ID
+                        FOR XML PATH('')), 1, 1, '')
+		    ,SewLine = (
+			    select TOP 1 i.Line
+                from FinalInspection_Order fo with (nolock) 
+                inner join SciProduction_Orders o with (nolock) on fo.OrderID = o.ID
+			    inner join Inspection i with (nolock) on i.OrderID = o.ID
+                where fo.ID = f.ID
+		    )
+) OrderJoinString
 outer apply (
     select	
         [POQty] = sum(o.Qty),

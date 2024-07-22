@@ -1132,6 +1132,7 @@ select o.ID
      , o.StyleID  
      , o.SeasonID 
      , o.BrandID 
+     , o.Customize4
      , [Article] = (SELECT Stuff((select concat( ',',Article)   from Production.dbo.Order_Article WITH(NOLOCK) where ID = o.ID FOR XML PATH('')),1,1,'') )
   from Production.dbo.orders o WITH(NOLOCK)
 where o.ftygroup = @Ftygroup and o.Qty > 0
