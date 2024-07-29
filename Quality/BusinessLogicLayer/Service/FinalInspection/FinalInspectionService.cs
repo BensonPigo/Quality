@@ -762,7 +762,6 @@ namespace BusinessLogicLayer.Service
                         {
                             exporter = new
                             {
-                                id = drStyleInfo["BrandAreaID"],
                                 erp_business_id = drStyleInfo["BrandAreaCode"],
                             },
                             po_number = custPono,
