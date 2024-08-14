@@ -25,5 +25,6 @@ namespace DatabaseObject.ResultModel.FinalInspection
         [Display(Name = "Selected")]
         public bool Selected { get; set; }
         public string Article { get; set; }
+        public string Customize4 { get; set; }
     }
 }
