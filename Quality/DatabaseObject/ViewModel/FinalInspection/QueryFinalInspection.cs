@@ -37,5 +37,6 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string SampleSize { get; set; }
         public string SubmitDate { get; set; }
         public bool ReInspection { get; set; }
+        public string Customize4 { get; set; }
     }
 }

@@ -213,6 +213,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string BrandID { get; set; }
         public string Seq { get; set; }
         public string Article { get; set; }
+        public string Customize4 { get; set; }
         public int Qty { get; set; }
         public int MetalContaminateQty { get; set; }
         public string Cartons { get; set; }

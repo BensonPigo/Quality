@@ -110,6 +110,7 @@
                             <tr id="row-name" class="row-name">
                                 <th>SP#</th>
                                 <th>PO#</th>
+                                <th>Original PO#</th>
                                 <th>SP# Qty</th>
                                 <th>Style</th>
                                 <th>Season</th>
@@ -132,6 +133,10 @@
                                         @Html.Hidden($"model[{idx}].CustPONO", item.CustPONO)
                                     </td>
                                     <td>
+                                        @Html.DisplayFor(modelItem => item.Customize4)
+                                        @Html.Hidden($"model[{idx}].Customize4", item.Customize4)
+                                    </td>
+                                    <td>
                                         @Html.DisplayFor(modelItem => item.Qty)
                                         @Html.Hidden($"model[{idx}].Qty", item.Qty)
                                     </td>
@@ -152,7 +157,7 @@
                                         @Html.Hidden($"model[{idx}].Article", item.Article)
                                     </td>
                                     <td>
-                                        @Html.CheckBox($"model[{idx}].Selected", item.Selected ,new { @class= "messageCheckbox" })
+                                        @Html.CheckBox($"model[{idx}].Selected", item.Selected, new { @class = "messageCheckbox" })
                                     </td>
                                 </tr>
                                 idx++;

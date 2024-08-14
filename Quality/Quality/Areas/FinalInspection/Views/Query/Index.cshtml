@@ -143,6 +143,7 @@
                                 <th>Inspection Result</th>
                                 <th>SP#</th>
                                 <th>PO#</th>
+                                <th>Original PO#</th>
                                 <th>Audit Date</th>
                                 <th>SP# Qty</th>
                                 <th>Sample lot Qty</th>
@@ -198,6 +199,9 @@
                                         @Html.DisplayFor(modelItem => item.CustPONO)
                                     </td>
                                     <td>
+                                        @Html.DisplayFor(modelItem => item.Customize4)
+                                    </td>
+                                    <td>
                                         @Html.DisplayFor(modelItem => item.AuditDate)
                                     </td>
                                     <td>
@@ -229,7 +233,7 @@
                                         @Html.DisplayFor(modelItem => item.InspectionStage)
                                     </td>
                                     <td>
-                                        @Html.CheckBoxFor(modelItem => item.ReInspection, new { @disabled = true})
+                                        @Html.CheckBoxFor(modelItem => item.ReInspection, new { @disabled = true })
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.IsTransferToPMS)

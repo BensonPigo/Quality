@@ -160,12 +160,15 @@
                     <div class="divPOInfoCell">@Model.BrandID</div>
                     <!--#endregion-->
                     <!--#region Row 2-->
+                    <div class="divPOInfoCell">Original PO#</div>
+                    <div class="divPOInfoCell5">@Model.Customize4</div>
+                    <!--#region Row 3-->
                     <div class="divPOInfoCell">SP#</div>
                     <div class="divPOInfoCell5">
                         <input type="text" value="@Model.SP" style="width:100%" class="@IsFD" readonly />
                     </div>
                     <!--#endregion-->
-                    <!--#region Row 3-->
+                    <!--#region Row 4-->
                     <div class="divPOInfoCell">Factory</div>
                     <div class="divPOInfoCell">@Model.FinalInspection.FactoryID</div>
                     <div class="divPOInfoCell">Total SP# Qty</div>

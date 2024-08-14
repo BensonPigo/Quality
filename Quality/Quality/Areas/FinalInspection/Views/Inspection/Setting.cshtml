@@ -470,7 +470,7 @@
         var table;
         @foreach (var item in Model.SelectedPO)
         {
-            @:poData.push([null, '@item.OrderID', index, '@item.CustPONO', '@item.StyleID', '@item.SeasonID', '@item.BrandID', @item.Qty, '@item.Cartons',@item.AvailableQty, '@item.SeasonID', '@item.Seq', '@item.Article',@item.MetalContaminateQty]);
+            @:poData.push([null, '@item.OrderID', index, '@item.CustPONO', '@item.StyleID', '@item.SeasonID', '@item.BrandID', @item.Qty, '@item.Cartons',@item.AvailableQty, '@item.SeasonID', '@item.Seq', '@item.Article',@item.MetalContaminateQty, '@item.Customize4']);
             @:index = index + 1;
         }
         @foreach (var item in Model.SelectedSewing)
@@ -1357,6 +1357,7 @@
         function format(d, orderID) {
 
             var metalContaminateQty = d[13];
+            var customize4 = d[14];
             return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
                 '<tr><td style="width:70%">PO#:</td><td style=" text-align: right;" style="width:30%">' +
                 '<input type="hidden" name="SelectedPO[' + d[2] + '].ORDERID" id="SelectedPO[' + d[2] + '].ORDERID" value="' + d[1] + '" \/>' +
@@ -1364,6 +1365,7 @@
                 d[3] +
                 '</td></tr>' +
                 '<tr><td>Style#:</td><td style=" text-align: right;">' + d[4] + '</td></tr>' +
+                '<tr><td>Original PO#:</td><td style=" text-align: right;">' + customize4 + '</td></tr>' +
                 '<tr><td>Season:</td><td style=" text-align: right;">' + d[5] + '</td></tr>' +
                 '<tr><td>Brand:</td><td style=" text-align: right;">' + d[6] + '</td></tr>' +
 
