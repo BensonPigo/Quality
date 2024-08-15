@@ -1707,7 +1707,7 @@ select	[POID] = f.POID,
         [BrandID] = o.BrandID,
         [Refno] = f.Refno,
         [NonWash] = fl.NonWash,
-        [SkewnessOptionID] = fl.SkewnessOptionID,
+        [SkewnessOptionID] = ISNULL(fl.SkewnessOptionID, ''),
         [DescDetail] = fab.DescDetail,
         [WashRemark] = fl.WashRemark,
         [WashEncode] = fl.WashEncode,
@@ -1780,7 +1780,7 @@ where flc.ID = @ID
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@ID", fabricCrkShrkTestWash_Result.ID);
             listPar.Add("@WashRemark", fabricCrkShrkTestWash_Result.Wash_Main.WashRemark);
-            listPar.Add("@SkewnessOptionID", fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID);
+            listPar.Add("@SkewnessOptionID", fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID ?? string.Empty);
             listPar.Add("@WashTestBeforePicture", fabricCrkShrkTestWash_Result.Wash_Main.WashTestBeforePicture);
             listPar.Add("@WashTestAfterPicture", fabricCrkShrkTestWash_Result.Wash_Main.WashTestAfterPicture);
 
