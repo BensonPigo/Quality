@@ -2376,6 +2376,7 @@ select  [FirstInspectionDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, 
         r.CustPONO,
         orderInfo.CustCDID,
         OrderJoinString.SewLine,
+        [Dest] = OrderJoinString.Dest,
         {dynamicCol}
 from {inspectionReportTable} r with (nolock)
 cross join system
@@ -2405,6 +2406,10 @@ outer apply (
 			    inner join {inspectionTable} i with (nolock) on i.OrderID = o.ID
                 where o.CustPONO = r.CustPONO
 		)
+            ,Dest = stuff((select distinct concat(',', o.Dest) 
+                        from Production.dbo.Orders o with (nolock)
+                        where o.CustPONO = r.CustPONO
+                        FOR XML PATH('')), 1, 1, '')
 ) OrderJoinString
 outer apply(SELECT val =  Stuff((select distinct concat( ',', oc.ColorID) 
                 from Production.dbo.Order_ColorCombo oc 
@@ -2440,35 +2445,93 @@ begin
     left join InlineInspectionReport_Breakdown irb with (nolock) on irb.Article = ta.Article and irb.InlineInspectionReportID = @ID
     group by ta.Article
 
-    select	Article,
-			SizeCode,
-			[ShipQty] = case when ShipQty = 0 then 0
-                             when isLast = 0 then TotalQty - LAG(GrandQty, 1, 0) OVER (PARTITION BY Article ORDER BY Seq)
-						else ShipQty end
-	from (	select  ia.Article,
-			        sr.SizeCode,
-			        [ShipQty] = FLOOR(ia.Qty * sr.SizeRatio),
-					[GrandQty] = sum(FLOOR(ia.Qty * sr.SizeRatio))  OVER (PARTITION BY sr.Article ORDER BY sr.Seq),
-					sr.Seq,
-					[isLast] = LEAD(sr.SizeRatio, 1, 0) OVER (PARTITION BY sr.Article ORDER BY sr.Seq),
-					[TotalQty] = ia.Qty
-			from    #inlineArticle ia
-			inner join  #tmpSizeRatio sr on sr.Article = ia.Article) a
-    
+    ;WITH CTE_Letters AS (
+        select	Article,
+			    a.SizeCode,
+			    [ShipQty] = case when ShipQty = 0 then 0
+                                 when isLast = 0 then TotalQty - LAG(GrandQty, 1, 0) OVER (PARTITION BY Article ORDER BY Seq)
+						    else ShipQty end,
+		        (ROW_NUMBER() OVER (ORDER BY 
+			        CAST(SUBSTRING( a.SizeCode, 1, PATINDEX('%[^0-9]%', a.SizeCode + 'Z') - 1) AS INT), 
+			        SUBSTRING(a.SizeCode, PATINDEX('%[^0-9]%', a.SizeCode + 'Z'), LEN(a.SizeCode))
+		        ) * 10) AS SeqNumber
+	    from (	select  ia.Article,
+			            sr.SizeCode,
+			            [ShipQty] = FLOOR(ia.Qty * sr.SizeRatio),
+					    [GrandQty] = sum(FLOOR(ia.Qty * sr.SizeRatio))  OVER (PARTITION BY sr.Article ORDER BY sr.Seq),
+					    sr.Seq,
+					    [isLast] = LEAD(sr.SizeRatio, 1, 0) OVER (PARTITION BY sr.Article ORDER BY sr.Seq),
+					    [TotalQty] = ia.Qty
+			    from    #inlineArticle ia
+			    inner join  #tmpSizeRatio sr on sr.Article = ia.Article) a
+        where   PATINDEX('%[^0-9]%', a.SizeCode) > 0 -- 包含字母的SizeCode		
+    ),
+    CTE_Numbers AS (
+        select	Article,
+			    a.SizeCode,
+			    [ShipQty] = case when ShipQty = 0 then 0
+                                 when isLast = 0 then TotalQty - LAG(GrandQty, 1, 0) OVER (PARTITION BY Article ORDER BY Seq)
+						    else ShipQty end,
+		        ((ROW_NUMBER() OVER (ORDER BY 
+			        CAST(a.SizeCode AS INT)
+		        ) + (SELECT COUNT(*) FROM CTE_Letters)) * 10) AS SeqNumber
+	    from (	select  ia.Article,
+			            sr.SizeCode,
+			            [ShipQty] = FLOOR(ia.Qty * sr.SizeRatio),
+					    [GrandQty] = sum(FLOOR(ia.Qty * sr.SizeRatio))  OVER (PARTITION BY sr.Article ORDER BY sr.Seq),
+					    sr.Seq,
+					    [isLast] = LEAD(sr.SizeRatio, 1, 0) OVER (PARTITION BY sr.Article ORDER BY sr.Seq),
+					    [TotalQty] = ia.Qty
+			    from    #inlineArticle ia
+			    inner join  #tmpSizeRatio sr on sr.Article = ia.Article) a
+        where   PATINDEX('%[^0-9]%', a.SizeCode) = 0 -- 純數字的SizeCode	    
+    )
+    SELECT * FROM CTE_Letters
+    UNION ALL
+    SELECT * FROM CTE_Numbers
+    ORDER BY SeqNumber;
+
     drop table #tmpArticleSize, #tmpSizeRatio, #inlineArticle
 end
 else
 begin
-    select  oq.Article,
-            oq.SizeCode,
-            [ShipQty] = sum(isnull(irb.PassQty, 0) + isnull(irb.RejectQty, 0))
-    from    Production.dbo.Order_Qty oq with (nolock)
-    left join InspectionReport_Breakdown irb with (nolock) on   irb.InspectionReportID = @ID and 
-                                                                irb.OrderID = oq.ID and 
-                                                                irb.Article = oq.Article and
-                                                                irb.SizeCode = oq.SizeCode
-    where   oq.ID in (select OrderID from InspectionReport_Breakdown where InspectionReportID = @ID)
-    group by oq.Article, oq.SizeCode
+    ;WITH CTE_Letters AS (
+        select  oq.Article,
+                oq.SizeCode,
+                [ShipQty] = sum(isnull(irb.PassQty, 0) + isnull(irb.RejectQty, 0)),
+		        (ROW_NUMBER() OVER (ORDER BY 
+			        CAST(SUBSTRING( oq.SizeCode, 1, PATINDEX('%[^0-9]%', oq.SizeCode + 'Z') - 1) AS INT), 
+			        SUBSTRING( oq.SizeCode, PATINDEX('%[^0-9]%', oq.SizeCode + 'Z'), LEN(oq.SizeCode))
+		        ) * 10) AS SeqNumber
+        from    Production.dbo.Order_Qty oq with (nolock)
+        left join InspectionReport_Breakdown irb with (nolock) on   irb.InspectionReportID = @ID and 
+                                                                    irb.OrderID = oq.ID and 
+                                                                    irb.Article = oq.Article and
+                                                                    irb.SizeCode = oq.SizeCode
+        where   oq.ID in (select OrderID from InspectionReport_Breakdown where InspectionReportID = @ID)
+		AND PATINDEX('%[^0-9]%', oq.SizeCode) > 0 -- 包含字母的SizeCode		
+        group by oq.Article, oq.SizeCode
+    ),
+    CTE_Numbers AS (
+        select  oq.Article,
+                oq.SizeCode,
+                [ShipQty] = sum(isnull(irb.PassQty, 0) + isnull(irb.RejectQty, 0)),
+		        ((ROW_NUMBER() OVER (ORDER BY 
+			        CAST(oq.SizeCode AS INT)
+		        ) + (SELECT COUNT(*) FROM CTE_Letters)) * 10) AS SeqNumber
+        from    Production.dbo.Order_Qty oq with (nolock)
+        left join InspectionReport_Breakdown irb with (nolock) on   irb.InspectionReportID = @ID and 
+                                                                    irb.OrderID = oq.ID and 
+                                                                    irb.Article = oq.Article and
+                                                                    irb.SizeCode = oq.SizeCode
+        where   oq.ID in (select OrderID from InspectionReport_Breakdown where InspectionReportID = @ID)
+		AND PATINDEX('%[^0-9]%', oq.SizeCode) = 0 -- 純數字的SizeCode	
+        group by oq.Article, oq.SizeCode
+    )
+    SELECT * FROM CTE_Letters
+    UNION ALL
+    SELECT * FROM CTE_Numbers
+    ORDER BY SeqNumber;
 end
 
 select	s.StyleName,
@@ -2569,7 +2632,8 @@ Select
             else 'pass' 
         end,
     [MoistureComment] = SUBSTRING(MoistureComment.val, 1, 255),
-	OrderJoinString.SewLine
+	OrderJoinString.SewLine,
+	OrderJoinString.Dest
 from 
 FinalInspection f with (nolock)
 cross join system
@@ -2596,6 +2660,11 @@ outer apply (
 			    inner join Inspection i with (nolock) on i.OrderID = o.ID
                 where fo.ID = f.ID
 		    )
+		    ,Dest = Stuff((select distinct concat(',', o.Dest) 
+                        from FinalInspection_Order fo with (nolock) 
+                        inner join SciProduction_Orders o with (nolock) on fo.OrderID = o.ID
+                        where fo.ID = f.ID
+                        FOR XML PATH('')), 1, 1, '')
 ) OrderJoinString
 outer apply (
     select	
@@ -2642,14 +2711,43 @@ where oc.ID in (select POID from Production.dbo.Orders with (nolock)
 				where id in (select OrderID 
 							 from FinalInspection_Order with (nolock) where ID = @ID))
 
-select	oq.SizeCode,
-		oq.Article,
-        [ShipQty] = sum(oq.Qty)
-from FinalInspection_Order_QtyShip fo with (nolock)
-inner join Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID and fo.Seq = oq.Seq
-where fo.ID = @ID
-group by oq.SizeCode,
-		 oq.Article
+;WITH CTE_Letters AS (
+    SELECT 
+         oq.Article, 
+         oq.SizeCode,
+        [ShipQty] = sum(oq.Qty),
+        (ROW_NUMBER() OVER (ORDER BY 
+            CAST(SUBSTRING( oq.SizeCode, 1, PATINDEX('%[^0-9]%', SizeCode + 'Z') - 1) AS INT), 
+            SUBSTRING( oq.SizeCode, PATINDEX('%[^0-9]%', SizeCode + 'Z'), LEN(SizeCode))
+        ) * 10) AS SeqNumber
+    FROM FinalInspection_Order_QtyShip fo with (nolock)
+	inner join Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID and fo.Seq = oq.Seq
+    WHERE 
+       fo.ID = @ID
+        AND PATINDEX('%[^0-9]%', SizeCode) > 0 -- 包含字母的SizeCode		
+	group by oq.SizeCode,
+			 oq.Article
+),
+CTE_Numbers AS (
+    SELECT 
+         oq.Article, 
+         oq.SizeCode,
+        [ShipQty] = sum(oq.Qty),
+        ((ROW_NUMBER() OVER (ORDER BY 
+            CAST(SizeCode AS INT)
+        ) + (SELECT COUNT(*) FROM CTE_Letters)) * 10) AS SeqNumber
+    FROM FinalInspection_Order_QtyShip fo with (nolock)
+	inner join Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID and fo.Seq = oq.Seq
+    WHERE 
+       fo.ID = @ID
+        AND PATINDEX('%[^0-9]%', SizeCode) = 0 -- 純數字的SizeCode	
+	group by oq.SizeCode,
+			 oq.Article
+)
+SELECT * FROM CTE_Letters
+UNION ALL
+SELECT * FROM CTE_Numbers
+ORDER BY SeqNumber;
 
 select	s.StyleName,
 		o.FactoryID,

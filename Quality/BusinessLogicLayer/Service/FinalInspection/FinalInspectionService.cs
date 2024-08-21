@@ -166,16 +166,30 @@ namespace BusinessLogicLayer.Service
 
             List<object> sections = new List<object>();
 
-            string projectCode = drFinalInspection["Customize5"] != null && drFinalInspection["Customize5"] != DBNull.Value && !string.IsNullOrEmpty(drFinalInspection["Customize5"].ToString()) ? "APPTRANS4M" : "APP";
+            string projectCode;
+            if (Sci.MyUtility.Convert.GetString(drFinalInspection["Customize5"]) != string.Empty)
+            {
+                projectCode = "APPTRANS4M";
+            }
+            else
+            {
+                projectCode = "APP";
+            }
 
-            string sku_number_SewingLine = drFinalInspection["Customize5"] != null && drFinalInspection["Customize5"] != DBNull.Value && !string.IsNullOrEmpty(drFinalInspection["Customize5"].ToString()) ? $"_{drFinalInspection["SewLine"]}" : string.Empty;
-
-            var custPono = drFinalInspection["Customize4"] != null && drFinalInspection["Customize4"] != DBNull.Value && !string.IsNullOrEmpty(drFinalInspection["Customize4"].ToString()) ? drFinalInspection["Customize4"] : drFinalInspection["CustPONO"];
+            string custPono;
+            if (Sci.MyUtility.Convert.GetString(drFinalInspection["Customize5"]) != string.Empty || Sci.MyUtility.Convert.GetString(drFinalInspection["Dest"]) == "ZA")
+            {
+                custPono = Sci.MyUtility.Convert.GetString(drFinalInspection["Customize5"]);
+            }
+            else
+            {
+                custPono = Sci.MyUtility.Convert.GetString(drFinalInspection["CustPONO"]);
+            }
 
             var listSku_number = dtSizeArticle.AsEnumerable().Select(s =>
             new
             {
-                sku_number = $"{s["Article"]}_{s["SizeCode"]}{sku_number_SewingLine}",
+                sku_number = $"{s["Article"]}_{s["SizeCode"]}_{s["SeqNumber"]}",
                 qty_to_inspect = s["ShipQty"]
             }
             );
@@ -623,14 +637,20 @@ namespace BusinessLogicLayer.Service
 
             string projectCode = drInspection["Customize5"] != null && drInspection["Customize5"] != DBNull.Value && !string.IsNullOrEmpty(drInspection["Customize5"].ToString()) ? "APPTRANS4M" : "APP";
 
-            string sku_number_SewingLine = drInspection["Customize5"] != null && drInspection["Customize5"] != DBNull.Value && !string.IsNullOrEmpty(drInspection["Customize5"].ToString()) ? $"_{drInspection["SewLine"]}" : string.Empty;
-
-            var custPono = drInspection["Customize4"] != null && drInspection["Customize4"] != DBNull.Value && !string.IsNullOrEmpty(drInspection["Customize4"].ToString()) ? drInspection["Customize4"] : drInspection["CustPONO"];
+            string custPono;
+            if (Sci.MyUtility.Convert.GetString(drInspection["Customize5"]) != string.Empty || Sci.MyUtility.Convert.GetString(drInspection["Dest"]) == "ZA")
+            {
+                custPono = Sci.MyUtility.Convert.GetString(drInspection["Customize5"]);
+            }
+            else
+            {
+                custPono = Sci.MyUtility.Convert.GetString(drInspection["CustPONO"]);
+            }
 
             var listSku_number = dtSizeArticle.AsEnumerable().Select(s =>
             new
             {
-                sku_number = string.IsNullOrEmpty(s["SizeCode"].ToString()) ? s["Article"] : $"{s["Article"]}_{s["SizeCode"]}{sku_number_SewingLine}",
+                sku_number = string.IsNullOrEmpty(s["SizeCode"].ToString()) ? s["Article"] : $"{s["Article"]}_{s["SizeCode"]}_{s["SeqNumber"]}",
                 qty_to_inspect = s["ShipQty"].ToInt() == 0 ? 1 : s["ShipQty"]
             }
             );
@@ -771,7 +791,7 @@ namespace BusinessLogicLayer.Service
                                 id = 215,
                                 erp_business_id = "Adidas001",
                             },
-                            project = new 
+                            project = new
                             {
                                 project_code = projectCode
                             }
