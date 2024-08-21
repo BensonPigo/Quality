@@ -177,9 +177,11 @@ namespace BusinessLogicLayer.Service
             }
 
             string custPono;
+            bool isNewFormatt = false;
             if (Sci.MyUtility.Convert.GetString(drFinalInspection["Customize5"]) != string.Empty || Sci.MyUtility.Convert.GetString(drFinalInspection["Dest"]) == "ZA")
             {
                 custPono = Sci.MyUtility.Convert.GetString(drFinalInspection["Customize5"]);
+                isNewFormatt = true;
             }
             else
             {
@@ -189,7 +191,13 @@ namespace BusinessLogicLayer.Service
             var listSku_number = dtSizeArticle.AsEnumerable().Select(s =>
             new
             {
-                sku_number = $"{s["Article"]}_{s["SizeCode"]}_{s["SeqNumber"]}",
+                sku_number = isNewFormatt
+                ? (string.IsNullOrEmpty(s["SizeCode"].ToString())
+                ? s["Article"].ToString()
+                : $"{s["Article"]}_{s["SizeCode"]}_{s["SeqNumber"]}")
+                : (string.IsNullOrEmpty(s["SizeCode"].ToString())
+                ? s["Article"].ToString()
+                : $"{s["Article"]}_{s["SizeCode"]}"),
                 qty_to_inspect = s["ShipQty"]
             }
             );
@@ -638,9 +646,11 @@ namespace BusinessLogicLayer.Service
             string projectCode = drInspection["Customize5"] != null && drInspection["Customize5"] != DBNull.Value && !string.IsNullOrEmpty(drInspection["Customize5"].ToString()) ? "APPTRANS4M" : "APP";
 
             string custPono;
+            bool isNewFormatt = false;
             if (Sci.MyUtility.Convert.GetString(drInspection["Customize5"]) != string.Empty || Sci.MyUtility.Convert.GetString(drInspection["Dest"]) == "ZA")
             {
                 custPono = Sci.MyUtility.Convert.GetString(drInspection["Customize5"]);
+                isNewFormatt = true;
             }
             else
             {
@@ -650,7 +660,14 @@ namespace BusinessLogicLayer.Service
             var listSku_number = dtSizeArticle.AsEnumerable().Select(s =>
             new
             {
-                sku_number = string.IsNullOrEmpty(s["SizeCode"].ToString()) ? s["Article"] : $"{s["Article"]}_{s["SizeCode"]}_{s["SeqNumber"]}",
+                sku_number = isNewFormatt
+            ? (string.IsNullOrEmpty(s["SizeCode"].ToString())
+                ? s["Article"].ToString()
+                : $"{s["Article"]}_{s["SizeCode"]}_{s["SeqNumber"]}")
+            : (string.IsNullOrEmpty(s["SizeCode"].ToString())
+                ? s["Article"].ToString()
+                : $"{s["Article"]}_{s["SizeCode"]}"),
+
                 qty_to_inspect = s["ShipQty"].ToInt() == 0 ? 1 : s["ShipQty"]
             }
             );
