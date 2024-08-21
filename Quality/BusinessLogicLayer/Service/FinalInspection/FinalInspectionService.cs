@@ -167,9 +167,11 @@ namespace BusinessLogicLayer.Service
             List<object> sections = new List<object>();
 
             string projectCode;
-            if (Sci.MyUtility.Convert.GetString(drFinalInspection["Customize5"]) != string.Empty)
+            bool isNewFormatt = false;
+            if (Sci.MyUtility.Convert.GetString(drFinalInspection["Customize5"]) != string.Empty || Sci.MyUtility.Convert.GetString(drFinalInspection["Dest"]) == "ZA")
             {
                 projectCode = "APPTRANS4M";
+                isNewFormatt = true;
             }
             else
             {
@@ -177,11 +179,9 @@ namespace BusinessLogicLayer.Service
             }
 
             string custPono;
-            bool isNewFormatt = false;
-            if (Sci.MyUtility.Convert.GetString(drFinalInspection["Customize5"]) != string.Empty || Sci.MyUtility.Convert.GetString(drFinalInspection["Dest"]) == "ZA")
+            if (Sci.MyUtility.Convert.GetString(drFinalInspection["Customize4"]) != string.Empty )
             {
-                custPono = Sci.MyUtility.Convert.GetString(drFinalInspection["Customize5"]);
-                isNewFormatt = true;
+                custPono = Sci.MyUtility.Convert.GetString(drFinalInspection["Customize4"]);
             }
             else
             {
@@ -643,14 +643,23 @@ namespace BusinessLogicLayer.Service
             List<object> sections = new List<object>();
 
 
-            string projectCode = drInspection["Customize5"] != null && drInspection["Customize5"] != DBNull.Value && !string.IsNullOrEmpty(drInspection["Customize5"].ToString()) ? "APPTRANS4M" : "APP";
+            string projectCode;
 
-            string custPono;
             bool isNewFormatt = false;
             if (Sci.MyUtility.Convert.GetString(drInspection["Customize5"]) != string.Empty || Sci.MyUtility.Convert.GetString(drInspection["Dest"]) == "ZA")
             {
-                custPono = Sci.MyUtility.Convert.GetString(drInspection["Customize5"]);
+                projectCode = "APPTRANS4M";
                 isNewFormatt = true;
+            }
+            else
+            {
+                projectCode = "APP";
+            }
+
+            string custPono;
+            if (Sci.MyUtility.Convert.GetString(drInspection["Customize4"]) != string.Empty)
+            {
+                custPono = Sci.MyUtility.Convert.GetString(drInspection["Customize4"]);
             }
             else
             {
