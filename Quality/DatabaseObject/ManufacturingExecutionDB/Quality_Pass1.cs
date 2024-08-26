@@ -25,4 +25,13 @@ namespace DatabaseObject.ManufacturingExecutionDB
 
         public string Pivot88UserName { get; set; }
     }
+
+    public class QualityBrandTestCode
+    {
+        public string BrandID { get; set; }
+
+        public string FunctionName { get; set; }
+
+        public string TestCode { get; set; }
+    }
 }

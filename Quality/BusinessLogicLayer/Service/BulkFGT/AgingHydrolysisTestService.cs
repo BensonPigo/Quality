@@ -37,6 +37,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
     {
         public AgingHydrolysisTest_Provider _Provider;
         private MailToolsService _MailService;
+        QualityBrandTestCodeProvider _QualityBrandTestCodeProvider;
 
         public AgingHydrolysisTest_ViewModel GetDefaultModel()
         {
@@ -529,6 +530,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _Provider = new AgingHydrolysisTest_Provider(Common.ManufacturingExecutionDataAccessLayer);
+                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 // 取得報表資料
                 DataSet reportDataSet = _Provider.GetReport(new AgingHydrolysisTest_Request() { ReportNo = ReportNo });
@@ -537,6 +539,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 // AgingHydrolysisTest_Detail
                 DataTable agingHydrolysisTest_Detail = reportDataSet.Tables[0];
+
+                var testCode = _QualityBrandTestCodeProvider.Get(agingHydrolysisTest_Detail.Rows[0]["BrandID"].ToString(), "Accelerated Aging by Hydrolysis");
 
                 // AgingHydrolysisTest_Detail_Mockup
                 DataTable agingHydrolysisTest_Detail_Mockup = new DataTable();
@@ -617,6 +621,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     }
                 }
+
+                //if (testCode.Any())
+                //{
+                //    worksheet.Cells[1, 1] =$@"Accelerated aging by hydrolysis({agingHydrolysisTest_Detail.Rows[0]["BrandID"]})";
+                //}
 
                 string reportNo = agingHydrolysisTest_Detail.Rows[0]["ReportNo"].ToString();
                 worksheet.Cells[3, 2] = agingHydrolysisTest_Detail.Rows[0]["ReportNo"].ToString();

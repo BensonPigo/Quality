@@ -36,6 +36,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
         private MailToolsService _MailService;
+        QualityBrandTestCodeProvider _QualityBrandTestCodeProvider;
         public BaseResult Create(HeatTransferWash_ViewModel model, string MDivision, string userid, out string NewReportNo)
         {
             BaseResult result = new BaseResult();
@@ -266,18 +267,20 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public BaseResult ToReport(string ReportNo ,bool IsPDF,  out string FinalFilenmae, string AssignedFineName = "")
+        public BaseResult ToReport(string ReportNo, bool IsPDF, out string FinalFilenmae, string AssignedFineName = "")
         {
 
             BaseResult result = new BaseResult();
             _Provider = new HeatTransferWashProvider(Common.ManufacturingExecutionDataAccessLayer);
+            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
             FinalFilenmae = string.Empty;
             string tmpName = string.Empty;
 
             try
             {
                 HeatTransferWash_Result head = _Provider.GetMainData(new HeatTransferWash_Request() { ReportNo = ReportNo });
-                List<HeatTransferWash_Detail_Result> body =_Provider.GetDetailData(ReportNo).ToList();
+                var testCode = _QualityBrandTestCodeProvider.Get(head.BrandID, "Daily HT Wash");
+                List<HeatTransferWash_Detail_Result> body = _Provider.GetDetailData(ReportNo).ToList();
 
                 System.Data.DataTable ReportTechnician = _Provider.GetReportTechnician(new HeatTransferWash_Request() { ReportNo = ReportNo });
 
@@ -299,12 +302,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 excel.Visible = false;
                 excel.DisplayAlerts = false;
 
-                Excel.Worksheet worksheet= excel.ActiveWorkbook.Worksheets[1];
+                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
 
 
                 // 表頭填入
-
-                worksheet.Cells[1, 1] = head.ArtworkTypeID + " - Daily wash test report";
+                if (testCode.Any())
+                {
+                    worksheet.Cells[1, 1] = head.ArtworkTypeID + $@" - Daily wash test report({testCode.FirstOrDefault().TestCode})";
+                }
+                else
+                {
+                    worksheet.Cells[1, 1] = head.ArtworkTypeID + " - Daily wash test report";
+                }
 
                 worksheet.Cells[2, 2] = head.OrderID;
                 worksheet.Cells[2, 7] = head.ReportDate.HasValue ? head.ReportDate.Value.ToString("yyyy-MM-dd") : string.Empty;
@@ -354,7 +363,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 string imgPath_BeforePicture = string.Empty;
                 string imgPath_AfterPicture = string.Empty;
                 string imgPath_Signture = string.Empty;
-                if (head.TestBeforePicture != null )
+                if (head.TestBeforePicture != null)
                 {
                     byte[] beforePic = head.TestBeforePicture;
                     imgPath_BeforePicture = ToolKit.PublicClass.AddImageSignWord(beforePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
@@ -528,7 +537,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 List<string> list = new List<string>();
 
-                list= _Provider.GetArtworkTypeOri(orders).ToList();
+                list = _Provider.GetArtworkTypeOri(orders).ToList();
 
                 foreach (var item in list)
                 {
@@ -563,7 +572,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _Provider = new HeatTransferWashProvider(Common.ManufacturingExecutionDataAccessLayer);
-                result =  _Provider.GetLastDetailData(HTRefNo);
+                result = _Provider.GetLastDetailData(HTRefNo);
             }
             catch (Exception ex)
             {
@@ -586,7 +595,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         $"{model.Main.Result}_" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-            BaseResult report = this.ToReport(ReportNo, false ,out FinalFilenmae, name);
+            BaseResult report = this.ToReport(ReportNo, false, out FinalFilenmae, name);
 
             string mailBody = "";
             string FileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FinalFilenmae);

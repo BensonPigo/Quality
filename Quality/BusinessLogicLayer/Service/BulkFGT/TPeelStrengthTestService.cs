@@ -29,6 +29,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         private string UploadFilePath = $@"{ConfigurationManager.AppSettings["UploadFileRootPath"]}BulkFGT\TPeelStrengthTest\";
         private TPeelStrengthTestProvider _Provider;
         private MailToolsService _MailService;
+        QualityBrandTestCodeProvider _QualityBrandTestCodeProvider;
 
         public TPeelStrengthTest_ViewModel GetDefaultModel(bool iNew = false)
         {
@@ -446,10 +447,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _Provider = new TPeelStrengthTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 // 取得報表資料
 
                 TPeelStrengthTest_ViewModel model = this.GetData(new TPeelStrengthTest_Request() { ReportNo = ReportNo });
+
+                var testCode = _QualityBrandTestCodeProvider.Get(model.Main.BrandID, "T-Peel Strength Test");
 
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new TPeelStrengthTest_Request() { ReportNo = ReportNo });
 
@@ -466,6 +470,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 string reportNo = model.Main.ReportNo;
                 string machineReport = string.IsNullOrEmpty(model.Main.MachineReport) ? string.Empty : model.Main.MachineReport;
+
+                if (testCode.Any())
+                {
+                    worksheet.Cells[1, 1] = $@"T-peel strength test({testCode.FirstOrDefault().TestCode})";
+                }
 
                 worksheet.Cells[3, 2] = model.Main.ReportNo;
 
