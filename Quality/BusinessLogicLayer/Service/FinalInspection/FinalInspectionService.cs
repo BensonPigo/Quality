@@ -1099,7 +1099,8 @@ from
                 bool isSuccess = true;
                 string errorMsg = string.Empty;
                 string postBody = string.Empty;
-                string requestUri = pivotTransferRequest.RequestUri + "sintex" + inspectionID;
+                string uniqueKey = "sintex" + inspectionID;
+                string requestUri = pivotTransferRequest.RequestUri + uniqueKey;
 
                 try
                 {
@@ -1223,7 +1224,7 @@ from
 
                 return new SentPivot88Result()
                 {
-                    InspectionID = inspectionID,
+                    InspectionID = uniqueKey,
                     isSuccess = isSuccess,
                     errorMsg = errorMsg,
                 };
