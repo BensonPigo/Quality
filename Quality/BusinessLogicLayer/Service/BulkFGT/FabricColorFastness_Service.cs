@@ -5,6 +5,7 @@ using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
+using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Microsoft.IdentityModel.Tokens;
 using MICS.DataAccessLayer.Interface;
 using MICS.DataAccessLayer.Provider.MSSQL;
@@ -34,6 +35,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         private IColorFastnessDetailProvider _IColorFastnessDetailProvider;
         private IOrdersProvider _IOrdersProvider;
         private MailToolsService _MailService;
+        private QualityBrandTestCodeProvider _QualityBrandTestCodeProvider;
 
         public enum DetailStatus
         {
@@ -392,6 +394,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         {
             Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
             _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(Common.ProductionDataAccessLayer);
+            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
             List<ColorFastness_Excel> dataList = new List<ColorFastness_Excel>();
 
             dataList = _IColorFastnessDetailProvider.GetExcel(ID).ToList();
@@ -401,6 +404,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result.ErrorMessage = "Data not found!";
                 return result;
             }
+
+            var testCode = _QualityBrandTestCodeProvider.Get(dataList[0].BrandID, "Washing Fastness");
 
             string tmpName = $"Washing Fastness Test_{dataList[0].POID}_" +
                     $"{dataList[0].StyleID}_" +
@@ -415,6 +420,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
             excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
 
             Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
+            if (testCode.Any())
+            {
+                worksheet.Cells[1, 1] = $@"Washing Fastness Test Report({testCode.FirstOrDefault().TestCode})";
+            }
             worksheet.Cells[2, 3] = dataList[0].ReportNo;
             worksheet.Cells[3, 3] = dataList[0].SubmitDate.HasValue ? dataList[0].SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
             worksheet.Cells[3, 8] = dataList[0].InspDate.HasValue ? dataList[0].InspDate.Value.ToString("yyyy/MM/dd") : string.Empty;

@@ -6,6 +6,7 @@ using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
+using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Microsoft.Office.Interop.Excel;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
@@ -31,6 +32,7 @@ namespace BusinessLogicLayer.Service
         private IOrdersProvider _OrdersProvider;
         private IOrderQtyProvider _OrderQtyProvider;
         private IInspectionTypeProvider _InspectionTypeProvider;
+        private QualityBrandTestCodeProvider _QualityBrandTestCodeProvider;
         private MailToolsService _MailService;
 
         public MockupWash_ViewModel GetMockupWash(MockupWash_Request MockupWash)
@@ -190,6 +192,9 @@ namespace BusinessLogicLayer.Service
 
                 _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
                 _InspectionTypeProvider = new InspectionTypeProvider(Common.ProductionDataAccessLayer);
+                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                var testCode = _QualityBrandTestCodeProvider.Get(mockupWash.BrandID, "Mockup Wash Test");
 
                 List<InspectionType> InspectionTypes = _InspectionTypeProvider.Get_InspectionType("MockupWash", "Bulk", mockupWash.BrandID).ToList();
                 mockupWash.Requirements = InspectionTypes.Select(x => x.Comment).ToList();
@@ -214,6 +219,11 @@ namespace BusinessLogicLayer.Service
                 int haveHTrow = haveHT ? htRow : 0;
 
                 // 設定表頭資料
+                if (testCode.Any())
+                {
+                    worksheet.Cells[2, 1] = $@"Wash TEST ({testCode.FirstOrDefault().TestCode})";
+                }
+
                 worksheet.Cells[4, 2] = mockupWash.ReportNo;
                 worksheet.Cells[5, 2] = mockupWash.T1Subcon + "-" + mockupWash.T1SubconAbb; ;
                 worksheet.Cells[6, 2] = mockupWash.T2Supplier + "-" + mockupWash.T2SupplierAbb;

@@ -6,6 +6,7 @@ using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
+using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Office.Interop.Excel;
 using ProductionDataAccessLayer.Interface;
@@ -34,6 +35,7 @@ namespace BusinessLogicLayer.Service
         private IOrderQtyProvider _OrderQtyProvider;
         private IScaleProvider _ScaleProvider;
         private IInspectionTypeProvider _InspectionTypeProvider;
+        private QualityBrandTestCodeProvider _QualityBrandTestCodeProvider;
         private MailToolsService _MailService;
 
         private string IsTest = ConfigurationManager.AppSettings["IsTest"];
@@ -193,6 +195,9 @@ namespace BusinessLogicLayer.Service
 
                 _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
                 _InspectionTypeProvider = new InspectionTypeProvider(Common.ProductionDataAccessLayer);
+                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                var testCode = _QualityBrandTestCodeProvider.Get(mockupOven.BrandID, "Mockup Oven Test");
 
                 List<InspectionType> InspectionTypes = _InspectionTypeProvider.Get_InspectionType("MockupOven", "Bulk", mockupOven.BrandID).ToList();
                 mockupOven.Requirements = InspectionTypes.Select(x => x.Comment).ToList();
@@ -218,6 +223,10 @@ namespace BusinessLogicLayer.Service
                 int haveHTrow = haveHT ? htRow : 0;
 
                 // 設定表頭資料
+                if (testCode.Any())
+                {
+                    worksheet.Cells[2, 1] = $@"COLOR MIGRATION TEST (Oven)({testCode.FirstOrDefault().TestCode})";
+                }
                 worksheet.Cells[4, 2] = mockupOven.ReportNo;
                 worksheet.Cells[5, 2] = mockupOven.T1Subcon + "-" + mockupOven.T1SubconAbb;
                 worksheet.Cells[6, 2] = mockupOven.T2Supplier + "-" + mockupOven.T2SupplierAbb;

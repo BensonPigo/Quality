@@ -5,6 +5,7 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Library;
+using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
@@ -35,6 +36,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         public IOrdersProvider _OrdersProvider;
         public IStyleProvider _StyleProvider;
         private MailToolsService _MailService;
+        private QualityBrandTestCodeProvider _QualityBrandTestCodeProvider;
 
         public BaseResult AmendPerspirationFastnessDetail(string poID, string TestNo)
         {
@@ -474,6 +476,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         {
             BaseResult result = new BaseResult();
             _PerspirationFastnessProvider = new PerspirationFastnessProvider(Common.ProductionDataAccessLayer);
+            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
             List<PerspirationFastness_Excel> dataList = new List<PerspirationFastness_Excel>();
 
             string tmpName = string.Empty;
@@ -527,7 +530,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Excel.Worksheet currenSheet = excel.ActiveWorkbook.Worksheets[j];
                     currenSheet.Name = j.ToString();
                     PerspirationFastness_Excel currenData = dataList[j - 1];
-
+                    var testCode = _QualityBrandTestCodeProvider.Get(currenData.BrandID, "Perspiration Fastness Test");
+                    if (testCode.Any())
+                    {
+                        currenSheet.Cells[1, 1] = $@"Perspiration Fastness Test Report({testCode.FirstOrDefault().TestCode})";
+                    }
                     currenSheet.Cells[2, 3] = currenData.ReportNo;
                     currenSheet.Cells[3, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
                     currenSheet.Cells[3, 8] = DateTime.Now.ToString("yyyy/MM/dd");

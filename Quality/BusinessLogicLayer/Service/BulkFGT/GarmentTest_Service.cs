@@ -38,6 +38,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         private IGarmentTestDetailProvider _IGarmentTestDetailProvider;
         private IGarmentTestDetailShrinkageProvider _IGarmentTestDetailShrinkageProvider;
         private IGarmentDetailSpiralityProvider _IGarmentDetailSpiralityProvider;
+        private QualityBrandTestCodeProvider _QualityBrandTestCodeProvider;
         private MailToolsService _MailService;
 
         public enum SelectType
@@ -960,6 +961,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
         public GarmentTest_Detail_Result ToReport(string ID, string No, ReportType type, bool IsToPDF, bool test = false, string AssignedFineName = "")
         {
+            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
             GarmentTest_Detail_Result all_Data = Get_All_Detail(ID, No);
             all_Data.reportPath = string.Empty;
             P04Data data = new P04Data
@@ -978,6 +980,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Remark = all_Data.Detail.Remark,
             };
 
+            var testCOdeFgwt = _QualityBrandTestCodeProvider.Get(all_Data.Main.BrandID, "Garment Test-FGWT");
 
             bool IsNewData = all_Data.Apperance.Count == 9 ? false : true;
 
@@ -1098,6 +1101,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             // Team Wear
                             worksheet.Cells[15, 4] = "";
                             worksheet.Cells[15, 8] = "3";
+                        }
+
+                        if (testCOdeFgwt.Any())
+                        {
+                            worksheet.Cells[1, 2] = $@"Finished Garment Wash Test Report({testCOdeFgwt.FirstOrDefault().TestCode})";
                         }
 
                         worksheet.Cells[3, 4] = MyUtility.Convert.GetString(all_Data.Detail.ReportNo);
@@ -2753,6 +2761,10 @@ and t.GarmentTest=1
 
                     #endregion
 
+                    if (testCOdeFgwt.Any())
+                    {
+                        worksheet_2020.Cells[1, 1] = $@"Product TEST REPORT({testCOdeFgwt.FirstOrDefault().TestCode})";
+                    }
                     // 若為QA 10產生則顯示New Development Testing ( V )，若為QA P04產生則顯示1st Bulk Testing ( V )
                     worksheet_2020.Cells[4, 3] = "1st Bulk Testing ( V )";
 
@@ -2975,6 +2987,10 @@ and t.GarmentTest=1
                     }
                     #endregion
 
+                    //if (testCOdeFgpt.Any())
+                    //{
+                    //    worksheet_Physical.Cells[1, 1] = $@"Product TEST REPORT ({testCOdeFgpt.FirstOrDefault().TestCode})";
+                    //}
                     // 若為QA 10產生則顯示New Development Testing ( V )，若為QA P04產生則顯示1st Bulk Testing ( V )
                     worksheet_Physical.Cells[4, 3] = "1st Bulk Testing ( V )";
 
