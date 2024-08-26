@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
@@ -25,6 +26,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         private PullingTestProvider _PullingTestProvider;
         private bool IsTest = bool.Parse(ConfigurationManager.AppSettings["IsTest"]);
         private MailToolsService _MailService;
+        QualityBrandTestCodeProvider _QualityBrandTestCodeProvider;
 
         public PullingTest_ViewModel GetReportNoList(PullingTest_ViewModel Req)
         {
@@ -288,8 +290,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 _PullingTestProvider = new PullingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
                 PullingTest_Result model = _PullingTestProvider.GetData(ReportNo);
-
+                var testCode = _QualityBrandTestCodeProvider.Get(model.BrandID, "Pulling test for Snap/Button/Rivet");
                 System.Data.DataTable ReportTechnician = _PullingTestProvider.GetReportTechnician(ReportNo);
 
                 string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx"; ;
@@ -307,6 +310,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
                 excelApp.DisplayAlerts = false;
                 Worksheet worksheet = excelApp.Sheets[1];
+
+                if (testCode.Any())
+                {
+                    worksheet.Cells[1, 1] = $@"Pulling test for Snap/Button/Rivet Report({testCode.FirstOrDefault().TestCode})";
+                }
 
                 worksheet.Cells[2, 2] = model.ReportNo;
                 worksheet.Cells[2, 4] = DateTime.Now.ToString("yyyy/MM/dd");

@@ -4,6 +4,7 @@ using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
+using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Ocsp;
 using ProductionDataAccessLayer.Provider.MSSQL.BukkFGT;
@@ -28,6 +29,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
     public class AccessoryOvenWashService
     {
         private AccessoryOvenWashProvider _AccessoryOvenWashProvider;
+        private QualityBrandTestCodeProvider _QualityBrandTestCodeProvider;
         private MailToolsService _MailService;
         private string IsTest = ConfigurationManager.AppSettings["IsTest"].ToString();
 
@@ -263,7 +265,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         public BaseResult OvenTestExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName, string AssignedFineName = "")
         {
             _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
-
+            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
             BaseResult result = new BaseResult();
 
             Accessory_OvenExcel Model = new Accessory_OvenExcel();
@@ -289,6 +291,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Seq1 = Seq1,
                     Seq2 = Seq2,
                 });
+
+                var testCode = _QualityBrandTestCodeProvider.Get(Model.BrandID, "Accessory Oven & Wash Test-Oven");
 
                 tmpName = $"Accessory Oven Test"
                     + $"_{POID}"
@@ -316,7 +320,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 excel.DisplayAlerts = false;
                 Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
-
+                if (testCode.Any())
+                {
+                    worksheet.Cells[1, 3] = $@"ACCESSORY COLOR MIGRATION TEST REPORT (Oven)({testCode.FirstOrDefault().TestCode})";
+                }
                 worksheet.Cells[2, 2] = Model.ReportNo;
                 worksheet.Cells[2, 6] = Model.POID;
                 worksheet.Cells[2, 10] = Model.Supplier;
@@ -584,6 +591,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         public BaseResult WashTestExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName, string AssignedFineName = "")
         {
             _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
+            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
 
             BaseResult result = new BaseResult();
 
@@ -603,6 +611,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Seq1 = Seq1,
                     Seq2 = Seq2,
                 });
+
+                var testCode = _QualityBrandTestCodeProvider.Get(Model.BrandID, "Accessory Oven & Wash Test-701Wash");
 
                 tmpName = $"Accessory Wash Test"
                     + $"_{POID}"
@@ -630,7 +640,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 excel.DisplayAlerts = false;
                 Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
-
+                if (testCode.Any())
+                {
+                    worksheet.Cells[1, 3] = $@"ACCESSORY WASH TEST REPORT({testCode.FirstOrDefault().TestCode})";
+                }
                 worksheet.Cells[2, 2] = Model.ReportNo;
                 worksheet.Cells[2, 6] = Model.POID;
                 worksheet.Cells[2, 10] = Model.Supplier;
@@ -916,6 +929,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         public BaseResult WashingFastnessExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName, string AssignedFineName = "")
         {
             _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
+            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
 
             BaseResult result = new BaseResult();
 
@@ -935,6 +949,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Seq1 = Seq1,
                     Seq2 = Seq2,
                 });
+
+                var testCode = _QualityBrandTestCodeProvider.Get(Model.BrandID, "Accessory Oven & Wash Test-501Wash");
 
                 tmpName = $"Accessory Washing Fastness Test"
                     + $"_{POID}"
@@ -964,6 +980,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 excel.DisplayAlerts = false;
                 Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
 
+                if (testCode.Any())
+                {
+                    worksheet.Cells[1, 1] = $@"Washing Fastness (Accessories) ({testCode.FirstOrDefault().TestCode})";
+                }
                 worksheet.Cells[2, 2] = Model.ReportNo;
                 worksheet.Cells[2, 6] = Model.WashingFastnessReceivedDate.HasValue ? Model.WashingFastnessReceivedDate.Value.ToString("yyyy/MM/dd") : string.Empty;
 

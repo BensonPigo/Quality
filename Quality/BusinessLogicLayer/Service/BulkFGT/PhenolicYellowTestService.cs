@@ -27,13 +27,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
     {
         private PhenolicYellowTestProvider _Provider;
         private MailToolsService _MailService;
+        QualityBrandTestCodeProvider _QualityBrandTestCodeProvider;
         public PhenolicYellowTest_ViewModel GetDefaultModel(bool iNew = false)
         {
             PhenolicYellowTest_ViewModel model = new PhenolicYellowTest_ViewModel()
             {
                 Request = new PhenolicYellowTest_Request(),
                 Main = new PhenolicYellowTest_Main(),
-                
+
                 ReportNo_Source = new List<System.Web.Mvc.SelectListItem>(),
                 Article_Source = new List<System.Web.Mvc.SelectListItem>(),
                 Scale_Source = new List<System.Web.Mvc.SelectListItem>(),
@@ -233,7 +234,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _Provider = new PhenolicYellowTestProvider(_ISQLDataTransaction);
 
-                if (string.IsNullOrEmpty(Req.Main.OrderID) || string.IsNullOrEmpty(Req.Main.BrandID) || string.IsNullOrEmpty(Req.Main.SeasonID)|| string.IsNullOrEmpty(Req.Main.StyleID) || string.IsNullOrEmpty(Req.Main.Article))
+                if (string.IsNullOrEmpty(Req.Main.OrderID) || string.IsNullOrEmpty(Req.Main.BrandID) || string.IsNullOrEmpty(Req.Main.SeasonID) || string.IsNullOrEmpty(Req.Main.StyleID) || string.IsNullOrEmpty(Req.Main.Article))
                 {
                     throw new Exception("SP#、Brand、Season、Style and Article can't be empty.");
                 }
@@ -370,7 +371,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 model.Request = new PhenolicYellowTest_Request()
                 {
                     ReportNo = model.Main.ReportNo,
-                    BrandID =model.Main.BrandID,
+                    BrandID = model.Main.BrandID,
                     SeasonID = model.Main.SeasonID,
                     StyleID = model.Main.StyleID,
                     Article = model.Main.Article,
@@ -434,10 +435,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _Provider = new PhenolicYellowTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 // 取得報表資料
 
                 PhenolicYellowTest_ViewModel model = this.GetData(new PhenolicYellowTest_Request() { ReportNo = ReportNo });
+
+                var testCode = _QualityBrandTestCodeProvider.Get(model.Main.BrandID, "Phenolic Yellowing Test");
 
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new PhenolicYellowTest_Request() { ReportNo = ReportNo });
 
@@ -450,6 +454,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
+
+                if (testCode.Any())
+                {
+                    worksheet.Cells[1,1] = $@"Phenolic Yellowing test report({testCode.FirstOrDefault().TestCode})";
+                }
 
                 string reportNo = model.Main.ReportNo;
                 worksheet.Cells[3, 2] = model.Main.ReportNo;

@@ -29,6 +29,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
     {
         private HydrostaticPressureWaterproofTestProvider _Provider;
         private MailToolsService _MailService;
+        private QualityBrandTestCodeProvider _QualityBrandTestCodeProvider;
         public HydrostaticPressureWaterproofTest_ViewModel GetDefaultModel(bool IsNew = false)
         {
             HydrostaticPressureWaterproofTest_ViewModel model = new HydrostaticPressureWaterproofTest_ViewModel()
@@ -467,6 +468,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 HydrostaticPressureWaterproofTest_ViewModel model = this.GetData(new HydrostaticPressureWaterproofTest_Request() { ReportNo = ReportNo });
 
                 _Provider = new HydrostaticPressureWaterproofTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                var testCode = _QualityBrandTestCodeProvider.Get(model.Main.BrandID, "Hydrostatic Pressure Waterproof Test");
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new HydrostaticPressureWaterproofTest_Request() { ReportNo = ReportNo });
 
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
@@ -477,6 +481,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 $"{model.Main.FabricColor}_" +
                 $"{model.Main.Result}_" +
                 $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                if (testCode.Any())
+                {
+                    worksheet.Cells[1, 1] = $@"Hydrostatic pressure waterproof test({testCode.FirstOrDefault().TestCode})";
+                }
 
                 string reportNo = model.Main.ReportNo;
                 //string machineReport = string.IsNullOrEmpty(model.Main.MachineReport) ? string.Empty : model.Main.MachineReport;

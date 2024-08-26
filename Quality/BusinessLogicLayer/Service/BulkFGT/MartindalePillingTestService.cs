@@ -28,6 +28,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
     {
         private MartindalePillingTestProvider _Provider;
         private MailToolsService _MailService;
+        QualityBrandTestCodeProvider _QualityBrandTestCodeProvider;
         public MartindalePillingTest_ViewModel GetDefaultModel(bool isNew = false)
         {
             MartindalePillingTest_ViewModel model = new MartindalePillingTest_ViewModel()
@@ -449,10 +450,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 _Provider = new MartindalePillingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
 
                 // 取得報表資料
 
                 MartindalePillingTest_ViewModel model = this.GetData(new MartindalePillingTest_Request() { ReportNo = ReportNo });
+
+                var testCode = _QualityBrandTestCodeProvider.Get(model.Main.BrandID, "T-Peel Strength Test");
 
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new MartindalePillingTest_Request() { ReportNo = ReportNo });
 

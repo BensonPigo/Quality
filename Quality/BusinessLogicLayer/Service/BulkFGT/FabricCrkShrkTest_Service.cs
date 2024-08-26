@@ -5,6 +5,7 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Library;
+using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Org.BouncyCastle.Ocsp;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
@@ -33,7 +34,9 @@ namespace BusinessLogicLayer.Service
         IOrdersProvider _OrdersProvider;
         IStyleProvider _StyleProvider;
         IFIRLaboratoryProvider _FIRLaboratoryProvider;
+        QualityBrandTestCodeProvider _QualityBrandTestCodeProvider;
         private MailToolsService _MailService;
+
         public BaseResult AmendFabricCrkShrkTestCrockingDetail(long ID)
         {
             BaseResult baseResult = new BaseResult();
@@ -929,6 +932,7 @@ namespace BusinessLogicLayer.Service
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
             BaseResult result = new BaseResult();
             excelFileName = string.Empty;
             string tmpName = string.Empty;
@@ -937,6 +941,7 @@ namespace BusinessLogicLayer.Service
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
                 DataTable dtHeatDetail = _FabricCrkShrkTestProvider.GetHeatDetailForReport(ID);
                 FabricCrkShrkTestHeat_Main fabricCrkShrkTestHeat_Main = _FabricCrkShrkTestProvider.GetFabricHeatTest_Main(ID);
+                var testCode = _QualityBrandTestCodeProvider.Get(fabricCrkShrkTestHeat_Main.BrandID, "Fabric Crocking & Shrinkage Test-Heat");
 
                 string excelName = baseFilePath + "\\XLT\\FabricHeatTest.xltx";
                 string[] columnNames = new string[]
@@ -988,6 +993,10 @@ namespace BusinessLogicLayer.Service
                 Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(excelName);
 
                 Microsoft.Office.Interop.Excel.Worksheet excelSheets = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
+                if (testCode.Any())
+                {
+                    excelSheets.Cells[1, 1] = $@"Quality Heat Test Report({testCode.FirstOrDefault().TestCode})";
+                }
                 excelSheets.Cells[2, 2] = fabricCrkShrkTestHeat_Main.ReportNo;
                 excelSheets.Cells[3, 2] = fabricCrkShrkTestHeat_Main.POID;
                 excelSheets.Cells[3, 4] = fabricCrkShrkTestHeat_Main.SEQ;
@@ -1289,6 +1298,7 @@ namespace BusinessLogicLayer.Service
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
             BaseResult result = new BaseResult();
             excelFileName = string.Empty;
             string tmpName = string.Empty;
@@ -1300,6 +1310,7 @@ namespace BusinessLogicLayer.Service
 
                 DataTable dtWashDetail = _FabricCrkShrkTestProvider.GetWashDetailForReport(ID);
                 FabricCrkShrkTestWash_Main fabricCrkShrkTestWash_Main = _FabricCrkShrkTestProvider.GetFabricWashTest_Main(ID);
+                var testCode = _QualityBrandTestCodeProvider.Get(fabricCrkShrkTestWash_Main.BrandID, "Fabric Crocking & Shrinkage Test-Wash");
 
                 string excelName = baseFilePath + "\\XLT\\FabricWashTest.xltx";
 
@@ -1352,6 +1363,10 @@ namespace BusinessLogicLayer.Service
                 Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(excelName);
 
                 Microsoft.Office.Interop.Excel.Worksheet excelSheets = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
+                if (testCode.Any())
+                {
+                    excelSheets.Cells[1, 1] = $@"Quality Wash Test Report({testCode.FirstOrDefault().TestCode})";
+                }
                 excelSheets.Cells[2, 2] = fabricCrkShrkTestWash_Main.ReportNo;
                 excelSheets.Cells[3, 2] = fabricCrkShrkTestWash_Main.POID;
                 excelSheets.Cells[3, 4] = fabricCrkShrkTestWash_Main.SEQ;
@@ -1507,6 +1522,7 @@ namespace BusinessLogicLayer.Service
         {
             BaseResult result = new BaseResult();
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
             List<Crocking_Excel> dataList_Head = new List<Crocking_Excel>();
             List<Crocking_Excel> dataList_Body = new List<Crocking_Excel>();
             excelFileName = string.Empty;
@@ -1514,12 +1530,15 @@ namespace BusinessLogicLayer.Service
 
             dataList_Head = _FabricCrkShrkTestProvider.CrockingTest_ToExcel_Head(ID).ToList();
             dataList_Body = _FabricCrkShrkTestProvider.CrockingTest_ToExcel_Body(ID).ToList();
+
             if (!dataList_Head.Any())
             {
                 result.Result = false;
                 result.ErrorMessage = "Data not found!";
                 return result;
             }
+
+            var testCode = _QualityBrandTestCodeProvider.Get(dataList_Head.FirstOrDefault().BrandID, "Fabric Crocking & Shrinkage Test-Crocking");
 
             tmpName = $"Fabric Crocking Test_{dataList_Head.FirstOrDefault().POID}_" +
                     $"{dataList_Head.FirstOrDefault().StyleID}_" +
@@ -1565,6 +1584,10 @@ namespace BusinessLogicLayer.Service
             //excel.Visible = true;
             Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
+            if (testCode.Any())
+            {
+                worksheet.Cells[1, 1] = $@"Crocking Fastness Test Report({testCode.FirstOrDefault().TestCode})";
+            }
             worksheet.Cells[2, 3] = dataList_Head.FirstOrDefault().ReportNo;
 
             worksheet.Cells[3, 3] = dataList_Head.FirstOrDefault().SubmitDate.HasValue ? dataList_Head.FirstOrDefault().SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
