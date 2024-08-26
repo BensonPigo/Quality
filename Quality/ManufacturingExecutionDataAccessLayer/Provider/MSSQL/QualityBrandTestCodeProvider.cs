@@ -25,20 +25,11 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 
             SbSql.Append($@"
 SELECT * FROM QualityBrandTestCode
-WHERE  1=1 
+WHERE  BrandID = @BrandID AND FunctionName = @FunctionName
 " + Environment.NewLine);
 
-            if (!string.IsNullOrEmpty(brandId))
-            {
-                SbSql.Append("AND BrandID = @BrandID" + Environment.NewLine);
-                objParameter.Add("@BrandID", DbType.String, brandId);
-            }
-
-            if (!string.IsNullOrEmpty(functuionName))
-            {
-                SbSql.Append("AND FunctionName = @FunctionName" + Environment.NewLine);
-                objParameter.Add("@FunctionName", DbType.String, functuionName);
-            }
+            objParameter.Add("@BrandID", DbType.String, brandId ?? string.Empty);
+            objParameter.Add("@FunctionName", DbType.String, functuionName ?? string.Empty);
 
             return ExecuteList<QualityBrandTestCode>(CommandType.Text, SbSql.ToString(), objParameter);
         }
