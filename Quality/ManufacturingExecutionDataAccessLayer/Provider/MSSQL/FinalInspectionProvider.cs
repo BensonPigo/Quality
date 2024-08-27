@@ -2819,8 +2819,11 @@ where   IsExportToP88 = 0 and
         InspectionResult in ('Pass', 'Fail') and
         submitdate >= @FinalInspFromDateTransferToP88 and
         InspectionStage = 'Final' and
-        exists (select 1 from Production.dbo.Orders o with (nolock) where o.CustPONo = Finalinspection.CustPONO and o.BrandID in ('Adidas'))
-
+        exists (select 1 from Production.dbo.Orders o with (nolock) 
+                where   o.CustPONo = Finalinspection.CustPONO and
+                        o.BrandID in ('Adidas')
+                ) and
+        CustPONO <> ''
 ";
             if (!string.IsNullOrEmpty(finalInspectionID))
             {
