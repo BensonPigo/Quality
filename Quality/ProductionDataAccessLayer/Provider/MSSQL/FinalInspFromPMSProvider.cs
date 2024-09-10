@@ -833,9 +833,9 @@ where   oqs.id in ({whereOrderID})
             string sqlUpdCmd = @"
 update q
 	set q.CFAUpdateDate = t.SubmitDate
-	, q.[CFAFinalInspectResult] = iif(t2.InspectionStage = 'Final', t2.InspectionResult, q.CFAFinalInspectResult )
-	, q.[CFAFinalInspectDate] = iif(t2.InspectionStage = 'Final', t2.AuditDate, q.CFAFinalInspectDate)
-	, q.[CFAFinalInspectHandle] = iif(t2.InspectionStage = 'Final', t2.CFA, q.CFAFinalInspectHandle )
+	, q.[CFAFinalInspectResult] = iif(t2.InspectionStage = 'Final' or t2.InspectionStage = 'Final Internal', t2.InspectionResult, q.CFAFinalInspectResult )
+	, q.[CFAFinalInspectDate] = iif(t2.InspectionStage = 'Final' or t2.InspectionStage = 'Final Internal', t2.AuditDate, q.CFAFinalInspectDate)
+	, q.[CFAFinalInspectHandle] = iif(t2.InspectionStage = 'Final' or t2.InspectionStage = 'Final Internal', t2.CFA, q.CFAFinalInspectHandle )
 	, q.[CFA3rdInspectResult] = iif(t2.InspectionStage = '3rd Party', t2.InspectionResult, q.CFA3rdInspectResult )
 	, q.[CFA3rdInspectDate] = iif(t2.InspectionStage = '3rd Party', t2.AuditDate, q.CFA3rdInspectDate)
 	, q.[CFAIs3rdInspectHandle] = iif(t2.InspectionStage = '3rd Party', t2.CFA, q.CFAIs3rdInspectHandle )
@@ -882,7 +882,7 @@ left join (
 			and foq.Seq = foq2.Seq)
 		and f.InspectionStep = 'Submit' 
 		and f.SubmitDate is not null
-		and f.InspectionStage in ('Final', '3rd Party')
+		and f.InspectionStage in ('Final','Final Internal', '3rd Party')
 		group by f.InspectionStage, foq.OrderID, foq.Seq
 	) t on foq.OrderID = t.OrderID and foq.Seq = t.Seq and foq.InspectionTimes = t.InspectionTimes and f.InspectionStage = t.InspectionStage
 )t2 on q.Id = t2.OrderID and q.Seq = t2.Seq
