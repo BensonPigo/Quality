@@ -139,7 +139,7 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public object GetPivot88Json(string ID)
+        public object GetPivot88Json(string ID, bool isNewType = false)
         {
             IFinalInspectionProvider finalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
             DataSet resultPivot88 = finalInspectionProvider.GetPivot88(ID);
@@ -167,19 +167,18 @@ namespace BusinessLogicLayer.Service
             List<object> sections = new List<object>();
 
             string projectCode;
-            bool isNewFormatt = false;
-            if (Sci.MyUtility.Convert.GetString(drFinalInspection["Customize5"]) != string.Empty || Sci.MyUtility.Convert.GetString(drFinalInspection["Dest"]) == "ZA")
+            if (isNewType)
             {
                 projectCode = "APPTRANS4M";
-                isNewFormatt = true;
             }
             else
             {
+                ;
                 projectCode = "APP";
             }
 
             string custPono;
-            if (Sci.MyUtility.Convert.GetString(drFinalInspection["Customize4"]) != string.Empty )
+            if (Sci.MyUtility.Convert.GetString(drFinalInspection["Customize4"]) != string.Empty)
             {
                 custPono = Sci.MyUtility.Convert.GetString(drFinalInspection["Customize4"]);
             }
@@ -191,13 +190,11 @@ namespace BusinessLogicLayer.Service
             var listSku_number = dtSizeArticle.AsEnumerable().Select(s =>
             new
             {
-                sku_number = isNewFormatt
+                sku_number = isNewType
                 ? (string.IsNullOrEmpty(s["SizeCode"].ToString())
-                ? s["Article"].ToString()
-                : $"{s["Article"]}_{s["SizeCode"]}_{s["SeqNumber"]}")
+                    ? s["Article"].ToString() : $"{s["Article"]}_{s["SizeCode"]}_{s["SeqNumber"]}")
                 : (string.IsNullOrEmpty(s["SizeCode"].ToString())
-                ? s["Article"].ToString()
-                : $"{s["Article"]}_{s["SizeCode"]}"),
+                    ? s["Article"].ToString() : $"{s["Article"]}_{s["SizeCode"]}"),
                 qty_to_inspect = s["ShipQty"]
             }
             );
@@ -619,7 +616,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public object GetEndInlinePivot88Json(string ID, string inspectionType)
+        public object GetEndInlinePivot88Json(string ID, string inspectionType, bool isNewType = false)
         {
             IFinalInspectionProvider finalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
             DataSet resultPivot88 = finalInspectionProvider.GetEndInlinePivot88(ID, inspectionType);
@@ -645,11 +642,9 @@ namespace BusinessLogicLayer.Service
 
             string projectCode;
 
-            bool isNewFormatt = false;
-            if (Sci.MyUtility.Convert.GetString(drInspection["Customize5"]) != string.Empty || Sci.MyUtility.Convert.GetString(drInspection["Dest"]) == "ZA")
+            if (isNewType)
             {
                 projectCode = "APPTRANS4M";
-                isNewFormatt = true;
             }
             else
             {
@@ -669,7 +664,7 @@ namespace BusinessLogicLayer.Service
             var listSku_number = dtSizeArticle.AsEnumerable().Select(s =>
             new
             {
-                sku_number = isNewFormatt
+                sku_number = isNewType
             ? (string.IsNullOrEmpty(s["SizeCode"].ToString())
                 ? s["Article"].ToString()
                 : $"{s["Article"]}_{s["SizeCode"]}_{s["SeqNumber"]}")
@@ -1094,6 +1089,9 @@ from
                 return sentPivot88Results;
             }
 
+            // 每個 InspectionID要傳新舊兩個版本的JSON，舊版本就不改了，新版本額外註解寫出來
+
+            // 舊版本
             sentPivot88Results = listInspectionID.Select(inspectionID =>
             {
                 bool isSuccess = true;
@@ -1108,6 +1106,144 @@ from
                     postBody = pivotTransferRequest.InspectionType == "FinalInspection" ?
                     JsonConvert.SerializeObject(GetPivot88Json(inspectionID)) :
                     JsonConvert.SerializeObject(GetEndInlinePivot88Json(inspectionID, pivotTransferRequest.InspectionType));
+
+                    WebApiBaseResult webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, requestUri, postBody, HttpMethod.Put, headers: pivotTransferRequest.Headers);
+
+                    switch (webApiBaseResult.webApiResponseStatus)
+                    {
+                        case WebApiResponseStatus.Success:
+                            isSuccess = true;
+                            break;
+                        case WebApiResponseStatus.WebApiReturnFail:
+                            isSuccess = false;
+                            errorMsg = webApiBaseResult.responseContent;
+                            break;
+                        case WebApiResponseStatus.OtherException:
+                            isSuccess = false;
+                            errorMsg = webApiBaseResult.exception.ToString();
+                            break;
+                        case WebApiResponseStatus.ApiTimeout:
+                            isSuccess = false;
+                            errorMsg = "WebAPI timeout";
+                            break;
+                        default:
+                            isSuccess = false;
+                            errorMsg = "????";
+                            break;
+                    }
+                    #endregion
+
+                    #region 傳送圖片
+
+
+                    if (isSuccess)
+                    {
+                        Dictionary<string, byte[]> dicImage = new Dictionary<string, byte[]>();
+
+                        switch (pivotTransferRequest.InspectionType)
+                        {
+                            case "FinalInspection":
+                                dicImage = _FinalInspectionProvider.GetFinalInspectionDefectImage(inspectionID);
+                                break;
+                            case "InlineInspection":
+                                dicImage = _FinalInspectionProvider.GetInlineInspectionDefectImage(inspectionID);
+                                break;
+                            case "EndlineInspection":
+                                dicImage = _FinalInspectionProvider.GetEndLineInspectionDefectImage(inspectionID);
+                                break;
+                            default:
+                                break;
+                        }
+
+                        string requestUploadImgUri = requestUri + "/images/upload";
+                        //string requestUploadImgUri = "rest/operation/v1/inspection_reports/unique_key:sintexSPSCH22020130/images/upload";
+
+                        foreach (KeyValuePair<string, byte[]> imageInfo in dicImage)
+                        {
+                            MultipartFormDataContent contentPost = new MultipartFormDataContent();
+                            contentPost.Add(new StreamContent(new MemoryStream(imageInfo.Value)), "file", imageInfo.Key);
+                            webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, requestUploadImgUri, null, HttpMethod.Post, headers: pivotTransferRequest.Headers, httpContent: contentPost);
+
+                            switch (webApiBaseResult.webApiResponseStatus)
+                            {
+                                case WebApiResponseStatus.Success:
+                                    break;
+                                case WebApiResponseStatus.WebApiReturnFail:
+                                    isSuccess = false;
+                                    errorMsg = webApiBaseResult.responseContent;
+                                    break;
+                                case WebApiResponseStatus.OtherException:
+                                    isSuccess = false;
+                                    errorMsg = webApiBaseResult.exception.ToString();
+                                    break;
+                                case WebApiResponseStatus.ApiTimeout:
+                                    isSuccess = false;
+                                    errorMsg = "WebAPI timeout";
+                                    break;
+                                default:
+                                    isSuccess = false;
+                                    errorMsg = "????";
+                                    break;
+                            }
+
+                            if (!isSuccess)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                    if (isSuccess)
+                    {
+                        _FinalInspectionProvider.UpdateIsExportToP88(inspectionID, pivotTransferRequest.InspectionType);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    isSuccess = false;
+                    errorMsg = ex.ToString();
+                }
+
+                if (!isSuccess)
+                {
+                    AutomationErrMsg automationErrMsg = new AutomationErrMsg();
+                    automationErrMsg.suppID = StaticPivot88.SuppID;
+                    automationErrMsg.moduleName = pivotTransferRequest.InspectionType;
+                    automationErrMsg.apiThread = StaticPivot88.APIThreadFinalInsp;
+                    automationErrMsg.errorMsg = errorMsg;
+                    automationErrMsg.json = postBody;
+                    automationErrMsg.addName = "SCIMIS";
+
+                    _AutomationErrMsgProvider = new AutomationErrMsgProvider(Common.ProductionDataAccessLayer);
+                    _AutomationErrMsgProvider.Insert(automationErrMsg);
+                }
+
+                return new SentPivot88Result()
+                {
+                    InspectionID = uniqueKey,
+                    isSuccess = isSuccess,
+                    errorMsg = errorMsg,
+                };
+            }).ToList();
+
+            // 新版本
+            sentPivot88Results = listInspectionID.Select(inspectionID =>
+            {
+                bool isSuccess = true;
+                string errorMsg = string.Empty;
+                string postBody = string.Empty;
+                string uniqueKey = "sintex" + inspectionID + "Trans4m"; // 新版本 + Trans4m
+                string requestUri = pivotTransferRequest.RequestUri + uniqueKey;
+
+                try
+                {
+                    #region 傳送finalinspection資料
+                    // 新版本 isNewType = true
+                    postBody = pivotTransferRequest.InspectionType == "FinalInspection" ?
+                    JsonConvert.SerializeObject(GetPivot88Json(inspectionID, isNewType: true)) :
+                    JsonConvert.SerializeObject(GetEndInlinePivot88Json(inspectionID, pivotTransferRequest.InspectionType, isNewType: true));
 
                     WebApiBaseResult webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, requestUri, postBody, HttpMethod.Put, headers: pivotTransferRequest.Headers);
 
