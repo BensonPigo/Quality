@@ -79,32 +79,6 @@
                     </td>
                     <td></td>
                 </tr>
-
-                @*if (Model.InspectionStage == "Final" && item.ItemName == "FGPT")
-            {
-                <tr>
-                    <td class="fistTD">
-                        <div><label class="checkboxlabel" for="FabricApprovalDoc">@item.ShowText</label></div>
-                    </td>
-                    <td class="secTD">
-                        @Html.CheckBox($@"finalInspectionGeneral.{item.GeneralColName}", IsChecked, new { @class = "notSelectAll", @ID = $@"finalInspectionGeneral_{item.GeneralColName}" })
-                    </td>
-                    <td></td>
-                </tr>
-            }
-            else if (item.ItemName != "FGPT")
-            {
-                <tr>
-                    <td class="fistTD">
-                        <div><label class="checkboxlabel" for="FabricApprovalDoc">@item.ShowText</label></div>
-                    </td>
-                    <td class="secTD">
-                        @Html.CheckBox($@"finalInspectionGeneral.{item.GeneralColName}", IsChecked, new { @class = "notSelectAll", @ID = $@"finalInspectionGeneral_{item.GeneralColName}" })
-
-                    </td>
-                    <td></td>
-                </tr>
-            }*@
             }
         </table>
         <input type="hidden" id="goPage" name="goPage">

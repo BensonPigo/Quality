@@ -1216,7 +1216,7 @@ select PassRate = ROUND( (
     select IIF(SUM( fi.SampleSize)=0,0,1.0 * SUM( fi.PassQty) / SUM( fi.SampleSize))
     from Finalinspection fi with (nolock)
     where 1=1
-    and fi.InspectionStage ='Final'
+    and fi.InspectionStage in ('Final' ,'Final Internal')
     and fi.InspectionResult != 'On-going'
     and fi.SubmitDate is not null
     AND exists(
@@ -1230,7 +1230,7 @@ select PassRate = ROUND( (
     select IIF(SUM( fi.SampleSize)=0,0,1.0 * SUM( fi.RejectQty) / SUM( fi.SampleSize))
     from Finalinspection fi with (nolock)
     where 1=1
-    and fi.InspectionStage ='Final'
+    and fi.InspectionStage in ('Final' ,'Final Internal')
     and fi.InspectionResult != 'On-going'
     and fi.SubmitDate is not null
     AND exists(
@@ -1244,7 +1244,7 @@ select PassRate = ROUND( (
     select ISNULL( IIF(SUM( fi.SampleSize)=0,0,1.0 * SUM( fi.PassQty) / SUM( fi.SampleSize)) ,0)
     from Finalinspection fi with (nolock)
     where 1=1
-    and fi.InspectionStage ='Final'
+    and fi.InspectionStage in ('Final' ,'Final Internal')
     and fi.InspectionResult != 'On-going'
     and fi.SubmitDate is not null
     AND exists(
@@ -1260,7 +1260,7 @@ select PassRate = ROUND( (
     select ISNULL( IIF(SUM( fi.SampleSize)=0,0,1.0 * SUM( fi.PassQty) / SUM( fi.SampleSize)),0)
     from Finalinspection fi with (nolock)
     where 1=1
-    and fi.InspectionStage ='Final'
+    and fi.InspectionStage in ('Final' ,'Final Internal')
     and fi.InspectionResult != 'On-going'
     and fi.SubmitDate is not null
     AND exists(

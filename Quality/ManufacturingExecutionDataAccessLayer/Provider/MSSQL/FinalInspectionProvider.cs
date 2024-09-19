@@ -90,8 +90,8 @@ select  ID                             ,
         IsFollowAQL,
         HasOtherImage = Cast(IIF(exists(select 1 from SciPMSFile_FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit),
         CheckFGPT                      ,
-        [FGWT] = iif(a.InspectionStage = 'Final', ISNULL(g.WashResult, 'Lacking Test') , ''),
-        [FGPT] = iif(a.InspectionStage = 'Final', fgpt.Result, ''),
+        [FGWT] = iif(a.InspectionStage in ('Final' ,'Final Internal'), ISNULL(g.WashResult, 'Lacking Test') , ''),
+        [FGPT] = iif(a.InspectionStage in ('Final' ,'Final Internal'), fgpt.Result, ''),
         [ISFD] = cast(I.ISFD as bit) 
 from FinalInspection a with (nolock)
 outer apply (

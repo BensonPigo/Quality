@@ -165,7 +165,7 @@ namespace BusinessLogicLayer.Service
                 //    _FinalInspectionProvider.UpdateMoisture(moistureResult);
                 //}
 
-                if ((finalInspection.InspectionStage == "Stagger" || finalInspection.InspectionStage == "Final") && BrandIDs.Where(o => o.ToUpper() == "ADIDAS").Any())
+                if ((finalInspection.InspectionStage == "Stagger" || finalInspection.InspectionStage == "Final" || finalInspection.InspectionStage == "Final Internal") && BrandIDs.Where(o => o.ToUpper() == "ADIDAS").Any())
                 {
                     isMoistureExists = _FinalInspectionProvider.CheckMoistureExists(moistureResult.FinalInspectionID, string.Empty, 0);
                     if (!isMoistureExists)
@@ -176,7 +176,7 @@ namespace BusinessLogicLayer.Service
                     }
                 }
 
-                if (finalInspection.InspectionStage == "Final" && BrandIDs.Where(o => o.ToUpper() == "LLL").Any())
+                if ( (finalInspection.InspectionStage == "Final" || finalInspection.InspectionStage == "Final Internal") && BrandIDs.Where(o => o.ToUpper() == "LLL").Any())
                 {
                     isMoistureExists = _FinalInspectionProvider.CheckMoistureExists(moistureResult.FinalInspectionID, string.Empty, 0);
                     if (!isMoistureExists)
