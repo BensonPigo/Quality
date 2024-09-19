@@ -243,6 +243,7 @@ namespace BusinessLogicLayer.Service
                     if (setting.InspectionStage == "Inline" ||
                         setting.InspectionStage == "Stagger" ||
                         setting.InspectionStage == "Final" ||
+                        setting.InspectionStage == "Final Internal" ||
                         setting.InspectionStage == "3rd Party")
                     {
                         int totalAvailableQty = setting.SelectedPO.Sum(s => s.AvailableQty);
@@ -414,7 +415,7 @@ namespace BusinessLogicLayer.Service
                                 break;
                             default:
                                 result.Result = false;
-                                result.ErrorMessage = "When Inspection Stage is [Final] or [3rd Party], AQL Plan can not empty";
+                                result.ErrorMessage = "When Inspection Stage is [Final] or [Final Internal] or [3rd Party], AQL Plan can not empty";
                                 return result;
                         }
 

@@ -2,7 +2,7 @@
     ViewBag.Title = "Setting";
 
     bool AQLPlanDisabled = Model.InspectionStage == "Inline" || Model.InspectionStage == "Stagger";
-    bool SampleQtyDisabled = Model.InspectionStage == "Final" || Model.InspectionStage == "3rd Party";
+    bool SampleQtyDisabled = Model.InspectionStage == "Final" || Model.InspectionStage == "Final Internal" || Model.InspectionStage == "3rd Party";
 }
 
 @model DatabaseObject.ViewModel.FinalInspection.Setting
@@ -570,7 +570,7 @@
                 var availableQtycheck = $('input[col=AvailableQty]');
 
                 $.each(availableQtycheck, function () {
-                    if (currentStage == "Final") {
+                    if (currentStage == "Final" || currentStage == "Final Internal") {
                         $($(this)[0]).attr("readonly", "readonly");
                     }
                     else {
@@ -744,7 +744,7 @@
                             $("#CTNSearch").val('').keyup();
 
                             // 重置
-                            if ($('[id^=Carton_Select_]').length > 0 && currentStage != 'Final') {
+                            if ($('[id^=Carton_Select_]').length > 0 && currentStage != 'Final' && currentStage != 'Final Internal') {
                                 var allKeys = Object.keys(Order_AvailableQty);
                                 var sp = $($('[id^=Carton_Select_]')[0]).attr("orderid");
                                 $.each(allKeys, function () {
@@ -771,7 +771,7 @@
 
                                     checkedList.push($(this).attr("ctnno"));
 
-                                    if (currentStage != 'Final') {
+                                    if (currentStage != 'Final' && currentStage != 'Final Internal') {
                                         totalQty = totalQty + shipQty;
                                         Order_AvailableQty[selectedOrderID + '-' + selectedSeq] = totalQty;
                                     }
@@ -791,8 +791,8 @@
                             //var seqList = document.getElementById("SelectedPO[" + index + "].Seq").value;
                             //var seq = seqList.split(',');
 
-                            //Stage != 'Final'才需要從Carton帶入數量，否則帶入OrderQty
-                            if (currentStage != 'Final') {
+                            //Stage != 'Final' && Stage != Final Internal才需要從Carton帶入數量，否則帶入OrderQty
+                            if (currentStage != 'Final' && currentStage != 'Final Internal') {
 
                                 document.getElementById("SelectedPO[" + index + "].AvailableQty").value = totalQty;
 
@@ -1381,7 +1381,7 @@
                 '<tr><td>Available Qty:</td><td style=" text-align: right;" class="OpenDetail" >' +
                 '<input type="number" style="width:100%" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" orderQty="' + d[7]+'" value="' +
 
-                `${currentStage == 'Final' ? d[7] : d[9]}`
+                `${currentStage == 'Final' || currentStage == 'Final Internal' ? d[7] : d[9]}`
 
                 + '" OrderID="' + orderID + '" oninput="value=AvailableQtyChk(' + d[7] + ',value)" max="' + d[7] + '" min="0" Col="AvailableQty"/>' +
                 '</td></tr>' +
@@ -1449,7 +1449,7 @@
             });
 
             // Stage改變，會影響到[Selected PO]區塊裡面每一筆SP#的Available Qty
-            if (currentStage == "Final") {
+            if (currentStage == "Final" || currentStage == "Final Internal") {
 
                 // 如果是Final，則AvailableQty自動待入該訂單的Orders.Qty
 
@@ -1647,9 +1647,6 @@
                 return false;
             }
 
-            //*保存前檢查[Selected PO]部分都有輸入，若沒有則顯示
-            //<Selected PO> part cannot be empty.
-
             //*保存前檢查[Accepted Qty]是否有輸入，若沒有則顯示
             //<Accepted Qty> cannot be empty.
             if ($("#AcceptQty").val() == "") {
@@ -1657,22 +1654,6 @@
                 return false;
             }
             ShowLoading();
-            //*保存前檢查[Choose Inspection Stage]選擇 Final或3rd Party時，若AQL Plan為空白則顯示
-            //<AQL Plan>thiscannot be empty.
-            //var inspectionStage = $("#InspectionStage").val();
-            //if (inspectionStage == "Final" || inspectionStage == "3rd Party") {
-            //    if () {
-            //        msg.WithError("<AQL Plan> cannot be empty.");
-            //    }
-            //}
-
-            //*保存前依照AQL Plan選擇項目，若是選擇
-            // -1.0 Level I
-            // -1.0 Level II
-            // -1.5 Level I
-            // -2.5 Level I
-            //請依照AQL Plan中所寫邏輯重抓AcceptableQualityLevels設定資料
-
 
             //為避免POST抓不到畫面上的控制項，因此要全部打開
             var trlist = $("#SelectedPOTable tbody td.details-control");
@@ -1706,12 +1687,12 @@
             $("#AQProLPlan").removeAttr("disabled");
             var stage = $("#InspectionStage").val();
 
-            if ((stage == 'Final' || stage == '3rd Party') && $("#AQLPlan").val() == '' && $("#AQProLPlan").val() == '' ) {
+            if ((stage == 'Final' || stage == 'Final Internal' || stage == '3rd Party') && $("#AQLPlan").val() == '' && $("#AQProLPlan").val() == '' ) {
                 AQLPlanResult = false;
             }
 
             var CartonResult = true;
-            if (stage == 'Final') {
+            if (stage == 'Final' || stage == 'Final Internal') {
 
                 var cartoncheck = $('input[col=Cartons]');
 
@@ -1739,7 +1720,7 @@
                     return false;
                 }
                 if (!AQLPlanResult) {
-                    msg.WithError("AQL Plan cannot be empty when Choose Inspection Stage is Final or 3rd Party.");
+                    msg.WithError("AQL Plan cannot be empty when Choose Inspection Stage is Final or Final Internal or 3rd Party.");
                     NonLoading();
                     return false;
                 }

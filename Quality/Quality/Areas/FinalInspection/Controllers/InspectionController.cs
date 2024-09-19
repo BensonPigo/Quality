@@ -116,6 +116,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 new SelectListItem(){Text="Inline",Value="Inline"},
                 new SelectListItem(){Text="Stagger",Value="Stagger"},
                 new SelectListItem(){Text="Final",Value="Final"},
+                new SelectListItem(){Text="Final Internal",Value="Final Internal"},
                 new SelectListItem(){Text="3rd Party",Value="3rd Party"},
             };
 
@@ -243,6 +244,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                 new SelectListItem(){Text="Inline",Value="Inline"},
                 new SelectListItem(){Text="Stagger",Value="Stagger"},
                 new SelectListItem(){Text="Final",Value="Final"},
+                new SelectListItem(){Text="Final Internal",Value="Final Internal"},
                 new SelectListItem(){Text="3rd Party",Value="3rd Party"},
             };
 
@@ -434,7 +436,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         }
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public ActionResult AQLPro_AJAX(string AQLPlan, int TotalAvailableQty ,string BrandID)
+        public ActionResult AQLPro_AJAX(string AQLPlan, int TotalAvailableQty, string BrandID)
         {
             Setting setting = new Setting();
             if (TempData["FinalInspectionSetting"] != null)
@@ -522,6 +524,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                     new SelectListItem(){Text="Inline",Value="Inline"},
                     new SelectListItem(){Text="Stagger",Value="Stagger"},
                     new SelectListItem(){Text="Final",Value="Final"},
+                    new SelectListItem(){Text="Final Internal",Value="Final Internal"},
                     new SelectListItem(){Text="3rd Party",Value="3rd Party"},
                 };
 
@@ -595,7 +598,7 @@ namespace Quality.Areas.FinalInspection.Controllers
 
             FinalInspectionService service = new FinalInspectionService();
             DatabaseObject.ManufacturingExecutionDB.FinalInspection model = service.GetFinalInspection(FinalInspectionID);
-            model.GeneralList = service.GetGeneralByBrand(FinalInspectionID, model.BrandID ,model.InspectionStage);
+            model.GeneralList = service.GetGeneralByBrand(FinalInspectionID, model.BrandID, model.InspectionStage);
 
             ViewData["FinalInspectionAllStep"] = service.GetAllStep(FinalInspectionID, string.Empty);
 
@@ -766,10 +769,10 @@ namespace Quality.Areas.FinalInspection.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public ActionResult MeasurementDelete(string FinalInspectionID,string AddDate)
+        public ActionResult MeasurementDelete(string FinalInspectionID, string AddDate)
         {
             FinalInspectionMeasurementService service = new FinalInspectionMeasurementService();
-            BaseResult result = service.DeleteMeasurement(new ServiceMeasurement() { FinalInspectionID= FinalInspectionID }, Convert.ToDateTime(AddDate));
+            BaseResult result = service.DeleteMeasurement(new ServiceMeasurement() { FinalInspectionID = FinalInspectionID }, Convert.ToDateTime(AddDate));
             return Json(result);
         }
 

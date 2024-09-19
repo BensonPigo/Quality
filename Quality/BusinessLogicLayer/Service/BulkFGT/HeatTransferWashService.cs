@@ -370,7 +370,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Excel.Range cell = worksheet.Cells[17, 1];
                     worksheet.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 2, cell.Top + 2, 220, 130);
                 }
-                if (head.TestBeforePicture != null)
+                if (head.TestAfterPicture != null)
                 {
                     byte[] beforePic = head.TestAfterPicture;
                     imgPath_AfterPicture = ToolKit.PublicClass.AddImageSignWord(beforePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);

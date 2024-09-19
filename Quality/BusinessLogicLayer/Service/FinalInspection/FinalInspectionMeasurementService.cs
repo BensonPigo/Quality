@@ -137,11 +137,11 @@ namespace BusinessLogicLayer.Service
                 var needUpdMeasurement = measurement.ListMeasurementItem.Where(s => !string.IsNullOrEmpty(s.ResultSizeSpec));
 
                 if (!needUpdMeasurement.Any() && 
-                    (finalInspection.InspectionStage == "Final" || finalInspection.InspectionStage == "3rd Party")
+                    (finalInspection.InspectionStage == "Final" || finalInspection.InspectionStage == "Final Internal" || finalInspection.InspectionStage == "3rd Party")
                     )
                 {
                     result.Result = false;
-                    result.ErrorMessage = "Please input the measurement data if <Inspection Stage> is Final or 3rd Party";
+                    result.ErrorMessage = "Please input the measurement data if <Inspection Stage> is Final or Final Internal or 3rd Party";
                     return result;
                 }
 
@@ -209,10 +209,10 @@ namespace BusinessLogicLayer.Service
                     _FinalInspectionProvider.GetFinalInspection(Head.FinalInspectionID);
 
 
-                if (finalInspection.InspectionStage == "Final" || finalInspection.InspectionStage == "3rd Party")                    
+                if (finalInspection.InspectionStage == "Final" || finalInspection.InspectionStage == "Final Internal" || finalInspection.InspectionStage == "3rd Party")                    
                 {
                     result.Result = false;
-                    result.ErrorMessage = "Please input the measurement data if <Inspection Stage> is Final or 3rd Party";
+                    result.ErrorMessage = "Please input the measurement data if <Inspection Stage> is Final or Final Internal or 3rd Party";
                     return result;
                 }
 
