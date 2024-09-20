@@ -250,7 +250,7 @@ outer apply (
             }
             if (!string.IsNullOrEmpty(Req.SPNO))
             {
-                where += "AND g.OrderID = @SPNO ";
+                where += "AND (g.OrderID = @SPNO or gd.OrderID = @SPNO) ";
             }
             if (!string.IsNullOrEmpty(Req.StyleID))
             {
