@@ -1687,7 +1687,7 @@
             $("#AQProLPlan").removeAttr("disabled");
             var stage = $("#InspectionStage").val();
 
-            if ((stage == 'Final' || stage == 'Final Internal' || stage == '3rd Party') && ($("#AQLPlan").val() == '' || $("#AQLPlan").val() == undefined ||  $("#AQProLPlan").val() == '' || $("#AQProLPlan").val() == undefined)) {
+            if ((stage == 'Final' || stage == 'Final Internal' || stage == '3rd Party') && ($("#AQLPlan").val() == '' || $("#AQLPlan").val() == undefined) && ($("#AQProLPlan").val() == '' || $("#AQProLPlan").val() == undefined)) {
                 AQLPlanResult = false;
             }
 
