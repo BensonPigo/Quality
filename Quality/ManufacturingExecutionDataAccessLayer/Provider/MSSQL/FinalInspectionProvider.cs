@@ -1434,6 +1434,13 @@ select @FinalInspection_CTNMoistureStandard = Standard
 from FinalInspectionMoistureStandard
 where Category = 'CTNMoisture' and BrandID = @BrandID
 
+IF @FinalInspection_CTNMoistureStandard  IS NULL
+BEGIN
+	select @FinalInspection_CTNMoistureStandard = Standard
+	from FinalInspectionMoistureStandard
+	where Category = 'CTNMoisture' and BrandID = 'Default'
+END
+
 select *
 into #EndlineMoisture
 from EndlineMoisture WITH(NOLOCK)
