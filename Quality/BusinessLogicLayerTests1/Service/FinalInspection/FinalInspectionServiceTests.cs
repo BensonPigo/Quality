@@ -22,8 +22,8 @@ namespace BusinessLogicLayer.Service.Tests
             try
             {
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
-                string result = JsonConvert.SerializeObject(finalInspectionService.GetPivot88Json("SPSCH24080730"));
-                string result_New = JsonConvert.SerializeObject(finalInspectionService.GetPivot88Json("SPSCH24080730", isNewType: true));
+                string result = JsonConvert.SerializeObject(finalInspectionService.GetPivot88Json("SPRCH24100333"));
+                string result_New = JsonConvert.SerializeObject(finalInspectionService.GetPivot88Json("SPRCH24100333", isNewType: true));
                 Assert.IsTrue(true);
             }
             catch (Exception ex)

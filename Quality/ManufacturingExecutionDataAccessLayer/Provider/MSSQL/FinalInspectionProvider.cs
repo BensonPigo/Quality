@@ -2718,23 +2718,7 @@ where oc.ID in (select POID from Production.dbo.Orders with (nolock)
 				where id in (select OrderID 
 							 from FinalInspection_Order with (nolock) where ID = @ID))
 
-;WITH CTE_Letters AS (
-    SELECT 
-         oq.Article, 
-         oq.SizeCode,
-        [ShipQty] = sum(oq.Qty),
-        (ROW_NUMBER() OVER (ORDER BY 
-            CAST(SUBSTRING( oq.SizeCode, 1, PATINDEX('%[^0-9]%', SizeCode + 'Z') - 1) AS INT), 
-            SUBSTRING( oq.SizeCode, PATINDEX('%[^0-9]%', SizeCode + 'Z'), LEN(SizeCode))
-        ) * 10) AS SeqNumber
-    FROM FinalInspection_Order_QtyShip fo with (nolock)
-	inner join Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID and fo.Seq = oq.Seq
-    WHERE 
-       fo.ID = @ID
-        AND PATINDEX('%[^0-9]%', SizeCode) > 0 -- 包含字母的SizeCode		
-	group by oq.SizeCode,
-			 oq.Article
-),
+;WITH 
 CTE_Numbers AS (
     SELECT 
          oq.Article, 
@@ -2742,7 +2726,7 @@ CTE_Numbers AS (
         [ShipQty] = sum(oq.Qty),
         ((ROW_NUMBER() OVER (ORDER BY 
             CAST(SizeCode AS INT)
-        ) + (SELECT COUNT(*) FROM CTE_Letters)) * 10) AS SeqNumber
+        ) ) * 10) AS SeqNumber
     FROM FinalInspection_Order_QtyShip fo with (nolock)
 	inner join Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID and fo.Seq = oq.Seq
     WHERE 
@@ -2750,10 +2734,28 @@ CTE_Numbers AS (
         AND PATINDEX('%[^0-9]%', SizeCode) = 0 -- 純數字的SizeCode	
 	group by oq.SizeCode,
 			 oq.Article
+),
+CTE_Letters AS (
+    SELECT 
+         oq.Article, 
+         oq.SizeCode,
+        [ShipQty] = sum(oq.Qty),
+        ((ROW_NUMBER() OVER (ORDER BY 
+            PATINDEX('%[^0-9][0-9]%', SizeCode ),
+            CAST(SUBSTRING( oq.SizeCode, 1, PATINDEX('%[^0-9]%', SizeCode + 'Z') - 1) AS INT), 
+            SUBSTRING( oq.SizeCode, PATINDEX('%[^0-9]%', SizeCode + 'Z'), LEN(SizeCode))
+        ) + (SELECT COUNT(*) FROM CTE_Numbers))* 10) AS SeqNumber
+    FROM FinalInspection_Order_QtyShip fo with (nolock)
+	inner join Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID and fo.Seq = oq.Seq
+    WHERE 
+       fo.ID = @ID
+        AND PATINDEX('%[^0-9]%', SizeCode) > 0 -- 包含字母的SizeCode		
+	group by oq.SizeCode,
+			 oq.Article
 )
-SELECT * FROM CTE_Letters
-UNION ALL
 SELECT * FROM CTE_Numbers
+UNION ALL
+SELECT * FROM CTE_Letters
 ORDER BY SeqNumber;
 
 select	s.StyleName,
