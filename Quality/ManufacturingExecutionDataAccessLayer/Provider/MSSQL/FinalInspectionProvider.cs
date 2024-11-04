@@ -2742,6 +2742,7 @@ CTE_Letters AS (
         [ShipQty] = sum(oq.Qty),
         ((ROW_NUMBER() OVER (ORDER BY 
             PATINDEX('%[^0-9][0-9]%', SizeCode ),
+            iif(PATINDEX('%[^0-9][0-9]%', SizeCode ) > 0,  SUBSTRING(oq.SizeCode, PATINDEX('%[^0-9][0-9]%', SizeCode ), LEN(SizeCode)), ''),
             CAST(SUBSTRING( oq.SizeCode, 1, PATINDEX('%[^0-9]%', SizeCode + 'Z') - 1) AS INT), 
             SUBSTRING( oq.SizeCode, PATINDEX('%[^0-9]%', SizeCode + 'Z'), LEN(SizeCode))
         ) + (SELECT COUNT(*) FROM CTE_Numbers))* 10) AS SeqNumber
