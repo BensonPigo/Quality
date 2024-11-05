@@ -65,13 +65,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _Provider = new AgingHydrolysisTest_Provider(Common.ProductionDataAccessLayer);
             return new AgingHydrolysisTest_Detail_ViewModel()
             {
-                // 預設產生四筆
+                // 預設產生五筆
                 MockupList = new List<AgingHydrolysisTest_Detail_Mockup>()
                 {
                     new AgingHydrolysisTest_Detail_Mockup() { SpecimenName = "Specimen1" ,ChangeScaleStandard="4-5",StainingScaleStandard="4" ,ChangeScale="4-5",StainingScale="4",ChangeResult="Pass",StainingResult="Pass"},
                     new AgingHydrolysisTest_Detail_Mockup() { SpecimenName = "Specimen2" ,ChangeScaleStandard="4-5",StainingScaleStandard="4" ,ChangeScale="4-5",StainingScale="4",ChangeResult="Pass",StainingResult="Pass"},
                     new AgingHydrolysisTest_Detail_Mockup() { SpecimenName = "Specimen3" ,ChangeScaleStandard="4-5",StainingScaleStandard="4" ,ChangeScale="4-5",StainingScale="4",ChangeResult="Pass",StainingResult="Pass"},
                     new AgingHydrolysisTest_Detail_Mockup() { SpecimenName = "Specimen4" ,ChangeScaleStandard="4-5",StainingScaleStandard="4" ,ChangeScale="4-5",StainingScale="4",ChangeResult="Pass",StainingResult="Pass"},
+                    new AgingHydrolysisTest_Detail_Mockup() { SpecimenName = "Specimen5" ,ChangeScaleStandard="4-5",StainingScaleStandard="4" ,ChangeScale="4-5",StainingScale="4",ChangeResult="Pass",StainingResult="Pass"},
                 },
                 Scale_Source = _Provider.GetScales()
             };
@@ -391,19 +392,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             ReportNo = Req.ReportNo,
                         });
 
-                        // 有現存的、且MaterialType = "Mockup"，則帶現存四筆
-                        if (nowMockupList.Any() && model.MainDetailData.MaterialType == "Mockup")
+                        // 有現存的資料
+                        if (nowMockupList.Any())
                         {
                             model.MockupList = nowMockupList;
                         }
-                        // MaterialType != "Mockup"，清空
-                        else if (model.MainDetailData.MaterialType != "Mockup")
-                        {
-                            model.MockupList = new List<AgingHydrolysisTest_Detail_Mockup>();
-                        }
                         else
                         {
-                            // 其餘則使用宣告時預設的四筆
+                            // 其餘則使用宣告時預設的五筆
                         }
 
                         string Subject = $"Accelerated Aging by Hydrolysis Test_{model.MainDetailData.OrderID}_" +
@@ -458,12 +454,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     DetailList = new List<AgingHydrolysisTest_Detail>() { Req.MainDetailData },
                 }
                 , UserID: UserID, isSaveDetailPage: true);
-
-                // 如果 AgingHydrolysisTest_Detail.MaterialType != "Mockup"，則刪除AgingHydrolysisTest_Detail_Mockup
-                if (Req.MainDetailData.MaterialType != "Mockup")
-                {
-                    Req.MockupList = new List<AgingHydrolysisTest_Detail_Mockup>();
-                }
 
                 // AgingHydrolysisTest_Detail_Mockup 異動
                 _Provider.Process_AgingHydrolysisTest_Detail_Mockup(Req, UserID);
@@ -596,20 +586,42 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Mockup_Fail_TextBox.TextFrame.Characters().Text = "V";
                 }
 
-                // Technician 欄位
+                // Technician + Approver 欄位
                 if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
                 {
                     string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
 
                     // 姓名
-                    worksheet.Cells[28, 5] = TechnicianName;
+                    worksheet.Cells[29, 1] = TechnicianName;
 
                     // Signture 圖片
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[30, 5];
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[31, 1];
                     if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
                     {
 
                         byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
+
+                        MemoryStream ms = new MemoryStream(TestBeforePicture);
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                        string imageName = $"{Guid.NewGuid()}.jpg";
+                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                        img.Save(imgPath);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
+                    }
+
+                    string ApproverName = ReportTechnician.Rows[0]["ApproverName"].ToString();
+
+                    // 姓名
+                    worksheet.Cells[29, 5] = ApproverName;
+
+                    // Signture 圖片
+                    cell = worksheet.Cells[31, 5];
+                    if (ReportTechnician.Rows[0]["ApproverSignture"] != DBNull.Value)
+                    {
+
+                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["ApproverSignture"]; // 圖片的 byte[]
 
                         MemoryStream ms = new MemoryStream(TestBeforePicture);
                         System.Drawing.Image img = System.Drawing.Image.FromStream(ms);

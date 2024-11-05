@@ -226,7 +226,7 @@
                     <div class="buttonArea">
                         <div class="buttonAreaItem">
                             <h4 id="Exit" class="toolBarItem" style=" margin-right: 1em;">
-                                <a href="@Url.Action("IndexBack", ViewContext.RouteData.GetRequiredString("Controller"), new 
+                                <a href="@Url.Action("IndexBack", ViewContext.RouteData.GetRequiredString("Controller"), new
                                     {
                                         BrandID = Model.MainDetailData.BrandID,
                                         SeasonID = Model.MainDetailData.SeasonID,
@@ -447,9 +447,14 @@
                         </div>
 
                         <div class="MainDataAreaItem odd">
+                            <h4 class="colTitle">Approver</h4>
                         </div>
 
                         <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainDetailData.Approver, "", new { @class = "CanEdit", @style = "width: 5vw" })
+                            @Html.TextBoxFor(o => o.MainDetailData.ApproverName, "", new { @readonly = "readonly", @style = "width: 7vw" })
+
+                            <input id="btnDetailApproverSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                         </div>
 
 
@@ -673,7 +678,33 @@
                 $('#Save, #Undo ,#Picture ,#Exit').addClass("canUse");
                 $("#MainDetailData_ReceivedDate").addClass("date-picker");
                 $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+                $('#btnDetailApproverSelectItem').on('click', function () {
+                    window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})','Approver',config='toolbar=no,status=no,location=no,width=1000,height=650');
+                });
 
+                $('#MainDetailData_Approver').blur(function () {
+                    $.ajax({
+                        url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                        type: 'POST',
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify({ID: $(this).val(), ReturnType: "JSON" }),
+                        async: true,
+                        success: function (data) {
+                            if (data.length == 0) {
+                                $("#MainDetailData_Approver").val('');
+                                $("#MainDetailData_ApproverName").val('');
+                                msg.WithError('Approver Not Found');
+                            }
+                            else
+                            {
+                                $("#MainDetailData_ApproverName").val(data[0].Name);
+                            }
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            console.log(xhr.responseText);
+                        }
+                    });
+                });
             }
             else {
                 // 可編輯欄位關閉
@@ -1047,5 +1078,10 @@
             $(target).val('Fail');
         }
         $(target).change();
+    }
+
+    function GetPass1(data) {
+        $('#MainDetailData_Approver').val(data.ID);
+        $('#MainDetailData_ApproverName').val(data.Name);
     }
 </script>

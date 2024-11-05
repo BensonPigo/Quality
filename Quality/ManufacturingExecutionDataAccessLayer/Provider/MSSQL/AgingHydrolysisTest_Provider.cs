@@ -143,10 +143,12 @@ select   b.BrandID
         ,c.BuyerDelivery
         ,d.TestAfterPicture
         ,d.TestBeforePicture
+        ,[ApproverName] = pass1Approver.Name
 from AgingHydrolysisTest_Detail a WITH(NOLOCK)
 inner join AgingHydrolysisTest b WITH(NOLOCK) on a.AgingHydrolysisTestID = b.ID
 inner join SciProduction_Orders c on b.OrderID = c.ID
 left join PMSFile.dbo.AgingHydrolysisTest_Image d WITH(NOLOCK) on a.ReportNo = d.ReportNo
+left join MainServer.Production.dbo.pass1 pass1Approver WITH(NOLOCK) on a.Approver = pass1Approver.ID
 where 1=1
 ";
             if (Req.AgingHydrolysisTestID > 0)
@@ -387,6 +389,7 @@ SET EditDate = GETDATE() , EditName = @EditName
     ,AccRefNo = @AccRefNo
     ,FabricColor = @FabricColor
     ,AccColor = @AccColor
+    ,Approver = @Approver
     ,Result = @Result
     ,Comment = @Comment
 WHERE ReportNo = @ReportNo
@@ -480,6 +483,7 @@ DELETE FROM PMSFile.dbo.AgingHydrolysisTest_Image  where ReportNo = @ReportNo
                         listDetailPar.Add(new SqlParameter($"@FabricColor", detailItem.FabricColor ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@AccColor", detailItem.AccColor ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@Comment", detailItem.Comment ?? string.Empty));
+                        listDetailPar.Add(new SqlParameter($"@Approver", detailItem.Approver ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@Result", detailItem.Result ?? string.Empty));
                         listDetailPar.Add(new SqlParameter($"@EditName", UserID));
 
@@ -718,10 +722,15 @@ WHERE ReportNo = @ReportNo
             string sqlCmd = $@"
 select Technician = ISNULL(mp.Name,pp.Name)
 	   ,TechnicianSignture = t.Signature
+       ,ApproverName = ISNULL(Apvmp.Name,Apvpp.Name)
+	   ,ApproverSignture = Apvt.Signature
 from AgingHydrolysisTest_Detail a
 left join Pass1 mp on mp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
 left join MainServer.Production.dbo.Pass1 pp on pp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
 left join MainServer.Production.dbo.Technician t on t.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join Pass1 Apvmp on Apvmp.ID = a.Approver
+left join MainServer.Production.dbo.Pass1 Apvpp on Apvpp.ID = a.Approver
+left join MainServer.Production.dbo.Technician Apvt on Apvt.ID = a.Approver
 where a.ReportNo = @ReportNo
 ;
 
@@ -751,11 +760,14 @@ select b.BrandID
 	,d.TestAfterPicture
 	,Technician = ISNULL(mp.Name,pp.Name)
 	,a.Comment
+    ,a.Approver
+    ,[ApproverName] = pass1Approver.Name
 from AgingHydrolysisTest_Detail a
 inner join AgingHydrolysisTest b on b.ID = a.AgingHydrolysisTestID
 left join PMSFile.dbo.AgingHydrolysisTest_Image  d on a.ReportNo = d.ReportNo
 left join Pass1 mp on a.EditName = mp.ID
 left join SciProduction_Pass1 pp on a.EditName = pp.ID
+left join pass1 pass1Approver WITH(NOLOCK) on a.Approver = pass1Approver.ID
 where a.ReportNo = @ReportNo
 
 select *
