@@ -54,10 +54,14 @@ select	[TestNo] = cast(o.TestNo as varchar),
 		[Remark] = o.Remark,
 		[Status] = o.Status,
         [TestBeforePicture] = (select top 1 TestBeforePicture from SciPMSFile_Oven oi with (nolock) where o.ID = oi.ID) ,
-        [TestAfterPicture] =  (select top 1 TestAfterPicture from SciPMSFile_Oven oi with (nolock) where o.ID = oi.ID) 
+        [TestAfterPicture] =  (select top 1 TestAfterPicture from SciPMSFile_Oven oi with (nolock) where o.ID = oi.ID) ,
+        [Approver] = o.Approver,
+        [ApproverName] = pass1Approver.Name,
+		[ReportDate] = o.ReportDate
 from Oven o with (nolock)
 inner join Orders od  with (nolock) on o.POID = od.ID
 left join pass1 pass1Inspector WITH(NOLOCK) on o.Inspector = pass1Inspector.ID
+left join pass1 pass1Approver WITH(NOLOCK) on o.Approver = pass1Approver.ID
 where o.POID = @POID and o.TestNo = @TestNo
 ";
 
@@ -175,7 +179,8 @@ where o.POID = @POID
             listPar.Add("@TestNo", fabricOvenTest_Detail_Result.Main.TestNo);
             listPar.Add("@InspDate", fabricOvenTest_Detail_Result.Main.InspDate);
             listPar.Add("@Article", fabricOvenTest_Detail_Result.Main.Article);
-            listPar.Add("@Inspector", fabricOvenTest_Detail_Result.Main.Inspector);            
+            listPar.Add("@Inspector", fabricOvenTest_Detail_Result.Main.Inspector);
+            listPar.Add("@Approver", fabricOvenTest_Detail_Result.Main.Approver);
             listPar.Add("@Remark", fabricOvenTest_Detail_Result.Main.Remark ?? "");
             listPar.Add("@editName", userID);
             listPar.Add("@TestBeforePicture", fabricOvenTest_Detail_Result.Main.TestBeforePicture);
@@ -187,6 +192,7 @@ SET XACT_ABORT ON
 update  Oven set    InspDate = @InspDate,
                     Article = @Article,
                     Inspector = @Inspector,
+                    Approver = @Approver,
                     Remark = @Remark,
                     EditName = @editName,
                     EditDate = getdate()
@@ -370,6 +376,7 @@ update  Oven_Detail set Roll           =  @Roll         ,
             listPar.Add("@InspDate", fabricOvenTest_Detail_Result.Main.InspDate);
             listPar.Add("@Article", fabricOvenTest_Detail_Result.Main.Article);
             listPar.Add("@Inspector", fabricOvenTest_Detail_Result.Main.Inspector);
+            listPar.Add("@Approver", fabricOvenTest_Detail_Result.Main.Approver);
             listPar.Add("@Remark", fabricOvenTest_Detail_Result.Main.Remark ?? "");
             listPar.Add("@addName", userID);
             listPar.Add("@TestBeforePicture", fabricOvenTest_Detail_Result.Main.TestBeforePicture);
@@ -389,9 +396,9 @@ from    Oven  WITH(NOLOCK)
 where POID = @POID
 
 ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
-insert into Oven(POID, TestNo, InspDate, Article, Status, Inspector, Remark, addName, addDate ,ReportNo)
+insert into Oven(POID, TestNo, InspDate, Article, Status, Inspector, Approver, Remark, addName, addDate ,ReportNo)
         OUTPUT INSERTED.ID, INSERTED.TestNo into @OvenID
-        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Remark, @addName, getdate() ,@ReportNo)
+        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Approver, @Remark, @addName, getdate() ,@ReportNo)
 
 select  [OvenID] = ID, TestNo
 from @OvenID
@@ -510,6 +517,7 @@ exec UpdateInspPercent 'LabOven',@POID
 
             string sqlUpdateOvenMain = @"
 update Oven set Status = 'Confirmed',
+                ReportDate = getdate(),
                 Result = @result
 where POID = @poID and TestNo = @TestNo
 
@@ -526,6 +534,7 @@ exec UpdateInspPercent 'LabOven',@poID
 
             string sqlUpdateOvenMain = @"
 update Oven set Status = 'New',
+                ReportDate = null,
                 Result = ''
 where POID = @poID and TestNo = @TestNo
 
@@ -550,7 +559,8 @@ select  [SP#] = ov.POID,
         [Article] = ov.Article,
         [Result] = ov.Result,
         [Inspector] = ov.Inspector,
-        [Remark] = ov.Remark
+        [Remark] = ov.Remark,
+        [Approver] = ov.Approver
 from Oven ov with (nolock)
 left join Orders o with (nolock) on ov.POID = o.ID
 where ov.POID = @poID and ov.TestNo = @TestNo
@@ -566,8 +576,7 @@ where ov.POID = @poID and ov.TestNo = @TestNo
             listPar.Add("@TestNo", TestNo);
 
             string sqlGetData = @"
-select	[SubmitDate] = od.SubmitDate,
-        [OvenGroup] = od.OvenGroup,
+select	[OvenGroup] = od.OvenGroup,
         [SEQ] = Concat(od.Seq1, '-', od.Seq2),
         [Roll] = od.Roll,
         [Dyelot] = od.Dyelot,
@@ -613,6 +622,7 @@ select  ov.ID
         ,ov.Result
         ,ov.Status
         ,ov.Inspector
+        ,ov.Approver
         ,ov.Remark
         ,ov.addName
         ,ov.addDate
@@ -623,8 +633,11 @@ select  ov.ID
         ,[TestBeforePicture] = (select top 1 TestBeforePicture from SciPMSFile_Oven oi with (nolock) where oi.ID=ov.ID) 
         ,[TestAfterPicture] =  (select top 1 TestAfterPicture from SciPMSFile_Oven oi with (nolock) where oi.ID=ov.ID) 
         ,[InspectorName] = (select Name from Pass1 WITH(NOLOCK) where ID = ov.Inspector)
+        ,[ApproverName] = (select Name from Pass1 WITH(NOLOCK) where ID = ov.Approver)
         ,[Signature] = (select t.Signature from Technician t where t.ID = ov.Inspector)
+        ,[ApvSignature] = (select t.Signature from Technician t where t.ID = ov.Approver)
         ,ov.ReportNo
+        ,ov.ReportDate
 from    Oven ov with (nolock)
 where   ov.POID = @poID and ov.TestNo = @TestNo
 ";
