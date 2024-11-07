@@ -1009,8 +1009,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
             char[] invalidChars = Path.GetInvalidFileNameChars();
+            char[] additionalChars = { '-', '+' }; // 您想要新增的字元
+            char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
 
-            switch (type)
+                switch (type)
             {
                 case ReportType.Wash_Test_2018:
                     #region Print Wash 2018
@@ -2615,7 +2617,7 @@ and t.GarmentTest=1
                         }
 
 
-                        foreach (char invalidChar in invalidChars)
+                        foreach (char invalidChar in updatedInvalidChars)
                         {
                             typeName = typeName.Replace(invalidChar.ToString(), "");
                         }
@@ -2845,7 +2847,7 @@ and t.GarmentTest=1
                         typeName = AssignedFineName;
                     }
 
-                    foreach (char invalidChar in invalidChars)
+                    foreach (char invalidChar in updatedInvalidChars)
                     {
                         typeName = typeName.Replace(invalidChar.ToString(), "");
                     }
@@ -3118,7 +3120,7 @@ and t.GarmentTest=1
                         typeName = AssignedFineName;
                     }
 
-                    foreach (char invalidChar in invalidChars)
+                    foreach (char invalidChar in updatedInvalidChars)
                     {
                         typeName = typeName.Replace(invalidChar.ToString(), "");
                     }

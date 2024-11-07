@@ -408,8 +408,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     tmpName = AssignedFineName;
                 }
                 char[] invalidChars = Path.GetInvalidFileNameChars();
+                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
+                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
 
-                foreach (char invalidChar in invalidChars)
+                foreach (char invalidChar in updatedInvalidChars)
                 {
                     tmpName = tmpName.Replace(invalidChar.ToString(), "");
                 }
