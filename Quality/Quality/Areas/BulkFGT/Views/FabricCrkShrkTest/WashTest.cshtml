@@ -274,17 +274,21 @@
                                         <td><h5>Result</h5></td>
                                         <td>
                                             @{
-                                                string styleColor = "red";
+                                                string styleColor = "";
                                                 if (Model.Wash_Main.Wash == "Pass")
                                                 {
                                                     styleColor = "blue";
                                                 }
+                                                else
+                                                {
+                                                    styleColor = "red";
+                                                }
                                             }
                                             <font class="@styleColor">@Html.DisplayFor(o => o.Wash_Main.Wash)</font>
                                         </td>
-                                        <td><h5>Last Inspeciton Date</h5></td>
+                                        <td><h5>N/A</h5></td>
                                         <td>
-                                            @Html.ValueFor(o => o.Wash_Main.WashDate, "{0:yyyy/MM/dd}")
+                                            @Html.CheckBox("Wash_Main.NonWash", Convert.ToBoolean(Model.Wash_Main.NonWash), new { @disabled = "disabled" })
                                         </td>
                                     </tr>
                                     <tr>
@@ -292,13 +296,13 @@
                                         <td>
                                             @Html.DisplayFor(o => o.Wash_Main.StyleID)
                                         </td>
-                                        <td><h5>SCI Refno</h5></td>
+                                        <td><h5>Report Date</h5></td>
                                         <td>
-                                            @Html.DisplayFor(o => o.Wash_Main.SCIRefno)
+                                            @Html.ValueFor(o => o.Wash_Main.WashDate, "{0:yyyy/MM/dd}")
                                         </td>
                                         <td><h5>Wash Inspector</h5></td>
                                         <td>
-                                            @Html.DisplayFor(o => o.Wash_Main.Name)
+                                            @Html.DisplayFor(o => o.Wash_Main.WashInspector)
                                         </td>
                                     </tr>
                                     <tr>
@@ -306,13 +310,28 @@
                                         <td>
                                             @Html.DisplayFor(o => o.Wash_Main.BrandID)
                                         </td>
+                                        <td><h5>Receive Date</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Wash_Main.WashReceiveDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                        </td>
+                                        <td><h5>Approver</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Wash_Main.WashApprover, new { @style = "width:30%", @class = "inputWashApprover", @disabled = "disabled" })
+                                            @Html.TextBoxFor(modelItem => Model.Wash_Main.WashApproverName, new { @style = "width:55%", @disabled = "disabled" })
+                                            <input id="btnWashApproverSelectItem" type="button" class="site-btn btn-blue btnWashApproverSelectItem" style="margin:0;border:0;" value="..." />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>SCI Refno</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Wash_Main.SCIRefno)
+                                        </td>
                                         <td><h5>Brand Refno</h5></td>
                                         <td>
                                             @Html.DisplayFor(o => o.Wash_Main.Refno)
                                         </td>
-                                        <td><h5>N/A</h5></td>
+                                        <td><h5></h5></td>
                                         <td>
-                                            @Html.CheckBox("Wash_Main.NonWash", Convert.ToBoolean(Model.Wash_Main.NonWash), new { @disabled = "disabled" })
                                         </td>
                                     </tr>
                                     <tr>
@@ -345,7 +364,7 @@
                                     <tr>
                                         <td><h5>Remark</h5></td>
                                         <td colspan="4">
-                                            @Html.TextBoxFor(o => o.Wash_Main.WashRemark, new { @style="width:100%", @disabled = "disabled" })
+                                            @Html.TextBoxFor(o => o.Wash_Main.WashRemark, new { @style = "width:100%", @disabled = "disabled" })
                                         </td>
                                     </tr>
                                 </tbody>
@@ -534,14 +553,14 @@
 
             $('#Save, #New').addClass("IsEditMode");
             $(".MainEdit").removeAttr("disabled", "disabled");
-            $(".DetailTable input,.DetailTable select, #Wash_Main_WashRemark").removeAttr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select, #Wash_Main_WashRemark,.inputWashApprover ,#Wash_Main_WashReceiveDate").removeAttr("disabled", "disabled");
             $(".detailDelete").show();
             DetailButtonBind();
         }
         else {
             $('#Save, #New').unbind('click').removeClass("IsEditMode");
             $(".MainEdit").attr("disabled", "disabled");
-            $(".DetailTable input,.DetailTable select, #Wash_Main_WashRemark").attr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select, #Wash_Main_WashRemark,.inputWashApprover ,#Wash_Main_WashReceiveDate").attr("disabled", "disabled");
             $(".detailDelete").hide();
             $('#Excel ,#PDF ,#SendMail').addClass("IsEditMode");
 
@@ -1034,6 +1053,43 @@
             window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
         });
 
+        $('.inputWashApprover').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#Wash_Main_WashApprover").val('');
+                $("#Wash_Main_WashApproverName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Wash_Main_WashApprover").val('');
+                        $("#Wash_Main_WashApproverName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#Wash_Main_WashApprover").val(data[0].ID);
+                        $("#Wash_Main_WashApproverName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnWashApproverSelectItem').unbind('click').on('click', function () {
+            var targetID ='Wash_Main_WashApprover';
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
         $('.detailDelete').unbind('click').on('click', function () {
             var t = $(this).closest('tr');
 
@@ -1140,8 +1196,14 @@
     }
 
     function GetPass1(data, targetID) {
-        $("#Wash_Detail_" + targetID + "__Inspector").val(data.ID);
-        $("#Wash_Detail_" + targetID + "__Name").val(data.Name + ' Ext.' + data.ExtNo);
+        if (targetID.includes('Main')) {
+            $(`#${targetID}`).val(data.ID);
+            $(`#${targetID}Name`).val(data.Name);
+        }
+        else {
+            $("#Wash_Detail_" + targetID + "__Inspector").val(data.ID);
+            $("#Wash_Detail_" + targetID + "__Name").val(data.Name + ' Ext.' + data.ExtNo);
+        }
     }
 
     function GetPicture(data) {
