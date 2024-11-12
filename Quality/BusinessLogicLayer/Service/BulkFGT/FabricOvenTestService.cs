@@ -440,6 +440,7 @@ namespace BusinessLogicLayer.Service
                 worksheet.Cells[2, 6] = dtOven.Rows[0]["InspDate"] == DBNull.Value ? string.Empty : ((DateTime)dtOven.Rows[0]["InspDate"]).ToString("yyyy/MM/dd");
                 worksheet.Cells[2, 8] = dtOven.Rows[0]["Inspector"].ToString();
                 worksheet.Cells[2, 10] = brandID;
+                worksheet.Cells[3, 2] = dtOven.Rows[0]["ReportDate"] == DBNull.Value ? string.Empty : ((DateTime)dtOven.Rows[0]["ReportDate"]).ToString("yyyy/MM/dd");
 
                 #region 簽名檔
                 string imgPath_Signature = string.Empty;
@@ -461,19 +462,43 @@ namespace BusinessLogicLayer.Service
                     img.Save(imgPath_Signature);
                 }
 
+                string imgPath_ApvSignature = string.Empty;
+                if (dtOven.Rows[0]["ApvSignature"] != DBNull.Value)
+                {
+                    byte[] bytes = (byte[])dtOven.Rows[0]["ApvSignature"];
+                    MemoryStream ms = new MemoryStream(bytes);
+                    Image img = Image.FromStream(ms);
+                    string imageName = $"{Guid.NewGuid()}.jpg";
+                    if (IsTest.ToLower() == "true")
+                    {
+                        imgPath_ApvSignature = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                    }
+                    else
+                    {
+                        imgPath_ApvSignature = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    }
+
+                    img.Save(imgPath_ApvSignature);
+                }
                 string signature = dtOven.Rows[0]["InspectorName"].ToString();
                 string apvsignature = dtOven.Rows[0]["ApproverName"].ToString();
 
                 Excel.Range cell;
                 if (!string.IsNullOrEmpty(imgPath_Signature))
                 {
-                    cell = worksheet.Cells[32, 4];
+                    cell = worksheet.Cells[33, 4];
                     worksheet.Shapes.AddPicture(imgPath_Signature, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 50, cell.Top + 4, 100, 24);
                 }
-                worksheet.Cells[30, 4] = signature;
-                worksheet.Cells[30, 9] = apvsignature;
+
+                if (!string.IsNullOrEmpty(imgPath_ApvSignature))
+                {
+                    cell = worksheet.Cells[32, 9];
+                    worksheet.Shapes.AddPicture(imgPath_ApvSignature, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 20, cell.Top + 4, 100, 24);
+                }
+                worksheet.Cells[31, 4] = signature;
+                worksheet.Cells[31, 9] = apvsignature;
                 #endregion
-                Excel.Range cellBefore = worksheet.Cells[11, 1];
+                Excel.Range cellBefore = worksheet.Cells[12, 1];
                 if (dtOven.Rows[0]["TestBeforePicture"] != DBNull.Value)
                 {
                     byte[] bytes = (byte[])dtOven.Rows[0]["TestBeforePicture"];
@@ -481,7 +506,7 @@ namespace BusinessLogicLayer.Service
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 5, 370, 240);
                 }
 
-                Excel.Range cellAfter = worksheet.Cells[11, 7];
+                Excel.Range cellAfter = worksheet.Cells[12, 7];
                 if (dtOven.Rows[0]["TestAfterPicture"] != DBNull.Value)
                 {
                     byte[] bytes = (byte[])dtOven.Rows[0]["TestAfterPicture"];
@@ -500,7 +525,7 @@ namespace BusinessLogicLayer.Service
                     Marshal.ReleaseComObject(rngToInsert);
                 }
 
-                int startRow = 4;
+                int startRow = 5;
                 for (int i = 0; i < dtOvenDetail.Rows.Count; i++)
                 {
                     worksheet.Cells[startRow + i, 1] = ret[i, 0];
@@ -686,10 +711,10 @@ namespace BusinessLogicLayer.Service
                     worksheet.Cells[1, 2] = $@"Color Migration Test (Oven) Report({testCode.FirstOrDefault().TestCode})";
                 }
                 worksheet.Cells[4, 3] = distOvenDetailSubmitDate[0]["ReportNo"].ToString();
-                worksheet.Cells[4, 6] = dtOven.Rows[0]["ReportDate"] == DBNull.Value ? string.Empty : ((DateTime)dtOven.Rows[0]["ReportDate"]).ToString("yyyy/MM/dd");
-                worksheet.Cells[4, 9] = dtOven.Rows[0]["InspDate"] == DBNull.Value ? string.Empty : ((DateTime)dtOven.Rows[0]["InspDate"]).ToString("yyyy/MM/dd");
+                worksheet.Cells[4, 9] = dtOven.Rows[0]["ReportDate"] == DBNull.Value ? string.Empty : ((DateTime)dtOven.Rows[0]["ReportDate"]).ToString("yyyy/MM/dd");
+                worksheet.Cells[4, 14] = dtOven.Rows[0]["InspDate"] == DBNull.Value ? string.Empty : ((DateTime)dtOven.Rows[0]["InspDate"]).ToString("yyyy/MM/dd");
                 worksheet.Cells[5, 3] = poID;
-                worksheet.Cells[5, 6] = brandID;
+                worksheet.Cells[5, 9] = brandID;
                 worksheet.Cells[7, 3] = styleID;
                 worksheet.Cells[7, 9] = CustPONO;
                 worksheet.Cells[7, 14] = dtOven.Rows[0]["Article"].ToString();
@@ -719,7 +744,7 @@ namespace BusinessLogicLayer.Service
                     // 細項資料
                     this.SetDetailData(worksheet, j + headerRow + 1, dr[j]);
                 }
-                worksheet.get_Range($"O10:O{dr.Length + 10}").WrapText = true;
+                worksheet.get_Range($"N11:O{dr.Length + 11}").WrapText = true;
                 worksheet.Cells.EntireRow.AutoFit();
 
                 // 簽名格子塞入後的Row Index
@@ -732,7 +757,7 @@ namespace BusinessLogicLayer.Service
                 if (!string.IsNullOrEmpty(imgPath_Signature))
                 {
                     cell = worksheet.Cells[dr.Length + headerRow + 3, 2];
-                    worksheet.Shapes.AddPicture(imgPath_Signature, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 50, cell.Top + 4, 100, 24);
+                    worksheet.Shapes.AddPicture(imgPath_Signature, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 60, cell.Top + 4, 100, 24);
                 }
                 worksheet.Cells[dr.Length + headerRow + 5, 2] = signature;
 
