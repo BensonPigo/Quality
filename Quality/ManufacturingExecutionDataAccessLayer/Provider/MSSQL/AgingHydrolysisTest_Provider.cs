@@ -394,10 +394,9 @@ SET EditDate = GETDATE() , EditName = @EditName
     ,Comment = @Comment
 WHERE ReportNo = @ReportNo
 ;
-if @MaterialType != 'Mockup'
-begin
-    delete from AgingHydrolysisTest_Detail_Mockup where ReportNo = @ReportNo
-end 
+
+delete from AgingHydrolysisTest_Detail_Mockup where ReportNo = @ReportNo
+
 ;
 if not exists(
     select * from PMSFile.dbo.AgingHydrolysisTest_Image WHERE ReportNo = @ReportNo
@@ -425,10 +424,8 @@ SET EditDate = GETDATE() , EditName = @EditName
     ,MaterialType = @MaterialType
 WHERE ReportNo = @ReportNo
 ;
-if @MaterialType != 'Mockup'
-begin
-    delete from AgingHydrolysisTest_Detail_Mockup where ReportNo = @ReportNo
-end 
+
+delete from AgingHydrolysisTest_Detail_Mockup where ReportNo = @ReportNo
 
 if not exists(
     select * from PMSFile.dbo.AgingHydrolysisTest_Image WHERE ReportNo = @ReportNo

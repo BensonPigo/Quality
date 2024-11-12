@@ -22,6 +22,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -548,6 +549,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 $"{agingHydrolysisTest_Detail.Rows[0]["Result"]}_" +
                 $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
+                tmpName = Regex.Replace(tmpName, @"[/:?""<>|*%]", string.Empty);
 
                 if (reportDataSet.Tables.Count == 2)
                 {
@@ -689,7 +691,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 //AgingHydrolysisTest_Detail_Mockup
-                if (agingHydrolysisTest_Detail_Mockup != null && agingHydrolysisTest_Detail_Mockup.Rows != null && agingHydrolysisTest_Detail_Mockup.Rows.Count == 4)
+                if (agingHydrolysisTest_Detail_Mockup != null && agingHydrolysisTest_Detail_Mockup.Rows != null && agingHydrolysisTest_Detail_Mockup.Rows.Count >= 4)
                 {
                     // Specimen1
                     worksheet.Cells[11, 1] = agingHydrolysisTest_Detail_Mockup.Rows[0]["SpecimenName"].ToString();
@@ -714,6 +716,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Cells[14, 2] = agingHydrolysisTest_Detail_Mockup.Rows[3]["ChangeScale"].ToString();
                     worksheet.Cells[14, 4] = agingHydrolysisTest_Detail_Mockup.Rows[3]["StainingScale"].ToString();
                     worksheet.Cells[14, 5] = agingHydrolysisTest_Detail_Mockup.Rows[3]["Comment"].ToString();
+
+                    // Specimen5
+                    if (agingHydrolysisTest_Detail_Mockup.Rows.Count > 4)
+                    {
+                        worksheet.Cells[15, 1] = agingHydrolysisTest_Detail_Mockup.Rows[4]["SpecimenName"].ToString();
+                        worksheet.Cells[15, 2] = agingHydrolysisTest_Detail_Mockup.Rows[4]["ChangeScale"].ToString();
+                        worksheet.Cells[15, 4] = agingHydrolysisTest_Detail_Mockup.Rows[4]["StainingScale"].ToString();
+                        worksheet.Cells[15, 5] = agingHydrolysisTest_Detail_Mockup.Rows[4]["Comment"].ToString();
+                    }
                 }
 
                 //string tmpName = $"AgingHydrolysisTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
