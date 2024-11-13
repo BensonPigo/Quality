@@ -89,6 +89,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 FabricOvenTest_Detail_Result saveResult = (FabricOvenTest_Detail_Result)TempData["ModelFabricOvenTest"];
                 model.Main.InspDate = saveResult.Main.InspDate;
+                model.Main.ReportDate = saveResult.Main.ReportDate;
                 model.Main.Article = saveResult.Main.Article;
                 model.Main.Inspector = saveResult.Main.Inspector;
                 model.Main.InspectorName = saveResult.Main.InspectorName;
