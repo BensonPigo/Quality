@@ -1013,19 +1013,21 @@ namespace BusinessLogicLayer.Service
                 excelSheets.Cells[5, 6] = fabricCrkShrkTestHeat_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestHeat_Main.WhseArrival).ToString("yyyy/MM/dd");
                 excelSheets.Cells[5, 8] = fabricCrkShrkTestHeat_Main.Supp;
                 excelSheets.Cells[5, 10] = fabricCrkShrkTestHeat_Main.NonHeat.ToString();
+                excelSheets.Cells[6, 2] = fabricCrkShrkTestHeat_Main.HeatReceiveDate.HasValue ? fabricCrkShrkTestHeat_Main.HeatReceiveDate.Value.ToString("yyyy/MM/dd") : string.Empty;
 
-                excelSheets.Cells[44, 4] = fabricCrkShrkTestHeat_Main.HeatInspectorName;
-                excelSheets.Cells[44, 9] = fabricCrkShrkTestHeat_Main.HeatApproverName;
+                excelSheets.Cells[30, 4] = fabricCrkShrkTestHeat_Main.HeatInspectorName;
+                excelSheets.Cells[30, 9] = fabricCrkShrkTestHeat_Main.HeatApproverName;
 
-                int defaultRowCount = 10;
+                int defaultRowCount = 1;
+                int detailStartIdx = 8;
                 int otherCount = (dtHeatDetail.Rows.Count - defaultRowCount) > 0 ? dtHeatDetail.Rows.Count - defaultRowCount : 0;
                 if (otherCount > 0)
                 {
                     // Rate List 複製Row：若有第4筆，則複製一次；有第5筆，則複製2次
                     for (int i = 0; i < otherCount; i++)
                     {
-                        Microsoft.Office.Interop.Excel.Range paste = excelSheets.get_Range($"A{defaultRowCount + i}", Type.Missing);
-                        Microsoft.Office.Interop.Excel.Range copyRow = excelSheets.get_Range($"A{defaultRowCount}").EntireRow;
+                        Microsoft.Office.Interop.Excel.Range paste = excelSheets.get_Range($"A{detailStartIdx + i}", Type.Missing);
+                        Microsoft.Office.Interop.Excel.Range copyRow = excelSheets.get_Range($"A{detailStartIdx}").EntireRow;
                         paste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
                     }
                 }
@@ -1036,7 +1038,7 @@ namespace BusinessLogicLayer.Service
                     int colIndex = 1;
                     foreach (string col in columnNames)
                     {
-                        excel.Cells[RowIdx + 7, colIndex] = dtHeatDetail.Rows[RowIdx][col].ToString();
+                        excel.Cells[RowIdx + detailStartIdx, colIndex] = dtHeatDetail.Rows[RowIdx][col].ToString();
                         colIndex++;
                     }
 
@@ -1044,28 +1046,28 @@ namespace BusinessLogicLayer.Service
                 }
 
                 #region 添加圖片
-                Excel.Range cellBeforePicture = excelSheets.Cells[22 + otherCount, 1];
+                Excel.Range cellBeforePicture = excelSheets.Cells[10 + otherCount, 1];
                 if (fabricCrkShrkTestHeat_Main.HeatTestBeforePicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestHeat_Main.HeatTestBeforePicture, fabricCrkShrkTestHeat_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
                 }
 
-                Excel.Range cellAfterPicture = excelSheets.Cells[22 + otherCount, 7];
+                Excel.Range cellAfterPicture = excelSheets.Cells[10 + otherCount, 7];
                 if (fabricCrkShrkTestHeat_Main.HeatTestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestHeat_Main.HeatTestAfterPicture, fabricCrkShrkTestHeat_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 323, 255);
                 }
 
-                Excel.Range rgInspectorSignature = excelSheets.Cells[46 + otherCount, 4];
+                Excel.Range rgInspectorSignature = excelSheets.Cells[32 + otherCount, 4];
                 if (fabricCrkShrkTestHeat_Main.InspectorSignature != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestHeat_Main.InspectorSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgInspectorSignature.Left, rgInspectorSignature.Top, 100, 24);
                 }
 
-                Excel.Range rgApproverignature = excelSheets.Cells[46 + otherCount, 9];
+                Excel.Range rgApproverignature = excelSheets.Cells[32 + otherCount, 9];
                 if (fabricCrkShrkTestHeat_Main.ApproverSignature != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestHeat_Main.ApproverSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
@@ -1212,19 +1214,21 @@ namespace BusinessLogicLayer.Service
                 excelSheets.Cells[5, 6] = fabricCrkShrkTestIron_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestIron_Main.WhseArrival).ToString("yyyy/MM/dd");
                 excelSheets.Cells[5, 8] = fabricCrkShrkTestIron_Main.Supp;
                 excelSheets.Cells[5, 10] = fabricCrkShrkTestIron_Main.NonIron.ToString();
+                excelSheets.Cells[6, 2] = fabricCrkShrkTestIron_Main.IronReceiveDate.HasValue ? fabricCrkShrkTestIron_Main.IronReceiveDate.Value.ToString("yyyy/MM/dd") : string.Empty;
 
-                excelSheets.Cells[44, 4] = fabricCrkShrkTestIron_Main.IronInspectorName;
-                excelSheets.Cells[44, 9] = fabricCrkShrkTestIron_Main.IronApproverName;
+                excelSheets.Cells[30, 4] = fabricCrkShrkTestIron_Main.IronInspectorName;
+                excelSheets.Cells[30, 9] = fabricCrkShrkTestIron_Main.IronApproverName;
 
-                int defaultRowCount = 10;
+                int defaultRowCount = 1;
+                int detailStartIdx = 8;
                 int otherCount = (dtIronDetail.Rows.Count - defaultRowCount) > 0 ? dtIronDetail.Rows.Count - defaultRowCount : 0;
                 if (otherCount > 0)
                 {
                     // Rate List 複製Row：若有第4筆，則複製一次；有第5筆，則複製2次
                     for (int i = 0; i < otherCount; i++)
                     {
-                        Microsoft.Office.Interop.Excel.Range paste = excelSheets.get_Range($"A{defaultRowCount + i}", Type.Missing);
-                        Microsoft.Office.Interop.Excel.Range copyRow = excelSheets.get_Range($"A{defaultRowCount}").EntireRow;
+                        Microsoft.Office.Interop.Excel.Range paste = excelSheets.get_Range($"A{detailStartIdx + i}", Type.Missing);
+                        Microsoft.Office.Interop.Excel.Range copyRow = excelSheets.get_Range($"A{detailStartIdx}").EntireRow;
                         paste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
                     }
                 }
@@ -1235,7 +1239,7 @@ namespace BusinessLogicLayer.Service
                     int colIndex = 1;
                     foreach (string col in columnNames)
                     {
-                        excel.Cells[RowIdx + 7, colIndex] = dtIronDetail.Rows[RowIdx][col].ToString();
+                        excel.Cells[RowIdx + detailStartIdx, colIndex] = dtIronDetail.Rows[RowIdx][col].ToString();
                         colIndex++;
                     }
 
@@ -1243,28 +1247,28 @@ namespace BusinessLogicLayer.Service
                 }
 
                 #region 添加圖片
-                Excel.Range cellBeforePicture = excelSheets.Cells[22 + otherCount, 1];
+                Excel.Range cellBeforePicture = excelSheets.Cells[10 + otherCount, 1];
                 if (fabricCrkShrkTestIron_Main.IronTestBeforePicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestIron_Main.IronTestBeforePicture, fabricCrkShrkTestIron_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
                 }
 
-                Excel.Range cellAfterPicture = excelSheets.Cells[22 + otherCount, 7];
+                Excel.Range cellAfterPicture = excelSheets.Cells[10 + otherCount, 7];
                 if (fabricCrkShrkTestIron_Main.IronTestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestIron_Main.IronTestAfterPicture, fabricCrkShrkTestIron_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 323, 255);
                 }
 
-                Excel.Range rgInspectorSignature = excelSheets.Cells[46 + otherCount, 4];
+                Excel.Range rgInspectorSignature = excelSheets.Cells[32 + otherCount, 4];
                 if (fabricCrkShrkTestIron_Main.InspectorSignature != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestIron_Main.InspectorSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgInspectorSignature.Left, rgInspectorSignature.Top, 100, 24);
                 }
 
-                Excel.Range rgApproverignature = excelSheets.Cells[46 + otherCount, 9];
+                Excel.Range rgApproverignature = excelSheets.Cells[32 + otherCount, 9];
                 if (fabricCrkShrkTestIron_Main.ApproverSignature != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestIron_Main.ApproverSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
@@ -1421,19 +1425,21 @@ namespace BusinessLogicLayer.Service
                 excelSheets.Cells[5, 6] = fabricCrkShrkTestWash_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestWash_Main.WhseArrival).ToString("yyyy/MM/dd");
                 excelSheets.Cells[5, 8] = fabricCrkShrkTestWash_Main.Supp;
                 excelSheets.Cells[5, 10] = fabricCrkShrkTestWash_Main.NonWash;
+                excelSheets.Cells[6, 2] = fabricCrkShrkTestWash_Main.WashReceiveDate.HasValue ? fabricCrkShrkTestWash_Main.WashReceiveDate.Value.ToString("yyyy/MM/dd") : string.Empty;
 
-                excelSheets.Cells[56, 4] = fabricCrkShrkTestWash_Main.WashInspectorName;
-                excelSheets.Cells[56, 9] = fabricCrkShrkTestWash_Main.WashApproverName;
+                excelSheets.Cells[30, 4] = fabricCrkShrkTestWash_Main.WashInspectorName;
+                excelSheets.Cells[30, 9] = fabricCrkShrkTestWash_Main.WashApproverName;
 
-                int defaultRowCount = 24;
+                int defaultRowCount = 1;
+                int detailStartIdx = 8;
                 int otherCount = (dtWashDetail.Rows.Count - defaultRowCount) > 0 ? dtWashDetail.Rows.Count - defaultRowCount : 0;
                 if (otherCount > 0)
                 {
                     // Rate List 複製Row：若有第4筆，則複製一次；有第5筆，則複製2次
                     for (int i = 0; i < otherCount; i++)
                     {
-                        Microsoft.Office.Interop.Excel.Range paste = excelSheets.get_Range($"A{defaultRowCount + i}", Type.Missing);
-                        Microsoft.Office.Interop.Excel.Range copyRow = excelSheets.get_Range($"A{defaultRowCount}").EntireRow;
+                        Microsoft.Office.Interop.Excel.Range paste = excelSheets.get_Range($"A{detailStartIdx + i}", Type.Missing);
+                        Microsoft.Office.Interop.Excel.Range copyRow = excelSheets.get_Range($"A{detailStartIdx}").EntireRow;
                         paste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
                     }
                 }
@@ -1444,7 +1450,7 @@ namespace BusinessLogicLayer.Service
                     int colIndex = 1;
                     foreach (string col in columnNames)
                     {
-                        excelSheets.Cells[RowIdx + 7, colIndex] = dtWashDetail.Rows[RowIdx][col].ToString();
+                        excelSheets.Cells[RowIdx + detailStartIdx, colIndex] = dtWashDetail.Rows[RowIdx][col].ToString();
                         colIndex++;
                     }
 
@@ -1490,28 +1496,28 @@ namespace BusinessLogicLayer.Service
                 }
 
                 #region 添加圖片
-                Excel.Range cellBeforePicture = excelSheets.Cells[34 + otherCount, 1];
+                Excel.Range cellBeforePicture = excelSheets.Cells[10 + otherCount, 1];
                 if (fabricCrkShrkTestWash_Main.WashTestBeforePicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestWash_Main.WashTestBeforePicture, fabricCrkShrkTestWash_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 20, 323, 255);
                 }
 
-                Excel.Range cellAfterPicture = excelSheets.Cells[34 + otherCount, 7];
+                Excel.Range cellAfterPicture = excelSheets.Cells[10 + otherCount, 7];
                 if (fabricCrkShrkTestWash_Main.WashTestAfterPicture != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestWash_Main.WashTestAfterPicture, fabricCrkShrkTestWash_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 20, 323, 255);
                 }
 
-                Excel.Range rgInspectorSignature = excelSheets.Cells[58 + otherCount, 4];
+                Excel.Range rgInspectorSignature = excelSheets.Cells[32 + otherCount, 4];
                 if (fabricCrkShrkTestWash_Main.InspectorSignature != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestWash_Main.InspectorSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
                     excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgInspectorSignature.Left, rgInspectorSignature.Top, 100, 24);
                 }
 
-                Excel.Range rgApproverignature = excelSheets.Cells[58 + otherCount, 9];
+                Excel.Range rgApproverignature = excelSheets.Cells[32 + otherCount, 9];
                 if (fabricCrkShrkTestWash_Main.ApproverSignature != null)
                 {
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestWash_Main.ApproverSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
