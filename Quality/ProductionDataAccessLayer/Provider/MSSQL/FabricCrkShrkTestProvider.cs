@@ -265,9 +265,12 @@ select	[POID] = f.POID,
         [Supp] = Concat(f.SuppID, s.AbbEn),
         [Crocking] = fl.Crocking,
         [CrockingDate] = fl.CrockingDate,
+        fl.CrockingReceiveDate,
+        fl.CrockingApprover,
+        [CrockingApproverName] = (select Name from pass1 WITH(NOLOCK) where ID = fl.CrockingApprover),
         [StyleID] = o.StyleID,
         [SCIRefno] = f.SCIRefno,
-        [Name] = (select Name from pass1 WITH(NOLOCK) where ID = fl.CrockingInspector),
+        [CrockingInspector] = (select Name from pass1 WITH(NOLOCK) where ID = fl.CrockingInspector),
         [BrandID] = o.BrandID,
         [Refno] = f.Refno,
         [NonCrocking] = fl.NonCrocking,
@@ -396,6 +399,13 @@ select fl.ReportNo
 	,SCIRefno_Color = f.SCIRefno + ' ' + pc.SpecValue
 	,Color = pc.SpecValue
 	,Inspector = LabTech.Val
+    ,fl.CrockingReceiveDate
+    ,fl.CrockingInspector
+    ,[CrockingInspectorName] = (select Name from pass1 WITH(NOLOCK) where ID = fl.CrockingInspector)
+    ,InspectorSignature = tInspector.Signature
+    ,fl.CrockingApprover
+    ,[CrockingApproverName] = (select Name from pass1 WITH(NOLOCK) where ID = fl.CrockingApprover)
+    ,ApproverSignature = tCrockingApprover.Signature
     ,Remark = fl.CrockingRemark
 	,CrockingTestPicture1 = (select top 1 CrockingTestPicture1 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
     ,CrockingTestPicture2 = (select top 1 CrockingTestPicture2 from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID)
@@ -406,6 +416,8 @@ inner join Orders o with (nolock) on o.ID = fl.POID
 inner join FIR f with (nolock) on f.ID = fl.ID
 left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
 left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join Technician tInspector on tInspector.ID = fl.CrockingInspector
+left join Technician tCrockingApprover on tCrockingApprover.ID = fl.CrockingApprover
 outer apply(
 	select Val=STUFF((
 		select DISTINCT ',' + sa.Article
@@ -480,6 +492,8 @@ where   BrandID = (select BrandID from orders with (nolock) where ID = (select P
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@ID", fabricCrkShrkTestCrocking_Result.ID);
             listPar.Add("@CrockingRemark", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingRemark);
+            listPar.Add("@CrockingReceiveDate", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingReceiveDate);
+            listPar.Add("@CrockingApprover", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingApprover ?? string.Empty);
             listPar.Add("@CrockingTestPicture1", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestPicture1);
             listPar.Add("@CrockingTestPicture2", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestPicture2);
             listPar.Add("@CrockingTestPicture3", fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingTestPicture3);
@@ -488,12 +502,15 @@ where   BrandID = (select BrandID from orders with (nolock) where ID = (select P
             string sqlUpdateCrocking = @"
 SET XACT_ABORT ON
 -- 2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
-update  FIR_Laboratory set  CrockingRemark = @CrockingRemark
+update  FIR_Laboratory set  CrockingRemark = @CrockingRemark,
+                            CrockingReceiveDate = @CrockingReceiveDate,
+                            CrockingApprover = @CrockingApprover
+
 where   ID = @ID 
 
 if exists( select 1 from SciPMSFile_FIR_Laboratory where   ID = @ID )
 begin
-    update  SciPMSFile_FIR_Laboratory set  CrockingTestPicture1 = @CrockingTestPicture1,
+    update  SciPMSFile_FIR_Laboratory set  CrockingTestPicture1 = @CrockingTestPicture1,                                
                                 CrockingTestPicture2 = @CrockingTestPicture2,
                                 CrockingTestPicture3 = @CrockingTestPicture3,
                                 CrockingTestPicture4 = @CrockingTestPicture4
@@ -501,8 +518,8 @@ begin
 END
 else
 begin
-    insert into SciPMSFile_FIR_Laboratory (ID  ,CrockingTestPicture1  ,CrockingTestPicture2  ,CrockingTestPicture3  ,CrockingTestPicture4)
-    VALUES(@ID  ,@CrockingTestPicture1  ,@CrockingTestPicture2  ,@CrockingTestPicture3  ,@CrockingTestPicture4)
+    insert into SciPMSFile_FIR_Laboratory (ID,CrockingTestPicture1  ,CrockingTestPicture2  ,CrockingTestPicture3  ,CrockingTestPicture4)
+    VALUES(@ID,@CrockingTestPicture1  ,@CrockingTestPicture2  ,@CrockingTestPicture3  ,@CrockingTestPicture4)
 end
 ";
 
@@ -873,7 +890,12 @@ select	[POID] = f.POID,
         [HeatDate] = fl.HeatDate,
         [StyleID] = o.StyleID,
         [SCIRefno] = f.SCIRefno,
-        [Name] = (select Name from pass1 WITH(NOLOCK) where ID = fl.HeatInspector),
+        fl.HeatReceiveDate,
+        fl.HeatInspector,
+        [HeatInspectorName] = (select Name from pass1 WITH(NOLOCK) where ID = fl.HeatInspector),
+        fl.HeatApprover,
+        [HeatApproverName] = (select Name from pass1 WITH(NOLOCK) where ID = fl.HeatApprover),
+        fl.HeatReceiveDate,
         [BrandID] = o.BrandID,
         [Refno] = f.Refno,
         [NonHeat] = fl.NonHeat,
@@ -882,7 +904,9 @@ select	[POID] = f.POID,
         [HeatEncode] = fl.HeatEncode,
         [HeatTestBeforePicture] =  (select top 1 HeatTestBeforePicture from SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) where fli.ID = fl.ID ),  
         [HeatTestAfterPicture] = (select top 1 HeatTestAfterPicture from SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) where fli.ID = fl.ID),
-        [ReportNo] = fl.ReportNo
+        [ReportNo] = fl.ReportNo,
+        InspectorSignature = tInspector.Signature,
+        ApproverSignature = tApprover.Signature
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
@@ -891,6 +915,8 @@ left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = p
 left join Supp s with (nolock) on s.ID = f.SuppID
 left join Orders o with (nolock) on o.ID = f.POID
 left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno
+left join Technician tInspector on tInspector.ID = fl.HeatInspector
+left join Technician tApprover on tApprover.ID = fl.HeatApprover
 where f.ID = @ID
 ";
 
@@ -944,6 +970,8 @@ where flc.ID = @ID
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@ID", fabricCrkShrkTestHeat_Result.ID);
             listPar.Add("@HeatRemark", fabricCrkShrkTestHeat_Result.Heat_Main.HeatRemark);
+            listPar.Add("@HeatReceiveDate", fabricCrkShrkTestHeat_Result.Heat_Main.HeatReceiveDate);
+            listPar.Add("@HeatApprover", fabricCrkShrkTestHeat_Result.Heat_Main.HeatApprover ?? string.Empty);
             listPar.Add("@HeatTestBeforePicture", fabricCrkShrkTestHeat_Result.Heat_Main.HeatTestBeforePicture);
             listPar.Add("@HeatTestAfterPicture", fabricCrkShrkTestHeat_Result.Heat_Main.HeatTestAfterPicture);
 
@@ -951,6 +979,8 @@ where flc.ID = @ID
 SET XACT_ABORT ON
 -----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 update  FIR_Laboratory set  HeatRemark = @HeatRemark
+                            ,HeatReceiveDate = @HeatReceiveDate
+                            ,HeatApprover = @HeatApprover
 where   ID = @ID 
 ;
 if exists(
@@ -1287,7 +1317,11 @@ select	[POID] = f.POID,
         [IronDate] = fl.IronDate,
         [StyleID] = o.StyleID,
         [SCIRefno] = f.SCIRefno,
-        [Name] = (select Name from pass1 WITH(NOLOCK) where ID = fl.IronInspector),
+        fl.IronInspector,
+        [IronInspectorName] = (select Name from pass1 WITH(NOLOCK) where ID = fl.IronInspector),
+        fl.IronReceiveDate,
+        fl.IronApprover,
+        [IronApproverName] = (select Name from pass1 WITH(NOLOCK) where ID = fl.IronApprover),
         [BrandID] = o.BrandID,
         [Refno] = f.Refno,
         [NonIron] = fl.NonIron,
@@ -1296,7 +1330,9 @@ select	[POID] = f.POID,
         [IronEncode] = fl.IronEncode,
         [IronTestBeforePicture] =  (select top 1 IronTestBeforePicture from SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) where fli.ID = fl.ID ),  
         [IronTestAfterPicture] = (select top 1 IronTestAfterPicture from SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) where fli.ID = fl.ID),
-        [ReportNo] = fl.ReportNo
+        [ReportNo] = fl.ReportNo,
+        InspectorSignature = tInspector.Signature,
+        ApproverSignature = tApprover.Signature
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
@@ -1305,6 +1341,8 @@ left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = p
 left join Supp s with (nolock) on s.ID = f.SuppID
 left join Orders o with (nolock) on o.ID = f.POID
 left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno
+left join Technician tInspector on tInspector.ID = fl.IronInspector
+left join Technician tApprover on tApprover.ID = fl.IronApprover
 where f.ID = @ID
 ";
 
@@ -1357,6 +1395,8 @@ where flc.ID = @ID
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@ID", fabricCrkShrkTestIron_Result.ID);
+            listPar.Add("@IronReceiveDate", fabricCrkShrkTestIron_Result.Iron_Main.IronReceiveDate);
+            listPar.Add("@IronApprover", fabricCrkShrkTestIron_Result.Iron_Main.IronApprover ?? string.Empty);
             listPar.Add("@IronRemark", fabricCrkShrkTestIron_Result.Iron_Main.IronRemark ?? string.Empty);
             listPar.Add("@IronTestBeforePicture", fabricCrkShrkTestIron_Result.Iron_Main.IronTestBeforePicture);
             listPar.Add("@IronTestAfterPicture", fabricCrkShrkTestIron_Result.Iron_Main.IronTestAfterPicture);
@@ -1365,6 +1405,8 @@ where flc.ID = @ID
 SET XACT_ABORT ON
 -----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 update  FIR_Laboratory set  IronRemark = @IronRemark
+                            ,IronReceiveDate = @IronReceiveDate
+                            ,IronApprover = @IronApprover
 where   ID = @ID 
 ;
 if exists(
@@ -1703,7 +1745,11 @@ select	[POID] = f.POID,
         [WashDate] = fl.WashDate,
         [StyleID] = o.StyleID,
         [SCIRefno] = f.SCIRefno,
-        [Name] = (select Name from pass1 WITH(NOLOCK) where ID = fl.WashInspector),
+        fl.WashReceiveDate,
+        fl.WashInspector,
+        [WashInspectorName] = (select Name from pass1 WITH(NOLOCK) where ID = fl.WashInspector),
+        fl.WashApprover,
+        [WashApproverName] = (select Name from pass1 WITH(NOLOCK) where ID = fl.WashApprover),
         [BrandID] = o.BrandID,
         [Refno] = f.Refno,
         [NonWash] = fl.NonWash,
@@ -1713,7 +1759,9 @@ select	[POID] = f.POID,
         [WashEncode] = fl.WashEncode,
         [WashTestBeforePicture] = (select top 1 WashTestBeforePicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID),
         [WashTestAfterPicture] = (select top 1 WashTestAfterPicture from SciPMSFile_FIR_Laboratory fli WITH(NOLOCK) where fli.ID = fl.ID),
-        [ReportNo] = fl.ReportNo
+        [ReportNo] = fl.ReportNo,
+        InspectorSignature = tInspector.Signature,
+        ApproverSignature = tApprover.Signature
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
 left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
@@ -1722,6 +1770,8 @@ left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = p
 left join Supp s with (nolock) on s.ID = f.SuppID
 left join Orders o with (nolock) on o.ID = f.POID
 left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno
+left join Technician tInspector on tInspector.ID = fl.WashInspector
+left join Technician tApprover on tApprover.ID = fl.WashApprover
 where f.ID = @ID
 ";
 
@@ -1779,7 +1829,9 @@ where flc.ID = @ID
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
             listPar.Add("@ID", fabricCrkShrkTestWash_Result.ID);
-            listPar.Add("@WashRemark", fabricCrkShrkTestWash_Result.Wash_Main.WashRemark);
+            listPar.Add("@WashReceiveDate", fabricCrkShrkTestWash_Result.Wash_Main.WashReceiveDate);
+            listPar.Add("@WashApprover", fabricCrkShrkTestWash_Result.Wash_Main.WashApprover ?? string.Empty);
+            listPar.Add("@WashRemark", fabricCrkShrkTestWash_Result.Wash_Main.WashRemark ?? string.Empty);
             listPar.Add("@SkewnessOptionID", fabricCrkShrkTestWash_Result.Wash_Main.SkewnessOptionID ?? string.Empty);
             listPar.Add("@WashTestBeforePicture", fabricCrkShrkTestWash_Result.Wash_Main.WashTestBeforePicture);
             listPar.Add("@WashTestAfterPicture", fabricCrkShrkTestWash_Result.Wash_Main.WashTestAfterPicture);
@@ -1787,8 +1839,10 @@ where flc.ID = @ID
             string sqlUpdateCrocking = @"
 SET XACT_ABORT ON
 -----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
-update  FIR_Laboratory set  WashRemark = @WashRemark, 
-                            SkewnessOptionID = @SkewnessOptionID
+update  FIR_Laboratory set  WashRemark = @WashRemark
+                            ,SkewnessOptionID = @SkewnessOptionID
+                            ,WashApprover = @WashApprover
+                            ,WashReceiveDate = @WashReceiveDate
 where   ID = @ID 
 ;
 if exists(

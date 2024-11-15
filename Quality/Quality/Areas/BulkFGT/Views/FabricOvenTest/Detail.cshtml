@@ -248,7 +248,7 @@
                                         @Html.HiddenFor(o => o.Main.BrandID)
                                     </td>
 
-                                    <td style="width: 10vw;"><h5>TestDate</h5></td>
+                                    <td style="width: 10vw;"><h5>Receive Date</h5></td>
 
                                     <td style="width: 15vw;">
                                         @Html.TextBoxFor(o => Model.Main.InspDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
@@ -277,7 +277,21 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td><h5>Approver</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => Model.Main.Approver, "", new { @style = "width: 7vw" })
+                                        @Html.TextBoxFor(o => Model.Main.ApproverName, "", new { @readonly = "readonly", @style = "width: 8vw" })
 
+                                        <input id="btnDetailApproverSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td ><h5>Report Date</h5></td>
+
+                                    <td >
+                                        @Html.TextBoxFor(o => Model.Main.ReportDate, "{0:yyyy/MM/dd}", new { @readonly = "readonly" })
+                                    </td>
+
+                                </tr>
+                                <tr>                                  
                                     <td><h5>Remark</h5></td>
                                     <td colspan="5">
                                         @Html.TextBoxFor(o => o.Main.Remark, "", new { @style = "width: 50vw" })
@@ -297,7 +311,6 @@
                             <thead>
                                 <tr>
 
-                                    <th><h4>Submit Date</h4></th>
                                     <th><h4>Group</h4></th>
                                     <th><h4>SEQ#</h4></th>
                                     <th><h4>Roll#</h4></th>
@@ -322,10 +335,7 @@
                                 @for (int i = 0; i <= Model.Details.Count - 1; i++)
                                 {
                                     <tr idx='@i'>
-                                        <td>
-                                            <input id='Seq@{@i}' idx='@i' type='hidden'>
-                                            @Html.TextBoxFor(o => Model.Details[i].SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker width9vw" })
-                                        </td>
+                                       
                                         <td>
                                             @Html.TextBoxFor(o => Model.Details[i].OvenGroup, "", new { @maxlength = "2", @type = "number", @step = "1", @min = "0", @max = "99", @oninput = "value=OvenGroupCheck(value)" })
                                         </td>
@@ -521,6 +531,10 @@
           window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
         });
 
+        $('#btnDetailApproverSelectItem').on('click', function () {
+            window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})?TargetID=Approver','Approver',config='toolbar=no,status=no,location=no,width=1000,height=650');
+        });
+
         $('#Main_Article').blur(function () {
             var OrderID = $('#Main_POID').val();
             $.ajax({
@@ -557,6 +571,30 @@
                     else
                     {
                         $("#Main_InspectorName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('#Main_Approver').blur(function () {
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Main_Approver").val('');
+                        $("#Main_ApproverName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else
+                    {
+                        $("#Main_ApproverName").val(data[0].Name);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -817,10 +855,10 @@
 
                 $(this).children().find("input[type='text']").each(function (index, value) {
                     switch (index) {
-                        case 1:
+                        case 0:
                             SEQ = $(this).val();
                             break;
-                        case 7:
+                        case 6:
                             Result = $(this).val();
                             break;
                     }
@@ -1125,9 +1163,14 @@
         $('#Main_Article').val(data);
     }
 
-    function GetPass1(data) {
-        $('#Main_Inspector').val(data.ID);
-        $('#Main_InspectorName').val(data.Name);
+    function GetPass1(data, targetID) {
+        if (targetID == 'Approver') {
+            $('#Main_Approver').val(data.ID);
+            $('#Main_ApproverName').val(data.Name);
+        } else {
+            $('#Main_Inspector').val(data.ID);
+            $('#Main_InspectorName').val(data.Name);
+        }
     }
 
     function GetPo_Supp_Detail(data, TargetID) {

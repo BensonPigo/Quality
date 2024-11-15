@@ -285,9 +285,9 @@
                                             }
                                             <font class="@styleColor">@Html.DisplayFor(o => o.Iron_Main.Iron)</font>
                                         </td>
-                                        <td><h5>Last Inspeciton Date</h5></td>
+                                        <td><h5>N/A</h5></td>
                                         <td>
-                                            @Html.ValueFor(o => o.Iron_Main.IronDate, "{0:yyyy/MM/dd}")
+                                            @Html.CheckBox("Iron_Main.NonIron", Convert.ToBoolean(Model.Iron_Main.NonIron), new { @disabled = "disabled" })
                                         </td>
                                     </tr>
                                     <tr>
@@ -295,13 +295,13 @@
                                         <td>
                                             @Html.DisplayFor(o => o.Iron_Main.StyleID)
                                         </td>
-                                        <td><h5>SCI Refno</h5></td>
+                                        <td><h5>Report Date</h5></td>
                                         <td>
-                                            @Html.DisplayFor(o => o.Iron_Main.SCIRefno)
+                                            @Html.ValueFor(o => o.Iron_Main.IronDate, "{0:yyyy/MM/dd}")
                                         </td>
                                         <td><h5>Iron Inspector</h5></td>
                                         <td>
-                                            @Html.DisplayFor(o => o.Iron_Main.Name)
+                                            @Html.DisplayFor(o => o.Iron_Main.IronInspector)
                                         </td>
                                     </tr>
                                     <tr>
@@ -309,13 +309,28 @@
                                         <td>
                                             @Html.DisplayFor(o => o.Iron_Main.BrandID)
                                         </td>
+                                        <td><h5>Receive Date</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Main.IronReceiveDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                        </td>
+                                        <td><h5>Approver</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Main.IronApprover, new { @style = "width:30%", @class = "inputIronApprover", @disabled = "disabled" })
+                                            @Html.TextBoxFor(modelItem => Model.Iron_Main.IronApproverName, new { @style = "width:55%", @disabled = "disabled" })
+                                            <input id="btnIronApproverSelectItem" type="button" class="site-btn btn-blue btnIronApproverSelectItem" style="margin:0;border:0;" value="..." />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>SCI Refno</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Iron_Main.SCIRefno)
+                                        </td>
                                         <td><h5>Brand Refno</h5></td>
                                         <td>
                                             @Html.DisplayFor(o => o.Iron_Main.Refno)
                                         </td>
-                                        <td><h5>N/A</h5></td>
+                                        <td><h5></h5></td>
                                         <td>
-                                            @Html.CheckBox("Iron_Main.NonIron", Convert.ToBoolean(Model.Iron_Main.NonIron), new { @disabled = "disabled" })
                                         </td>
                                     </tr>
                                     <tr>
@@ -493,14 +508,14 @@
 
             $('#Save, #New').addClass("IsEditMode");
             $(".DataTable:not(.DetailTable) textarea").removeAttr("disabled", "disabled");
-            $(".DetailTable input,.DetailTable select, #Iron_Main_IronRemark").removeAttr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select, #Iron_Main_IronRemark ,.inputIronApprover ,#Iron_Main_IronReceiveDate").removeAttr("disabled", "disabled");
             $(".detailDelete").show();
             DetailButtonBind();
         }
         else {
             $('#Save, #New').unbind('click').removeClass("IsEditMode");
             $(".DataTable:not(.DetailTable) textarea").attr("disabled", "disabled");
-            $(".DetailTable input,.DetailTable select, #Iron_Main_IronRemark").attr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select, #Iron_Main_IronRemark ,.inputIronApprover ,#Iron_Main_IronReceiveDate").attr("disabled", "disabled");
             $(".detailDelete").hide();
             $('#Excel ,#PDF ,#SendMail').addClass("IsEditMode");
 
@@ -922,6 +937,44 @@
             window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
         });
 
+        $('.inputIronApprover').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#Iron_Main_IronApprover").val('');
+                $("#Iron_Main_IronApproverName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Iron_Main_IronApprover").val('');
+                        $("#Iron_Main_IronApproverName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#Iron_Main_IronApprover").val(data[0].ID);
+                        $("#Iron_Main_IronApproverName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnIronApproverSelectItem').unbind('click').on('click', function () {
+            var targetID ='Iron_Main_IronApprover';
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+
         $('.detailDelete').unbind('click').on('click', function () {
             var t = $(this).closest('tr');
 
@@ -982,8 +1035,14 @@
     }
 
     function GetPass1(data, targetID) {
-        $("#Iron_Detail_" + targetID + "__Inspector").val(data.ID);
-        $("#Iron_Detail_" + targetID + "__Name").val(data.Name + ' Ext.' + data.ExtNo);
+        if (targetID.includes('Main')) {
+            $(`#${targetID}`).val(data.ID);
+            $(`#${targetID}Name`).val(data.Name);
+        }
+        else {
+            $("#Iron_Detail_" + targetID + "__Inspector").val(data.ID);
+            $("#Iron_Detail_" + targetID + "__Name").val(data.Name + ' Ext.' + data.ExtNo);
+        }
     }
 
     function GetPicture(data) {

@@ -135,6 +135,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public byte[] TestBeforePicture { get; set; }
         public byte[] TestAfterPicture { get; set; }
 
+        public string Approver { get; set; }
+        public string ApproverName { get; set; }
         public string AddName { get; set; }
         public DateTime? AddDate { get; set; }
         public string CreateBy
