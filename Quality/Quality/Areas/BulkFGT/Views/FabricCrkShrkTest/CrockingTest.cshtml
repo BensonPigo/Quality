@@ -304,9 +304,9 @@
                                             }
                                             <font class="@styleColor">@Html.DisplayFor(o => o.Crocking_Main.Crocking)</font>
                                         </td>
-                                        <td><h5>Last Inspeciton Date</h5></td>
+                                        <td><h5>N/A</h5></td>
                                         <td>
-                                            @Html.ValueFor(o => o.Crocking_Main.CrockingDate, "{0:yyyy/MM/dd}")
+                                            @Html.CheckBox("Crocking_Main.NonCrocking", Convert.ToBoolean(Model.Crocking_Main.NonCrocking), new { @disabled = "disabled" })
                                         </td>
                                     </tr>
                                     <tr>
@@ -314,13 +314,13 @@
                                         <td>
                                             @Html.DisplayFor(o => o.Crocking_Main.StyleID)
                                         </td>
-                                        <td><h5>SCI Refno</h5></td>
+                                        <td><h5>Report Date</h5></td>
                                         <td>
-                                            @Html.DisplayFor(o => o.Crocking_Main.SCIRefno)
+                                            @Html.ValueFor(o => o.Crocking_Main.CrockingDate, "{0:yyyy/MM/dd}")
                                         </td>
                                         <td><h5>Crocking Inspector</h5></td>
                                         <td>
-                                            @Html.DisplayFor(o => o.Crocking_Main.Name)
+                                            @Html.DisplayFor(o => o.Crocking_Main.CrockingInspector)
                                         </td>
                                     </tr>
                                     <tr>
@@ -328,13 +328,28 @@
                                         <td>
                                             @Html.DisplayFor(o => o.Crocking_Main.BrandID)
                                         </td>
+                                        <td><h5>Receive Date</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Crocking_Main.CrockingReceiveDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                        </td>
+                                        <td><h5>Approver</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.Crocking_Main.CrockingApprover, new { @style = "width:30%" ,@class = "inputCrockingApprover" , @disabled = "disabled" })
+                                            @Html.TextBoxFor(modelItem => Model.Crocking_Main.CrockingApproverName, new { @style = "width:57%", @disabled = "disabled" })
+                                            <input id="btnCrockingApproverSelectItem" type="button" class="site-btn btn-blue btnCrockingApproverSelectItem" style="margin:0;border:0;" value="..." />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><h5>SCI Refno</h5></td>
+                                        <td>
+                                            @Html.DisplayFor(o => o.Crocking_Main.SCIRefno)
+                                        </td>
                                         <td><h5>Brand Refno</h5></td>
                                         <td>
                                             @Html.DisplayFor(o => o.Crocking_Main.Refno)
                                         </td>
-                                        <td><h5>N/A</h5></td>
+                                        <td><h5></h5></td>
                                         <td>
-                                            @Html.CheckBox("Crocking_Main.NonCrocking", Convert.ToBoolean(Model.Crocking_Main.NonCrocking), new { @disabled = "disabled" })
                                         </td>
                                     </tr>
                                     <tr>
@@ -606,14 +621,14 @@
 
             $('#Save, #New').addClass("IsEditMode");
             $(".DataTable:not(.DetailTable) textarea").removeAttr("disabled", "disabled");
-            $(".DetailTable input,.DetailTable select, #Crocking_Main_CrockingRemark").removeAttr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select, #Crocking_Main_CrockingRemark ,.inputCrockingApprover ,#Crocking_Main_CrockingReceiveDate").removeAttr("disabled", "disabled");
             $(".detailDelete").show();
             DetailButtonBind();
         }
         else {
             $('#Save, #New').unbind('click').removeClass("IsEditMode");
             $(".DataTable:not(.DetailTable) textarea").attr("disabled", "disabled");
-            $(".DetailTable input,.DetailTable select, #Crocking_Main_CrockingRemark").attr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select, #Crocking_Main_CrockingRemark, .inputCrockingApprover,#Crocking_Main_CrockingReceiveDate").attr("disabled", "disabled");
             $(".detailDelete").hide();
             $('#Excel, #PDF ,#SendMail').addClass("IsEditMode");
             if (@Model.Crocking_Main.CrockingEncdoe == false) {
@@ -1072,6 +1087,44 @@
             window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
         });
 
+        $('.inputCrockingApprover').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#Crocking_Main_CrockingApprover").val('');
+                $("#Crocking_Main_CrockingApproverName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Crocking_Main_CrockingApprover").val('');
+                        $("#Crocking_Main_CrockingApproverName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#Crocking_Main_CrockingApprover").val(data[0].ID);
+                        $("#Crocking_Main_CrockingApproverName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnCrockingApproverSelectItem').unbind('click').on('click', function () {
+            var targetID ='Crocking_Main_CrockingApprover';
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+
         $('.detailDelete').unbind('click').on('click', function () {
             var t = $(this).closest('tr');
 
@@ -1089,8 +1142,14 @@
     }
 
     function GetPass1(data, targetID) {
-        $("#Crocking_Detail_" + targetID + "__Inspector").val(data.ID);
-        $("#Crocking_Detail_" + targetID + "__Name").val(data.Name + ' Ext.' + data.ExtNo);
+        if (targetID.includes('Main')) {
+            $(`#${targetID}`).val(data.ID);
+            $(`#${targetID}Name`).val(data.Name);
+        }
+        else {
+            $("#Crocking_Detail_" + targetID + "__Inspector").val(data.ID);
+            $("#Crocking_Detail_" + targetID + "__Name").val(data.Name + ' Ext.' + data.ExtNo);
+        }
     }
 
     function GetFabricCrockingPicture(data) {

@@ -103,7 +103,7 @@ namespace DatabaseObject.ResultModel
         public DateTime? CrockingDate { get; set; }
         public string StyleID { get; set; }
         public string SCIRefno { get; set; }
-        public string Name { get; set; }
+        public string CrockingInspector { get; set; }
         public string BrandID { get; set; }
         public string Refno { get; set; }
         public bool? NonCrocking { get; set; }
@@ -121,6 +121,9 @@ namespace DatabaseObject.ResultModel
         public byte[] CrockingTestPicture3 { get; set; }
         public byte[] CrockingTestPicture4 { get; set; }
         public string MailSubject { get; set; }
+        public DateTime? CrockingReceiveDate { get; set; }
+        public string CrockingApprover { get; set; } = string.Empty;
+        public string CrockingApproverName { get; set; } = string.Empty;
     }
 
     public class Crocking_Excel
@@ -148,6 +151,13 @@ namespace DatabaseObject.ResultModel
         public string ResultWet_Weft { get; set; }
         public string Remark { get; set; }
         public string Inspector { get; set; }
+        public DateTime? CrockingReceiveDate { get; set; }
+        public string CrockingInspector { get; set; }
+        public string CrockingInspectorName { get; set; }
+        public string CrockingApprover { get; set; }
+        public string CrockingApproverName { get; set; }
+        public Byte[] InspectorSignature { get; set; }
+        public Byte[] ApproverSignature { get; set; }
         public Byte[] CrockingTestPicture1 { get; set; }
         public Byte[] CrockingTestPicture2 { get; set; }
         public Byte[] CrockingTestPicture3 { get; set; }
@@ -212,7 +222,8 @@ namespace DatabaseObject.ResultModel
         public DateTime? IronDate { get; set; }
         public string StyleID { get; set; }
         public string SCIRefno { get; set; }
-        public string Name { get; set; }
+        public string IronInspector { get; set; }
+        public string IronInspectorName { get; set; }
         public string BrandID { get; set; }
         public string Refno { get; set; }
         public bool? NonIron { get; set; }
@@ -223,9 +234,15 @@ namespace DatabaseObject.ResultModel
             get => _IronRemark ?? string.Empty;
             set => _IronRemark = value;
         }
+        public DateTime? IronReceiveDate { get; set; }
+        public string IronApprover { get; set; } = string.Empty;
+        public string IronApproverName { get; set; } = string.Empty;
+
         public bool IronEncode { get; set; }
         public byte[] IronTestBeforePicture { get; set; }
         public byte[] IronTestAfterPicture { get; set; }
+        public byte[] InspectorSignature { get; set; }
+        public byte[] ApproverSignature { get; set; }
         public string MailSubject { get; set; }
     }
     public class FabricCrkShrkTestHeat_Main
@@ -243,7 +260,8 @@ namespace DatabaseObject.ResultModel
         public DateTime? HeatDate { get; set; }
         public string StyleID { get; set; }
         public string SCIRefno { get; set; }
-        public string Name { get; set; }
+        public string HeatInspector { get; set; }
+        public string HeatInspectorName { get; set; }
         public string BrandID { get; set; }
         public string Refno { get; set; }
         public bool? NonHeat { get; set; }
@@ -258,6 +276,11 @@ namespace DatabaseObject.ResultModel
         public byte[] HeatTestBeforePicture { get; set; }
         public byte[] HeatTestAfterPicture { get; set; }
         public string MailSubject { get; set; }
+        public DateTime? HeatReceiveDate { get; set; }
+        public string HeatApprover { get; set; } = string.Empty;
+        public string HeatApproverName { get; set; } = string.Empty;
+        public byte[] InspectorSignature { get; set; }
+        public byte[] ApproverSignature { get; set; }
     }
 
     public class FabricCrkShrkTestHeat_Detail : CompareBase
@@ -332,7 +355,8 @@ namespace DatabaseObject.ResultModel
         public DateTime? WashDate { get; set; }
         public string StyleID { get; set; }
         public string SCIRefno { get; set; }
-        public string Name { get; set; }
+        public string WashInspector { get; set; }
+        public string WashInspectorName { get; set; }
         public string BrandID { get; set; }
         public string Refno { get; set; }
         public bool? NonWash { get; set; }
@@ -345,8 +369,14 @@ namespace DatabaseObject.ResultModel
             set => _WashRemark = value;
         }
         public bool WashEncode { get; set; }
+        public DateTime? WashReceiveDate { get; set; }
+        public string WashApprover { get; set; } = string.Empty;
+        public string WashApproverName { get; set; } = string.Empty;
         public byte[] WashTestBeforePicture { get; set; }
         public byte[] WashTestAfterPicture { get; set; }
+
+        public byte[] InspectorSignature { get; set; }
+        public byte[] ApproverSignature { get; set; }
         public string MailSubject { get; set; }
     }
 

@@ -125,4 +125,7 @@
 
     });
 
+    window.addEventListener('beforeunload', function (event) {
+        window.opener.location.reload();
+    });
 </script>
