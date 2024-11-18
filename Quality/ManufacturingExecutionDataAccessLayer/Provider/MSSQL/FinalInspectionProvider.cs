@@ -2723,12 +2723,11 @@ CTE_Numbers AS (
     SELECT 
          oq.Article, 
          oq.SizeCode,
-        [ShipQty] = sum(oq.Qty),
         ((ROW_NUMBER() OVER (ORDER BY 
             CAST(SizeCode AS INT)
         ) ) * 10) AS SeqNumber
     FROM FinalInspection_Order_QtyShip fo with (nolock)
-	inner join Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID and fo.Seq = oq.Seq
+	inner join Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID
     WHERE 
        fo.ID = @ID
         AND PATINDEX('%[^0-9]%', SizeCode) = 0 -- 純數字的SizeCode	
@@ -2739,7 +2738,6 @@ CTE_Letters AS (
     SELECT 
          oq.Article, 
          oq.SizeCode,
-        [ShipQty] = sum(oq.Qty),
         ((ROW_NUMBER() OVER (ORDER BY 
             PATINDEX('%[^0-9][0-9]%', SizeCode ),
             iif(PATINDEX('%[^0-9][0-9]%', SizeCode ) > 0,  SUBSTRING(oq.SizeCode, PATINDEX('%[^0-9][0-9]%', SizeCode ), LEN(SizeCode)), ''),
@@ -2747,17 +2745,29 @@ CTE_Letters AS (
             SUBSTRING( oq.SizeCode, PATINDEX('%[^0-9]%', SizeCode + 'Z'), LEN(SizeCode))
         ) + (SELECT COUNT(*) FROM CTE_Numbers))* 10) AS SeqNumber
     FROM FinalInspection_Order_QtyShip fo with (nolock)
-	inner join Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID and fo.Seq = oq.Seq
+	inner join Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID
     WHERE 
        fo.ID = @ID
         AND PATINDEX('%[^0-9]%', SizeCode) > 0 -- 包含字母的SizeCode		
 	group by oq.SizeCode,
 			 oq.Article
 )
-SELECT * FROM CTE_Numbers
+SELECT * into #tmpSku_number FROM CTE_Numbers
 UNION ALL
 SELECT * FROM CTE_Letters
 ORDER BY SeqNumber;
+
+SELECT	oqd.Article,
+		oqd.SizeCode,
+		[ShipQty] = sum(oqd.Qty),
+		t.SeqNumber
+from Production.dbo.Order_QtyShip_Detail oqd with (nolock)
+inner join #tmpSku_number t on t.Article = oqd.Article and t.SizeCode = oqd.SizeCode
+where exists(select 1 from FinalInspection_Order_QtyShip foq with (nolock) where foq.OrderID = oqd.ID and foq.Seq = oqd.Seq and foq.ID = @ID)
+group by	oqd.Article,
+			oqd.SizeCode,
+			t.SeqNumber
+order by t.SeqNumber
 
 select	s.StyleName,
 		o.FactoryID,
