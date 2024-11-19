@@ -180,7 +180,7 @@ where o.POID = @POID
             listPar.Add("@InspDate", fabricOvenTest_Detail_Result.Main.InspDate);
             listPar.Add("@Article", fabricOvenTest_Detail_Result.Main.Article);
             listPar.Add("@Inspector", fabricOvenTest_Detail_Result.Main.Inspector);
-            listPar.Add("@Approver", fabricOvenTest_Detail_Result.Main.Approver);
+            listPar.Add("@Approver", fabricOvenTest_Detail_Result.Main.Approver ?? string.Empty);
             listPar.Add("@Remark", fabricOvenTest_Detail_Result.Main.Remark ?? "");
             listPar.Add("@editName", userID);
             listPar.Add("@TestBeforePicture", fabricOvenTest_Detail_Result.Main.TestBeforePicture);
@@ -197,13 +197,25 @@ update  Oven set    InspDate = @InspDate,
                     EditName = @editName,
                     EditDate = getdate()
 where   POID = @POID and TestNo = @TestNo
+;
+IF EXISTS(
+    select 1 from SciPMSFile_Oven where   POID = @POID and TestNo = @TestNo
+)
+BEGIN
+    update  SciPMSFile_Oven set  
+                        TestBeforePicture = @TestBeforePicture,
+                        TestAfterPicture = @TestAfterPicture
+    where   POID = @POID and TestNo = @TestNo
+END
+ELSE
 
-update  SciPMSFile_Oven set  
-                    TestBeforePicture = @TestBeforePicture,
-                    TestAfterPicture = @TestAfterPicture
-where   POID = @POID and TestNo = @TestNo
-
-
+BEGIN
+    insert into SciPMSFile_Oven(ID, POID, TestNo, TestBeforePicture, TestAfterPicture)
+            values(
+    (select TOP 1 ID from Oven where POID = @POID AND TestNo = @TestNo)
+    , @POID, @TestNo, @TestBeforePicture, @TestAfterPicture)
+END
+;
 select  [OvenID] = ID
 from    Oven WITH(NOLOCK)
 where   POID = @POID and TestNo = @TestNo

@@ -337,6 +337,7 @@
                                     <tr idx='@i'>
                                        
                                         <td>
+                                            <input id='Seq@{@i}' idx='@i' type='hidden'>
                                             @Html.TextBoxFor(o => Model.Details[i].OvenGroup, "", new { @maxlength = "2", @type = "number", @step = "1", @min = "0", @max = "99", @oninput = "value=OvenGroupCheck(value)" })
                                         </td>
                                         <td style="width:11vw;">
