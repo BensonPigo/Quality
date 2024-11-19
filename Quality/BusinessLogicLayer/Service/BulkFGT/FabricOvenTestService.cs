@@ -489,13 +489,13 @@ namespace BusinessLogicLayer.Service
                 Excel.Range cell;
                 if (!string.IsNullOrEmpty(imgPath_Signature))
                 {
-                    cell = worksheet.Cells[25, 4];
+                    cell = worksheet.Cells[26, 4];
                     worksheet.Shapes.AddPicture(imgPath_Signature, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 50, cell.Top + 4, 100, 24);
                 }
 
                 if (!string.IsNullOrEmpty(imgPath_ApvSignature))
                 {
-                    cell = worksheet.Cells[25, 9];
+                    cell = worksheet.Cells[26, 9];
                     worksheet.Shapes.AddPicture(imgPath_ApvSignature, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 20, cell.Top + 4, 100, 24);
                 }
                 #endregion
