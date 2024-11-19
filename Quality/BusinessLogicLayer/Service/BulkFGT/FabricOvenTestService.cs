@@ -480,25 +480,28 @@ namespace BusinessLogicLayer.Service
 
                     img.Save(imgPath_ApvSignature);
                 }
+
                 string signature = dtOven.Rows[0]["InspectorName"].ToString();
                 string apvsignature = dtOven.Rows[0]["ApproverName"].ToString();
+                worksheet.Cells[24, 4] = signature;
+                worksheet.Cells[24, 9] = apvsignature;
 
                 Excel.Range cell;
                 if (!string.IsNullOrEmpty(imgPath_Signature))
                 {
-                    cell = worksheet.Cells[33, 4];
+                    cell = worksheet.Cells[26, 4];
                     worksheet.Shapes.AddPicture(imgPath_Signature, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 50, cell.Top + 4, 100, 24);
                 }
 
                 if (!string.IsNullOrEmpty(imgPath_ApvSignature))
                 {
-                    cell = worksheet.Cells[32, 9];
+                    cell = worksheet.Cells[26, 9];
                     worksheet.Shapes.AddPicture(imgPath_ApvSignature, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 20, cell.Top + 4, 100, 24);
                 }
-                worksheet.Cells[31, 4] = signature;
-                worksheet.Cells[31, 9] = apvsignature;
                 #endregion
-                Excel.Range cellBefore = worksheet.Cells[12, 1];
+
+                #region 圖片
+                Excel.Range cellBefore = worksheet.Cells[8, 1];
                 if (dtOven.Rows[0]["TestBeforePicture"] != DBNull.Value)
                 {
                     byte[] bytes = (byte[])dtOven.Rows[0]["TestBeforePicture"];
@@ -506,39 +509,40 @@ namespace BusinessLogicLayer.Service
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 5, 370, 240);
                 }
 
-                Excel.Range cellAfter = worksheet.Cells[12, 7];
+                Excel.Range cellAfter = worksheet.Cells[8, 7];
                 if (dtOven.Rows[0]["TestAfterPicture"] != DBNull.Value)
                 {
                     byte[] bytes = (byte[])dtOven.Rows[0]["TestAfterPicture"];
                     string imgPath = ToolKit.PublicClass.AddImageSignWord(bytes, dtOven.Rows[0]["ReportNo"].ToString(), ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
                     worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, 358, 240);
                 }
+                #endregion
 
-                if (dtOvenDetail.Rows.Count > 0)
+                int defaultRowCount = 1;
+                int detailStartIdx = 5;
+                int otherCount = dtOvenDetail.Rows.Count - defaultRowCount;
+                if (otherCount > 0)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A4:K4", Type.Missing).EntireRow;
-                    for (int i = 1; i < dtOvenDetail.Rows.Count; i++)
+                    //  複製Row
+                    for (int i = 0; i < otherCount; i++)
                     {
-                        rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+                        Microsoft.Office.Interop.Excel.Range paste = worksheet.get_Range($"A{detailStartIdx + i}", Type.Missing);
+                        Microsoft.Office.Interop.Excel.Range copyRow = worksheet.get_Range($"A{detailStartIdx}").EntireRow;
+                        paste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
                     }
-
-                    Marshal.ReleaseComObject(rngToInsert);
                 }
 
-                int startRow = 5;
-                for (int i = 0; i < dtOvenDetail.Rows.Count; i++)
+                int RowIdx = 0;
+                foreach (DataRow dr in dtOvenDetail.Rows)
                 {
-                    worksheet.Cells[startRow + i, 1] = ret[i, 0];
-                    worksheet.Cells[startRow + i, 2] = ret[i, 1];
-                    worksheet.Cells[startRow + i, 3] = ret[i, 2];
-                    worksheet.Cells[startRow + i, 4] = ret[i, 3];
-                    worksheet.Cells[startRow + i, 5] = ret[i, 4];
-                    worksheet.Cells[startRow + i, 6] = ret[i, 5];
-                    worksheet.Cells[startRow + i, 7] = ret[i, 6];
-                    worksheet.Cells[startRow + i, 8] = ret[i, 7];
-                    worksheet.Cells[startRow + i, 9] = ret[i, 8];
-                    worksheet.Cells[startRow + i, 10] = ret[i, 9];
-                    worksheet.Cells[startRow + i, 11] = ret[i, 10];
+                    int colIndex = 1;
+                    foreach (string col in columnNames)
+                    {
+                        excel.Cells[RowIdx + detailStartIdx, colIndex] = dtOvenDetail.Rows[RowIdx][col].ToString();
+                        colIndex++;
+                    }
+
+                    RowIdx++;
                 }
 
                 worksheet.Cells.EntireColumn.AutoFit();
