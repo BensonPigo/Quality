@@ -377,6 +377,7 @@
                                     <th><h4>450 Result</h4></th>
                                     <th><h4>451 Result</h4></th>
                                     <th><h4>@washName Result</h4></th>
+                                    <th><h4>Approver</h4></th>
                                     <th><h4>Inspector</h4></th>
                                     <th><h4>Inspector Name</h4></th>
                                     <th><h4>Comments</h4></th>
@@ -495,6 +496,15 @@
                                             }
                                             @WashResultDetailVal
                                         </td>
+
+
+                                        <td style="width:10vw;">
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(o => Model.garmentTest_Details[i].Approver, new { @class = "Approver", @style = "width: 6vw;margin-right:2px;" })
+                                                @Html.TextBoxFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_Approver, "", new { @readonly = "readonly", @style = "width: 10vw;margin-right:2px;", @class = "ApproverName" })
+                                                <input class="btnDetailApproverSelectItem site-btn btn-blue" type="button" style="margin:0;border:0;" value="..." />
+                                            </div>
+                                        </td>
                                         <td style="width:10vw;">
                                             <div class="input-group">
                                                 @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspector, new { @class = "Inspector" })
@@ -508,7 +518,7 @@
                                             @Html.TextBoxFor(o => Model.garmentTest_Details[i].Remark, "", "")
                                         </td>
                                         <td style="">
-                                            <img class="SendMail" src="~/Image/Icon/Mail.png" width="30" MailSubject="@Model.garmentTest_Details[i].MailSubject"/>
+                                            <img class="SendMail" src="~/Image/Icon/Mail.png" width="30" MailSubject="@Model.garmentTest_Details[i].MailSubject" />
                                         </td>
                                         <td class="Sender" style="">
                                             @Html.DisplayFor(o => Model.garmentTest_Details[i].Sender, "", "")
@@ -648,7 +658,7 @@
                 var no = fcol.attr("idv");
 
                 var NonSeamBreakageTest = $(this).children().find("input[type='checkbox']").prop("checked");
-                var OrderID, inspdate, inspector, Remark;
+                var OrderID, inspdate, inspector, Remark, approver;
                 var SizeCode, MtlTypeID;
                 $(this).children().find("input[type='text']").each(function (index, value) {
                     switch (index) {
@@ -659,9 +669,12 @@
                             inspdate = $(this).val();
                             break;
                         case 2:
-                            inspector = $(this).val();
+                            approver = $(this).val();
                             break;
                         case 4:
+                            inspector = $(this).val();
+                            break;
+                        case 6:
                             Remark = $(this).val();
                             break;
                     }
@@ -695,6 +708,7 @@
                     OrderID: OrderID,
                     inspdate: inspdate,
                     inspector: inspector,
+                    Approver: approver,
                     Remark: Remark,
                     NonSeamBreakageTest: NonSeamBreakageTest,
                     SizeCode: SizeCode,
@@ -860,7 +874,15 @@
 
         $('.btnDetailInspectorSelectItem').unbind('click').on('click', function () {
             var targetID = $(this).closest('tr').attr('idx');
-            var para = "?TargetID=" + targetID;
+            var id = `garmentTest_Details_${targetID}__inspector`;
+            var para = "?TargetID=" + id;
+            window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})' + para, 'Inspector', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+        });
+
+        $('.btnDetailApproverSelectItem').unbind('click').on('click', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+            var id = `garmentTest_Details_${targetID}__Approver`;
+            var para = "?TargetID=" + id;
             window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})' + para, 'Inspector', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
         });
 
@@ -881,7 +903,32 @@
                     }
                     else {
                         $("#garmentTest_Details_" + targetID + "__inspector").val(data[0].ID);
-                        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Inspector").val(data[0].Name + ' Ext.' + data[0].ExtNo);
+                        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Inspector").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+        $('.Approver').unbind('blur').blur(function () {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#garmentTest_Details_" + targetID + "__Approver").val('');
+                        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Approverr").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#garmentTest_Details_" + targetID + "__Approver").val(data[0].ID);
+                        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Approver").val(data[0].Name);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -1134,7 +1181,14 @@
     }
 
     function GetPass1(data, targetID) {
-        $("#garmentTest_Details_" + targetID + "__inspector").val(data.ID);
-        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Inspector").val(data.Name + ' Ext.' + data.ExtNo);
+
+        $(`#${targetID}`).val(data.ID);
+        if (targetID.includes('Approver')) {
+            $(`#${targetID.replace('Approver','GarmentTest_Detail_Approver')}`).val(data.Name);
+        }
+        else {
+            //$(`#${targetID}_Inspector`).val(data.Name + ' Ext.' + data.ExtNo);
+            $(`#${targetID.replace('inspector', 'GarmentTest_Detail_Inspector')}`).val(data.Name);
+        }
     }
 </script>

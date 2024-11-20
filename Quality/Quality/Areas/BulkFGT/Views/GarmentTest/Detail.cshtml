@@ -209,6 +209,12 @@
                                                             <input id="ReportExit" type="button" value="Exit">
                                                         </td>
                                                     </tr>
+                                                    <tr>
+                                                        <td style="text-align: center;">
+                                                            <input id="ReportAllPDF" type="button" value="All PDF">
+                                                            <input id="ReportAllExcel" type="button" value="All Excel" style="margin: 0 1em;">
+                                                        </td>
+                                                    </tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -1502,6 +1508,15 @@
             ToReport(0);
         });
 
+        $('#ReportAllPDF').on('click', function () {
+            ToAllReport(1);
+        });
+
+        $('#ReportAllExcel').on('click', function () {
+            ToAllReport(0);
+        });
+
+
         $('#ReportExit').on('click', function () {
             $('.ReportAction').addClass('display-None');
         });
@@ -1517,6 +1532,30 @@
             type: 'POST',
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify({ ID: $('#Detail_ID').val(), No: $('#Detail_No').val(), type: type, IsToPDF: IsToPDF}),
+            async: true,
+            success: function (data) {
+                if (data.Result) {
+                    window.location.href = data.reportPath;
+                }
+                else {
+                    msg.WithError(data.ErrMsg);
+                }
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function ToAllReport(IsToPDF) {
+
+        msg.WithInfoTimer("Report Generating...");
+
+        $.ajax({
+            url: "@Url.Action("DownloadAllReport", "GarmentTest", new { Area = "BulkFGT" })",
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ ID: $('#Detail_ID').val(), No: $('#Detail_No').val(), IsToPDF: IsToPDF}),
             async: true,
             success: function (data) {
                 if (data.Result) {
