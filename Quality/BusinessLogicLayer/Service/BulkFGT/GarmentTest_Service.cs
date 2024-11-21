@@ -1091,8 +1091,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                         if (all_Data.Apperance.Count == 0 || all_Data.Shrinkages.Count == 0)
                         {
-                            dicRt["reportPath"] = "Data not found!";
+                            dicRt["ErrMsg"] = "Data not found!";
                             dicRt["Result"] = "false";
+                            return dicRt;
                         }
 
                         typeName = $"Garment Test Wash 2018_{all_Data.Detail.OrderID}_" +
@@ -2790,8 +2791,9 @@ and t.GarmentTest=1
                         #region Print Wash 2020
                         if (all_Data.FGWT.Count == 0)
                         {
-                            dicRt["reportPath"] = "FGWT data not found!";
+                            dicRt["ErrMsg"] = "FGWT data not found!";
                             dicRt["Result"] = "false";
+                            return dicRt;
                         }
 
                         typeName = $"Garment Test Wash 2020_{all_Data.Detail.OrderID}_" +
@@ -3027,8 +3029,9 @@ and t.GarmentTest=1
                         #region Print Physical
                         if (all_Data.FGPT.Count == 0)
                         {
-                            dicRt["reportPath"] = "FGPT data not found.";
+                            dicRt["ErrMsg"] = "FGPT data not found.";
                             dicRt["Result"] = "false";
+                            return dicRt;
                         }
 
                         typeName = $"Garment Test Physical_{all_Data.Detail.OrderID}_" +
