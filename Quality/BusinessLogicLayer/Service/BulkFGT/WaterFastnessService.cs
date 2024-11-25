@@ -595,6 +595,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 workbook.SaveAs(filepath);
                 workbook.Close();
                 excel.Quit();
+                MyUtility.Excel.KillExcelProcess(excel);
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(excel);

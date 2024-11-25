@@ -558,6 +558,7 @@ namespace BusinessLogicLayer.Service
 
                 workbook.Close();
                 excel.Quit();
+                MyUtility.Excel.KillExcelProcess(excel);
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(excel);
@@ -829,6 +830,7 @@ namespace BusinessLogicLayer.Service
                 }
 
                 #endregion
+                MyUtility.Excel.KillExcelProcess(excel);
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(excel);
             }
