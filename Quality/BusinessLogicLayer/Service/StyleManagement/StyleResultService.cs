@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using static Sci.MyUtility;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BusinessLogicLayer.Service.StyleManagement
@@ -151,6 +152,7 @@ namespace BusinessLogicLayer.Service.StyleManagement
 
                 workbook.Close();
                 excelApp.Quit();
+                MyUtility.Excel.KillExcelProcess(excelApp);
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(excelApp);
 

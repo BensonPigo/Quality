@@ -9,6 +9,7 @@ using System.Text;
 using Microsoft.Office.Interop.Excel;
 using System.IO;
 using System.Runtime.InteropServices;
+using static Sci.MyUtility;
 
 namespace BusinessLogicLayer.Service.StyleManagement
 {
@@ -75,6 +76,7 @@ namespace BusinessLogicLayer.Service.StyleManagement
 
                 workbook.Close();
                 excelApp.Quit();
+                MyUtility.Excel.KillExcelProcess(excelApp);
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(excelApp);
 

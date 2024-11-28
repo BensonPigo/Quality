@@ -408,6 +408,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
+                MyUtility.Excel.KillExcelProcess(excel);
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(excel);
                 #endregion
@@ -733,6 +734,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
+                MyUtility.Excel.KillExcelProcess(excel);
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(excel);
                 #endregion
@@ -1144,6 +1146,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
+                MyUtility.Excel.KillExcelProcess(excel);
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(excel);
                 #endregion

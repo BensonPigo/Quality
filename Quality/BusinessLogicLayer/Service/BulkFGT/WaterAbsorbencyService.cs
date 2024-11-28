@@ -578,6 +578,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
             finally
             {
+                MyUtility.Excel.KillExcelProcess(excel);
                 Marshal.ReleaseComObject(excel);
             }
             return result;
