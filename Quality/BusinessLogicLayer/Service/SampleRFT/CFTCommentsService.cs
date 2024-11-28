@@ -12,6 +12,7 @@ using System.Data;
 using System.Runtime.InteropServices;
 using Excel = Microsoft.Office.Interop.Excel;
 using Sci;
+using static Sci.MyUtility;
 
 namespace BusinessLogicLayer.Service.SampleRFT
 {
@@ -186,6 +187,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
 
                 workbook.Close();
                 excelApp.Quit();
+                MyUtility.Excel.KillExcelProcess(excelApp);
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(excelApp);
 
@@ -315,6 +317,7 @@ namespace BusinessLogicLayer.Service.SampleRFT
 
                 workbook.Close();
                 excelApp.Quit();
+                MyUtility.Excel.KillExcelProcess(excelApp);
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(excelApp);
 
