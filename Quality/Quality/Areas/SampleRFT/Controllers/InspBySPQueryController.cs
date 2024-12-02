@@ -22,7 +22,6 @@ using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Mvc;
 using static Quality.Helper.Attribute;
-using static Sci.MyUtility;
 using Excel = Microsoft.Office.Interop.Excel;
 
 
@@ -351,7 +350,6 @@ namespace Quality.Areas.SampleRFT.Controllers
             workbook.SaveAs(filepath);
             workbook.Close();
             excelApp.Quit();
-            MyUtility.Excel.KillExcelProcess(excelApp);
             Marshal.ReleaseComObject(worksheet);
             Marshal.ReleaseComObject(workbook);
             Marshal.ReleaseComObject(excelApp);
