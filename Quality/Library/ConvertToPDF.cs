@@ -1,11 +1,9 @@
-﻿using Sci;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using static Sci.MyUtility;
 
 namespace Library
 {
@@ -50,7 +48,6 @@ namespace Library
                     application.Quit();
                 }
 
-                MyUtility.Excel.KillExcelProcess(application);
                 Marshal.ReleaseComObject(workBook);
                 Marshal.ReleaseComObject(application);
 

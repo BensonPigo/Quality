@@ -651,6 +651,27 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     result.ErrorMessage = "Convert To PDF Fail";
                     result.Result = false;
                 }
+
+
+                //// 轉PDF再繼續進行以下
+                //if (isPDF)
+                //{
+                //    if (ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
+                //    {
+                //        result.TempFileName = filePdfName;
+                //        result.Result = true;
+                //    }
+                //    else
+                //    {
+                //        result.ErrorMessage = "Convert To PDF Fail";
+                //        result.Result = false;
+                //    }
+                //}
+                //else
+                //{
+                //    result.TempFileName = fileName;
+                //    result.Result = true;
+                //}
             }
             catch (Exception ex)
             {
@@ -659,7 +680,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
             finally
             {
-                MyUtility.Excel.KillExcelProcess(excel);
                 Marshal.ReleaseComObject(excel);
             }
             return result;

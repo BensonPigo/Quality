@@ -284,7 +284,6 @@ namespace BusinessLogicLayer.Service
                 workbook.SaveAs(filepath);
                 workbook.Close();
                 excelApp.Quit();
-                MyUtility.Excel.KillExcelProcess(excelApp);
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(excelApp);

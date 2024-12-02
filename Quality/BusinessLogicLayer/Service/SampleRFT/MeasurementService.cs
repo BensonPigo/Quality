@@ -243,7 +243,6 @@ namespace BusinessLogicLayer.Service.SampleRFT
             workbook.SaveAs(filepath);
             workbook.Close();
             objApp.Quit();
-            MyUtility.Excel.KillExcelProcess(objApp);
             Marshal.ReleaseComObject(worksheet);
             Marshal.ReleaseComObject(workbook);
             Marshal.ReleaseComObject(objApp);

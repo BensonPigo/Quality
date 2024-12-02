@@ -35,7 +35,6 @@ using System.Web;
 using System.Web.Http.Results;
 using System.Web.Mvc;
 using System.Web.Services.Description;
-using static Sci.MyUtility;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace Quality.Areas.FinalInspection.Controllers
@@ -626,7 +625,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             workbook.SaveAs(filepath);
             workbook.Close();
             excelApp.Quit();
-            MyUtility.Excel.KillExcelProcess(excelApp);
             Marshal.ReleaseComObject(worksheet);
             Marshal.ReleaseComObject(workbook);
             Marshal.ReleaseComObject(excelApp);
