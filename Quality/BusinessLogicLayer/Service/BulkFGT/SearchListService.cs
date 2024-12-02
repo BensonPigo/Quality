@@ -13,7 +13,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using static Sci.MyUtility;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BusinessLogicLayer.Service.BulkFGT
@@ -101,7 +100,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 workbook.SaveAs(filepath);
                 workbook.Close();
                 objApp.Quit();
-                MyUtility.Excel.KillExcelProcess(objApp);
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(workbook);
                 Marshal.ReleaseComObject(objApp);
