@@ -2070,7 +2070,7 @@ and t.GarmentTest=1
                                             img.Save(imgPath);
                                         }
 
-                                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 100, 24);
+                                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left + 35, cellNew.Top, 100, 24);
                                     }
                                 }
 
@@ -2106,7 +2106,7 @@ and t.GarmentTest=1
                                             img.Save(imgPath);
                                         }
 
-                                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 100, 24);
+                                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left + 35, cellNew.Top, 100, 24);
                                     }
                                 }
                                 #endregion
@@ -2845,7 +2845,7 @@ and t.GarmentTest=1
                                     img.Save(imgPath);
                                 }
 
-                                worksheet_2020.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 100, 24);
+                                worksheet_2020.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left + 35, cellNew.Top, 100, 24);
                             }
                         }
                         if (!string.IsNullOrEmpty(all_Data.Detail.Approver))
@@ -2880,7 +2880,7 @@ and t.GarmentTest=1
                                     img.Save(imgPath);
                                 }
 
-                                worksheet_2020.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 100, 24);
+                                worksheet_2020.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left + 35, cellNew.Top, 100, 24);
                             }
                         }
 
