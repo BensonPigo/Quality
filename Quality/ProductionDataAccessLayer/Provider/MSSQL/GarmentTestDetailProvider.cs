@@ -135,6 +135,7 @@ gd.No
 ,gd.Approver
 ,[GarmentTest_Detail_Inspector] = isnull(InspectorName.Name,'')
 ,[GarmentTest_Detail_Approver] = isnull(ApproverName.Name,'')
+,[GarmentTest_Detail_Receiver] = isnull(ReceiverName.Name,'')
 ,gd.Remark
 ,gd.Sender
 ,gd.SendDate
@@ -156,6 +157,7 @@ left join Pass1 CreatBy WITH(NOLOCK) on CreatBy.ID = gd.AddName
 left join Pass1 EditBy WITH(NOLOCK) on EditBy.ID = gd.EditName
 left join Pass1 InspectorName WITH(NOLOCK) on InspectorName.ID = gd.inspector
 left join Pass1 ApproverName WITH(NOLOCK) on ApproverName.ID = gd.Approver
+left join Pass1 ReceiverName WITH(NOLOCK) on ReceiverName.ID = gd.Receiver
 outer apply(
 	select TOP 1 Comment = ad.Comment
 	                        +CASE   WHEN @IsRRLR_ACH_Comment = 1 AND @IsRRLR_CF_Comment = 1 THEN 'There is RR/LR (With shade achievability issue, please ensure shading within tolerance as agreement. Lower color fastness waring, please check if need to apply tissue paper.)'
@@ -365,6 +367,7 @@ and ID = @ID
                 { "@ID", source.ID } ,
                 { "@No", source.No } ,
                 { "@SubmitDate", DbType.Date, source.SubmitDate},
+                { "@ReceiveDate", DbType.Date, source.ReceiveDate},
                 { "@ArrivedQty", source.ArrivedQty } ,
                 { "@LOtoFactory", LOtoFactory} ,
                 { "@Remark", source.Remark ?? ""} ,
@@ -393,6 +396,7 @@ SET XACT_ABORT ON
 
 update GarmentTest_Detail set
     SubmitDate = @SubmitDate,
+    ReceiveDate = @ReceiveDate,
     ArrivedQty =  @ArrivedQty,
     LOtoFactory =  @LOtoFactory,
     Remark =  @Remark,

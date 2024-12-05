@@ -1176,9 +1176,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             worksheet.Cells[3, 4] = MyUtility.Convert.GetString(all_Data.Detail.ReportNo);
 
                             // Report Date
-                            if (!MyUtility.Check.Empty(all_Data.Detail.inspdate))
+                            if (!MyUtility.Check.Empty(all_Data.Detail.SubmitDate))
                             {
-                                worksheet.Cells[3, 7] = MyUtility.Convert.GetDate(all_Data.Detail.inspdate).Value.Year + "/" + MyUtility.Convert.GetDate(all_Data.Detail.inspdate).Value.Month + "/" + MyUtility.Convert.GetDate(all_Data.Detail.inspdate).Value.Day;
+                                worksheet.Cells[3, 7] = MyUtility.Convert.GetDate(all_Data.Detail.SubmitDate).Value.Year + "/" + MyUtility.Convert.GetDate(all_Data.Detail.SubmitDate).Value.Month + "/" + MyUtility.Convert.GetDate(all_Data.Detail.SubmitDate).Value.Day;
                             }
 
                             // Receive Date
@@ -1188,9 +1188,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             }
 
                             // Submit Date
-                            if (p04data.DateSubmit.HasValue)
+                            if (!MyUtility.Check.Empty(all_Data.Detail.inspdate))
                             {
-                                worksheet.Cells[4, 4] = MyUtility.Convert.GetDate(p04data.DateSubmit.Value).Value.Year + "/" + MyUtility.Convert.GetDate(p04data.DateSubmit.Value).Value.Month + "/" + MyUtility.Convert.GetDate(p04data.DateSubmit.Value).Value.Day;
+                                worksheet.Cells[4, 4] = MyUtility.Convert.GetDate(all_Data.Detail.inspdate).Value.Year + "/" + MyUtility.Convert.GetDate(all_Data.Detail.inspdate).Value.Month + "/" + MyUtility.Convert.GetDate(all_Data.Detail.inspdate).Value.Day;
                             }
 
                             worksheet.Cells[4, 7] = MyUtility.Convert.GetString(orders.ID);

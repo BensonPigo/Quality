@@ -384,7 +384,7 @@
                                     <th style="padding: 0 1em;"><h4>Send</h4></th>
                                     <th><h4>Sender</h4></th>
                                     <th><h4>Send Date</h4></th>
-                                    <th><h4>Receive</h4></th>
+                                    @*<th><h4>Receive</h4></th>*@
                                     <th><h4>Receiver</h4></th>
                                     <th><h4>Receive Date</h4></th>
                                     <th><h4>Add Name</h4></th>
@@ -435,7 +435,7 @@
                                             </select>
                                         </td>
                                         <td style="">
-                                            @Html.TextBoxFor(o => Model.garmentTest_Details[i].inspdate, "{0:yyyy/MM/dd HH:mm:ss}", new { @readonly = "readonly" })
+                                            @Html.TextBoxFor(o => Model.garmentTest_Details[i].SubmitDate, "{0:yyyy/MM/dd}", new {@class= "date-picker" })
                                         </td>
                                         <td style="">
                                             <select id="Model_garmentTest_Details_@{@i}__MtlTypeID" name="Model.garmentTest_Details[@i].MtlTypeID" disabled="disabled">
@@ -530,18 +530,24 @@
 
                                             @SendDateVal
                                         </td>
-                                        <td style="">
+                                        @*<td style="">
                                             <img class="ReceiveMail" src="~/Image/Icon/Mail.png" width="30" />
-                                        </td>
+                                        </td>*@
                                         <td class="Receiver" style="">
-                                            @Html.DisplayFor(o => Model.garmentTest_Details[i].Receiver, "", "")
+                                            @*@Html.DisplayFor(o => Model.garmentTest_Details[i].Receiver, "", "")*@
+                                            
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(o => Model.garmentTest_Details[i].Receiver, new { @class = "Receiver", @style = "width: 6vw;margin-right:2px;" })
+                                                @Html.TextBoxFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_Receiver, "", new { @readonly = "readonly", @style = "width: 10vw;margin-right:2px;", @class = "ReceiverName" })
+                                                <input class="btnDetailReceiverSelectItem site-btn btn-blue" type="button" style="margin:0;border:0;" value="..." />
+                                            </div>
                                         </td>
                                         <td class="ReceiveDate" style="">
                                             @{
                                                 var ReceiveDateVal = Model.garmentTest_Details[i].ReceiveDate.HasValue ? Model.garmentTest_Details[i].ReceiveDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : "";
                                             }
 
-                                            @ReceiveDateVal
+                                            @Html.TextBoxFor(o => Model.garmentTest_Details[i].ReceiveDate, new { @class = "date-picker", @style = "" })
                                         </td>
                                         <td style="">
                                             @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_AddName, "", "")
@@ -658,7 +664,7 @@
                 var no = fcol.attr("idv");
 
                 var NonSeamBreakageTest = $(this).children().find("input[type='checkbox']").prop("checked");
-                var OrderID, inspdate, inspector, Remark, approver;
+                var OrderID, submitDate, inspector, Remark, approver, receiver;
                 var SizeCode, MtlTypeID;
                 $(this).children().find("input[type='text']").each(function (index, value) {
                     switch (index) {
@@ -666,7 +672,7 @@
                             OrderID = $(this).val();
                             break;
                         case 1:
-                            inspdate = $(this).val();
+                            submitDate = $(this).val();
                             break;
                         case 2:
                             approver = $(this).val();
@@ -676,6 +682,9 @@
                             break;
                         case 6:
                             Remark = $(this).val();
+                            break;
+                        case 7:
+                            receiver = $(this).val();
                             break;
                     }
                 })
@@ -706,9 +715,10 @@
                     ID: parseInt(id),
                     No: parseInt(no),
                     OrderID: OrderID,
-                    inspdate: inspdate,
+                    SubmitDate: submitDate,
                     inspector: inspector,
                     Approver: approver,
+                    Receiver: receiver,
                     Remark: Remark,
                     NonSeamBreakageTest: NonSeamBreakageTest,
                     SizeCode: SizeCode,
@@ -885,6 +895,12 @@
             var para = "?TargetID=" + id;
             window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})' + para, 'Inspector', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
         });
+        $('.btnDetailReceiverSelectItem').unbind('click').on('click', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+            var id = `garmentTest_Details_${targetID}__Receiver`;
+            var para = "?TargetID=" + id;
+            window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})' + para, 'Inspector', config = 'toolbar=no,status=no,location=no,width=1000,height=650');
+        });
 
         $('.Inspector').unbind('blur').blur(function () {
             var targetID = $(this).closest('tr').attr('idx');
@@ -913,6 +929,10 @@
         });
         $('.Approver').unbind('blur').blur(function () {
             var targetID = $(this).closest('tr').attr('idx');
+            if ($(this).val() == "") {
+                $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Approver").val('');
+                return;
+            }
 
             $.ajax({
                 url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
@@ -923,12 +943,42 @@
                 success: function (data) {
                     if (data.length == 0) {
                         $("#garmentTest_Details_" + targetID + "__Approver").val('');
-                        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Approverr").val('');
+                        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Approver").val('');
                         msg.WithError('Approver Not Found');
                     }
                     else {
                         $("#garmentTest_Details_" + targetID + "__Approver").val(data[0].ID);
                         $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Approver").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+        $('.Receiver').unbind('blur').blur(function () {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Receiver").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#garmentTest_Details_" + targetID + "__Receiver").val('');
+                        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Receiver").val('');
+                        msg.WithError('Receiver Not Found');
+                    }
+                    else {
+                        $("#garmentTest_Details_" + targetID + "__Receiver").val(data[0].ID);
+                        $("#garmentTest_Details_" + targetID + "__GarmentTest_Detail_Receiver").val(data[0].Name);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -1185,6 +1235,9 @@
         $(`#${targetID}`).val(data.ID);
         if (targetID.includes('Approver')) {
             $(`#${targetID.replace('Approver','GarmentTest_Detail_Approver')}`).val(data.Name);
+        }
+        else if (targetID.includes('Receiver')) {
+            $(`#${targetID.replace('Receiver', 'GarmentTest_Detail_Receiver')}`).val(data.Name);
         }
         else {
             $(`#${targetID.replace('inspector', 'GarmentTest_Detail_Inspector')}`).val(data.Name);

@@ -269,7 +269,7 @@
                                             <td>@Html.DisplayFor(o => Model.Detail.SizeCode, "", "")</td>
                                         </tr>
                                         <tr>
-                                            <td><h4>Submit Date</h4></td>
+                                            <td><h4>Report Date</h4></td>
                                             <td>@Html.TextBoxFor(o => Model.Detail.SubmitDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })</td>
                                             <td><h4>Arrive Qty</h4></td>
                                             <td>
@@ -292,8 +292,8 @@
                                             <td>
                                                 @Html.CheckBoxFor(o => o.Detail.NonSeamBreakageTest, new { @class = "bigSize" })
                                             </td>
-                                            <td></td>
-                                            <td></td>
+                                            <td>Received Date</td>
+                                            <td>@Html.TextBoxFor(o => Model.Detail.ReceiveDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })</td>
                                         </tr>
                                         <tr>
                                             <td colspan="6"><h3>Washing Condition</h3></td>
