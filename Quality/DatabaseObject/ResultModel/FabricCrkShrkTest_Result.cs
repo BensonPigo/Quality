@@ -277,6 +277,9 @@ namespace DatabaseObject.ResultModel
         public byte[] HeatTestAfterPicture { get; set; }
         public string MailSubject { get; set; }
         public DateTime? HeatReceiveDate { get; set; }
+        public int Heat_Temperature { get; set; }
+        public int Heat_Second { get; set; }
+        public decimal Heat_Pressure { get; set; }
         public string HeatApprover { get; set; } = string.Empty;
         public string HeatApproverName { get; set; } = string.Empty;
         public byte[] InspectorSignature { get; set; }
