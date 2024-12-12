@@ -902,9 +902,6 @@ select	[POID] = f.POID,
         [DescDetail] = fab.DescDetail,
         [HeatRemark] = fl.HeatRemark,
         [HeatEncode] = fl.HeatEncode,
-        fl.Heat_Temperature,
-        fl.Heat_Second,
-        fl.Heat_Pressure,
         [HeatTestBeforePicture] =  (select top 1 HeatTestBeforePicture from SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) where fli.ID = fl.ID ),  
         [HeatTestAfterPicture] = (select top 1 HeatTestAfterPicture from SciPMSFile_FIR_Laboratory fli WITH (NOLOCK) where fli.ID = fl.ID),
         [ReportNo] = fl.ReportNo,
@@ -974,9 +971,9 @@ where flc.ID = @ID
             listPar.Add("@ID", fabricCrkShrkTestHeat_Result.ID);
             listPar.Add("@HeatRemark", fabricCrkShrkTestHeat_Result.Heat_Main.HeatRemark);
             listPar.Add("@HeatReceiveDate", fabricCrkShrkTestHeat_Result.Heat_Main.HeatReceiveDate);
-            listPar.Add("@Heat_Temperature", fabricCrkShrkTestHeat_Result.Heat_Main.Heat_Temperature);
-            listPar.Add("@Heat_Second", fabricCrkShrkTestHeat_Result.Heat_Main.Heat_Second);
-            listPar.Add("@Heat_Pressure", fabricCrkShrkTestHeat_Result.Heat_Main.Heat_Pressure);
+            //listPar.Add("@Heat_Temperature", fabricCrkShrkTestHeat_Result.Heat_Main.Heat_Temperature);
+            //listPar.Add("@Heat_Second", fabricCrkShrkTestHeat_Result.Heat_Main.Heat_Second);
+            //listPar.Add("@Heat_Pressure", fabricCrkShrkTestHeat_Result.Heat_Main.Heat_Pressure);
             listPar.Add("@HeatApprover", fabricCrkShrkTestHeat_Result.Heat_Main.HeatApprover ?? string.Empty);
             listPar.Add("@HeatTestBeforePicture", fabricCrkShrkTestHeat_Result.Heat_Main.HeatTestBeforePicture);
             listPar.Add("@HeatTestAfterPicture", fabricCrkShrkTestHeat_Result.Heat_Main.HeatTestAfterPicture);
@@ -986,9 +983,6 @@ SET XACT_ABORT ON
 -----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 update  FIR_Laboratory set  HeatRemark = @HeatRemark
                             ,HeatReceiveDate = @HeatReceiveDate
-                            ,Heat_Temperature = @Heat_Temperature
-                            ,Heat_Second = @Heat_Second
-                            ,Heat_Pressure = @Heat_Pressure
 where   ID = @ID 
 ;
 if exists(
