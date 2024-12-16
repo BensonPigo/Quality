@@ -11,7 +11,7 @@
 @*<link href="~/ThirdParty/plugins/jquery-ui/jquery-ui.css" rel="stylesheet" />*@
 @{
 
-    int MaxRateListIdx = Model.RateList.Any() ? Model.RateList.Count() - 1 : 0;
+    //int MaxRateListIdx = Model.RateList.Any() ? Model.RateList.Count() - 1 : 0;
     int MaxTimeListIdx = Model.TimeList.Any() ? Model.TimeList.Count() - 1 : 0;
 }
 <style>
@@ -92,6 +92,23 @@
         display: flex;
         align-items: center;
     }
+    .MainAreaItem2 {
+        width: 13.3%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+    }
+    .MainAreaItem3 {
+        width: 19.9%;
+        padding: 2px;
+        height: 3rem;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+    }
+
 
     .DetailDataAreaItem1 {
         width: 9%;
@@ -551,176 +568,180 @@
                     </div>
 
                     @*表頭*@
-                    <div class="MainArea">
-                        <!-- #region Row 1-->
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Report No</h4>
+                <div class="MainArea">
+                    <!-- #region Row 1-->
+                    <div class="MainAreaItem2 odd">
+                        <h4 class="colTitle">Report No</h4>
 
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.ReportNo, new { @class = "" })
+                    </div>
+                    <div class="MainAreaItem3 odd">
+                        @Html.TextBoxFor(o => o.Main.ReportNo, new { @class = "" })
 
-                            @Html.HiddenFor(o => o.Main.Status)
-                            @Html.HiddenFor(o => o.Main.TestBeforePicture)
-                            @Html.HiddenFor(o => o.Main.TestAfterPicture)
-                        </div>
+                        @Html.HiddenFor(o => o.Main.Status)
+                        @Html.HiddenFor(o => o.Main.TestBeforePicture)
+                        @Html.HiddenFor(o => o.Main.TestAfterPicture)
+                    </div>
 
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Report Date</h4>
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Report Date</h4>
 
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.ReportDateText, new { @class = "" })
-                        </div>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.ReportDateText, new { @class = "" })
+                    </div>
 
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Submit Date</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.HiddenFor(o => o.Main.SubmitDate)
-                            @Html.TextBoxFor(o => o.Main.SubmitDateText, new { @class = "CanEdit" })
-                        </div>
-                        <!-- #endregion -->
-                        <!-- #region Row 2-->
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Submit Date</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.HiddenFor(o => o.Main.SubmitDate)
+                        @Html.TextBoxFor(o => o.Main.SubmitDateText, new { @class = "CanEdit" })
+                    </div>
+                    <!-- #endregion -->
+                    <!-- #region Row 2-->
 
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">SP#</h4>
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.OrderID, new { @class = "even CanEdit" })
-                        </div>
+                    <div class="MainAreaItem2 even">
+                        <h4 class="colTitle">SP#</h4>
+                    </div>
+                    <div class="MainAreaItem3 even">
+                        @Html.TextBoxFor(o => o.Main.OrderID, new { @class = "even CanEdit" })
+                    </div>
 
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Brand</h4>
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.BrandID, new { @class = "even" })
-                        </div>
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Brand</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.BrandID, new { @class = "even" })
+                    </div>
 
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Season</h4>
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.SeasonID, new { @class = "even" })
-                        </div>
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Season</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.SeasonID, new { @class = "even" })
+                    </div>
 
 
-                        <!-- #endregion -->
-                        <!-- #region Row 3-->
+                    <!-- #endregion -->
+                    <!-- #region Row 3-->
 
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Style</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.StyleID, new { @class = "" })
-                        </div>
+                    <div class="MainAreaItem2 odd">
+                        <h4 class="colTitle">Style</h4>
+                    </div>
+                    <div class="MainAreaItem3 odd">
+                        @Html.TextBoxFor(o => o.Main.StyleID, new { @class = "" })
+                    </div>
 
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Article</h4>
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Article</h4>
 
-                        </div>
-                        <div class="MainAreaItem odd">
-                            <select id="Main_Article" name="Main.Article" class="CanEdit">
-                                @foreach (var item in Model.Article_Source)
-                                {
-                                    string selected = item.Value.Equals(Model.Main.Article) ? "selected" : "";
-                                    <option value="@item.Value" @selected>@item.Text</option>
-                                }
-                            </select>
-                        </div>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        <select id="Main_Article" name="Main.Article" class="CanEdit">
+                            @foreach (var item in Model.Article_Source)
+                            {
+                                string selected = item.Value.Equals(Model.Main.Article) ? "selected" : "";
+                                <option value="@item.Value" @selected>@item.Text</option>
+                            }
+                        </select>
+                    </div>
 
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Seq</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.Seq, new { @class = "odd" })
-                            @Html.HiddenFor(o => o.Main.Seq1, new { @class = "" })
-                            @Html.HiddenFor(o => o.Main.Seq2, new { @class = "" })
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Seq</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.Seq, new { @class = "odd" })
+                        @Html.HiddenFor(o => o.Main.Seq1, new { @class = "" })
+                        @Html.HiddenFor(o => o.Main.Seq2, new { @class = "" })
 
-                        </div>
+                    </div>
 
-                        <!-- #endregion -->
-                        <!-- #region Row 4-->
+                    <!-- #endregion -->
+                    <!-- #region Row 4-->
 
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Fabric Ref#</h4>
+                    <div class="MainAreaItem2 even">
+                        <h4 class="colTitle">Fabric Ref#</h4>
 
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.FabricRefNo, new { @class = "even", @onclick = "OpenWindow('FabricRefNo')", @placeholder = "Click" })
-                        </div>
+                    </div>
+                    <div class="MainAreaItem3 even">
+                        @Html.TextBoxFor(o => o.Main.FabricRefNo, new { @class = "even", @onclick = "OpenWindow('FabricRefNo')", @placeholder = "Click" })
+                    </div>
 
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Fabric Color</h4>
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Fabric Color</h4>
 
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.FabricColor, new { @class = "even" })
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.FabricColor, new { @class = "even" })
 
-                        </div>
+                    </div>
 
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Fabric Description</h4>
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.FabricDescription, new { @class = "even CanEdit" })
-                        </div>
-                        <!-- #endregion -->
-                        <!-- #region Row 5-->
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Fabric Description</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.FabricDescription, new { @class = "even CanEdit" })
+                    </div>
+                    <!-- #endregion -->
+                    <!-- #region Row 5-->
 
-                        <div class="MainAreaItem odd">
+                        <div class="MainAreaItem2 odd">
                             <h4 class="colTitle">Before Wash Average Rate</h4>
 
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.BeforeAverageRate, new { @class = "odd", @DetailType = "MainBefore" })
-                        </div>
-
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">After Wash Average Rate</h4>
-
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.AfterAverageRate, new { @class = "odd", @DetailType = "MainAfter" })
-                        </div>
-
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Result</h4>
-
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @{ string mainResultColor = Model.Main.Result == "Pass" ? "blue" : "red";}
-                            @Html.TextBoxFor(o => o.Main.Result, new { @class = "", @style = $@"color:{mainResultColor}" })
-                        </div>
-
-                        <!-- #endregion -->
-                        <!-- #region Row 6-->
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Remark</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.Remark, new { @class = "CanEdit even", @style = "width:100%" })
-                        </div>
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Last Upadate</h4>
-
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "even", @style = "width:100%" })
-                        </div>
-
-                        <div class="MainAreaItem even">
-                        </div>
-                        <div class="MainAreaItem even">
-                        </div>
-
-                        <!-- #endregion -->
                     </div>
+                        <div class="MainAreaItem3 odd">
+                        @Html.TextBoxFor(o => o.Main.BeforeAverageRate, new { @class = "odd", @DetailType = "MainBefore" })
+                    </div>
+
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">After Wash Average Rate</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.AfterAverageRate, new { @class = "odd", @DetailType = "MainAfter" })
+                    </div>
+
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Result</h4>
+
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @{ string mainResultColor = Model.Main.Result == "Pass" ? "blue" : "red";}
+                        @Html.TextBoxFor(o => o.Main.Result, new { @class = "", @style = $@"color:{mainResultColor}" })
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 6-->
+
+
+                    <div class="MainAreaItem2 even">
+                        <h4 class="colTitle">Approver</h4>
+                    </div>
+                    <div class="MainAreaItem3 even">
+                        @Html.TextBoxFor(o => o.Main.Approver, new { @class = "CanEdit even", @style = "width:35%" })
+                        @Html.TextBoxFor(o => o.Main.ApproverName, new { @class = "even", @style = "width:65%" })
+                        <input id="btnTechnician" onclick="OpenWindow('Technician')" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Remark</h4>
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.Remark, new { @class = "CanEdit even", @style = "width:100%" })
+                    </div>
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Last Upadate</h4>
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "even", @style = "width:100%" })
+                    </div>
+                    <!-- #endregion -->
+                </div>
 
                     @*表身*@
                     <div class="bodyDiv">
@@ -736,7 +757,7 @@
                                 {
                                     int DetailListIdx = 0;
                                     int TimeListIdx = 0;
-                                    int RateListIdx = 0;
+                                    //int RateListIdx = 0;
                                     int SpecimenListIdx = 0;
                                     foreach (var detail in Model.DetailList)
                                     {
@@ -776,7 +797,7 @@
                                             {
                                                 string specimenID = specimen.SpecimenID;
                                                 var timeList = Model.TimeList.Where(o => o.DetailType == detail.Type && o.SpecimenID == specimenID);
-                                                var rateList = Model.RateList.Where(o => o.DetailType == detail.Type && o.SpecimenID == specimenID);
+                                                //var rateList = Model.RateList.Where(o => o.DetailType == detail.Type && o.SpecimenID == specimenID);
                                                 string divID = $"tab0{detail.Type}{IdxDivID}";
 
                                                 @Html.Hidden($"SpecimenList[{SpecimenListIdx}].Ukey", specimen.Ukey, new { @class = "", @style = "width:100%" })
@@ -788,7 +809,7 @@
 
                                                 <div id="@divID" class="tab-inner">
 
-                                                    <div class="divTabInnerLeft">
+                                                    @*<div class="divTabInnerLeft">
                                                         <div class="divRate">
                                                             <div class="divRateInner1 colHead" style="background-color:aquamarine">
                                                                 @detail.Type Average
@@ -844,7 +865,9 @@
                                                                 RateListIdx++;
                                                             }
                                                         </div>
-                                                    </div>
+                                                    </div>*@
+
+
                                                     <div class="divTabInnerBlank">
                                                         <button onclick="GotoType('@anotherType')" type="button" style="margin:0;min-width:0;width:100%;" class="btn btn-blue">
                                                             To
@@ -861,6 +884,41 @@
                                                     </div>
                                                     <div class="divTabInnerRight">
                                                         <div class="divTime">
+
+                                                            <!--#region Before Result(g/h) -->
+                                                            <div class="divTime20 colHead" style="background-color:aquamarine">
+                                                                @detail.Type Result(g/h)
+                                                            </div>
+                                                            <div class="divTime20">
+                                                                @Html.TextBox($"SpecimenList[{SpecimenListIdx}].RateAverage", specimen.RateAverage, new
+                                                                {
+                                                                   @class = "RateAverage",
+                                                                   @style = "width:100%",
+                                                                   @DetailType = detail.Type,
+                                                                   @SpecimenID = specimen.SpecimenID,
+                                                               })
+                                                            </div>
+                                                            <div class="divTime20" style="width:60%;"></div>
+                                                            <!--#endregion-->
+
+                                                            <!--#region Specimen Mass(g) -->
+                                                            <div class="divTime20 colHead" style="background-color:aquamarine">
+                                                                Specimen Mass(g)
+                                                            </div>
+                                                            <div class="divTime20">
+                                                                @*<input  style="width:100%" type="text" value="@timeList.FirstOrDefault().Mass" readonly="readonly">*@
+                                                                @Html.TextBox($"SpecimenMassG[{SpecimenListIdx}]", timeList.Where(o => o.IsInitialMass).FirstOrDefault().Mass, new
+                                                                {
+                                                                   @class = "SpecimenMassG",
+                                                                   @style = "width:100%",
+                                                                   @DetailType = detail.Type,
+                                                                   @SpecimenID = specimen.SpecimenID,
+                                                                   @readonly="readonly",
+                                                               })
+                                                            </div>
+                                                            <div class="divTime20" style="width:60%;"></div>
+                                                            <!--#endregion-->
+
                                                             <div class="divTime10 colHead">
                                                                 Time
                                                             </div>
@@ -882,14 +940,17 @@
                                                                 <div class="divTime10">
                                                                     @Html.Hidden($"TimeList[{TimeListIdx}].Ukey", time.Ukey, new { @class = "", @style = "width:100%" })
                                                                     @Html.Hidden($"TimeList[{TimeListIdx}].SpecimenUkey", time.SpecimenUkey, new { @class = "", @style = "width:100%" })
-                                                                    @Html.Hidden($"TimeList[{TimeListIdx}].Time", time.Time, new { @class = "", @style = "width:100%" })
+                                                                    @*@Html.Hidden($"TimeList[{TimeListIdx}].Time", time.Time, new { @class = "", @style = "width:100%" })*@
                                                                     @Html.Hidden($"TimeList[{TimeListIdx}].InitialTime", time.InitialTime, new { @class = "", @style = "width:100%" })
                                                                     @Html.Hidden($"TimeList[{TimeListIdx}].InitialTimeUkey", time.InitialTimeUkey, new { @class = "", @style = "width:100%" })
                                                                     @Html.Hidden($"TimeList[{TimeListIdx}].IsInitialMass", time.IsInitialMass, new { @class = "", @style = "width:100%" })
                                                                     @Html.Hidden($"TimeList[{TimeListIdx}].DetailType", time.DetailType, new { @class = "", @style = "width:100%" })
                                                                     @Html.Hidden($"TimeList[{TimeListIdx}].SpecimenID", time.SpecimenID, new { @class = "", @style = "width:100%" })
 
-                                                                    @Html.TextBox($"TimeList[{TimeListIdx}].Time", time.Time, new { @class = "", @style = "width:100%" })
+                                                                    @Html.TextBox($"TimeList[{TimeListIdx}].Time", time.Time, new { @class = "Time",
+                                                                   @DetailType = detail.Type,
+                                                                   @SpecimenID = specimen.SpecimenID,
+                                                                   @style = "width:100%" })
                                                                 </div>
                                                                 <div class="divTime10">
                                                                     @*@time.Mass*@
@@ -901,7 +962,7 @@
                                                                    @DetailType = detail.Type,
                                                                    @SpecimenID = specimen.SpecimenID,
                                                                    @IsInitialMass = time.IsInitialMass,
-                                                                   @onchange = "value=MassCheck(value);AutoUpdateTime(this)"
+                                                                   @onchange = $@"value=MassCheck(value);AutoUpdateTime(this);"
 
                                                                })
                                                                 </div>
@@ -919,10 +980,8 @@
                                                                     })
 
                                                                 </div>
-
                                                                 <div class="divTime40">
                                                                     @Html.TextBox($"TimeList[{TimeListIdx}].LastUpadate", time.LastUpadate, new { @class = "", @style = "width:100%" })
-                                                                    @time.LastUpadate
                                                                 </div>
                                                                 <div class="divTime10">
                                                                     <input type="hidden" class="detailTimeListIdx" name="name" value="@TimeListIdx" />
@@ -966,8 +1025,8 @@
     var EditMode;
     let fcousDetailType = 'Before';
     let fcousSpecimenID = 'Specimen 1';
-    let MaxRateListIdx = @MaxRateListIdx;
     let MaxTimeListIdx = @MaxTimeListIdx;
+    let ttlSpecimenCount = 0;
 
 
     var DataBeforeSpecimen1 = {
@@ -996,6 +1055,26 @@
             {
                 label: 'Specimen 3',
                 data: [@Html.Raw(String.Join(",", Model.TimeList.Where(o=>o.DetailType =="Before" && o.SpecimenID== "Specimen 3").OrderBy(o=>o.Time).Select(o=>o.Evaporation).ToList()))],
+                borderColor: window.chartColors.red,
+            }
+        ]
+    };
+    var DataBeforeSpecimen4 = {
+        labels: [@Html.Raw(String.Join(",", Model.TimeList.Where(o=>o.DetailType =="Before" && o.SpecimenID== "Specimen 4").Select(o=>o.Time).ToList()))],  //Time
+        datasets: [
+            {
+                label: 'Specimen 4',
+                data: [@Html.Raw(String.Join(",", Model.TimeList.Where(o=>o.DetailType =="Before" && o.SpecimenID== "Specimen 4").OrderBy(o=>o.Time).Select(o=>o.Evaporation).ToList()))],
+                borderColor: window.chartColors.red,
+            }
+        ]
+    };
+    var DataBeforeSpecimen5 = {
+        labels: [@Html.Raw(String.Join(",", Model.TimeList.Where(o=>o.DetailType =="Before" && o.SpecimenID== "Specimen 5").Select(o=>o.Time).ToList()))],  //Time
+        datasets: [
+            {
+                label: 'Specimen 5',
+                data: [@Html.Raw(String.Join(",", Model.TimeList.Where(o=>o.DetailType =="Before" && o.SpecimenID== "Specimen 5").OrderBy(o=>o.Time).Select(o=>o.Evaporation).ToList()))],
                 borderColor: window.chartColors.red,
             }
         ]
@@ -1030,6 +1109,32 @@
             }
         ]
     };
+    var DataAfterSpecimen4 = {
+        labels: [@Html.Raw(String.Join(",", Model.TimeList.Where(o=>o.DetailType =="After" && o.SpecimenID== "Specimen 4").Select(o=>o.Time).ToList()))],  //Time
+        datasets: [
+            {
+                label: 'Specimen 4',
+                data: [@Html.Raw(String.Join(",", Model.TimeList.Where(o=>o.DetailType == "After" && o.SpecimenID== "Specimen 4").OrderBy(o=>o.Time).Select(o=>o.Evaporation).ToList()))],
+                borderColor: window.chartColors.red,
+            }
+        ]
+    };
+    var DataAfterSpecimen5 = {
+        labels: [@Html.Raw(String.Join(",", Model.TimeList.Where(o=>o.DetailType =="After" && o.SpecimenID== "Specimen 5").Select(o=>o.Time).ToList()))],  //Time
+        datasets: [
+            {
+                label: 'Specimen 5',
+                data: [@Html.Raw(String.Join(",", Model.TimeList.Where(o=>o.DetailType == "After" && o.SpecimenID== "Specimen 5").OrderBy(o=>o.Time).Select(o=>o.Evaporation).ToList()))],
+                borderColor: window.chartColors.red,
+            }
+        ]
+    };
+
+    // 建立資料模型
+    let data = {
+        name: 'John Doe',
+        age: 25
+    };
 
     $(function () {
         EditMode = false;
@@ -1044,294 +1149,535 @@
         tabChange();
         InitChart();
         GotoType('Before');
-
+        IsInitialMassSync();
         @Html.Raw(Model.ErrorMessage)
     });
 
+    function IsInitialMassSync() {
+        let masses = $('.Mass');
+
+        $(masses).each(function (index, data) {
+            var massIpt = this;
+
+            $(massIpt).on('input', function () {
+                let isInitialMass = $(this).attr('IsInitialMass');
+                if (isInitialMass == 'True') {
+                    let detailtype = $(this).attr('detailtype');
+                    let specimenid = $(this).attr('specimenid');
+                    let targetObj = $(`.SpecimenMassG[detailtype="${detailtype}"][specimenid="${specimenid}"]`);
+                    $(targetObj).val(MassCheck($(this).val()));
+                }
+            });
+        });
+    }
+    
     function SpecimenChartToggle(detailType, specimenID) {
         $(`.divSpecimenChart`).hide();
         $(`.divSpecimenChart[DetailType='${detailType}'][SpecimenID='${specimenID}']`).toggle();
     }
 
     function InitChart() {
-
-        var objBeforeSpecimen1 = $(".SpecimenChart[DetailType='Before'][SpecimenID='Specimen 1']")[0].getContext('2d');
-        var objBeforeSpecimen2 = $(".SpecimenChart[DetailType='Before'][SpecimenID='Specimen 2']")[0].getContext('2d');
-        var objBeforeSpecimen3 = $(".SpecimenChart[DetailType='Before'][SpecimenID='Specimen 3']")[0].getContext('2d');
-        var objAfterSpecimen1 = $(".SpecimenChart[DetailType='After'][SpecimenID='Specimen 1']")[0].getContext('2d');
-        var objAfterSpecimen2 = $(".SpecimenChart[DetailType='After'][SpecimenID='Specimen 2']")[0].getContext('2d');
-        var objAfterSpecimen3 = $(".SpecimenChart[DetailType='After'][SpecimenID='Specimen 3']")[0].getContext('2d');
-
-
-        $.myBar = new Chart(objBeforeSpecimen1, {
-            type: 'line',
-            data: DataBeforeSpecimen1,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false,
-                        position: 'left',
-                    },
-                    title: {
-                        display: false,
-                    }
-                },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-
-                            beginAtZero: true,
-                            //fontSize: 20,
-                            stepSize: 20,
+        // Before Specimen 1
+        if (DataBeforeSpecimen1.labels.length > 0) {
+            ttlSpecimenCount += 1;
+            var objBeforeSpecimen1 = $(".SpecimenChart[DetailType='Before'][SpecimenID='Specimen 1']")[0].getContext('2d');
+            $.myBar = new Chart(objBeforeSpecimen1, {
+                type: 'line',
+                data: DataBeforeSpecimen1,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                            position: 'left',
                         },
-                        scaleLabel: {
-                            display: true,
-                            labelString: "Evaporation(g)",
-                            //fontSize: 25
+                        title: {
+                            display: false,
                         }
-                    }],
-                    xAxes: [
-                        {
+                    },
+                    scales: {
+                        yAxes: [{
                             ticks: {
+
+                                beginAtZero: true,
                                 //fontSize: 20,
+                                stepSize: 20,
                             },
                             scaleLabel: {
                                 display: true,
-                                labelString: "Time(min)",
+                                labelString: "Evaporation(g)",
                                 //fontSize: 25
                             }
-                        }
-                    ]
-                },
-            },
-        });
-        $.myBar = new Chart(objBeforeSpecimen2, {
-            type: 'line',
-            data: DataBeforeSpecimen2,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false,
-                        position: 'top',
+                        }],
+                        xAxes: [
+                            {
+                                ticks: {
+                                    //fontSize: 20,
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "Time(min)",
+                                    //fontSize: 25
+                                }
+                            }
+                        ]
                     },
-                    title: {
-                        display: false,
-                        text: 'Chart.js Line Chart'
-                    }
                 },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-
-                            beginAtZero: true,
-                            //fontSize: 20,
-                            stepSize: 20,
+            });
+        }
+        // Before Specimen 2
+        if (DataBeforeSpecimen2.labels.length > 0) {
+            ttlSpecimenCount += 1;
+            var objBeforeSpecimen2 = $(".SpecimenChart[DetailType='Before'][SpecimenID='Specimen 2']")[0].getContext('2d');
+            $.myBar = new Chart(objBeforeSpecimen2, {
+                type: 'line',
+                data: DataBeforeSpecimen2,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                            position: 'top',
                         },
-                        scaleLabel: {
-                            display: true,
-                            labelString: "Evaporation(g)",
-                            //fontSize: 25
+                        title: {
+                            display: false,
+                            text: 'Chart.js Line Chart'
                         }
-                    }],
-                    xAxes: [
-                        {
+                    },
+                    scales: {
+                        yAxes: [{
                             ticks: {
+
+                                beginAtZero: true,
                                 //fontSize: 20,
+                                stepSize: 20,
                             },
                             scaleLabel: {
                                 display: true,
-                                labelString: "Time(min)",
+                                labelString: "Evaporation(g)",
                                 //fontSize: 25
                             }
-                        }
-                    ]
-                },
-            },
-        });
-        $.myBar = new Chart(objBeforeSpecimen3, {
-            type: 'line',
-            data: DataBeforeSpecimen3,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false,
-                        position: 'top',
+                        }],
+                        xAxes: [
+                            {
+                                ticks: {
+                                    //fontSize: 20,
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "Time(min)",
+                                    //fontSize: 25
+                                }
+                            }
+                        ]
                     },
-                    title: {
-                        display: false,
-                        text: 'Chart.js Line Chart'
-                    }
                 },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-
-                            beginAtZero: true,
-                            //fontSize: 20,
-                            stepSize: 20,
+            });
+        }
+        // Before Specimen 3
+        if (DataBeforeSpecimen3.labels.length > 0) {
+            ttlSpecimenCount += 1;
+            var objBeforeSpecimen3 = $(".SpecimenChart[DetailType='Before'][SpecimenID='Specimen 3']")[0].getContext('2d');
+            $.myBar = new Chart(objBeforeSpecimen3, {
+                type: 'line',
+                data: DataBeforeSpecimen3,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                            position: 'top',
                         },
-                        scaleLabel: {
-                            display: true,
-                            labelString: "Evaporation(g)",
-                            //fontSize: 25
+                        title: {
+                            display: false,
+                            text: 'Chart.js Line Chart'
                         }
-                    }],
-                    xAxes: [
-                        {
+                    },
+                    scales: {
+                        yAxes: [{
                             ticks: {
+
+                                beginAtZero: true,
                                 //fontSize: 20,
+                                stepSize: 20,
                             },
                             scaleLabel: {
                                 display: true,
-                                labelString: "Time(min)",
+                                labelString: "Evaporation(g)",
                                 //fontSize: 25
                             }
-                        }
-                    ]
-                },
-            },
-        });
-        $.myBar = new Chart(objAfterSpecimen1, {
-            type: 'line',
-            data: DataAfterSpecimen1,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false,
-                        position: 'top',
+                        }],
+                        xAxes: [
+                            {
+                                ticks: {
+                                    //fontSize: 20,
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "Time(min)",
+                                    //fontSize: 25
+                                }
+                            }
+                        ]
                     },
-                    title: {
-                        display: false,
-                        text: 'Chart.js Line Chart'
-                    }
                 },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-
-                            beginAtZero: true,
-                            //fontSize: 20,
-                            stepSize: 20,
+            });
+        }
+        // Before Specimen 4
+        if (DataBeforeSpecimen4.labels.length > 0) {
+            ttlSpecimenCount += 1;
+            var objBeforeSpecimen4 = $(".SpecimenChart[DetailType='Before'][SpecimenID='Specimen 4']")[0].getContext('2d');
+            $.myBar = new Chart(objBeforeSpecimen4, {
+                type: 'line',
+                data: DataBeforeSpecimen4,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                            position: 'top',
                         },
-                        scaleLabel: {
-                            display: true,
-                            labelString: "Evaporation(g)",
-                            //fontSize: 25
+                        title: {
+                            display: false,
+                            text: 'Chart.js Line Chart'
                         }
-                    }],
-                    xAxes: [
-                        {
+                    },
+                    scales: {
+                        yAxes: [{
                             ticks: {
+
+                                beginAtZero: true,
                                 //fontSize: 20,
+                                stepSize: 20,
                             },
                             scaleLabel: {
                                 display: true,
-                                labelString: "Time(min)",
+                                labelString: "Evaporation(g)",
                                 //fontSize: 25
                             }
-                        }
-                    ]
-                },
-            },
-        });
-        $.myBar = new Chart(objAfterSpecimen2, {
-            type: 'line',
-            data: DataAfterSpecimen2,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false,
-                        position: 'top',
+                        }],
+                        xAxes: [
+                            {
+                                ticks: {
+                                    //fontSize: 20,
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "Time(min)",
+                                    //fontSize: 25
+                                }
+                            }
+                        ]
                     },
-                    title: {
-                        display: false,
-                        text: 'Chart.js Line Chart'
-                    }
                 },
-                scales: {
-                    yAxes: [{
-                        ticks: {
-
-                            beginAtZero: true,
-                            //fontSize: 20,
-                            stepSize: 20,
+            });
+        }
+        // Before Specimen 5
+        if (DataBeforeSpecimen5.labels.length > 0) {
+            ttlSpecimenCount += 1;
+            var objBeforeSpecimen5 = $(".SpecimenChart[DetailType='Before'][SpecimenID='Specimen 5']")[0].getContext('2d');
+            $.myBar = new Chart(objBeforeSpecimen5, {
+                type: 'line',
+                data: DataBeforeSpecimen5,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                            position: 'top',
                         },
-                        scaleLabel: {
-                            display: true,
-                            labelString: "Evaporation(g)",
-                            //fontSize: 25
+                        title: {
+                            display: false,
+                            text: 'Chart.js Line Chart'
                         }
-                    }],
-                    xAxes: [
-                        {
+                    },
+                    scales: {
+                        yAxes: [{
                             ticks: {
+
+                                beginAtZero: true,
                                 //fontSize: 20,
+                                stepSize: 20,
                             },
                             scaleLabel: {
                                 display: true,
-                                labelString: "Time(min)",
+                                labelString: "Evaporation(g)",
                                 //fontSize: 25
                             }
-                        }
-                    ]
-                },
-            },
-        });
-        $.myBar = new Chart(objAfterSpecimen3, {
-            type: 'line',
-            data: DataAfterSpecimen3,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false,
-                        position: 'top',
+                        }],
+                        xAxes: [
+                            {
+                                ticks: {
+                                    //fontSize: 20,
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "Time(min)",
+                                    //fontSize: 25
+                                }
+                            }
+                        ]
                     },
-                    title: {
-                        display: false,
-                        text: 'Chart.js Line Chart'
-                    }
                 },
-                scales: {
-                    yAxes: [{
-                        ticks: {
+            });
+        }
 
-                            beginAtZero: true,
-                            //fontSize: 20,
-                            stepSize: 20,
+
+        // After Specimen 1
+        if (DataAfterSpecimen1.labels.length > 0) {
+            ttlSpecimenCount += 1;
+            var objAfterSpecimen1 = $(".SpecimenChart[DetailType='After'][SpecimenID='Specimen 1']")[0].getContext('2d');
+            $.myBar = new Chart(objAfterSpecimen1, {
+                type: 'line',
+                data: DataAfterSpecimen1,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                            position: 'top',
                         },
-                        scaleLabel: {
-                            display: true,
-                            labelString: "Evaporation(g)",
-                            //fontSize: 25
+                        title: {
+                            display: false,
+                            text: 'Chart.js Line Chart'
                         }
-                    }],
-                    xAxes: [
-                        {
+                    },
+                    scales: {
+                        yAxes: [{
                             ticks: {
+
+                                beginAtZero: true,
                                 //fontSize: 20,
+                                stepSize: 20,
                             },
                             scaleLabel: {
                                 display: true,
-                                labelString: "Time(min)",
+                                labelString: "Evaporation(g)",
                                 //fontSize: 25
                             }
-                        }
-                    ]
+                        }],
+                        xAxes: [
+                            {
+                                ticks: {
+                                    //fontSize: 20,
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "Time(min)",
+                                    //fontSize: 25
+                                }
+                            }
+                        ]
+                    },
                 },
-            },
-        });
+            });
+        }
+        // After Specimen 2
+        if (DataAfterSpecimen2.labels.length > 0) {
+            ttlSpecimenCount += 1;
+            var objAfterSpecimen2 = $(".SpecimenChart[DetailType='After'][SpecimenID='Specimen 2']")[0].getContext('2d');
+            $.myBar = new Chart(objAfterSpecimen2, {
+                type: 'line',
+                data: DataAfterSpecimen2,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                            position: 'top',
+                        },
+                        title: {
+                            display: false,
+                            text: 'Chart.js Line Chart'
+                        }
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+
+                                beginAtZero: true,
+                                //fontSize: 20,
+                                stepSize: 20,
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: "Evaporation(g)",
+                                //fontSize: 25
+                            }
+                        }],
+                        xAxes: [
+                            {
+                                ticks: {
+                                    //fontSize: 20,
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "Time(min)",
+                                    //fontSize: 25
+                                }
+                            }
+                        ]
+                    },
+                },
+            });
+        }
+        // After Specimen 3
+        if (DataAfterSpecimen3.labels.length > 0) {
+            ttlSpecimenCount += 1;
+            var objAfterSpecimen3 = $(".SpecimenChart[DetailType='After'][SpecimenID='Specimen 3']")[0].getContext('2d');
+            $.myBar = new Chart(objAfterSpecimen3, {
+                type: 'line',
+                data: DataAfterSpecimen3,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                            position: 'top',
+                        },
+                        title: {
+                            display: false,
+                            text: 'Chart.js Line Chart'
+                        }
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+
+                                beginAtZero: true,
+                                //fontSize: 20,
+                                stepSize: 20,
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: "Evaporation(g)",
+                                //fontSize: 25
+                            }
+                        }],
+                        xAxes: [
+                            {
+                                ticks: {
+                                    //fontSize: 20,
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "Time(min)",
+                                    //fontSize: 25
+                                }
+                            }
+                        ]
+                    },
+                },
+            });
+        }
+        // After Specimen 4
+        if (DataAfterSpecimen4.labels.length > 0) {
+            ttlSpecimenCount += 1;
+            var objAfterSpecimen4 = $(".SpecimenChart[DetailType='After'][SpecimenID='Specimen 4']")[0].getContext('2d');
+            $.myBar = new Chart(objAfterSpecimen4, {
+                type: 'line',
+                data: DataAfterSpecimen4,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                            position: 'top',
+                        },
+                        title: {
+                            display: false,
+                            text: 'Chart.js Line Chart'
+                        }
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+
+                                beginAtZero: true,
+                                //fontSize: 20,
+                                stepSize: 20,
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: "Evaporation(g)",
+                                //fontSize: 25
+                            }
+                        }],
+                        xAxes: [
+                            {
+                                ticks: {
+                                    //fontSize: 20,
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "Time(min)",
+                                    //fontSize: 25
+                                }
+                            }
+                        ]
+                    },
+                },
+            });
+        }
+        // After Specimen 5
+        if (DataAfterSpecimen5.labels.length > 0) {
+            ttlSpecimenCount += 1;
+            var objAfterSpecimen5 = $(".SpecimenChart[DetailType='After'][SpecimenID='Specimen 5']")[0].getContext('2d');
+            $.myBar = new Chart(objAfterSpecimen5, {
+                type: 'line',
+                data: DataAfterSpecimen5,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                            position: 'top',
+                        },
+                        title: {
+                            display: false,
+                            text: 'Chart.js Line Chart'
+                        }
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+
+                                beginAtZero: true,
+                                //fontSize: 20,
+                                stepSize: 20,
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: "Evaporation(g)",
+                                //fontSize: 25
+                            }
+                        }],
+                        xAxes: [
+                            {
+                                ticks: {
+                                    //fontSize: 20,
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: "Time(min)",
+                                    //fontSize: 25
+                                }
+                            }
+                        ]
+                    },
+                },
+            });
+        }
     }
 
     function IsEditModeChange() {
@@ -1373,7 +1719,7 @@
             else {
                 // 可編輯欄位關閉
                 $('.divTime10 input ,.divTime20 input ,.divTime30 input ,.divTime40 input ,.divRateInner1 input').attr("readonly", "readonly");
-                $('.MainAreaItem input').attr("readonly", "readonly");
+                $('.MainArea input ,.MainAreaItem input').attr("readonly", "readonly");
                 $(".detailDelete").hide();
 
                 // 圖表只有非編輯模式可以用
@@ -1550,6 +1896,11 @@
             }
             var para = `?TargetID=Main_TypeOfPrint&BrandID=${$('#Main_BrandID').val()}&SeasonID=${$('#Main_SeasonID').val()}&StyleID=${$('#Main_StyleID').val()}`;
             window.open('@Url.Action("InkTypeList", "PublicWindow", new { Area = "" })' + para, WindowType, config = 'toolbar=no,status=no,location=no,width=800,height=750');
+        }
+        if (WindowType == "Technician" && EditMode) {
+
+            var para = "?TargetID=Main_Approver";
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para,'Approver',config='toolbar=no,status=no,location=no,width=1000,height=650');
         }
     }
 
@@ -1819,7 +2170,7 @@
                 function () {
 
                     let divTime = $(t).parent().parent();
-                    let divRate = $(t).parent().parent().parent().parent().find('.divTabInnerLeft').find('.divRate');
+                    //let divRate = $(t).parent().parent().parent().parent().find('.divTabInnerLeft').find('.divRate');
 
                     // 找出刪除的detailtype、specimenid
                     let detailtype = $($(divTime).find('div')[6]).find(".Mass").attr("detailtype");
@@ -1842,7 +2193,7 @@
                     }
                     // 把大於這個idx的都往前推一
                     AdjustElements('TimeList', deleteTimeIdx);
-
+                    /*
                     let divRateLength = $(divRate).find('div').length;
                     ctnPerRow = 2;
                     var deleteRateIdx = 0;
@@ -1862,11 +2213,11 @@
 
                     // 把大於這個idx的都往前推一
                     AdjustElements('RateList', deleteRateIdx);
+                    */
 
                     MaxRateListIdx -= 1;
                     MaxTimeListIdx -= 1;
                     AutoUpdateTime(detailtype, specimenid);
-                    AutoUpdateRate(detailtype, specimenid);
 
                 }, null);
         });
@@ -2037,11 +2388,46 @@
         $("#Main_SubmitDateText").on("change", function () {
             $("#Main_SubmitDate").val($("#Main_SubmitDateText").val());
         });
+
+        $("#Main_Approver").on("blur", function () {
+            if (EditMode == false) {
+                return;
+            }
+            if ($(this).val() == "") {
+                $("#Main_Approver").val('');
+                $("#Main_ApproverName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID:$(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Main_Approver").val('');
+                        $("#Main_ApproverName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else
+                    {
+                        $("#Main_Approver").val(data[0].ID);
+                        $("#Main_ApproverName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+
+        });
     }
 
     function AddDetailRow() {
 
-        MaxRateListIdx += 1;
+        //MaxRateListIdx += 1;
         MaxTimeListIdx += 1;
         //  必要參數
         var detailType = fcousDetailType;
@@ -2053,10 +2439,14 @@
         let lastEvaporation = evaporationList[evaporationList.length - 1];
 
         // Time List 必要參數
-        let lastTime = parseInt($(lastEvaporation).attr("Time")) + 10;
+        let lastTime = parseInt($(lastEvaporation).attr("Time")) + 3;
+        if (lastTime > 60) {
+            return;
+        }
         let TimeListIdx = MaxTimeListIdx;
         parentTabID = $(lastEvaporation).attr("parentTabID");
 
+        /*
         let rateValueList = $(`.RateValue[detailType="${detailType}"][specimenID="${specimenID}"]`);
         let lastRateValue = rateValueList[rateValueList.length - 1];
 
@@ -2067,7 +2457,7 @@
         let SpecimenListIdx = parseInt($(lastRateValue).attr("SpecimenListIdx")) + 1;
         let subtrahendTime = parseInt($(lastRateValue).attr("subtrahend-time")) + 10;
         let minuendTime = parseInt($(lastRateValue).attr("minuend-time")) + 10;
-
+        */
 
 
         $.ajax({
@@ -2083,7 +2473,7 @@
                 console.log(xhr.responseText);
             },
         });
-
+        @*
         $.ajax({
             url: "@Url.Action("AddRateRow")",
             type: 'POST',
@@ -2099,12 +2489,12 @@
                 console.log(xhr.responseText);
             }
         });
-
+        *@
         msg.WithSuccess("Add Success");
 
         ClickEventBind();
-
-        AutoUpdateRate(detailType, specimenID);
+        //AutoUpdateRate(detailType, specimenID);
+        AutoUpdateAverageRate(detailType, specimenID);
 
     }
 
@@ -2122,8 +2512,11 @@
         else if (value == '') {
             return 0;
         }
+        else if (isNaN(value)) {
+            return 0;
+        }
 
-        return Number.parseFloat(value).toFixed(3);
+        return Number.parseFloat(value).toFixed(4);
     }
 
     function tabChange() {
@@ -2165,25 +2558,6 @@
         fcousDetailType = type;
     }
 
-    function DetailItemValueCgange(obj, standard, detailItemListIdx, evaluationItem) {
-
-        if ($(obj).val() == standard) {
-            $(`#DetailItemList_${detailItemListIdx}__Result`).val('Pass');
-            $(`#DetailItemList_${detailItemListIdx}__Result`).css('color', 'blue');
-
-            $(`input[tag='${evaluationItem}Tag']`).val('Pass');
-            $(`input[tag='${evaluationItem}Tag']`).css('color', 'blue');
-        }
-        else {
-            $(`#DetailItemList_${detailItemListIdx}__Result`).val('Fail');
-            $(`#DetailItemList_${detailItemListIdx}__Result`).css('color', 'red');
-
-            $(`input[tag='${evaluationItem}Tag']`).val('Fail');
-            $(`input[tag='${evaluationItem}Tag']`).css('color', 'red');
-        }
-
-    }
-
     function AutoUpdateTime(updatedObj) {
         let isInitialMass =$(updatedObj).attr("IsInitialMass");
         let specimenID = $(updatedObj).attr("SpecimenID");
@@ -2208,7 +2582,7 @@
                     val = 0;
                 }
                 else {
-                    val = Number.parseFloat(val).toFixed(3);
+                    val = Number.parseFloat(val).toFixed(4);
                 }
 
                 $(evaporation).val(val);
@@ -2234,47 +2608,33 @@
                     val = 0;
                 }
                 else {
-                    val = Number.parseFloat(val).toFixed(3);
+                    val = Number.parseFloat(val).toFixed(4);
                 }
 
                 $(evaporation).val(val);
             });
         }
 
-        AutoUpdateRate(detailType, specimenID);
-    }
-
-    function AutoUpdateRate(detailType, specimenID) {
-        let rateValueList = $(`.RateValue[detailType="${detailType}"][specimenID="${specimenID}"]`);
-        $.each(rateValueList, function () {
-            let rateValue = this;
-            let ratio = $(rateValue).attr("Ratio");
-            let subtrahendTime = $(rateValue).attr("subtrahend-time");
-            let minuendTime = $(rateValue).attr("minuend-time");
-            let massSubtrahend = $(`.Mass[detailType="${detailType}"][specimenID="${specimenID}"][Time="${subtrahendTime}"]`)[0];
-            let massMinuend = $(`.Mass[detailType="${detailType}"][specimenID="${specimenID}"][Time="${minuendTime}"]`)[0];
-
-            let newRate = ($(massSubtrahend).val() - $(massMinuend).val()) * ratio;
-            newRate = Number.parseFloat(newRate).toFixed(3);
-            $(rateValue).val(newRate);
-        });
-
+        //AutoUpdateRate(detailType, specimenID);
         AutoUpdateAverageRate(detailType, specimenID);
     }
 
     function AutoUpdateAverageRate(detailType, specimenID) {
-        let allRate = 0.0;
-        let count = 0;
-        let rateValueList = $(`.RateValue[detailType="${detailType}"][specimenID="${specimenID}"]`);
-        $.each(rateValueList, function () {
-            let rateValue = this;
-            allRate += Number.parseFloat($(rateValue).val());
-            count += 1;
-        });
 
-        let avg = Number.parseFloat(allRate / count).toFixed(3);
-        $(`.RateAverage[detailType="${detailType}"][specimenID="${specimenID}"]`).val(avg);
+        let timeValueList = $(`.Time[detailType="${detailType}"][specimenID="${specimenID}"]`);
+        let evaporationValueList = $(`.Evaporation[detailType="${detailType}"][specimenID="${specimenID}"]`);
 
+        let timeValueArray = timeValueList.map(function () {
+            return parseFloat($(this).val()); // 使用 jQuery 提取 value 並轉為數字
+        }).get(); // 使用 .get() 轉換為純 JavaScript 陣列
+
+        let evaporationValueArray = evaporationValueList.map(function () {
+            return parseFloat($(this).val()); // 使用 jQuery 提取 value 並轉為數字
+        }).get(); // 使用 .get() 轉換為純 JavaScript 陣列
+
+
+        let slope = calculateSlope(timeValueArray, evaporationValueArray);
+        $(`.RateAverage[detailType="${detailType}"][specimenID="${specimenID}"]`).val(slope);
         AutoUpdateFinalAverage(detailType);
     }
 
@@ -2284,12 +2644,66 @@
         let rateValueList = $(`.RateAverage[detailType="${detailType}"]`);
         $.each(rateValueList, function () {
             let rateValue = this;
-            allRate += Number.parseFloat($(rateValue).val());
+            allRate += Number.parseFloat($(rateValue).val()) * 60;
             count += 1;
         });
 
-        let avg = Number.parseFloat(allRate / count).toFixed(3);
+        let avg = Number.parseFloat(allRate / count).toFixed(4);
         $(`input[detailtype="Main${detailType}"]`).val(avg);
+    }
+
+    function calculateSlope(arrTime, arrEvaporation) {
+        if (arrTime.length !== arrEvaporation.length || arrTime.length === 0) {
+            //throw new Error("The input arrays must have the same non-zero length.");
+            return 0;
+        }
+
+        // 計算 X 和 Y 的平均值
+        const X = arrTime.reduce((sum, value) => sum + value, 0) / arrTime.length;
+        const Y = arrEvaporation.reduce((sum, value) => sum + value, 0) / arrEvaporation.length;
+
+        // 計算 (Time - X)*(Evaporation - Y) 的總和 和 (Time - X)^2 的總和
+        let numeratorSum = 0; // 分子總和
+        let denominatorSum = 0; // 分母總和
+
+        for (let i = 0; i < arrTime.length; i++) {
+            const timeDiff = arrTime[i] - X;
+            const evaporationDiff = arrEvaporation[i] - Y;
+            numeratorSum += timeDiff * evaporationDiff;
+            denominatorSum += timeDiff ** 2;
+        }
+
+        // 檢查分母是否為 0，避免除以 0
+        if (denominatorSum === 0) {
+            // throw new Error("Division by zero: All time values are the same.");
+            return 0;
+        }
+
+        // 計算斜率
+        const slope = numeratorSum / denominatorSum;
+        return Number.parseFloat(slope).toFixed(4);
+    }
+
+
+    function CalculateAvgResult(arr) {
+        if (arr.length == 0) {
+            return 0;
+        }
+        if (arr.length == 1) {
+            return arr[1];
+        }
+
+        let sum = 0;
+
+        // 計算所有相鄰元素的差值並累加
+        for (let i = 0; i < arr.length - 1; i++) {
+            sum += (arr[i] - arr[i + 1]) * 6;
+        }
+
+        // 計算平均值
+        const rAvg = sum / (arr.length - 1);
+
+        return rAvg;
     }
 
     function FailMail() {
@@ -2381,4 +2795,8 @@
         }
     }
 
+    function GetPass1(data, targetID) {
+        $('#' + targetID).val(data.ID);
+        $('#' + targetID + "Name").val(data.Name );
+    }
 </script>
