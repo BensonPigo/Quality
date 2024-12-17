@@ -1014,6 +1014,9 @@ namespace BusinessLogicLayer.Service
                 excelSheets.Cells[5, 8] = fabricCrkShrkTestHeat_Main.Supp;
                 excelSheets.Cells[5, 10] = fabricCrkShrkTestHeat_Main.NonHeat.ToString();
                 excelSheets.Cells[6, 2] = fabricCrkShrkTestHeat_Main.HeatReceiveDate.HasValue ? fabricCrkShrkTestHeat_Main.HeatReceiveDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+                //excelSheets.Cells[6, 4] = fabricCrkShrkTestHeat_Main.Heat_Temperature;
+                //excelSheets.Cells[6, 6] = fabricCrkShrkTestHeat_Main.Heat_Second;
+                //excelSheets.Cells[6, 8] = fabricCrkShrkTestHeat_Main.Heat_Pressure;
 
                 excelSheets.Cells[30, 4] = fabricCrkShrkTestHeat_Main.HeatInspectorName;
                 excelSheets.Cells[30, 9] = fabricCrkShrkTestHeat_Main.HeatApproverName;

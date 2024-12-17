@@ -315,7 +315,7 @@
                                         </td>
                                         <td><h5>Approver</h5></td>
                                         <td>
-                                            @Html.TextBoxFor(modelItem => Model.Heat_Main.HeatApprover, new { @style = "width:30%", @class = "inputHeatApprover", @disabled = "disabled" })
+                                            @Html.TextBoxFor(modelItem => Model.Heat_Main.HeatApprover, new { @style = "width:30%", @class = "inputHeatApprover inputHead", @disabled = "disabled" })
                                             @Html.TextBoxFor(modelItem => Model.Heat_Main.HeatApproverName, new { @style = "width:57%", @disabled = "disabled" })
                                             <input id="btnHeatApproverSelectItem" type="button" class="site-btn btn-blue btnHeatApproverSelectItem" style="margin:0;border:0;" value="..." />
                                         </td>
@@ -508,14 +508,14 @@
 
             $('#Save, #New').addClass("IsEditMode");
             $(".DataTable:not(.DetailTable) textarea").removeAttr("disabled", "disabled");
-            $(".DetailTable input,.DetailTable select, #Heat_Main_HeatRemark ,.inputHeatApprover ,#Heat_Main_HeatReceiveDate").removeAttr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select, #Heat_Main_HeatRemark ,.inputHead ,#Heat_Main_HeatReceiveDate").removeAttr("disabled", "disabled");
             $(".detailDelete").show();
             DetailButtonBind();
         }
         else {
             $('#Save, #New').unbind('click').removeClass("IsEditMode");
             $(".DataTable:not(.DetailTable) textarea").attr("disabled", "disabled");
-            $(".DetailTable input,.DetailTable select, #Heat_Main_HeatRemark ,.inputHeatApprover ,#Heat_Main_HeatReceiveDate").attr("disabled", "disabled");
+            $(".DetailTable input,.DetailTable select, #Heat_Main_HeatRemark ,.inputHead ,#Heat_Main_HeatReceiveDate").attr("disabled", "disabled");
             $(".detailDelete").hide();
             $('#Excel, #PDF ,#SendMail').addClass("IsEditMode");
 
