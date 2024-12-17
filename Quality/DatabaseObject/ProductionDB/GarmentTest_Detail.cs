@@ -161,6 +161,7 @@ namespace DatabaseObject.ProductionDB
         /// <summary>測試後的照片</summary>
         [Display(Name = "測試後的照片")]
         public Byte[] TestAfterPicture { get; set; }
+        public string Approver { get; set; }
 
     }
 }

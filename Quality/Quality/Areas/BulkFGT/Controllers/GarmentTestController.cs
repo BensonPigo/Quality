@@ -476,5 +476,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(new { result.Result, result.ErrMsg, result.reportPath });
         }
 
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult DownloadAllReport(string ID, string No, bool IsToPDF)
+        {
+            GarmentTest_Detail_Result result = _GarmentTest_Service.DownloadAllReport(ID, No, IsToPDF);
+            result.reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.reportPath;
+            return Json(new { result.Result, result.ErrMsg, result.reportPath });
+        }
     }
 }

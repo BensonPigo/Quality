@@ -623,7 +623,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     $"{dtContent.Rows[0]["Article"]}_" +
                     $"{dtContent.Rows[0]["Result"]}_" +
                     $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
-                
+
                 GarmentTest_Detail_Result baseResult = ToReport(ID, No, ReportType.Wash_Test_2018, true, AssignedFineName: name);
                 string FileName = baseResult.Result.Value ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", baseResult.reportPath) : string.Empty;
                 SendMail_Request request = new SendMail_Request()
@@ -959,14 +959,22 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return strValie;
         }
 
+
         public GarmentTest_Detail_Result ToReport(string ID, string No, ReportType type, bool IsToPDF, bool test = false, string AssignedFineName = "")
         {
             _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
-            GarmentTest_Detail_Result all_Data = Get_All_Detail(ID, No);
+            IStyleProvider styleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
+            IOrdersProvider ordersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(Common.ProductionDataAccessLayer);
+
+            // 取得資料
+            GarmentTest_Detail_Result all_Data = this.Get_All_Detail(ID, No);
+
             all_Data.reportPath = string.Empty;
-            P04Data data = new P04Data
+            P04Data p04Data = new P04Data
             {
                 DateSubmit = all_Data.Detail.SubmitDate,
+                ReceiveDate = all_Data.Detail.ReceiveDate,
                 NumArriveQty = all_Data.Detail.ArrivedQty,
                 TxtSize = all_Data.Detail.SizeCode,
                 RdbtnLine = all_Data.Detail.LineDry,
@@ -980,58 +988,121 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Remark = all_Data.Detail.Remark,
             };
 
-            var testCOdeFgwt = _QualityBrandTestCodeProvider.Get(all_Data.Main.BrandID, "Garment Test-FGWT");
+            var testCodeFgwt = _QualityBrandTestCodeProvider.Get(all_Data.Main.BrandID, "Garment Test-FGWT").ToList();
 
-            bool IsNewData = all_Data.Apperance.Count == 9 ? false : true;
+            bool isNewData = all_Data.Apperance.Count != 9;
 
-            IStyleProvider styleProvider = new StyleProvider(Common.ProductionDataAccessLayer);
-            string StyleName = styleProvider.GetStyleName(all_Data.Main.StyleID, all_Data.Main.SeasonID, all_Data.Main.BrandID);
-            string CriticalName = styleProvider.GetStyleCritical(all_Data.Main.StyleID, all_Data.Main.SeasonID, all_Data.Main.BrandID);
+            string styleName = styleProvider.GetStyleName(all_Data.Main.StyleID, all_Data.Main.SeasonID, all_Data.Main.BrandID);
+            string criticalName = styleProvider.GetStyleCritical(all_Data.Main.StyleID, all_Data.Main.SeasonID, all_Data.Main.BrandID);
 
+            var orderDetails = this.GetOrderDetails(all_Data);
+
+            var dtShrinkages = _IGarmentTestDetailShrinkageProvider.Get_dt_Shrinkage(ID, No);
+
+            string typeName = this.GenerateTypeName(all_Data);
+
+            char[] invalidChars = this.GetInvalidFileNameChars();
+
+            Dictionary<string, string> result = GenerateReport(type, all_Data, p04Data, isNewData, styleName, criticalName, orderDetails, dtShrinkages, testCodeFgwt, invalidChars, IsToPDF, AssignedFineName);
+
+            all_Data.Result = Convert.ToBoolean(result["Result"]);
+            all_Data.reportPath = result["reportPath"];
+            all_Data.reportFileFullPath = result["reportFileFullPath"];
+            all_Data.ErrMsg = result["ErrMsg"];
+
+            return all_Data;
+        }
+
+        public GarmentTest_Detail_Result DownloadAllReport(string ID, string No, bool IsToPDF)
+        {
+            GarmentTest_Detail_Result result = new GarmentTest_Detail_Result();
+            GarmentTest_Detail_Result report1 = this.ToReport(ID, No, ReportType.Wash_Test_2018, IsToPDF);
+            GarmentTest_Detail_Result report2 = this.ToReport(ID, No, ReportType.Wash_Test_2020, IsToPDF);
+            GarmentTest_Detail_Result report3 = this.ToReport(ID, No, ReportType.Physical_Test, IsToPDF);
+
+            Ionic.Zip.ZipFile zipFile = new Ionic.Zip.ZipFile();
+            string zipName = $"Garment Test Wash All Report_{DateTime.Now.ToString("yyyyMMdd")}.zip";
+            string zipPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", zipName);
+            if (report1.Result.Value)
+            {
+                zipFile.AddFile(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report1.reportPath), string.Empty);
+            }
+            if (report2.Result.Value)
+            {
+                zipFile.AddFile(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report2.reportPath), string.Empty);
+            }
+            if (report3.Result.Value)
+            {
+                zipFile.AddFile(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", report3.reportPath), string.Empty);
+            }
+            zipFile.Save(zipPath);
+            result.reportPath = zipName;
+            result.Result = true;
+            return result;
+        }
+
+        private Orders GetOrderDetails(GarmentTest_Detail_Result all_Data)
+        {
             IOrdersProvider ordersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
-            Orders orders = new Orders();
             if (!string.IsNullOrEmpty(all_Data.Detail.OrderID))
             {
                 var query = ordersProvider.Get(new Orders() { ID = all_Data.Detail.OrderID });
                 if (query.Any())
                 {
-                    orders = query.FirstOrDefault();
+                    return query.FirstOrDefault();
                 }
             }
-
-            _IGarmentTestDetailShrinkageProvider = new GarmentTestDetailShrinkageProvider(Common.ProductionDataAccessLayer);
-            DataTable dtShrinkages = _IGarmentTestDetailShrinkageProvider.Get_dt_Shrinkage(ID, No);
-
-            string typeName = $"Garment Test_{all_Data.Detail.OrderID}_" +
-                $"{all_Data.Main.StyleID}_" +
-                $"{all_Data.Main.Article}_" +
-                $"{(all_Data.Detail.Result == "P" ? "Pass" : "Fail")}_" +
-                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
-
+            return new Orders();
+        }
+        private string GenerateTypeName(GarmentTest_Detail_Result all_Data)
+        {
+            return $"Garment Test_{all_Data.Detail.OrderID}_{all_Data.Main.StyleID}_{all_Data.Main.Article}_{(all_Data.Detail.Result == "P" ? "Pass" : "Fail")}_{DateTime.Now:yyyyMMddHHmmss}";
+        }
+        private char[] GetInvalidFileNameChars()
+        {
             char[] invalidChars = Path.GetInvalidFileNameChars();
-            char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-            char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
+            char[] additionalChars = { '-', '+' };
+            return invalidChars.Concat(additionalChars).ToArray();
+        }
+
+        private Dictionary<string, string> GenerateReport(ReportType type, GarmentTest_Detail_Result all_Data, P04Data p04data, bool isNewData, string styleName, string criticalName, Orders orders, DataTable dtShrinkages, List<QualityBrandTestCode> testCodeFgwt, char[] invalidChars, bool isToPDF, string AssignedFineName = "")
+        {
+            Dictionary<string, string> dicRt = new Dictionary<string, string>
+            {
+                ["reportPath"] = string.Empty,
+                ["reportFileFullPath"] = string.Empty,
+                ["Result"] = string.Empty,
+                ["ErrMsg"] = string.Empty,
+            };
+
+            try
+            {
+
+                string typeName = $"Garment Test_{all_Data.Detail.OrderID}_" +
+                    $"{all_Data.Main.StyleID}_" +
+                    $"{all_Data.Main.Article}_" +
+                    $"{(all_Data.Detail.Result == "P" ? "Pass" : "Fail")}_" +
+                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 switch (type)
-            {
-                case ReportType.Wash_Test_2018:
-                    #region Print Wash 2018
+                {
+                    case ReportType.Wash_Test_2018:
+                        #region Print Wash 2018
 
-                    if (all_Data.Apperance.Count == 0 || all_Data.Shrinkages.Count == 0)
-                    {
-                        all_Data.ErrMsg = " Datas not found!";
-                        all_Data.Result = false;
-                        return all_Data;
-                    }
-                    typeName = $"Garment Test Wash 2018_{all_Data.Detail.OrderID}_" +
-                       $"{all_Data.Main.StyleID}_" +
-                       $"{all_Data.Main.Article}_" +
-                       $"{(all_Data.Detail.Result == "P" ? "Pass" : "Fail")}_" +
-                       $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                        if (all_Data.Apperance.Count == 0 || all_Data.Shrinkages.Count == 0)
+                        {
+                            dicRt["ErrMsg"] = "Data not found!";
+                            dicRt["Result"] = "false";
+                            return dicRt;
+                        }
 
-                    try
-                    {
-                        if (!test)
+                        typeName = $"Garment Test Wash 2018_{all_Data.Detail.OrderID}_" +
+                           $"{all_Data.Main.StyleID}_" +
+                           $"{all_Data.Main.Article}_" +
+                           $"{(all_Data.Detail.Result == "P" ? "Pass" : "Fail")}_" +
+                           $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                        try
                         {
                             if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
                             {
@@ -1042,167 +1113,170 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             {
                                 System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
                             }
-                        }
 
-                        string openfilepath;
-                        string basefileName_2018 = "WashTest_2018";
-                        if (test)
-                        {
-                            openfilepath = "C:\\Willy_Repository\\Quality_KPI\\Quality\\Quality\\bin\\XLT\\WashTest_2018.xltx";
-                        }
-                        else
-                        {
+                            string openfilepath;
+                            string basefileName_2018 = "WashTest_2018";
                             openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName_2018}.xltx";
-                        }
 
-                        Excel.Application objApp = MyUtility.Excel.ConnectExcel(openfilepath);
-                        objApp.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-                        Excel.Worksheet worksheet = objApp.ActiveWorkbook.Worksheets[1]; // 取得工作表
+                            Excel.Application objApp = MyUtility.Excel.ConnectExcel(openfilepath);
+                            objApp.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
+                            Excel.Worksheet worksheet = objApp.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
-                        // WashName 調整次數 710(1,10,15), 701(1,3)
-                        string WashName = all_Data.Main.WashName;
-                        if (WashName == "710")
-                        {
-                            // Actual Shrinkage % 
-                            // Top
-                            worksheet.Cells[18, 8] = "10.wash";
-                            worksheet.Cells[18, 10] = "15.wash";
-                            // INNER
-                            worksheet.Cells[26, 8] = "10.wash";
-                            worksheet.Cells[26, 10] = "15.wash";
-                            // OUTER
-                            worksheet.Cells[34, 8] = "10.wash";
-                            worksheet.Cells[34, 10] = "15.wash";
-                            // BOTTOM
-                            worksheet.Cells[44, 8] = "10.wash";
-                            worksheet.Cells[44, 10] = "15.wash";
-
-                            //After Wash Appearance Check list
-                            worksheet.Cells[63, 6] = "10.wash";
-                            worksheet.Cells[63, 8] = "15.wash";
-
-                            // Team Wear
-                            worksheet.Cells[15, 4] = "V";
-                            worksheet.Cells[15, 8] = "15";
-                        }
-                        else if (WashName == "701")
-                        {
-                            // Actual Shrinkage % 
-                            // Top
-                            worksheet.Cells[18, 10] = "";
-                            // INNER
-                            worksheet.Cells[26, 10] = "";
-                            // OUTER
-                            worksheet.Cells[34, 10] = "";
-                            // BOTTOM
-                            worksheet.Cells[44, 10] = "";
-
-                            //After Wash Appearance Check list
-                            worksheet.Cells[63, 8] = "";
-
-                            // Team Wear
-                            worksheet.Cells[15, 4] = "";
-                            worksheet.Cells[15, 8] = "3";
-                        }
-
-                        if (testCOdeFgwt.Any())
-                        {
-                            worksheet.Cells[1, 2] = $@"Finished Garment Wash Test Report({testCOdeFgwt.FirstOrDefault().TestCode})";
-                        }
-
-                        worksheet.Cells[3, 4] = MyUtility.Convert.GetString(all_Data.Detail.ReportNo);
-                        if (data.DateSubmit.HasValue)
-                        {
-                            worksheet.Cells[4, 4] = MyUtility.Convert.GetDate(data.DateSubmit.Value).Value.Year + "/" + MyUtility.Convert.GetDate(data.DateSubmit.Value).Value.Month + "/" + MyUtility.Convert.GetDate(data.DateSubmit.Value).Value.Day;
-                        }
-
-                        if (!MyUtility.Check.Empty(all_Data.Detail.inspdate))
-                        {
-                            worksheet.Cells[4, 7] = MyUtility.Convert.GetDate(all_Data.Detail.inspdate).Value.Year + "/" + MyUtility.Convert.GetDate(all_Data.Detail.inspdate).Value.Month + "/" + MyUtility.Convert.GetDate(all_Data.Detail.inspdate).Value.Day;
-                        }
-
-                        worksheet.Cells[4, 9] = MyUtility.Convert.GetString(all_Data.Main.OrderID);
-                        worksheet.Cells[4, 11] = MyUtility.Convert.GetString(all_Data.Main.BrandID);
-                        worksheet.Cells[6, 4] = MyUtility.Convert.GetString(all_Data.Main.StyleID);
-                        worksheet.Cells[7, 8] = orders.CustPONO;
-                        worksheet.Cells[7, 4] = MyUtility.Convert.GetString(all_Data.Main.Article);
-                        worksheet.Cells[6, 8] = StyleName;
-                        worksheet.Cells[6, 11] = string.IsNullOrEmpty(CriticalName) ? string.Empty : "Y";
-                        worksheet.Cells[8, 8] = MyUtility.Convert.GetDecimal(data.NumArriveQty);
-
-                        string sendDate = Convert.ToDateTime(orders.BuyerDelivery).ToShortDateString();
-                        worksheet.Cells[8, 4] = sendDate;
-                        worksheet.Cells[8, 10] = MyUtility.Convert.GetString(data.TxtSize);
-
-                        worksheet.Cells[11, 4] = data.RdbtnLine == true ? "V" : string.Empty;
-                        worksheet.Cells[12, 4] = data.RdbtnTumble == true ? "V" : string.Empty;
-                        worksheet.Cells[13, 4] = data.RdbtnHand == true ? "V" : string.Empty;
-                        worksheet.Cells[11, 8] = data.ComboTemperature + "˚C ";
-                        worksheet.Cells[12, 8] = data.ComboMachineModel;
-                        worksheet.Cells[13, 8] = data.TxtFibreComposition;
-                        // Remark
-                        worksheet.Cells[14, 4] = data.Remark;
-
-                        string remark = data.Remark == null ? string.Empty : data.Remark;
-                        int rowCtn = (remark.Length / 85) + 1;
-
-                        worksheet.get_Range("14:14", Type.Missing).RowHeight = 15.75 * rowCtn;
-
-                        if (all_Data.Main.IsSkirt)
-                        {
-                            worksheet.Cells[44, 3] = "SKIRT";
-                        }
-
-                        #region 舊資料
-                        if (!IsNewData)
-                        {
-                            #region 照片
-                            if (all_Data.Detail.TestBeforePicture != null)
+                            // WashName 調整次數 710(1,10,15), 701(1,3)
+                            string WashName = all_Data.Main.WashName;
+                            if (WashName == "710")
                             {
-                                Excel.Range cell = worksheet.Cells[94, 2];
-                                string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestBeforePicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
-                                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 328, 247);
+                                // Actual Shrinkage % 
+                                // Top
+                                worksheet.Cells[18, 8] = "10.wash";
+                                worksheet.Cells[18, 10] = "15.wash";
+                                // INNER
+                                worksheet.Cells[26, 8] = "10.wash";
+                                worksheet.Cells[26, 10] = "15.wash";
+                                // OUTER
+                                worksheet.Cells[34, 8] = "10.wash";
+                                worksheet.Cells[34, 10] = "15.wash";
+                                // BOTTOM
+                                worksheet.Cells[44, 8] = "10.wash";
+                                worksheet.Cells[44, 10] = "15.wash";
+
+                                //After Wash Appearance Check list
+                                worksheet.Cells[63, 6] = "10.wash";
+                                worksheet.Cells[63, 8] = "15.wash";
+
+                                // Team Wear
+                                worksheet.Cells[15, 4] = "V";
+                                worksheet.Cells[15, 8] = "15";
+                            }
+                            else if (WashName == "701")
+                            {
+                                // Actual Shrinkage % 
+                                // Top
+                                worksheet.Cells[18, 10] = "";
+                                // INNER
+                                worksheet.Cells[26, 10] = "";
+                                // OUTER
+                                worksheet.Cells[34, 10] = "";
+                                // BOTTOM
+                                worksheet.Cells[44, 10] = "";
+
+                                //After Wash Appearance Check list
+                                worksheet.Cells[63, 8] = "";
+
+                                // Team Wear
+                                worksheet.Cells[15, 4] = "";
+                                worksheet.Cells[15, 8] = "3";
                             }
 
-                            if (all_Data.Detail.TestAfterPicture != null)
+                            if (testCodeFgwt.Any())
                             {
-                                Excel.Range cell = worksheet.Cells[94, 7];
-                                string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestAfterPicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
-                                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 300, 248);
-                            }
-                            #endregion
-
-                            #region 最下面 Signature
-
-                            bool ApperanceRejected = all_Data.Apperance.Where(x => x.Wash1.EqualString("Rejected")
-                                                        || x.Wash2.EqualString("Rejected")
-                                                        || x.Wash3.EqualString("Rejected")
-                                                        || x.Wash4.EqualString("Rejected")
-                                                        || x.Wash5.EqualString("Rejected")).ToList().Count() > 0;
-
-                            bool ApperanceAccepted = all_Data.Apperance.Where(x => x.Wash1.EqualString("Accepted")
-                                                      || x.Wash2.EqualString("Accepted")
-                                                      || x.Wash3.EqualString("Accepted")
-                                                      || x.Wash4.EqualString("Accepted")
-                                                      || x.Wash5.EqualString("Accepted")).ToList().Count() > 0;
-
-                            if ((MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("P") || ApperanceAccepted) && !ApperanceRejected)
-                            {
-                                worksheet.Cells[87, 4] = "V";
-                            }
-                            else if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("F") || ApperanceRejected)
-                            {
-                                worksheet.Cells[87, 6] = "V";
+                                worksheet.Cells[1, 2] = $@"Finished Garment Wash Test Report({testCodeFgwt.FirstOrDefault().TestCode})";
                             }
 
-                            #endregion
+                            worksheet.Cells[3, 4] = MyUtility.Convert.GetString(all_Data.Detail.ReportNo);
 
-                            #region 插入圖片與Technician名字
-
-                            // ToPDF
-                            if (IsToPDF)
+                            // Report Date
+                            if (!MyUtility.Check.Empty(all_Data.Detail.SubmitDate))
                             {
-                                string sql_cmd = $@"
+                                worksheet.Cells[3, 7] = MyUtility.Convert.GetDate(all_Data.Detail.SubmitDate).Value.Year + "/" + MyUtility.Convert.GetDate(all_Data.Detail.SubmitDate).Value.Month + "/" + MyUtility.Convert.GetDate(all_Data.Detail.SubmitDate).Value.Day;
+                            }
+
+                            // Receive Date
+                            if (!MyUtility.Check.Empty(all_Data.Detail.ReceiveDate))
+                            {
+                                worksheet.Cells[3, 10] = MyUtility.Convert.GetDate(all_Data.Detail.ReceiveDate).Value.Year + "/" + MyUtility.Convert.GetDate(all_Data.Detail.ReceiveDate).Value.Month + "/" + MyUtility.Convert.GetDate(all_Data.Detail.ReceiveDate).Value.Day;
+                            }
+
+                            // Submit Date
+                            if (!MyUtility.Check.Empty(all_Data.Detail.inspdate))
+                            {
+                                worksheet.Cells[4, 4] = MyUtility.Convert.GetDate(all_Data.Detail.inspdate).Value.Year + "/" + MyUtility.Convert.GetDate(all_Data.Detail.inspdate).Value.Month + "/" + MyUtility.Convert.GetDate(all_Data.Detail.inspdate).Value.Day;
+                            }
+
+                            worksheet.Cells[4, 7] = MyUtility.Convert.GetString(orders.ID);
+                            worksheet.Cells[4, 9] = MyUtility.Convert.GetString(all_Data.Main.BrandID);
+                            worksheet.Cells[4, 11] = MyUtility.Convert.GetString(all_Data.Main.SeasonID);
+
+                            worksheet.Cells[6, 4] = MyUtility.Convert.GetString(all_Data.Main.StyleID);
+                            worksheet.Cells[7, 8] = orders.CustPONO;
+                            worksheet.Cells[7, 4] = MyUtility.Convert.GetString(all_Data.Main.Article);
+                            worksheet.Cells[6, 8] = styleName;
+                            worksheet.Cells[6, 11] = string.IsNullOrEmpty(criticalName) ? string.Empty : "Y";
+                            worksheet.Cells[8, 8] = MyUtility.Convert.GetDecimal(p04data.NumArriveQty);
+
+                            string sendDate = Convert.ToDateTime(orders.BuyerDelivery).ToShortDateString();
+                            worksheet.Cells[8, 4] = sendDate;
+                            worksheet.Cells[8, 10] = MyUtility.Convert.GetString(p04data.TxtSize);
+
+                            worksheet.Cells[11, 4] = p04data.RdbtnLine == true ? "V" : string.Empty;
+                            worksheet.Cells[12, 4] = p04data.RdbtnTumble == true ? "V" : string.Empty;
+                            worksheet.Cells[13, 4] = p04data.RdbtnHand == true ? "V" : string.Empty;
+                            worksheet.Cells[11, 8] = p04data.ComboTemperature + "˚C ";
+                            worksheet.Cells[12, 8] = p04data.ComboMachineModel;
+                            worksheet.Cells[13, 8] = p04data.TxtFibreComposition;
+                            // Remark
+                            worksheet.Cells[14, 4] = p04data.Remark;
+
+                            string remark = p04data.Remark == null ? string.Empty : p04data.Remark;
+                            int rowCtn = (remark.Length / 85) + 1;
+
+                            worksheet.get_Range("14:14", Type.Missing).RowHeight = 15.75 * rowCtn;
+
+                            if (all_Data.Main.IsSkirt)
+                            {
+                                worksheet.Cells[44, 3] = "SKIRT";
+                            }
+
+                            #region 舊資料
+                            if (!isNewData)
+                            {
+                                #region 照片
+                                if (all_Data.Detail.TestBeforePicture != null)
+                                {
+                                    Excel.Range cell = worksheet.Cells[94, 2];
+                                    string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestBeforePicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
+                                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 328, 247);
+                                }
+
+                                if (all_Data.Detail.TestAfterPicture != null)
+                                {
+                                    Excel.Range cell = worksheet.Cells[94, 7];
+                                    string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestAfterPicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
+                                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 300, 248);
+                                }
+                                #endregion
+
+                                #region 最下面 Signature
+
+                                bool ApperanceRejected = all_Data.Apperance.Where(x => x.Wash1.EqualString("Rejected")
+                                                            || x.Wash2.EqualString("Rejected")
+                                                            || x.Wash3.EqualString("Rejected")
+                                                            || x.Wash4.EqualString("Rejected")
+                                                            || x.Wash5.EqualString("Rejected")).ToList().Count() > 0;
+
+                                bool ApperanceAccepted = all_Data.Apperance.Where(x => x.Wash1.EqualString("Accepted")
+                                                          || x.Wash2.EqualString("Accepted")
+                                                          || x.Wash3.EqualString("Accepted")
+                                                          || x.Wash4.EqualString("Accepted")
+                                                          || x.Wash5.EqualString("Accepted")).ToList().Count() > 0;
+
+                                if ((MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("P") || ApperanceAccepted) && !ApperanceRejected)
+                                {
+                                    worksheet.Cells[87, 4] = "V";
+                                }
+                                else if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("F") || ApperanceRejected)
+                                {
+                                    worksheet.Cells[87, 6] = "V";
+                                }
+
+                                #endregion
+
+                                #region 插入圖片與Technician名字
+
+                                // ToPDF
+                                if (!string.IsNullOrEmpty(all_Data.Detail.inspector))
+                                {
+                                    string sql_cmd = $@"
 select p.name,[SignaturePic] = t.Signature
 from Production.dbo.Technician t WITH (NOLOCK)
 inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
@@ -1211,741 +1285,762 @@ where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
 
-                                string technicianName = string.Empty;
-                                DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
+                                    string technicianName = string.Empty;
+                                    DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
 
-                                if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
-                                {
-                                    technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
-                                    byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
-
-                                    string imageName = $"{Guid.NewGuid()}.jpg";
-                                    string imgPath;
-
-                                    if (test)
+                                    if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
                                     {
-                                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                                    }
-                                    else
-                                    {
+                                        technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
+                                        byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
+
+                                        string imageName = $"{Guid.NewGuid()}.jpg";
+                                        string imgPath;
+
                                         imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                                        // Name
+                                        worksheet.Cells[86, 8] = technicianName;
+                                        Excel.Range cell = worksheet.Cells[88, 8];
+
+                                        using (MemoryStream ms = new MemoryStream(imgData))
+                                        {
+                                            Image img = Image.FromStream(ms);
+                                            img.Save(imgPath);
+                                        }
+                                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
                                     }
+                                }
 
-                                    // Name
-                                    worksheet.Cells[88, 9] = technicianName;
-                                    Excel.Range cell = worksheet.Cells[86, 9];
+                                if (!string.IsNullOrEmpty(all_Data.Detail.Approver))
+                                {
+                                    string sql_cmd = $@"
+select p.name,[SignaturePic] = t.Signature
+from Production.dbo.Technician t WITH (NOLOCK)
+inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
+outer apply (select PicPath from Production.dbo.system) s 
+where t.ID = '{all_Data.Detail.Approver}'
+and t.GarmentTest=1
+";
 
-                                    using (MemoryStream ms = new MemoryStream(imgData))
+                                    string approverName = string.Empty;
+                                    DataTable dtApproverInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
+
+                                    if (dtApproverInfo != null && dtApproverInfo.Rows.Count > 0 && dtApproverInfo.Rows[0]["SignaturePic"] != null)
                                     {
-                                        Image img = Image.FromStream(ms);
-                                        img.Save(imgPath);
+                                        approverName = dtApproverInfo.Rows[0]["name"].ToString();
+                                        byte[] imgData = (byte[])dtApproverInfo.Rows[0]["SignaturePic"];
+
+                                        string imageName = $"{Guid.NewGuid()}.jpg";
+                                        string imgPath;
+
+                                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                                        // Name
+                                        worksheet.Cells[86, 10] = approverName;
+                                        Excel.Range cell = worksheet.Cells[88, 10];
+
+                                        using (MemoryStream ms = new MemoryStream(imgData))
+                                        {
+                                            Image img = Image.FromStream(ms);
+                                            img.Save(imgPath);
+                                        }
+                                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
                                     }
-                                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+                                }
+
+                                #endregion
+
+                                #region After Wash Appearance Check list
+                                string tmpAR;
+
+                                worksheet.Cells[75, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Type).First());
+
+                                worksheet.get_Range("75:75", Type.Missing).Rows.AutoFit();
+
+                                // 大約21個字換行
+                                int widhthBase = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Type).First()).Length / 20;
+
+                                worksheet.get_Range("75:75", Type.Missing).RowHeight = widhthBase == 0 ? 28 : 28 * widhthBase;
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[75, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[75, 5] = "V";
                                 }
                                 else
                                 {
-                                    worksheet.Cells[88, 9] = MyUtility.Convert.GetString(all_Data.Detail.GarmentTest_Detail_Inspector);
+                                    worksheet.Cells[75, 4] = tmpAR;
                                 }
-                            }
 
-                            // ToExcel
-                            if (!IsToPDF)
-                            {
-                                worksheet.Cells[84, 8] = string.Empty;
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[75, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[75, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[75, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[75, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[75, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[75, 8] = tmpAR;
+                                }
+
+                                string strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 75, strComment);
+                                worksheet.Cells[75, 10] = strComment;
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[75, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[75, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[75, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[76, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[76, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[76, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[76, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[76, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[76, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 76, strComment);
+                                worksheet.Cells[76, 10] = strComment;
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[77, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[77, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[77, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[77, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[77, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[77, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[77, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[77, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[76, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 77, strComment);
+                                worksheet.Cells[77, 10] = strComment;
+
+                                worksheet.Cells[78, 3] = all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Type).First().ToString(); // type;
+
+                                // 大約21個字換行
+                                int widhthBase2 = all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Type).First().ToString().Length / 20;
+
+                                worksheet.get_Range("78:78", Type.Missing).RowHeight = widhthBase2 == 0 ? 28 : 28 * widhthBase2;
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[78, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[78, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[78, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[78, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[78, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[78, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[78, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[78, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[78, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 78, strComment);
+                                worksheet.Cells[78, 10] = strComment;
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[79, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[79, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[79, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[79, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[79, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[79, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[79, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[79, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[79, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 79, strComment);
+                                worksheet.Cells[79, 10] = strComment;
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[80, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[80, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[80, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[80, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[80, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[80, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[80, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[80, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[80, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 80, strComment);
+                                worksheet.Cells[80, 10] = strComment;
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[81, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[81, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[81, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[81, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[81, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[81, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[81, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[81, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[81, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 81, strComment);
+                                worksheet.Cells[81, 10] = strComment;
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[82, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[82, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[82, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[82, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[82, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[82, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[82, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[82, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[82, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 82, strComment);
+                                worksheet.Cells[82, 10] = strComment;
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(9)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[83, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[83, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[83, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(9)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[83, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[83, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[83, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(9)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[83, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[83, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[83, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(9)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 83, strComment);
+                                worksheet.Cells[83, 10] = strComment;
+                                #endregion
+
+                                #region Spirality
+
+                                if (all_Data.Spiralities.Where(x => x.Location.EqualString("O")).Any())
+                                {
+                                    var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("O")).First();
+                                    worksheet.Cells[68, 6] = dr.MethodA;
+                                    worksheet.Cells[69, 6] = dr.MethodB;
+                                    worksheet.Cells[70, 6] = dr.CM;
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A66:A70", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+
+                                if (all_Data.Spiralities.Where(x => x.Location.EqualString("I")).Any())
+                                {
+                                    var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("I")).First();
+                                    worksheet.Cells[63, 6] = dr.MethodA;
+                                    worksheet.Cells[64, 6] = dr.MethodB;
+                                    worksheet.Cells[65, 6] = dr.CM;
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A61:A65", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+
+                                if (all_Data.Spiralities.Where(x => x.Location.EqualString("B")).Any())
+                                {
+                                    var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("B")).First();
+                                    worksheet.Cells[58, 6] = dr.MethodA;
+                                    worksheet.Cells[59, 6] = dr.MethodB;
+                                    worksheet.Cells[60, 6] = dr.CM;
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A56:A60", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+
+                                if (all_Data.Spiralities.Where(x => x.Location.EqualString("T")).Any())
+                                {
+                                    var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("T")).First();
+                                    worksheet.Cells[53, 6] = dr.MethodA;
+                                    worksheet.Cells[54, 6] = dr.MethodB;
+                                    worksheet.Cells[55, 6] = dr.CM;
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A51:A55", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+                                #endregion
+
+                                // Streched Neck Opening is OK according to size spec?
+                                if (p04data.ComboNeck.EqualString("Yes"))
+                                {
+                                    worksheet.Cells[42, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[42, 11] = "V";
+                                }
+
+                                #region Shrinkage
+
+                                if (dtShrinkages.Select("Location = 'B'").Length > 0)
+                                {
+                                    DataTable dt_B = dtShrinkages.Select("Location = 'B'").CopyToDataTable();
+
+
+
+                                    // 超過5個測量點則新增行數
+                                    if (dt_B.Rows.Count > 5)
+                                    {
+                                        for (int i = 0; i < dt_B.Rows.Count - 5; i++)
+                                        {
+                                            Excel.Range rng = worksheet.get_Range("A50:A50", Type.Missing).EntireRow;
+                                            rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
+                                        }
+                                    }
+
+                                    // 依不同品牌/套裝塞入資料
+                                    for (int r = 0; r < dt_B.Rows.Count; r++)
+                                    {
+                                        for (int c = 3; c < dt_B.Columns.Count; c++)
+                                        {
+                                            worksheet.Cells[46 + r, c] = this.AddShrinkageUnit_18(dt_B, r, c);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A44:A51", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+
+                                if (dtShrinkages.Select("Location = 'O'").Length > 0)
+                                {
+                                    DataTable dt = dtShrinkages.Select("Location = 'O'").CopyToDataTable();
+
+                                    // 超過5個測量點則新增行數
+                                    if (dt.Rows.Count > 5)
+                                    {
+                                        for (int i = 0; i < dt.Rows.Count - 5; i++)
+                                        {
+                                            Excel.Range rng = worksheet.get_Range("A40:A40", Type.Missing).EntireRow;
+                                            rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
+                                        }
+                                    }
+
+                                    // 依不同品牌/套裝塞入資料
+                                    for (int r = 0; r < dt.Rows.Count; r++)
+                                    {
+                                        for (int c = 3; c < dt.Columns.Count; c++)
+                                        {
+                                            worksheet.Cells[35 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A34:A41", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+
+                                if (dtShrinkages.Select("Location = 'I'").Length > 0)
+                                {
+                                    DataTable dt = dtShrinkages.Select("Location = 'I'").CopyToDataTable();
+
+                                    // 超過5個測量點則新增行數
+                                    if (dt.Rows.Count > 5)
+                                    {
+                                        for (int i = 0; i < dt.Rows.Count - 5; i++)
+                                        {
+                                            Excel.Range rng = worksheet.get_Range("A32:A32", Type.Missing).EntireRow;
+                                            rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
+                                        }
+                                    }
+
+                                    // 依不同品牌/套裝塞入資料
+                                    for (int r = 0; r < dt.Rows.Count; r++)
+                                    {
+                                        for (int c = 3; c < dt.Columns.Count; c++)
+                                        {
+                                            worksheet.Cells[28 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A26:A33", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+
+                                if (dtShrinkages.Select("Location = 'T'").Length > 0)
+                                {
+                                    DataTable dt = dtShrinkages.Select("Location = 'T'").CopyToDataTable();
+
+                                    // 超過5個測量點則新增行數
+                                    if (dt.Rows.Count > 5)
+                                    {
+                                        for (int i = 0; i < dt.Rows.Count - 5; i++)
+                                        {
+                                            Excel.Range rng = worksheet.get_Range("A24:A24", Type.Missing).EntireRow;
+                                            rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
+                                        }
+                                    }
+
+                                    // 依不同品牌/套裝塞入資料
+                                    for (int r = 0; r < dt.Rows.Count; r++)
+                                    {
+                                        for (int c = 3; c < dt.Columns.Count; c++)
+                                        {
+                                            worksheet.Cells[20 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A18:A25", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+
+                                #endregion
+
                             }
                             #endregion
 
-                            #region After Wash Appearance Check list
-                            string tmpAR;
-
-                            worksheet.Cells[75, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Type).First());
-
-                            worksheet.get_Range("75:75", Type.Missing).Rows.AutoFit();
-
-                            // 大約21個字換行
-                            int widhthBase = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Type).First()).Length / 20;
-
-                            worksheet.get_Range("75:75", Type.Missing).RowHeight = widhthBase == 0 ? 28 : 28 * widhthBase;
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[75, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[75, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[75, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[75, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[75, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[75, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[75, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[75, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[75, 8] = tmpAR;
-                            }
-
-                            string strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 75, strComment);
-                            worksheet.Cells[75, 10] = strComment;
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[75, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[75, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[75, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[76, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[76, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[76, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[76, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[76, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[76, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 76, strComment);
-                            worksheet.Cells[76, 10] = strComment;
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[77, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[77, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[77, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[77, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[77, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[77, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[77, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[77, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[76, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 77, strComment);
-                            worksheet.Cells[77, 10] = strComment;
-
-                            worksheet.Cells[78, 3] = all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Type).First().ToString(); // type;
-
-                            // 大約21個字換行
-                            int widhthBase2 = all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Type).First().ToString().Length / 20;
-
-                            worksheet.get_Range("78:78", Type.Missing).RowHeight = widhthBase2 == 0 ? 28 : 28 * widhthBase2;
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[78, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[78, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[78, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[78, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[78, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[78, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[78, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[78, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[78, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 78, strComment);
-                            worksheet.Cells[78, 10] = strComment;
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[79, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[79, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[79, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[79, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[79, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[79, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[79, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[79, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[79, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 79, strComment);
-                            worksheet.Cells[79, 10] = strComment;
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[80, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[80, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[80, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[80, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[80, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[80, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[80, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[80, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[80, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 80, strComment);
-                            worksheet.Cells[80, 10] = strComment;
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[81, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[81, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[81, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[81, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[81, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[81, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[81, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[81, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[81, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 81, strComment);
-                            worksheet.Cells[81, 10] = strComment;
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[82, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[82, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[82, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[82, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[82, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[82, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[82, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[82, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[82, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 82, strComment);
-                            worksheet.Cells[82, 10] = strComment;
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(9)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[83, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[83, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[83, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(9)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[83, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[83, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[83, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(9)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[83, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[83, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[83, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(9)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 83, strComment);
-                            worksheet.Cells[83, 10] = strComment;
-                            #endregion
-
-                            #region Spirality
-
-                            if (all_Data.Spiralities.Where(x => x.Location.EqualString("O")).Any())
-                            {
-                                var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("O")).First();
-                                worksheet.Cells[68, 6] = dr.MethodA;
-                                worksheet.Cells[69, 6] = dr.MethodB;
-                                worksheet.Cells[70, 6] = dr.CM;
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A66:A70", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
-
-                            if (all_Data.Spiralities.Where(x => x.Location.EqualString("I")).Any())
-                            {
-                                var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("I")).First();
-                                worksheet.Cells[63, 6] = dr.MethodA;
-                                worksheet.Cells[64, 6] = dr.MethodB;
-                                worksheet.Cells[65, 6] = dr.CM;
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A61:A65", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
-
-                            if (all_Data.Spiralities.Where(x => x.Location.EqualString("B")).Any())
-                            {
-                                var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("B")).First();
-                                worksheet.Cells[58, 6] = dr.MethodA;
-                                worksheet.Cells[59, 6] = dr.MethodB;
-                                worksheet.Cells[60, 6] = dr.CM;
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A56:A60", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
-
-                            if (all_Data.Spiralities.Where(x => x.Location.EqualString("T")).Any())
-                            {
-                                var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("T")).First();
-                                worksheet.Cells[53, 6] = dr.MethodA;
-                                worksheet.Cells[54, 6] = dr.MethodB;
-                                worksheet.Cells[55, 6] = dr.CM;
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A51:A55", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
-                            #endregion
-
-                            // Streched Neck Opening is OK according to size spec?
-                            if (data.ComboNeck.EqualString("Yes"))
-                            {
-                                worksheet.Cells[42, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[42, 11] = "V";
-                            }
-
-                            #region Shrinkage
-
-                            if (dtShrinkages.Select("Location = 'B'").Length > 0)
-                            {
-                                DataTable dt_B = dtShrinkages.Select("Location = 'B'").CopyToDataTable();
-
-
-
-                                // 超過5個測量點則新增行數
-                                if (dt_B.Rows.Count > 5)
+                            #region 新資料
+                            if (isNewData)
+                            {
+                                #region 照片
+                                if (all_Data.Detail.TestBeforePicture != null)
                                 {
-                                    for (int i = 0; i < dt_B.Rows.Count - 5; i++)
-                                    {
-                                        Excel.Range rng = worksheet.get_Range("A50:A50", Type.Missing).EntireRow;
-                                        rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
-                                    }
+                                    Excel.Range cell = worksheet.Cells[94, 2];
+                                    string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestBeforePicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
+                                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 328, 247);
                                 }
 
-                                // 依不同品牌/套裝塞入資料
-                                for (int r = 0; r < dt_B.Rows.Count; r++)
+                                if (all_Data.Detail.TestAfterPicture != null)
                                 {
-                                    for (int c = 3; c < dt_B.Columns.Count; c++)
-                                    {
-                                        worksheet.Cells[46 + r, c] = this.AddShrinkageUnit_18(dt_B, r, c);
-                                    }
+                                    Excel.Range cell = worksheet.Cells[94, 7];
+                                    string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestAfterPicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
+                                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 300, 248);
                                 }
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A44:A51", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
+                                #endregion
 
-                            if (dtShrinkages.Select("Location = 'O'").Length > 0)
-                            {
-                                DataTable dt = dtShrinkages.Select("Location = 'O'").CopyToDataTable();
+                                worksheet.get_Range("76:76", Type.Missing).Delete();
 
-                                // 超過5個測量點則新增行數
-                                if (dt.Rows.Count > 5)
+                                #region 最下面 Signature
+
+                                bool ApperanceRejected = all_Data.Apperance.Where(x => x.Wash1.EqualString("Rejected")
+                                                            || x.Wash2.EqualString("Rejected")
+                                                            || x.Wash3.EqualString("Rejected")
+                                                            || x.Wash4.EqualString("Rejected")
+                                                            || x.Wash5.EqualString("Rejected")).ToList().Count() > 0;
+
+                                bool ApperanceAccepted = all_Data.Apperance.Where(x => x.Wash1.EqualString("Accepted")
+                                                          || x.Wash2.EqualString("Accepted")
+                                                          || x.Wash3.EqualString("Accepted")
+                                                          || x.Wash4.EqualString("Accepted")
+                                                          || x.Wash5.EqualString("Accepted")).ToList().Count() > 0;
+
+
+                                if ((MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("P") || ApperanceAccepted) && !ApperanceRejected)
                                 {
-                                    for (int i = 0; i < dt.Rows.Count - 5; i++)
-                                    {
-                                        Excel.Range rng = worksheet.get_Range("A40:A40", Type.Missing).EntireRow;
-                                        rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
-                                    }
+                                    worksheet.Cells[86, 4] = "V";
                                 }
-
-                                // 依不同品牌/套裝塞入資料
-                                for (int r = 0; r < dt.Rows.Count; r++)
+                                else if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("F") || ApperanceRejected)
                                 {
-                                    for (int c = 3; c < dt.Columns.Count; c++)
-                                    {
-                                        worksheet.Cells[35 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
-                                    }
+                                    worksheet.Cells[86, 6] = "V";
                                 }
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A34:A41", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
+                                #endregion
 
-                            if (dtShrinkages.Select("Location = 'I'").Length > 0)
-                            {
-                                DataTable dt = dtShrinkages.Select("Location = 'I'").CopyToDataTable();
+                                #region 插入圖片與Technician名字
 
-                                // 超過5個測量點則新增行數
-                                if (dt.Rows.Count > 5)
+                                if (!string.IsNullOrEmpty(all_Data.Detail.inspector))
                                 {
-                                    for (int i = 0; i < dt.Rows.Count - 5; i++)
-                                    {
-                                        Excel.Range rng = worksheet.get_Range("A32:A32", Type.Missing).EntireRow;
-                                        rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
-                                    }
-                                }
-
-                                // 依不同品牌/套裝塞入資料
-                                for (int r = 0; r < dt.Rows.Count; r++)
-                                {
-                                    for (int c = 3; c < dt.Columns.Count; c++)
-                                    {
-                                        worksheet.Cells[28 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A26:A33", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
-
-                            if (dtShrinkages.Select("Location = 'T'").Length > 0)
-                            {
-                                DataTable dt = dtShrinkages.Select("Location = 'T'").CopyToDataTable();
-
-                                // 超過5個測量點則新增行數
-                                if (dt.Rows.Count > 5)
-                                {
-                                    for (int i = 0; i < dt.Rows.Count - 5; i++)
-                                    {
-                                        Excel.Range rng = worksheet.get_Range("A24:A24", Type.Missing).EntireRow;
-                                        rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
-                                    }
-                                }
-
-                                // 依不同品牌/套裝塞入資料
-                                for (int r = 0; r < dt.Rows.Count; r++)
-                                {
-                                    for (int c = 3; c < dt.Columns.Count; c++)
-                                    {
-                                        worksheet.Cells[20 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A18:A25", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
-
-                            #endregion
-
-                        }
-                        #endregion
-
-                        #region 新資料
-                        if (IsNewData)
-                        {
-                            #region 照片
-                            if (all_Data.Detail.TestBeforePicture != null)
-                            {
-                                Excel.Range cell = worksheet.Cells[94, 2];
-                                string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestBeforePicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
-                                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 328, 247);
-                            }
-
-                            if (all_Data.Detail.TestAfterPicture != null)
-                            {
-                                Excel.Range cell = worksheet.Cells[94, 7];
-                                string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestAfterPicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
-                                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 300, 248);
-                            }
-                            #endregion
-
-                            worksheet.get_Range("76:76", Type.Missing).Delete();
-
-                            #region 最下面 Signature
-
-                            bool ApperanceRejected = all_Data.Apperance.Where(x => x.Wash1.EqualString("Rejected")
-                                                        || x.Wash2.EqualString("Rejected")
-                                                        || x.Wash3.EqualString("Rejected")
-                                                        || x.Wash4.EqualString("Rejected")
-                                                        || x.Wash5.EqualString("Rejected")).ToList().Count() > 0;
-
-                            bool ApperanceAccepted = all_Data.Apperance.Where(x => x.Wash1.EqualString("Accepted")
-                                                      || x.Wash2.EqualString("Accepted")
-                                                      || x.Wash3.EqualString("Accepted")
-                                                      || x.Wash4.EqualString("Accepted")
-                                                      || x.Wash5.EqualString("Accepted")).ToList().Count() > 0;
-
-
-                            if ((MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("P") || ApperanceAccepted) && !ApperanceRejected)
-                            {
-                                worksheet.Cells[86, 4] = "V";
-                            }
-                            else if (MyUtility.Convert.GetString(all_Data.Detail.WashResult).EqualString("F") || ApperanceRejected)
-                            {
-                                worksheet.Cells[86, 6] = "V";
-                            }
-                            #endregion
-
-                            #region 插入圖片與Technician名字
-
-                            if (IsToPDF)
-                            {
-                                string sql_cmd = $@"
+                                    string sql_cmd = $@"
 select p.name,[SignaturePic] = t.Signature
 from Production.dbo.Technician t WITH (NOLOCK)
 inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
@@ -1953,661 +2048,963 @@ outer apply (select PicPath from Production.dbo.system) s
 where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
-                                string technicianName = string.Empty;
+                                    string technicianName = string.Empty;
 
-                                Excel.Range cell = worksheet.Cells[12, 2];
+                                    DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
 
-                                DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
-
-                                if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
-                                {
-                                    technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
-                                    byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
-                                    string imageName = $"{Guid.NewGuid()}.jpg";
-                                    string imgPath;
-
-                                    if (test)
+                                    if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
                                     {
-                                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                                    }
-                                    else
-                                    {
+                                        technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
+                                        byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
+                                        string imageName = $"{Guid.NewGuid()}.jpg";
+                                        string imgPath;
+
                                         imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                                    }
 
-                                    // Name
-                                    worksheet.Cells[89, 9] = technicianName;
-                                    Excel.Range cellNew = worksheet.Cells[86, 9];
-                                    using (MemoryStream ms = new MemoryStream(imgData))
+                                        // Name
+                                        worksheet.Cells[85, 8] = technicianName;
+                                        Excel.Range cellNew = worksheet.Cells[87, 8];
+                                        Excel.Range mergeArea = cellNew.MergeArea;
+                                        using (MemoryStream ms = new MemoryStream(imgData))
+                                        {
+                                            Image img = Image.FromStream(ms);
+                                            img.Save(imgPath);
+                                        }
+
+                                        double cellWidth = mergeArea.Width;
+                                        double cellHeight = mergeArea.Height;
+                                        var picture = worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, mergeArea.Left, mergeArea.Top, 100, 24);
+
+                                        // 調整圖片位置，置中於合併儲存格
+                                        float picLeft = (float)(mergeArea.Left + (mergeArea.Width - picture.Width) / 2);
+                                        float picTop = (float)(mergeArea.Top + (mergeArea.Height - picture.Height) / 2);
+                                        picture.Left = picLeft;
+                                        picture.Top = picTop + 10;
+
+                                    }
+                                }
+
+                                if (!string.IsNullOrEmpty(all_Data.Detail.Approver))
+                                {
+                                    string sql_cmd = $@"
+select p.name,[SignaturePic] = t.Signature
+from Production.dbo.Technician t WITH (NOLOCK)
+inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
+outer apply (select PicPath from Production.dbo.system) s 
+where t.ID = '{all_Data.Detail.Approver}'
+and t.GarmentTest=1
+";
+                                    string technicianName = string.Empty;
+
+                                    DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
+
+                                    if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
                                     {
-                                        Image img = Image.FromStream(ms);
-                                        img.Save(imgPath);
-                                    }
+                                        technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
+                                        byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
+                                        string imageName = $"{Guid.NewGuid()}.jpg";
+                                        string imgPath;
 
-                                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 100, 24);
+                                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                                        // Name
+                                        worksheet.Cells[85, 10] = technicianName;
+                                        Excel.Range cellNew = worksheet.Cells[87, 10];
+                                        Excel.Range mergeArea = cellNew.MergeArea;
+                                        using (MemoryStream ms = new MemoryStream(imgData))
+                                        {
+                                            Image img = Image.FromStream(ms);
+                                            img.Save(imgPath);
+                                        }
+
+                                        double cellWidth = mergeArea.Width;
+                                        double cellHeight = mergeArea.Height;
+                                        var picture = worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, mergeArea.Left, mergeArea.Top, 100, 24);
+
+                                        // 調整圖片位置，置中於合併儲存格
+                                        float picLeft = (float)(mergeArea.Left + (mergeArea.Width - picture.Width) / 2);
+                                        float picTop = (float)(mergeArea.Top + (mergeArea.Height - picture.Height) / 2);
+                                        picture.Left = picLeft;
+                                        picture.Top = picTop + 10;
+                                    }
+                                }
+                                #endregion
+
+                                #region After Wash Appearance Check list
+                                string tmpAR;
+
+                                worksheet.Cells[75, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Type).First());
+                                worksheet.get_Range("75:75", Type.Missing).Rows.AutoFit();
+
+                                // 大約21個字換行
+                                int widhthBase = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Type).First()).ToString().Length / 20;
+
+                                worksheet.get_Range("75:75", Type.Missing).RowHeight = widhthBase == 0 ? 28 : 28 * widhthBase;
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[75, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[75, 5] = "V";
                                 }
                                 else
                                 {
-                                    worksheet.Cells[86, 9] = MyUtility.Convert.GetString(all_Data.Detail.GarmentTest_Detail_Inspector);
+                                    worksheet.Cells[75, 4] = tmpAR;
                                 }
-                            }
 
-                            if (!IsToPDF)
-                            {
-                                worksheet.Cells[84, 8] = string.Empty;
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[75, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[75, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[75, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[75, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[75, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[75, 8] = tmpAR;
+                                }
+
+                                string strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 75, strComment);
+                                worksheet.Cells[75, 10] = strComment;
+
+                                worksheet.Cells[76, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Type).First());
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[76, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[76, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[76, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[76, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[76, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[76, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[76, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[76, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[76, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 76, strComment);
+                                worksheet.Cells[76, 10] = strComment;
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash1).First());
+
+                                worksheet.Cells[77, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Type).First()).ToString(); // type;
+
+                                // 大約21個字換行
+                                int widhthBase2 = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Type).First()).ToString().Length / 20;
+
+                                worksheet.get_Range("77:77", Type.Missing).RowHeight = widhthBase2 == 0 ? 28 : 28 * widhthBase2;
+
+                                if ((
+                                        worksheet.get_Range("75:75", Type.Missing).RowHeight
+                                        + worksheet.get_Range("76:76", Type.Missing).RowHeight
+                                        + worksheet.get_Range("77:77", Type.Missing).RowHeight) < 81)
+                                {
+                                    worksheet.get_Range("75:75", Type.Missing).RowHeight = worksheet.get_Range("75:75", Type.Missing).RowHeight > 28 ? worksheet.get_Range("75:75", Type.Missing).RowHeight : 28;
+                                    worksheet.get_Range("76:76", Type.Missing).RowHeight = 28;
+                                    worksheet.get_Range("77:77", Type.Missing).RowHeight = worksheet.get_Range("77:77", Type.Missing).RowHeight > 28 ? worksheet.get_Range("77:77", Type.Missing).RowHeight : 28;
+                                }
+
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[77, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[77, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[77, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[77, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[77, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[77, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[77, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[77, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[77, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 77, strComment);
+                                worksheet.Cells[77, 10] = strComment;
+
+                                worksheet.Cells[78, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Type).First());
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[78, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[78, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[78, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[78, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[78, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[78, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[78, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[78, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[78, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 78, strComment);
+                                worksheet.Cells[78, 10] = strComment;
+
+                                worksheet.Cells[79, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Type).First());
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[79, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[79, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[79, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[79, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[79, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[79, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[79, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[79, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[79, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 79, strComment);
+                                worksheet.Cells[79, 10] = strComment;
+
+                                worksheet.Cells[80, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Type).First());
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[80, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[80, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[80, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[80, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[80, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[80, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[80, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[80, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[80, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 80, strComment);
+                                worksheet.Cells[80, 10] = strComment;
+
+                                worksheet.Cells[81, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Type).First());
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[81, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[81, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[81, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[81, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[81, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[81, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[81, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[81, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[81, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 81, strComment);
+                                worksheet.Cells[81, 10] = strComment;
+
+                                worksheet.Cells[82, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Type).First());
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash1).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[82, 4] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[82, 5] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[82, 4] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash2).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[82, 6] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[82, 7] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[82, 6] = tmpAR;
+                                }
+
+                                tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash3).First());
+                                if (tmpAR.EqualString("Accepted"))
+                                {
+                                    worksheet.Cells[82, 8] = "V";
+                                }
+                                else if (tmpAR.EqualString("Rejected"))
+                                {
+                                    worksheet.Cells[82, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[82, 8] = tmpAR;
+                                }
+
+                                strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Comment).First());
+                                this.RowHeight(worksheet, 82, strComment);
+                                worksheet.Cells[82, 10] = strComment;
+
+                                #endregion
+
+                                #region Spirality
+                                if (all_Data.Spiralities.Where(x => x.Location.EqualString("O")).Any())
+                                {
+                                    var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("O")).First();
+                                    worksheet.Cells[68, 6] = dr.MethodA;
+                                    worksheet.Cells[69, 6] = dr.MethodB;
+                                    worksheet.Cells[70, 6] = dr.CM;
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A66:A70", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+
+                                if (all_Data.Spiralities.Where(x => x.Location.EqualString("I")).Any())
+                                {
+                                    var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("I")).First();
+                                    worksheet.Cells[63, 6] = dr.MethodA;
+                                    worksheet.Cells[64, 6] = dr.MethodB;
+                                    worksheet.Cells[65, 6] = dr.CM;
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A61:A65", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+
+                                if (all_Data.Spiralities.Where(x => x.Location.EqualString("B")).Any())
+                                {
+                                    var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("B")).First();
+                                    worksheet.Cells[58, 6] = dr.MethodA;
+                                    worksheet.Cells[59, 6] = dr.MethodB;
+                                    worksheet.Cells[60, 6] = dr.CM;
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A56:A60", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+
+                                if (all_Data.Spiralities.Where(x => x.Location.EqualString("T")).Any())
+                                {
+                                    var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("T")).First();
+                                    worksheet.Cells[53, 6] = dr.MethodA;
+                                    worksheet.Cells[54, 6] = dr.MethodB;
+                                    worksheet.Cells[55, 6] = dr.CM;
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A51:A55", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+                                #endregion
+
+                                // Streched Neck Opening is OK according to size spec?
+                                if (p04data.ComboNeck.EqualString("Yes"))
+                                {
+                                    worksheet.Cells[42, 9] = "V";
+                                }
+                                else
+                                {
+                                    worksheet.Cells[42, 11] = "V";
+                                }
+
+                                #region Shrinkage
+                                if (dtShrinkages.Select("Location = 'B'").Length > 0)
+                                {
+                                    DataTable dt = dtShrinkages.Select("Location = 'B'").CopyToDataTable();
+
+                                    // 超過5個測量點則新增行數
+                                    if (dt.Rows.Count > 5)
+                                    {
+                                        for (int i = 0; i < dt.Rows.Count - 5; i++)
+                                        {
+                                            Excel.Range rng = worksheet.get_Range("A49:A49", Type.Missing).EntireRow;
+                                            rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
+                                        }
+                                    }
+
+                                    // 依不同品牌/套裝塞入資料
+                                    for (int r = 0; r < dt.Rows.Count; r++)
+                                    {
+                                        for (int c = 3; c < dt.Columns.Count; c++)
+                                        {
+                                            worksheet.Cells[46 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A44:A51", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+
+                                if (dtShrinkages.Select("Location = 'O'").Length > 0)
+                                {
+                                    DataTable dt = dtShrinkages.Select("Location = 'O'").CopyToDataTable();
+
+                                    // 超過5個測量點則新增行數
+                                    if (dt.Rows.Count > 5)
+                                    {
+                                        for (int i = 0; i < dt.Rows.Count - 5; i++)
+                                        {
+                                            Excel.Range rng = worksheet.get_Range("A39:A39", Type.Missing).EntireRow;
+                                            rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
+                                        }
+                                    }
+
+                                    // 依不同品牌/套裝塞入資料
+                                    for (int r = 0; r < dt.Rows.Count; r++)
+                                    {
+                                        for (int c = 3; c < dt.Columns.Count; c++)
+                                        {
+                                            worksheet.Cells[36 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A34:A41", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+
+                                if (dtShrinkages.Select("Location = 'I'").Length > 0)
+                                {
+                                    DataTable dt = dtShrinkages.Select("Location = 'I'").CopyToDataTable();
+
+                                    // 超過5個測量點則新增行數
+                                    if (dt.Rows.Count > 5)
+                                    {
+                                        for (int i = 0; i < dt.Rows.Count - 5; i++)
+                                        {
+                                            Excel.Range rng = worksheet.get_Range("A32:A32", Type.Missing).EntireRow;
+                                            rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
+                                        }
+                                    }
+
+                                    // 依不同品牌/套裝塞入資料
+                                    for (int r = 0; r < dt.Rows.Count; r++)
+                                    {
+                                        for (int c = 3; c < dt.Columns.Count; c++)
+                                        {
+                                            worksheet.Cells[28 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A26:A33", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+
+                                if (dtShrinkages.Select("Location = 'T'").Length > 0)
+                                {
+                                    DataTable dt = dtShrinkages.Select("Location = 'T'").CopyToDataTable();
+
+                                    // 超過5個測量點則新增行數
+                                    if (dt.Rows.Count > 5)
+                                    {
+                                        for (int i = 0; i < dt.Rows.Count - 5; i++)
+                                        {
+                                            Excel.Range rng = worksheet.get_Range("A24:A24", Type.Missing).EntireRow;
+                                            rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
+                                        }
+                                    }
+
+                                    // 依不同品牌/套裝塞入資料
+                                    for (int r = 0; r < dt.Rows.Count; r++)
+                                    {
+                                        for (int c = 3; c < dt.Columns.Count; c++)
+                                        {
+                                            worksheet.Cells[20 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Excel.Range rng = worksheet.get_Range("A18:A25", Type.Missing).EntireRow;
+                                    rng.Select();
+                                    rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
+                                    Marshal.ReleaseComObject(rng);
+                                }
+
+                                #endregion
                             }
                             #endregion
 
-                            #region After Wash Appearance Check list
-                            string tmpAR;
+                            #region Save & Show Excel
 
-                            worksheet.Cells[75, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Type).First());
-                            worksheet.get_Range("75:75", Type.Missing).Rows.AutoFit();
-
-                            // 大約21個字換行
-                            int widhthBase = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Type).First()).ToString().Length / 20;
-
-                            worksheet.get_Range("75:75", Type.Missing).RowHeight = widhthBase == 0 ? 28 : 28 * widhthBase;
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
+                            if (!string.IsNullOrWhiteSpace(AssignedFineName))
                             {
-                                worksheet.Cells[75, 4] = "V";
+                                typeName = AssignedFineName;
                             }
-                            else if (tmpAR.EqualString("Rejected"))
+
+
+                            foreach (char invalidChar in invalidChars)
                             {
-                                worksheet.Cells[75, 5] = "V";
+                                typeName = typeName.Replace(invalidChar.ToString(), "");
+                            }
+                            string filexlsx_2018 = typeName + ".xlsx";
+                            string fileNamePDF_2018 = typeName + ".pdf";
+
+                            string filepath_2018;
+                            string filepathpdf_2018;
+                            filepath_2018 = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx_2018);
+                            filepathpdf_2018 = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF_2018);
+
+                            string fileProcessName_2018 = "FGWT" + "_"
+                                + all_Data.Main.SeasonID.ToString() + "_" + all_Data.Main.StyleID.ToString() + "_" + all_Data.Main.Article.ToString();
+                            Excel.Workbook workbook_2018 = objApp.ActiveWorkbook;
+
+                            if (isToPDF)
+                            {
+                                workbook_2018.ExportAsFixedFormat(
+                                    Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF,     // PDF 格式
+                                    filepathpdf_2018,                   // 輸出的 PDF 路徑
+                                     Microsoft.Office.Interop.Excel.XlFixedFormatQuality.xlQualityStandard, // 標準品質
+                                    true,                            // 包含開啟的工作表
+                                    false,                           // 不需要整個活頁簿
+                                    Type.Missing,                    // 起始頁 (可選)
+                                    Type.Missing,                    // 結束頁 (可選)
+                                    false                            // 匯出完成後不需要啟用文件
+                                );
+                                dicRt["reportPath"] = fileNamePDF_2018;
+                                dicRt["reportFileFullPath"] = filepathpdf_2018;
                             }
                             else
                             {
-                                worksheet.Cells[75, 4] = tmpAR;
+                                workbook_2018.SaveAs(filepath_2018);
+                                dicRt["reportPath"] = filexlsx_2018;
+                                dicRt["reportFileFullPath"] = filepath_2018;
                             }
 
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[75, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[75, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[75, 6] = tmpAR;
-                            }
+                            workbook_2018.Close();
+                            objApp.Quit();
+                            MyUtility.Excel.KillExcelProcess(objApp);
 
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[75, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[75, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[75, 8] = tmpAR;
-                            }
+                            Marshal.ReleaseComObject(worksheet);
+                            Marshal.ReleaseComObject(workbook_2018);
+                            Marshal.ReleaseComObject(objApp);
 
-                            string strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(1)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 75, strComment);
-                            worksheet.Cells[75, 10] = strComment;
-
-                            worksheet.Cells[76, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Type).First());
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[76, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[76, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[76, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[76, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[76, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[76, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[76, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[76, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[76, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(2)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 76, strComment);
-                            worksheet.Cells[76, 10] = strComment;
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash1).First());
-
-                            worksheet.Cells[77, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Type).First()).ToString(); // type;
-
-                            // 大約21個字換行
-                            int widhthBase2 = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Type).First()).ToString().Length / 20;
-
-                            worksheet.get_Range("77:77", Type.Missing).RowHeight = widhthBase2 == 0 ? 28 : 28 * widhthBase2;
-
-                            if ((
-                                    worksheet.get_Range("75:75", Type.Missing).RowHeight
-                                    + worksheet.get_Range("76:76", Type.Missing).RowHeight
-                                    + worksheet.get_Range("77:77", Type.Missing).RowHeight) < 81)
-                            {
-                                worksheet.get_Range("75:75", Type.Missing).RowHeight = worksheet.get_Range("75:75", Type.Missing).RowHeight > 28 ? worksheet.get_Range("75:75", Type.Missing).RowHeight : 28;
-                                worksheet.get_Range("76:76", Type.Missing).RowHeight = 28;
-                                worksheet.get_Range("77:77", Type.Missing).RowHeight = worksheet.get_Range("77:77", Type.Missing).RowHeight > 28 ? worksheet.get_Range("77:77", Type.Missing).RowHeight : 28;
-                            }
-
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[77, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[77, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[77, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[77, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[77, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[77, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[77, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[77, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[77, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(3)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 77, strComment);
-                            worksheet.Cells[77, 10] = strComment;
-
-                            worksheet.Cells[78, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Type).First());
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[78, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[78, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[78, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[78, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[78, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[78, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[78, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[78, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[78, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(4)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 78, strComment);
-                            worksheet.Cells[78, 10] = strComment;
-
-                            worksheet.Cells[79, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Type).First());
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[79, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[79, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[79, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[79, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[79, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[79, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[79, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[79, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[79, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(5)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 79, strComment);
-                            worksheet.Cells[79, 10] = strComment;
-
-                            worksheet.Cells[80, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Type).First());
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[80, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[80, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[80, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[80, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[80, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[80, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[80, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[80, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[80, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(6)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 80, strComment);
-                            worksheet.Cells[80, 10] = strComment;
-
-                            worksheet.Cells[81, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Type).First());
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[81, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[81, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[81, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[81, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[81, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[81, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[81, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[81, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[81, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(7)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 81, strComment);
-                            worksheet.Cells[81, 10] = strComment;
-
-                            worksheet.Cells[82, 3] = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Type).First());
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash1).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[82, 4] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[82, 5] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[82, 4] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash2).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[82, 6] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[82, 7] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[82, 6] = tmpAR;
-                            }
-
-                            tmpAR = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Wash3).First());
-                            if (tmpAR.EqualString("Accepted"))
-                            {
-                                worksheet.Cells[82, 8] = "V";
-                            }
-                            else if (tmpAR.EqualString("Rejected"))
-                            {
-                                worksheet.Cells[82, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[82, 8] = tmpAR;
-                            }
-
-                            strComment = MyUtility.Convert.GetString(all_Data.Apperance.Where(x => x.Seq.Equals(8)).Select(x => x.Comment).First());
-                            this.RowHeight(worksheet, 82, strComment);
-                            worksheet.Cells[82, 10] = strComment;
-
-                            #endregion
-
-                            #region Spirality
-                            if (all_Data.Spiralities.Where(x => x.Location.EqualString("O")).Any())
-                            {
-                                var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("O")).First();
-                                worksheet.Cells[68, 6] = dr.MethodA;
-                                worksheet.Cells[69, 6] = dr.MethodB;
-                                worksheet.Cells[70, 6] = dr.CM;
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A66:A70", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
-
-                            if (all_Data.Spiralities.Where(x => x.Location.EqualString("I")).Any())
-                            {
-                                var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("I")).First();
-                                worksheet.Cells[63, 6] = dr.MethodA;
-                                worksheet.Cells[64, 6] = dr.MethodB;
-                                worksheet.Cells[65, 6] = dr.CM;
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A61:A65", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
-
-                            if (all_Data.Spiralities.Where(x => x.Location.EqualString("B")).Any())
-                            {
-                                var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("B")).First();
-                                worksheet.Cells[58, 6] = dr.MethodA;
-                                worksheet.Cells[59, 6] = dr.MethodB;
-                                worksheet.Cells[60, 6] = dr.CM;
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A56:A60", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
-
-                            if (all_Data.Spiralities.Where(x => x.Location.EqualString("T")).Any())
-                            {
-                                var dr = all_Data.Spiralities.Where(x => x.Location.EqualString("T")).First();
-                                worksheet.Cells[53, 6] = dr.MethodA;
-                                worksheet.Cells[54, 6] = dr.MethodB;
-                                worksheet.Cells[55, 6] = dr.CM;
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A51:A55", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
-                            #endregion
-
-                            // Streched Neck Opening is OK according to size spec?
-                            if (data.ComboNeck.EqualString("Yes"))
-                            {
-                                worksheet.Cells[42, 9] = "V";
-                            }
-                            else
-                            {
-                                worksheet.Cells[42, 11] = "V";
-                            }
-
-                            #region Shrinkage
-                            if (dtShrinkages.Select("Location = 'B'").Length > 0)
-                            {
-                                DataTable dt = dtShrinkages.Select("Location = 'B'").CopyToDataTable();
-
-                                // 超過5個測量點則新增行數
-                                if (dt.Rows.Count > 5)
-                                {
-                                    for (int i = 0; i < dt.Rows.Count - 5; i++)
-                                    {
-                                        Excel.Range rng = worksheet.get_Range("A49:A49", Type.Missing).EntireRow;
-                                        rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
-                                    }
-                                }
-
-                                // 依不同品牌/套裝塞入資料
-                                for (int r = 0; r < dt.Rows.Count; r++)
-                                {
-                                    for (int c = 3; c < dt.Columns.Count; c++)
-                                    {
-                                        worksheet.Cells[46 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A44:A51", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
-
-                            if (dtShrinkages.Select("Location = 'O'").Length > 0)
-                            {
-                                DataTable dt = dtShrinkages.Select("Location = 'O'").CopyToDataTable();
-
-                                // 超過5個測量點則新增行數
-                                if (dt.Rows.Count > 5)
-                                {
-                                    for (int i = 0; i < dt.Rows.Count - 5; i++)
-                                    {
-                                        Excel.Range rng = worksheet.get_Range("A39:A39", Type.Missing).EntireRow;
-                                        rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
-                                    }
-                                }
-
-                                // 依不同品牌/套裝塞入資料
-                                for (int r = 0; r < dt.Rows.Count; r++)
-                                {
-                                    for (int c = 3; c < dt.Columns.Count; c++)
-                                    {
-                                        worksheet.Cells[36 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A34:A41", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
-
-                            if (dtShrinkages.Select("Location = 'I'").Length > 0)
-                            {
-                                DataTable dt = dtShrinkages.Select("Location = 'I'").CopyToDataTable();
-
-                                // 超過5個測量點則新增行數
-                                if (dt.Rows.Count > 5)
-                                {
-                                    for (int i = 0; i < dt.Rows.Count - 5; i++)
-                                    {
-                                        Excel.Range rng = worksheet.get_Range("A32:A32", Type.Missing).EntireRow;
-                                        rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
-                                    }
-                                }
-
-                                // 依不同品牌/套裝塞入資料
-                                for (int r = 0; r < dt.Rows.Count; r++)
-                                {
-                                    for (int c = 3; c < dt.Columns.Count; c++)
-                                    {
-                                        worksheet.Cells[28 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A26:A33", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
-
-                            if (dtShrinkages.Select("Location = 'T'").Length > 0)
-                            {
-                                DataTable dt = dtShrinkages.Select("Location = 'T'").CopyToDataTable();
-
-                                // 超過5個測量點則新增行數
-                                if (dt.Rows.Count > 5)
-                                {
-                                    for (int i = 0; i < dt.Rows.Count - 5; i++)
-                                    {
-                                        Excel.Range rng = worksheet.get_Range("A24:A24", Type.Missing).EntireRow;
-                                        rng.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown);
-                                    }
-                                }
-
-                                // 依不同品牌/套裝塞入資料
-                                for (int r = 0; r < dt.Rows.Count; r++)
-                                {
-                                    for (int c = 3; c < dt.Columns.Count; c++)
-                                    {
-                                        worksheet.Cells[20 + r, c] = this.AddShrinkageUnit_18(dt, r, c);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Excel.Range rng = worksheet.get_Range("A18:A25", Type.Missing).EntireRow;
-                                rng.Select();
-                                rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                Marshal.ReleaseComObject(rng);
-                            }
+                            dicRt["Result"] = "true";
 
                             #endregion
                         }
+                        catch (Exception ex)
+                        {
+                            throw ex;
+                        }
+
                         #endregion
+                        break;
+                    case ReportType.Wash_Test_2020:
+                        #region Print Wash 2020
+                        if (all_Data.FGWT.Count == 0)
+                        {
+                            dicRt["ErrMsg"] = "FGWT data not found!";
+                            dicRt["Result"] = "false";
+                            return dicRt;
+                        }
+
+                        typeName = $"Garment Test Wash 2020_{all_Data.Detail.OrderID}_" +
+                           $"{all_Data.Main.StyleID}_" +
+                           $"{all_Data.Main.Article}_" +
+                           $"{(all_Data.Detail.Result == "P" ? "Pass" : "Fail")}_" +
+                           $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                        string basefileName_2020 = "WashTest_2020_FGWT";
+                        string openfilepath_2020;
+                        openfilepath_2020 = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName_2020}.xltx";
+
+                        Excel.Application objApp_2020 = MyUtility.Excel.ConnectExcel(openfilepath_2020);
+                        objApp_2020.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
+                        Excel.Worksheet worksheet_2020 = objApp_2020.ActiveWorkbook.Worksheets[1]; // 取得工作表
+
+                        // objApp.Visible = true;
+                        #region 插入圖片與Technician名字
+
+                        if (!string.IsNullOrEmpty(all_Data.Detail.inspector))
+                        {
+                            string sql_cmd = $@"
+select p.name,[SignaturePic] = t.Signature
+from Production.dbo.Technician t WITH (NOLOCK)
+inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
+outer apply (select PicPath from Production.dbo.system) s 
+where t.ID = '{all_Data.Detail.inspector}'
+and t.GarmentTest=1
+";
+                            string technicianName = string.Empty;
+                            DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
+
+                            if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
+                            {
+                                technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
+                                byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
+                                string imageName = $"{Guid.NewGuid()}.jpg";
+                                string imgPath;
+
+                                imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                                // Name
+                                worksheet_2020.Cells[28, 5] = technicianName;
+                                Excel.Range cellNew = worksheet_2020.Cells[30, 5];
+                                Excel.Range mergeArea = cellNew.MergeArea;
+
+                                using (MemoryStream ms = new MemoryStream(imgData))
+                                {
+                                    Image img = Image.FromStream(ms);
+                                    img.Save(imgPath);
+                                }
+
+                                double cellWidth = mergeArea.Width;
+                                double cellHeight = mergeArea.Height;
+                                var picture = worksheet_2020.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, mergeArea.Left, mergeArea.Top, 100, 24);
+
+                                // 調整圖片位置，置中於合併儲存格
+                                float picLeft = (float)(mergeArea.Left + (mergeArea.Width - picture.Width) / 2);
+                                float picTop = (float)(mergeArea.Top + (mergeArea.Height - picture.Height) / 2);
+                                picture.Left = picLeft;
+                                picture.Top = picTop + 10;
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(all_Data.Detail.Approver))
+                        {
+                            string sql_cmd = $@"
+select p.name,[SignaturePic] = t.Signature
+from Production.dbo.Technician t WITH (NOLOCK)
+inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
+outer apply (select PicPath from Production.dbo.system) s 
+where t.ID = '{all_Data.Detail.Approver}'
+and t.GarmentTest=1
+";
+                            string appRoverName = string.Empty;
+                            DataTable dtApproverInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
+
+                            if (dtApproverInfo != null && dtApproverInfo.Rows.Count > 0 && dtApproverInfo.Rows[0]["SignaturePic"] != null)
+                            {
+                                appRoverName = dtApproverInfo.Rows[0]["name"].ToString();
+                                byte[] imgData = (byte[])dtApproverInfo.Rows[0]["SignaturePic"];
+                                string imageName = $"{Guid.NewGuid()}.jpg";
+                                string imgPath;
+
+                                imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                                // Name
+                                worksheet_2020.Cells[28, 7] = appRoverName;
+                                Excel.Range cellNew = worksheet_2020.Cells[30, 7];
+                                Excel.Range mergeArea = cellNew.MergeArea;
+
+                                using (MemoryStream ms = new MemoryStream(imgData))
+                                {
+                                    Image img = Image.FromStream(ms);
+                                    img.Save(imgPath);
+                                }
+
+                                double cellWidth = mergeArea.Width;
+                                double cellHeight = mergeArea.Height;
+                                var picture = worksheet_2020.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, mergeArea.Left, mergeArea.Top, 100, 24);
+
+                                // 調整圖片位置，置中於合併儲存格
+                                float picLeft = (float)(mergeArea.Left + (mergeArea.Width - picture.Width) / 2);
+                                float picTop = (float)(mergeArea.Top + (mergeArea.Height - picture.Height) / 2);
+                                picture.Left = picLeft;
+                                picture.Top = picTop + 10;
+                            }
+                        }
+
+
+                        #endregion
+
+                        if (testCodeFgwt.Any())
+                        {
+                            worksheet_2020.Cells[1, 1] = $@"Product TEST REPORT({testCodeFgwt.FirstOrDefault().TestCode})";
+                        }
+                        // 若為QA 10產生則顯示New Development Testing ( V )，若為QA P04產生則顯示1st Bulk Testing ( V )
+                        worksheet_2020.Cells[4, 3] = "1st Bulk Testing ( V )";
+
+                        worksheet_2020.Cells[5, 1] = "adidas Article No.: " + MyUtility.Convert.GetString(all_Data.Main.Article);
+                        worksheet_2020.Cells[5, 3] = "adidas Working No.: " + MyUtility.Convert.GetString(all_Data.Main.StyleID);
+                        worksheet_2020.Cells[5, 4] = "adidas Model No.: " + styleName;
+
+                        worksheet_2020.Cells[6, 1] = "T1 Supplier Ref.: " + orders.FactoryID;
+                        worksheet_2020.Cells[6, 3] = "T1 Factory Name: " + orders.BrandAreaCode;
+                        worksheet_2020.Cells[6, 4] = "LO to Factory: " + p04data.TxtLotoFactory;
+
+                        if (p04data.DateSubmit.HasValue)
+                        {
+                            worksheet_2020.Cells[8, 1] = "Report Date: " + p04data.DateSubmit.Value.ToString("yyyy/MM/dd");
+                        }
+                        if (p04data.ReceiveDate.HasValue)
+                        {
+                            worksheet_2020.Cells[9, 1] = "Receive Date: " + p04data.ReceiveDate.Value.ToString("yyyy/MM/dd");
+                        }
+
+
+                        int copyCount = all_Data.FGWT.Count - 2;
+
+                        for (int i = 0; i <= copyCount - 1; i++)
+                        {
+                            // 複製儲存格
+                            Excel.Range rgCopy = worksheet_2020.get_Range("A13:A13").EntireRow;
+
+                            // 選擇要被貼上的位置
+                            Excel.Range rgPaste = worksheet_2020.get_Range("A13:A13", Type.Missing);
+
+                            // 貼上
+                            rgPaste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, rgCopy.Copy(Type.Missing));
+                        }
+
+                        worksheet_2020.get_Range($"B12", $"B{all_Data.FGWT.Count + 11}").Merge(false);
+
+                        int startRowIndex = 12;
+
+                        // 開始填入表身
+                        foreach (var dr in all_Data.FGWT)
+                        {
+                            // Requirement
+                            worksheet_2020.Cells[startRowIndex, 3] = MyUtility.Convert.GetString(dr.Type);
+
+                            // Test Results
+                            // 若[GarmentTest_Detail_FGWT.Scale]非null則帶入Scale，若為null則帶入 [GarmentTest_Detail_FGWT.AfterWash - GarmentTest_Detail_FGWT.BeforeWash.]
+                            if (!string.IsNullOrEmpty(dr.Scale))
+                            {
+                                worksheet_2020.Cells[startRowIndex, 4] = MyUtility.Convert.GetString(dr.Scale);
+                            }
+                            else
+                            {
+                                if ((dr.BeforeWash != 0 && dr.AfterWash != 0 && dr.Shrinkage != 0)
+                                    || MyUtility.Convert.GetBool(dr.IsInPercentage))
+                                {
+                                    // TestDetail  % 或Range% 視作相同
+                                    if (MyUtility.Convert.GetString(dr.TestDetail).Contains("%"))
+                                    {
+                                        worksheet_2020.Cells[startRowIndex, 4] = MyUtility.Convert.GetDouble(dr.Shrinkage);
+                                    }
+                                    else
+                                    {
+                                        worksheet_2020.Cells[startRowIndex, 4] = MyUtility.Convert.GetDouble(dr.AfterWash) - MyUtility.Convert.GetDouble(dr.BeforeWash);
+                                    }
+                                }
+                            }
+
+                            // Test Details
+                            worksheet_2020.Cells[startRowIndex, 5] = MyUtility.Convert.GetString(dr.TestDetail) == "Range%" ? "%" : MyUtility.Convert.GetString(dr.TestDetail);
+
+                            worksheet_2020.Cells[startRowIndex, 6] = MyUtility.Convert.GetString(dr.StandardRemark);
+                            // adidas pass
+                            worksheet_2020.Cells[startRowIndex, 7] = MyUtility.Convert.GetString(dr.Result);
+
+                            startRowIndex++;
+                        }
 
                         #region Save & Show Excel
 
@@ -2616,327 +3013,85 @@ and t.GarmentTest=1
                             typeName = AssignedFineName;
                         }
 
-
-                        foreach (char invalidChar in updatedInvalidChars)
+                        foreach (char invalidChar in invalidChars)
                         {
                             typeName = typeName.Replace(invalidChar.ToString(), "");
                         }
-                        string filexlsx_2018 = typeName + ".xlsx";
-                        string fileNamePDF_2018 = typeName + ".pdf";
 
-                        string filepath_2018;
-                        string filepathpdf_2018;
-                        if (test)
-                        {
-                            filepath_2018 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx_2018);
-                            filepathpdf_2018 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF_2018);
-                        }
-                        else
-                        {
-                            filepath_2018 = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx_2018);
-                            filepathpdf_2018 = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF_2018);
-                        }
+                        string filexlsx_2020 = typeName + ".xlsx";
+                        string fileNamePDF_2020 = typeName + ".pdf";
 
-                        string fileProcessName_2018 = "FGWT" + "_"
-                            + all_Data.Main.SeasonID.ToString() + "_" + all_Data.Main.StyleID.ToString() + "_" + all_Data.Main.Article.ToString();
-                        Excel.Workbook workbook_2018 = objApp.ActiveWorkbook;
-                        workbook_2018.SaveAs(filepath_2018);
-                        workbook_2018.Close();
-                        objApp.Quit();
-                        Marshal.ReleaseComObject(worksheet);
-                        Marshal.ReleaseComObject(workbook_2018);
-                        Marshal.ReleaseComObject(objApp);
+                        string filepath_2020;
+                        string filepathpdf_2020;
 
-                        if (IsToPDF)
-                        {
-                            if (ConvertToPDF.ExcelToPDF(filepath_2018, filepathpdf_2018))
-                            {
-                                all_Data.reportPath = fileNamePDF_2018;
-                                all_Data.Result = true;
-                            }
-                            else
-                            {
-                                all_Data.ErrMsg = "Convert To PDF Fail";
-                                all_Data.Result = false;
-                            }
-                        }
-
-                        if (!IsToPDF)
-                        {
-                            all_Data.reportPath = filexlsx_2018;
-                            all_Data.Result = true;
-                        }
-                        #endregion
-                    }
-                    catch (Exception ex)
-                    {
-                        all_Data.ErrMsg = ex.Message.Replace("'", string.Empty);
-                        all_Data.Result = false;
-                    }
-
-                    #endregion
-                    break;
-                case ReportType.Wash_Test_2020:
-                    #region Print Wash 2020
-                    if (all_Data.FGWT.Count == 0)
-                    {
-                        all_Data.Result = false;
-                        all_Data.ErrMsg = "FGWT data not found!";
-                        return all_Data;
-                    }
-
-                    typeName = $"Garment Test Wash 2020_{all_Data.Detail.OrderID}_" +
-                       $"{all_Data.Main.StyleID}_" +
-                       $"{all_Data.Main.Article}_" +
-                       $"{(all_Data.Detail.Result == "P" ? "Pass" : "Fail")}_" +
-                       $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
-
-                    string basefileName_2020 = "WashTest_2020_FGWT";
-                    string openfilepath_2020;
-                    if (test)
-                    {
-                        openfilepath_2020 = "C:\\Willy_Repository\\Quality_KPI\\Quality\\Quality\\bin\\XLT\\WashTest_2020_FGWT.xltx";
-                    }
-                    else
-                    {
-                        openfilepath_2020 = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName_2020}.xltx";
-                    }
-
-                    Excel.Application objApp_2020 = MyUtility.Excel.ConnectExcel(openfilepath_2020);
-                    objApp_2020.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-                    Excel.Worksheet worksheet_2020 = objApp_2020.ActiveWorkbook.Worksheets[1]; // 取得工作表
-
-                    // objApp.Visible = true;
-                    #region 插入圖片與Technician名字
-
-                    if (IsToPDF)
-                    {
-                        string sql_cmd = $@"
-select p.name,[SignaturePic] = t.Signature
-from Production.dbo.Technician t WITH (NOLOCK)
-inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
-outer apply (select PicPath from Production.dbo.system) s 
-where t.ID = '{all_Data.Detail.inspector}'
-and t.GarmentTest=1
-";
-                        string technicianName = string.Empty;
-                        DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
-
-                        if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
-                        {
-                            technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
-                            byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
-                            string imageName = $"{Guid.NewGuid()}.jpg";
-                            string imgPath;
-
-                            if (test)
-                            {
-                                imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                            }
-                            else
-                            {
-                                imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                            }
-
-                            // Name
-                            worksheet_2020.Cells[31, 8] = technicianName;
-                            Excel.Range cellNew = worksheet_2020.Cells[29, 8];
-
-                            using (MemoryStream ms = new MemoryStream(imgData))
-                            {
-                                Image img = Image.FromStream(ms);
-                                img.Save(imgPath);
-                            }
-
-                            worksheet_2020.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 100, 24);
-                        }
-                        else
-                        {
-                            worksheet_2020.Cells[31, 8] = MyUtility.Convert.GetString(all_Data.Detail.GarmentTest_Detail_Inspector);
-                        }
-                    }
-
-                    if (!IsToPDF)
-                    {
-                        worksheet_2020.Cells[27, 7] = string.Empty;
-                    }
-
-                    #endregion
-
-                    if (testCOdeFgwt.Any())
-                    {
-                        worksheet_2020.Cells[1, 1] = $@"Product TEST REPORT({testCOdeFgwt.FirstOrDefault().TestCode})";
-                    }
-                    // 若為QA 10產生則顯示New Development Testing ( V )，若為QA P04產生則顯示1st Bulk Testing ( V )
-                    worksheet_2020.Cells[4, 3] = "1st Bulk Testing ( V )";
-
-                    worksheet_2020.Cells[5, 1] = "adidas Article No.: " + MyUtility.Convert.GetString(all_Data.Main.Article);
-                    worksheet_2020.Cells[5, 3] = "adidas Working No.: " + MyUtility.Convert.GetString(all_Data.Main.StyleID);
-                    worksheet_2020.Cells[5, 4] = "adidas Model No.: " + StyleName;
-
-                    worksheet_2020.Cells[6, 1] = "T1 Supplier Ref.: " + orders.FactoryID;
-                    worksheet_2020.Cells[6, 3] = "T1 Factory Name: " + orders.BrandAreaCode;
-                    worksheet_2020.Cells[6, 4] = "LO to Factory: " + data.TxtLotoFactory;
-
-                    if (data.DateSubmit.HasValue)
-                    {
-                        worksheet_2020.Cells[8, 1] = "Date: " + data.DateSubmit.Value.ToString("yyyy/MM/dd");
-                    }
-
-                    int copyCount = all_Data.FGWT.Count - 2;
-
-                    for (int i = 0; i <= copyCount - 1; i++)
-                    {
-                        // 複製儲存格
-                        Excel.Range rgCopy = worksheet_2020.get_Range("A13:A13").EntireRow;
-
-                        // 選擇要被貼上的位置
-                        Excel.Range rgPaste = worksheet_2020.get_Range("A13:A13", Type.Missing);
-
-                        // 貼上
-                        rgPaste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, rgCopy.Copy(Type.Missing));
-                    }
-
-                    worksheet_2020.get_Range($"B12", $"B{all_Data.FGWT.Count + 11}").Merge(false);
-
-                    int startRowIndex = 12;
-
-                    // 開始填入表身
-                    foreach (var dr in all_Data.FGWT)
-                    {
-                        // Requirement
-                        worksheet_2020.Cells[startRowIndex, 3] = MyUtility.Convert.GetString(dr.Type);
-
-                        // Test Results
-                        // 若[GarmentTest_Detail_FGWT.Scale]非null則帶入Scale，若為null則帶入 [GarmentTest_Detail_FGWT.AfterWash - GarmentTest_Detail_FGWT.BeforeWash.]
-                        if (!string.IsNullOrEmpty(dr.Scale))
-                        {
-                            worksheet_2020.Cells[startRowIndex, 4] = MyUtility.Convert.GetString(dr.Scale);
-                        }
-                        else
-                        {
-                            if ((dr.BeforeWash != 0 && dr.AfterWash != 0 && dr.Shrinkage != 0)
-                                || MyUtility.Convert.GetBool(dr.IsInPercentage))
-                            {
-                                // TestDetail  % 或Range% 視作相同
-                                if (MyUtility.Convert.GetString(dr.TestDetail).Contains("%"))
-                                {
-                                    worksheet_2020.Cells[startRowIndex, 4] = MyUtility.Convert.GetDouble(dr.Shrinkage);
-                                }
-                                else
-                                {
-                                    worksheet_2020.Cells[startRowIndex, 4] = MyUtility.Convert.GetDouble(dr.AfterWash) - MyUtility.Convert.GetDouble(dr.BeforeWash);
-                                }
-                            }
-                        }
-
-                        // Test Details
-                        worksheet_2020.Cells[startRowIndex, 5] = MyUtility.Convert.GetString(dr.TestDetail) == "Range%" ? "%" : MyUtility.Convert.GetString(dr.TestDetail);
-
-                        worksheet_2020.Cells[startRowIndex, 6] = MyUtility.Convert.GetString(dr.StandardRemark);
-                        // adidas pass
-                        worksheet_2020.Cells[startRowIndex, 7] = MyUtility.Convert.GetString(dr.Result);
-
-                        startRowIndex++;
-                    }
-
-                    #region Save & Show Excel
-
-                    if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                    {
-                        typeName = AssignedFineName;
-                    }
-
-                    foreach (char invalidChar in updatedInvalidChars)
-                    {
-                        typeName = typeName.Replace(invalidChar.ToString(), "");
-                    }
-
-                    string filexlsx_2020 = typeName + ".xlsx";
-                    string fileNamePDF_2020 = typeName + ".pdf";
-
-                    string filepath_2020;
-                    string filepathpdf_2020;
-                    if (test)
-                    {
-                        filepath_2020 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx_2020);
-                        filepathpdf_2020 = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF_2020);
-                    }
-                    else
-                    {
                         filepath_2020 = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx_2020);
                         filepathpdf_2020 = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF_2020);
-                    }
 
-                    string fileProcessName_2020 = "FGWT" + "_"
-                       + all_Data.Main.SeasonID.ToString() + "_" + all_Data.Main.StyleID.ToString() + "_" + all_Data.Main.Article.ToString();
-                    Excel.Workbook workbook_2020 = objApp_2020.ActiveWorkbook;
-                    workbook_2020.SaveAs(filepath_2020);
-                    workbook_2020.Close();
-                    objApp_2020.Quit();
-                    Marshal.ReleaseComObject(worksheet_2020);
-                    Marshal.ReleaseComObject(workbook_2020);
-                    Marshal.ReleaseComObject(objApp_2020);
+                        string fileProcessName_2020 = "FGWT" + "_"
+                           + all_Data.Main.SeasonID.ToString() + "_" + all_Data.Main.StyleID.ToString() + "_" + all_Data.Main.Article.ToString();
+                        Excel.Workbook workbook_2020 = objApp_2020.ActiveWorkbook;
 
-                    if (IsToPDF)
-                    {
-                        if (ConvertToPDF.ExcelToPDF(filepath_2020, filepathpdf_2020))
+                        if (isToPDF)
                         {
-                            all_Data.reportPath = fileNamePDF_2020;
-                            all_Data.Result = true;
+                            workbook_2020.ExportAsFixedFormat(
+                                Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF,     // PDF 格式
+                                filepathpdf_2020,                   // 輸出的 PDF 路徑
+                                 Microsoft.Office.Interop.Excel.XlFixedFormatQuality.xlQualityStandard, // 標準品質
+                                false                            // 匯出完成後不需要啟用文件
+                            );
+
+                            dicRt["reportPath"] = fileNamePDF_2020;
+                            dicRt["reportFileFullPath"] = filepathpdf_2020;
                         }
                         else
                         {
-                            all_Data.ErrMsg = "Convert To PDF Fail";
-                            all_Data.Result = false;
+                            workbook_2020.SaveAs(filepath_2020);
+                            dicRt["reportPath"] = filexlsx_2020;
+                            dicRt["reportFileFullPath"] = filepath_2020;
                         }
-                    }
 
-                    if (!IsToPDF)
-                    {
-                        all_Data.reportPath = filexlsx_2020;
-                        all_Data.Result = true;
-                    }
-                    #endregion
+                        workbook_2020.Close();
+                        objApp_2020.Quit();
+                        MyUtility.Excel.KillExcelProcess(objApp_2020);
+                        Marshal.ReleaseComObject(worksheet_2020);
+                        Marshal.ReleaseComObject(workbook_2020);
+                        Marshal.ReleaseComObject(objApp_2020);
 
-                    #endregion
-                    break;
-                case ReportType.Physical_Test:
-                    #region Print Physical
-                    if (all_Data.FGPT.Count == 0)
-                    {
-                        all_Data.ErrMsg = "FGPT data not found.";
-                        all_Data.Result = false;
-                        return all_Data;
-                    }
+                        dicRt["Result"] = "true";
+                        #endregion
 
-                    typeName = $"Garment Test Physical_{all_Data.Detail.OrderID}_" +
-                       $"{all_Data.Main.StyleID}_" +
-                       $"{all_Data.Main.Article}_" +
-                       $"{(all_Data.Detail.Result == "P" ? "Pass" : "Fail")}_" +
-                       $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                        #endregion
+                        break;
+                    case ReportType.Physical_Test:
+                        #region Print Physical
+                        if (all_Data.FGPT.Count == 0)
+                        {
+                            dicRt["ErrMsg"] = "FGPT data not found.";
+                            dicRt["Result"] = "false";
+                            return dicRt;
+                        }
 
-                    string basefileName_Physical = "WashTest_Physical";
-                    string openfilepath_Physical;
-                    if (test)
-                    {
-                        openfilepath_Physical = "C:\\Willy_Repository\\Quality_KPI\\Quality\\Quality\\bin\\XLT\\WashTest_Physical.xltx";
-                    }
-                    else
-                    {
+                        typeName = $"Garment Test Physical_{all_Data.Detail.OrderID}_" +
+                           $"{all_Data.Main.StyleID}_" +
+                           $"{all_Data.Main.Article}_" +
+                           $"{(all_Data.Detail.Result == "P" ? "Pass" : "Fail")}_" +
+                           $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+
+                        string basefileName_Physical = "WashTest_Physical";
+                        string openfilepath_Physical;
+
                         openfilepath_Physical = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName_Physical}.xltx";
-                    }
 
-                    Excel.Application objApp_Physical = MyUtility.Excel.ConnectExcel(openfilepath_Physical);
+                        Excel.Application objApp_Physical = MyUtility.Excel.ConnectExcel(openfilepath_Physical);
 
-                    objApp_Physical.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-                    Excel.Worksheet worksheet_Physical = objApp_Physical.ActiveWorkbook.Worksheets[1]; // 取得工作表
+                        objApp_Physical.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
+                        Excel.Worksheet worksheet_Physical = objApp_Physical.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
-                    // objApp.Visible = true;
-                    #region 插入圖片與Technician名字
-                    if (IsToPDF)
-                    {
-                        string sql_cmd = $@"
+                        // objApp.Visible = true;
+                        #region 插入圖片與Technician名字
+                        if (!string.IsNullOrEmpty(all_Data.Detail.inspector))
+                        {
+                            string sql_cmd = $@"
 select p.name,[SignaturePic] = t.Signature
 from Production.dbo.Technician t WITH (NOLOCK)
 inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
@@ -2944,238 +3099,286 @@ outer apply (select PicPath from Production.dbo.system) s
 where t.ID = '{all_Data.Detail.inspector}'
 and t.GarmentTest=1
 ";
-                        string technicianName = string.Empty;
-                        DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
+                            string technicianName = string.Empty;
+                            DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
 
 
-                        if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
-                        {
-                            technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
-                            byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
-
-
-                            string imageName = $"{Guid.NewGuid()}.jpg";
-                            string imgPath;
-
-                            if (test)
+                            if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
                             {
-                                imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                            }
-                            else
-                            {
+                                technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
+                                byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
+
+
+                                string imageName = $"{Guid.NewGuid()}.jpg";
+                                string imgPath;
+
                                 imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                            }
 
-                            // Name
-                            worksheet_Physical.Cells[119, 8] = technicianName;
-                            Excel.Range cellNew = worksheet_Physical.Cells[117, 8];
+                                // Name
+                                worksheet_Physical.Cells[117, 5] = technicianName;
+                                Excel.Range cellNew = worksheet_Physical.Cells[119, 5];
+                                Excel.Range mergeArea = cellNew.MergeArea;
 
-                            using (MemoryStream ms = new MemoryStream(imgData))
+                                using (MemoryStream ms = new MemoryStream(imgData))
+                                {
+                                    Image img = Image.FromStream(ms);
+                                    img.Save(imgPath);
+                                }
+
+                                double cellWidth = mergeArea.Width;
+                                double cellHeight = mergeArea.Height;
+                                var picture = worksheet_Physical.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, mergeArea.Left, mergeArea.Top, 100, 24);
+
+                                // 調整圖片位置，置中於合併儲存格
+                                float picLeft = (float)(mergeArea.Left + (mergeArea.Width - picture.Width) / 2);
+                                float picTop = (float)(mergeArea.Top + (mergeArea.Height - picture.Height) / 2);
+                                picture.Left = picLeft;
+                                picture.Top = picTop;
+                            }                       
+                        }
+
+                        if (!string.IsNullOrEmpty(all_Data.Detail.Approver))
+                        {
+                            string sql_cmd = $@"
+select p.name,[SignaturePic] = t.Signature
+from Production.dbo.Technician t WITH (NOLOCK)
+inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID  
+outer apply (select PicPath from Production.dbo.system) s 
+where t.ID = '{all_Data.Detail.Approver}'
+and t.GarmentTest=1
+";
+                            string approverName = string.Empty;
+                            DataTable dtApproverInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
+
+
+                            if (dtApproverInfo != null && dtApproverInfo.Rows.Count > 0 && dtApproverInfo.Rows[0]["SignaturePic"] != null)
                             {
-                                Image img = Image.FromStream(ms);
-                                img.Save(imgPath);
+                                approverName = dtApproverInfo.Rows[0]["name"].ToString();
+                                byte[] imgData = (byte[])dtApproverInfo.Rows[0]["SignaturePic"];
+
+
+                                string imageName = $"{Guid.NewGuid()}.jpg";
+                                string imgPath;
+
+                                imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                                // Name
+                                worksheet_Physical.Cells[117, 7] = approverName;
+                                Excel.Range cellNew = worksheet_Physical.Cells[119, 7];
+                                Excel.Range mergeArea = cellNew.MergeArea;
+
+                                using (MemoryStream ms = new MemoryStream(imgData))
+                                {
+                                    Image img = Image.FromStream(ms);
+                                    img.Save(imgPath);
+                                }
+
+                                double cellWidth = mergeArea.Width;
+                                double cellHeight = mergeArea.Height;
+                                var picture = worksheet_Physical.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, mergeArea.Left, mergeArea.Top, 100, 24);
+
+                                // 調整圖片位置，置中於合併儲存格
+                                float picLeft = (float)(mergeArea.Left + (mergeArea.Width - picture.Width) / 2);
+                                float picTop = (float)(mergeArea.Top + (mergeArea.Height - picture.Height) / 2);
+                                picture.Left = picLeft;
+                                picture.Top = picTop;
                             }
-                            worksheet_Physical.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 80, 24);
                         }
-                        else
+                        #endregion
+
+                        // 若為QA 10產生則顯示New Development Testing ( V )，若為QA P04產生則顯示1st Bulk Testing ( V )
+                        worksheet_Physical.Cells[4, 3] = "1st Bulk Testing ( V )";
+
+                        worksheet_Physical.Cells[5, 1] = "adidas Article No.: " + MyUtility.Convert.GetString(all_Data.Main.Article);
+                        worksheet_Physical.Cells[5, 3] = "adidas Working No.: " + MyUtility.Convert.GetString(all_Data.Main.StyleID);
+                        worksheet_Physical.Cells[5, 4] = "adidas Model No.: " + styleName;
+
+                        worksheet_Physical.Cells[6, 1] = "T1 Supplier Ref.: " + orders.FactoryID;
+                        worksheet_Physical.Cells[6, 3] = "T1 Factory Name: " + orders.BrandAreaCode;
+                        worksheet_Physical.Cells[6, 4] = "LO to Factory: " + p04data.TxtLotoFactory;
+
+                        if (p04data.DateSubmit.HasValue)
                         {
-                            worksheet_Physical.Cells[119, 8] = MyUtility.Convert.GetString(all_Data.Detail.GarmentTest_Detail_Inspector);
+                            worksheet_Physical.Cells[8, 1] = "Report Date: " + p04data.DateSubmit.Value.ToString("yyyy/MM/dd");
                         }
-                    }
-
-                    if (!IsToPDF)
-                    {
-                        worksheet_Physical.Cells[116, 7] = string.Empty;
-                    }
-                    #endregion
-
-                    //if (testCOdeFgpt.Any())
-                    //{
-                    //    worksheet_Physical.Cells[1, 1] = $@"Product TEST REPORT ({testCOdeFgpt.FirstOrDefault().TestCode})";
-                    //}
-                    // 若為QA 10產生則顯示New Development Testing ( V )，若為QA P04產生則顯示1st Bulk Testing ( V )
-                    worksheet_Physical.Cells[4, 3] = "1st Bulk Testing ( V )";
-
-                    worksheet_Physical.Cells[5, 1] = "adidas Article No.: " + MyUtility.Convert.GetString(all_Data.Main.Article);
-                    worksheet_Physical.Cells[5, 3] = "adidas Working No.: " + MyUtility.Convert.GetString(all_Data.Main.StyleID);
-                    worksheet_Physical.Cells[5, 4] = "adidas Model No.: " + StyleName;
-
-                    worksheet_Physical.Cells[6, 1] = "T1 Supplier Ref.: " + orders.FactoryID;
-                    worksheet_Physical.Cells[6, 3] = "T1 Factory Name: " + orders.BrandAreaCode;
-                    worksheet_Physical.Cells[6, 4] = "LO to Factory: " + data.TxtLotoFactory;
-
-                    if (data.DateSubmit.HasValue)
-                    {
-                        worksheet_Physical.Cells[8, 1] = "Date: " + data.DateSubmit.Value.ToString("yyyy/MM/dd");
-                    }
-
-                    var testName_1 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName).Contains("PHX-AP0413"));
-                    var testName_2 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName).Contains("PHX-AP0450"));
-                    var testName_3 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName).Contains("PHX-AP0451"));
-
-
-
-                    // PHX-AP0451
-
-                    // Requirement
-                    worksheet_Physical.Cells[110, 3] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().Type);
-
-                    // Test Results
-                    worksheet_Physical.Cells[110, 4] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().TestResult);
-
-                    // Test Details
-                    worksheet_Physical.Cells[110, 5] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().TestDetail) == "Range%" ? "%" : MyUtility.Convert.GetString(testName_3.FirstOrDefault().TestDetail);
-
-                    // adidas pass
-                    worksheet_Physical.Cells[110, 8] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().Result);
-
-                    // PHX-AP0450 複製空格
-                    int copyCount_2 = testName_2.Count() - 2;
-
-                    // 第三筆開始才需要插入新的Row
-                    if (copyCount_2 > 0)
-                    {
-                        for (int i = 0; i <= copyCount_2 - 1; i++)
+                        if (p04data.ReceiveDate.HasValue)
                         {
-                            // 複製儲存格
-                            Excel.Range rgCopy = worksheet_Physical.get_Range("A109:A109").EntireRow;
-
-                            // 選擇要被貼上的位置
-                            Excel.Range rgPaste = worksheet_Physical.get_Range("A109:A109", Type.Missing);
-
-                            // 貼上
-                            rgPaste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, rgCopy.Copy(Type.Missing));
+                            worksheet_Physical.Cells[9, 1] = "Receive Date: " + p04data.ReceiveDate.Value.ToString("yyyy/MM/dd");
                         }
-                        worksheet_Physical.get_Range($"B108", $"B{copyCount_2 + 108}").Merge(false);
-                    }
 
-                    // 開始填入表身，填PHX - AP0450
-                    int startRowIndex_Pyhsical = 108;
+                        var testName_1 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName).Contains("PHX-AP0413"));
+                        var testName_2 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName).Contains("PHX-AP0450"));
+                        var testName_3 = all_Data.FGPT.AsEnumerable().Where(o => MyUtility.Convert.GetString(o.TestName).Contains("PHX-AP0451"));
 
-                    foreach (var dr in testName_2)
-                    {
+
+
+                        // PHX-AP0451
+
                         // Requirement
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 3] = MyUtility.Convert.GetString(dr.Type);
+                        worksheet_Physical.Cells[110, 3] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().Type);
 
                         // Test Results
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 4] = MyUtility.Convert.GetString(dr.TestResult);
+                        worksheet_Physical.Cells[110, 4] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().TestResult);
 
                         // Test Details
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 5] = MyUtility.Convert.GetString(dr.TestDetail) == "Range%" ? "%" : MyUtility.Convert.GetString(dr.TestDetail);
-
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 6] = MyUtility.Convert.GetString(dr.StandardRemark);
+                        worksheet_Physical.Cells[110, 5] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().TestDetail) == "Range%" ? "%" : MyUtility.Convert.GetString(testName_3.FirstOrDefault().TestDetail);
 
                         // adidas pass
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 7] = MyUtility.Convert.GetString(dr.Result);
+                        worksheet_Physical.Cells[110, 8] = MyUtility.Convert.GetString(testName_3.FirstOrDefault().Result);
 
-                        startRowIndex_Pyhsical++;
-                    }
+                        // PHX-AP0450 複製空格
+                        int copyCount_2 = testName_2.Count() - 2;
 
-                    // PHX - AP0413 複製空格
-                    int copyCount_1 = testName_1.Count() - 2;
-
-                    // 第三筆開始才需要插入新的Row
-                    if (copyCount_1 > 0)
-                    {
-                        for (int i = 0; i <= copyCount_1 - 1; i++)
+                        // 第三筆開始才需要插入新的Row
+                        if (copyCount_2 > 0)
                         {
-                            // 複製儲存格
-                            Excel.Range rgCopy = worksheet_Physical.get_Range("A97:A97").EntireRow;
+                            for (int i = 0; i <= copyCount_2 - 1; i++)
+                            {
+                                // 複製儲存格
+                                Excel.Range rgCopy = worksheet_Physical.get_Range("A109:A109").EntireRow;
 
-                            // 選擇要被貼上的位置
-                            Excel.Range rgPaste = worksheet_Physical.get_Range("A97:A97", Type.Missing);
+                                // 選擇要被貼上的位置
+                                Excel.Range rgPaste = worksheet_Physical.get_Range("A109:A109", Type.Missing);
 
-                            // 貼上
-                            rgPaste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, rgCopy.Copy(Type.Missing));
+                                // 貼上
+                                rgPaste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, rgCopy.Copy(Type.Missing));
+                            }
+                            worksheet_Physical.get_Range($"B108", $"B{copyCount_2 + 108}").Merge(false);
                         }
 
-                        worksheet_Physical.get_Range($"B96", $"B{copyCount_1 + 96}").Merge(false);
-                    }
+                        // 開始填入表身，填PHX - AP0450
+                        int startRowIndex_Pyhsical = 108;
 
-                    // 開始填入表身，先填PHX - AP0413
-                    startRowIndex_Pyhsical = 96;
-                    foreach (var dr in testName_1)
-                    {
-                        // Requirement
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 3] = MyUtility.Convert.GetString(dr.Type);
+                        foreach (var dr in testName_2)
+                        {
+                            // Requirement
+                            worksheet_Physical.Cells[startRowIndex_Pyhsical, 3] = MyUtility.Convert.GetString(dr.Type);
 
-                        // Test Results
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 4] = MyUtility.Convert.GetString(dr.TestResult);
+                            // Test Results
+                            worksheet_Physical.Cells[startRowIndex_Pyhsical, 4] = MyUtility.Convert.GetString(dr.TestResult);
 
-                        // Test Details
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 5] = MyUtility.Convert.GetString(dr.TestDetail) == "Range%" ? "%" : MyUtility.Convert.GetString(dr.TestDetail);
+                            // Test Details
+                            worksheet_Physical.Cells[startRowIndex_Pyhsical, 5] = MyUtility.Convert.GetString(dr.TestDetail) == "Range%" ? "%" : MyUtility.Convert.GetString(dr.TestDetail);
 
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 6] = MyUtility.Convert.GetString(dr.StandardRemark);
+                            worksheet_Physical.Cells[startRowIndex_Pyhsical, 6] = MyUtility.Convert.GetString(dr.StandardRemark);
 
-                        // adidas pass
-                        worksheet_Physical.Cells[startRowIndex_Pyhsical, 7] = MyUtility.Convert.GetString(dr.Result);
+                            // adidas pass
+                            worksheet_Physical.Cells[startRowIndex_Pyhsical, 7] = MyUtility.Convert.GetString(dr.Result);
 
-                        startRowIndex_Pyhsical++;
-                    }
+                            startRowIndex_Pyhsical++;
+                        }
 
-                    #region Save & Show Excel
+                        // PHX - AP0413 複製空格
+                        int copyCount_1 = testName_1.Count() - 2;
 
-                    if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                    {
-                        typeName = AssignedFineName;
-                    }
+                        // 第三筆開始才需要插入新的Row
+                        if (copyCount_1 > 0)
+                        {
+                            for (int i = 0; i <= copyCount_1 - 1; i++)
+                            {
+                                // 複製儲存格
+                                Excel.Range rgCopy = worksheet_Physical.get_Range("A97:A97").EntireRow;
 
-                    foreach (char invalidChar in updatedInvalidChars)
-                    {
-                        typeName = typeName.Replace(invalidChar.ToString(), "");
-                    }
-                    string filexlsx_Physical = typeName + ".xlsx";
-                    string fileNamePDF_Physical = typeName + ".pdf";
+                                // 選擇要被貼上的位置
+                                Excel.Range rgPaste = worksheet_Physical.get_Range("A97:A97", Type.Missing);
 
-                    string filepath_Physical;
-                    string filepathpdf_Physical;
-                    if (test)
-                    {
-                        filepath_Physical = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx_Physical);
-                        filepathpdf_Physical = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF_Physical);
-                    }
-                    else
-                    {
+                                // 貼上
+                                rgPaste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, rgCopy.Copy(Type.Missing));
+                            }
+
+                            worksheet_Physical.get_Range($"B96", $"B{copyCount_1 + 96}").Merge(false);
+                        }
+
+                        // 開始填入表身，先填PHX - AP0413
+                        startRowIndex_Pyhsical = 96;
+                        foreach (var dr in testName_1)
+                        {
+                            // Requirement
+                            worksheet_Physical.Cells[startRowIndex_Pyhsical, 3] = MyUtility.Convert.GetString(dr.Type);
+
+                            // Test Results
+                            worksheet_Physical.Cells[startRowIndex_Pyhsical, 4] = MyUtility.Convert.GetString(dr.TestResult);
+
+                            // Test Details
+                            worksheet_Physical.Cells[startRowIndex_Pyhsical, 5] = MyUtility.Convert.GetString(dr.TestDetail) == "Range%" ? "%" : MyUtility.Convert.GetString(dr.TestDetail);
+
+                            worksheet_Physical.Cells[startRowIndex_Pyhsical, 6] = MyUtility.Convert.GetString(dr.StandardRemark);
+
+                            // adidas pass
+                            worksheet_Physical.Cells[startRowIndex_Pyhsical, 7] = MyUtility.Convert.GetString(dr.Result);
+
+                            startRowIndex_Pyhsical++;
+                        }
+
+                        #region Save & Show Excel
+
+                        if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                        {
+                            typeName = AssignedFineName;
+                        }
+
+                        foreach (char invalidChar in invalidChars)
+                        {
+                            typeName = typeName.Replace(invalidChar.ToString(), "");
+                        }
+                        string filexlsx_Physical = typeName + ".xlsx";
+                        string fileNamePDF_Physical = typeName + ".pdf";
+
+                        string filepath_Physical;
+                        string filepathpdf_Physical;
+
                         filepath_Physical = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx_Physical);
                         filepathpdf_Physical = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF_Physical);
-                    }
 
+                        Excel.Workbook workbook_Physical = objApp_Physical.ActiveWorkbook;
 
-                    Excel.Workbook workbook_Physical = objApp_Physical.ActiveWorkbook;
-                    workbook_Physical.SaveAs(filepath_Physical);
-                    workbook_Physical.Close();
-                    objApp_Physical.Quit();
-                    Marshal.ReleaseComObject(worksheet_Physical);
-                    Marshal.ReleaseComObject(workbook_Physical);
-                    Marshal.ReleaseComObject(objApp_Physical);
-
-                    if (IsToPDF)
-                    {
-                        if (ConvertToPDF.ExcelToPDF(filepath_Physical, filepathpdf_Physical))
+                        if (isToPDF)
                         {
-                            all_Data.reportPath = fileNamePDF_Physical;
-                            all_Data.Result = true;
+                            workbook_Physical.ExportAsFixedFormat(
+                                Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF,     // PDF 格式
+                                filepathpdf_Physical,                   // 輸出的 PDF 路徑
+                                 Microsoft.Office.Interop.Excel.XlFixedFormatQuality.xlQualityStandard, // 標準品質
+                                true,                            // 包含開啟的工作表
+                                false,                           // 不需要整個活頁簿
+                                Type.Missing,                    // 起始頁 (可選)
+                                Type.Missing,                    // 結束頁 (可選)
+                                false                            // 匯出完成後不需要啟用文件
+                            );
+                            dicRt["reportPath"] = fileNamePDF_Physical;
+                            dicRt["reportFileFullPath"] = filepathpdf_Physical;
                         }
                         else
                         {
-                            all_Data.ErrMsg = "Convert To PDF Fail";
-                            all_Data.Result = false;
+                            workbook_Physical.SaveAs(filepath_Physical);
+                            dicRt["reportPath"] = filexlsx_Physical;
+                            dicRt["reportFileFullPath"] = filepath_Physical;
                         }
-                    }
 
-                    if (!IsToPDF)
-                    {
-                        all_Data.reportPath = filexlsx_Physical;
-                        all_Data.Result = true;
-                    }
-                    #endregion
-                    #endregion
-                    break;
-                default:
-                    break;
+                        workbook_Physical.Close();
+                        objApp_Physical.Quit();
+                        MyUtility.Excel.KillExcelProcess(objApp_Physical);
+                        Marshal.ReleaseComObject(worksheet_Physical);
+                        Marshal.ReleaseComObject(workbook_Physical);
+                        Marshal.ReleaseComObject(objApp_Physical);
+
+                        dicRt["Result"] = "true";
+
+                        #endregion
+
+                        #endregion
+                        break;
+                    default:
+                        break;
+                }
+
+                dicRt["Result"] = "true";
             }
-
-            return all_Data;
+            catch (Exception ex)
+            {
+                dicRt["ErrMsg"] = ex.Message;
+                dicRt["Result"] = "false";
+            }
+            return dicRt;
         }
 
         public GarmentTest_Detail_Result StyleResult_BulkFGTReport(string BrandID, string StyleID, string SeasonID, string Article, string Type)
@@ -3203,7 +3406,7 @@ and t.GarmentTest=1
                         Ionic.Zip.ZipFile zipFile = new Ionic.Zip.ZipFile();
                         string zipName = $"WashTest_Physical_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.zip";
                         string zipPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", zipName);
-                        result = ToReport(detail_ViewModel.ID.ToString(), detail_ViewModel.No.ToString(), ReportType.Wash_Test_2018, true);                        
+                        result = ToReport(detail_ViewModel.ID.ToString(), detail_ViewModel.No.ToString(), ReportType.Wash_Test_2018, true);
                         if (result.Result.Value)
                         {
                             zipFile.AddFile(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", result.reportPath), string.Empty);
@@ -3214,7 +3417,7 @@ and t.GarmentTest=1
                         {
                             zipFile.AddFile(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", result.reportPath), string.Empty);
                         }
-                        
+
                         zipFile.Save(zipPath);
                         result.reportPath = zipName;
                         break;
@@ -3224,7 +3427,7 @@ and t.GarmentTest=1
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrMsg= ex.Message;                
+                result.ErrMsg = ex.Message;
             }
 
             return result;
