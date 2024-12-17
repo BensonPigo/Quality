@@ -2064,13 +2064,23 @@ and t.GarmentTest=1
                                         // Name
                                         worksheet.Cells[85, 8] = technicianName;
                                         Excel.Range cellNew = worksheet.Cells[87, 8];
+                                        Excel.Range mergeArea = cellNew.MergeArea;
                                         using (MemoryStream ms = new MemoryStream(imgData))
                                         {
                                             Image img = Image.FromStream(ms);
                                             img.Save(imgPath);
                                         }
 
-                                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left + 35, cellNew.Top, 100, 24);
+                                        double cellWidth = mergeArea.Width;
+                                        double cellHeight = mergeArea.Height;
+                                        var picture = worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, mergeArea.Left, mergeArea.Top, 100, 24);
+
+                                        // 調整圖片位置，置中於合併儲存格
+                                        float picLeft = (float)(mergeArea.Left + (mergeArea.Width - picture.Width) / 2);
+                                        float picTop = (float)(mergeArea.Top + (mergeArea.Height - picture.Height) / 2);
+                                        picture.Left = picLeft;
+                                        picture.Top = picTop + 10;
+
                                     }
                                 }
 
@@ -2100,13 +2110,22 @@ and t.GarmentTest=1
                                         // Name
                                         worksheet.Cells[85, 10] = technicianName;
                                         Excel.Range cellNew = worksheet.Cells[87, 10];
+                                        Excel.Range mergeArea = cellNew.MergeArea;
                                         using (MemoryStream ms = new MemoryStream(imgData))
                                         {
                                             Image img = Image.FromStream(ms);
                                             img.Save(imgPath);
                                         }
 
-                                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left + 35, cellNew.Top, 100, 24);
+                                        double cellWidth = mergeArea.Width;
+                                        double cellHeight = mergeArea.Height;
+                                        var picture = worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, mergeArea.Left, mergeArea.Top, 100, 24);
+
+                                        // 調整圖片位置，置中於合併儲存格
+                                        float picLeft = (float)(mergeArea.Left + (mergeArea.Width - picture.Width) / 2);
+                                        float picTop = (float)(mergeArea.Top + (mergeArea.Height - picture.Height) / 2);
+                                        picture.Left = picLeft;
+                                        picture.Top = picTop + 10;
                                     }
                                 }
                                 #endregion
@@ -2838,6 +2857,7 @@ and t.GarmentTest=1
                                 // Name
                                 worksheet_2020.Cells[28, 5] = technicianName;
                                 Excel.Range cellNew = worksheet_2020.Cells[30, 5];
+                                Excel.Range mergeArea = cellNew.MergeArea;
 
                                 using (MemoryStream ms = new MemoryStream(imgData))
                                 {
@@ -2845,7 +2865,15 @@ and t.GarmentTest=1
                                     img.Save(imgPath);
                                 }
 
-                                worksheet_2020.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left + 35, cellNew.Top, 100, 24);
+                                double cellWidth = mergeArea.Width;
+                                double cellHeight = mergeArea.Height;
+                                var picture = worksheet_2020.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, mergeArea.Left, mergeArea.Top, 100, 24);
+
+                                // 調整圖片位置，置中於合併儲存格
+                                float picLeft = (float)(mergeArea.Left + (mergeArea.Width - picture.Width) / 2);
+                                float picTop = (float)(mergeArea.Top + (mergeArea.Height - picture.Height) / 2);
+                                picture.Left = picLeft;
+                                picture.Top = picTop + 10;
                             }
                         }
                         if (!string.IsNullOrEmpty(all_Data.Detail.Approver))
@@ -2873,6 +2901,7 @@ and t.GarmentTest=1
                                 // Name
                                 worksheet_2020.Cells[28, 7] = appRoverName;
                                 Excel.Range cellNew = worksheet_2020.Cells[30, 7];
+                                Excel.Range mergeArea = cellNew.MergeArea;
 
                                 using (MemoryStream ms = new MemoryStream(imgData))
                                 {
@@ -2880,7 +2909,15 @@ and t.GarmentTest=1
                                     img.Save(imgPath);
                                 }
 
-                                worksheet_2020.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left + 35, cellNew.Top, 100, 24);
+                                double cellWidth = mergeArea.Width;
+                                double cellHeight = mergeArea.Height;
+                                var picture = worksheet_2020.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, mergeArea.Left, mergeArea.Top, 100, 24);
+
+                                // 調整圖片位置，置中於合併儲存格
+                                float picLeft = (float)(mergeArea.Left + (mergeArea.Width - picture.Width) / 2);
+                                float picTop = (float)(mergeArea.Top + (mergeArea.Height - picture.Height) / 2);
+                                picture.Left = picLeft;
+                                picture.Top = picTop + 10;
                             }
                         }
 
@@ -3080,13 +3117,23 @@ and t.GarmentTest=1
                                 // Name
                                 worksheet_Physical.Cells[117, 5] = technicianName;
                                 Excel.Range cellNew = worksheet_Physical.Cells[119, 5];
+                                Excel.Range mergeArea = cellNew.MergeArea;
 
                                 using (MemoryStream ms = new MemoryStream(imgData))
                                 {
                                     Image img = Image.FromStream(ms);
                                     img.Save(imgPath);
                                 }
-                                worksheet_Physical.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 80, 24);
+
+                                double cellWidth = mergeArea.Width;
+                                double cellHeight = mergeArea.Height;
+                                var picture = worksheet_Physical.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, mergeArea.Left, mergeArea.Top, 100, 24);
+
+                                // 調整圖片位置，置中於合併儲存格
+                                float picLeft = (float)(mergeArea.Left + (mergeArea.Width - picture.Width) / 2);
+                                float picTop = (float)(mergeArea.Top + (mergeArea.Height - picture.Height) / 2);
+                                picture.Left = picLeft;
+                                picture.Top = picTop;
                             }                       
                         }
 
@@ -3118,13 +3165,23 @@ and t.GarmentTest=1
                                 // Name
                                 worksheet_Physical.Cells[117, 7] = approverName;
                                 Excel.Range cellNew = worksheet_Physical.Cells[119, 7];
+                                Excel.Range mergeArea = cellNew.MergeArea;
 
                                 using (MemoryStream ms = new MemoryStream(imgData))
                                 {
                                     Image img = Image.FromStream(ms);
                                     img.Save(imgPath);
                                 }
-                                worksheet_Physical.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellNew.Left, cellNew.Top, 80, 24);
+
+                                double cellWidth = mergeArea.Width;
+                                double cellHeight = mergeArea.Height;
+                                var picture = worksheet_Physical.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, mergeArea.Left, mergeArea.Top, 100, 24);
+
+                                // 調整圖片位置，置中於合併儲存格
+                                float picLeft = (float)(mergeArea.Left + (mergeArea.Width - picture.Width) / 2);
+                                float picTop = (float)(mergeArea.Top + (mergeArea.Height - picture.Height) / 2);
+                                picture.Left = picLeft;
+                                picture.Top = picTop;
                             }
                         }
                         #endregion

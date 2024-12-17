@@ -556,7 +556,7 @@ where ID = @ID
 ";
                 List<GarmentTest_Detail_ViewModel> oldDetailData = GetDetail(master.ID.ToString(), sameInstance).ToList();
                 List<GarmentTest_Detail_ViewModel> needUpdateDetailList = PublicClass.CompareListValue<GarmentTest_Detail_ViewModel>(
-                    detail, oldDetailData, "ID,No", "OrderID,SizeCode,MtlTypeID,SubmitDate,inspector,NonSeamBreakageTest,Remark,Approver,Receiver");
+                    detail, oldDetailData, "ID,No", "OrderID,SizeCode,MtlTypeID,SubmitDate,inspector,NonSeamBreakageTest,Remark,Approver,Receiver,ReceiveDate");
 
                 string NewReportNo = GetID(master.MDivisionid + "GM", "GarmentTest_Detail", DateTime.Today, 2, "ReportNo");
 
@@ -570,6 +570,7 @@ insert into GarmentTest_Detail(
     ,inspector
     ,Approver
     ,Receiver
+    ,ReceiveDate
     ,SubmitDate
     ,Remark
     ,AddName,AddDate
@@ -585,6 +586,7 @@ values(
     ,@inspector
     ,@Approver
     ,@Receiver
+    ,@ReceiveDate
     ,@SubmitDate
     ,@Remark
     ,@UserID, GetDate()
@@ -605,6 +607,7 @@ set SizeCode = @SizeCode
 ,inspector = @inspector
 ,Approver = @Approver
 ,Receiver = @Receiver
+,ReceiveDate = @ReceiveDate
 ,SubmitDate = @SubmitDate
 ,Remark = @Remark
 ,NonSeamBreakageTest = @NonSeamBreakageTest
@@ -639,6 +642,7 @@ Delete {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTes
                             objParameterDetail.Add($"@inspector", string.IsNullOrEmpty(detailItem.inspector) ? string.Empty : detailItem.inspector);
                             objParameterDetail.Add($"@Approver", string.IsNullOrEmpty(detailItem.Approver) ? string.Empty : detailItem.Approver);
                             objParameterDetail.Add($"@Receiver", string.IsNullOrEmpty(detailItem.Receiver) ? string.Empty : detailItem.Receiver);
+                            objParameterDetail.Add($"@ReceiveDate", detailItem.ReceiveDate);
                             objParameterDetail.Add($"@Remark", string.IsNullOrEmpty(detailItem.Remark) ? string.Empty : detailItem.Remark);
                             objParameterDetail.Add($"@UserID", string.IsNullOrEmpty(UserID) ? string.Empty : UserID);
                             objParameterDetail.Add($"@OrderID", string.IsNullOrEmpty(detailItem.OrderID) ? string.Empty : detailItem.OrderID);
@@ -661,6 +665,7 @@ Delete {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTes
                             objParameterDetail.Add($"@inspector", string.IsNullOrEmpty(detailItem.inspector) ? string.Empty : detailItem.inspector);
                             objParameterDetail.Add($"@Approver", string.IsNullOrEmpty(detailItem.Approver) ? string.Empty : detailItem.Approver);
                             objParameterDetail.Add($"@Receiver", string.IsNullOrEmpty(detailItem.Receiver) ? string.Empty : detailItem.Receiver);
+                            objParameterDetail.Add($"@ReceiveDate", detailItem.ReceiveDate);
 
                             ExecuteNonQuery(CommandType.Text, sqlUpdateDetail, objParameterDetail);
                             break;

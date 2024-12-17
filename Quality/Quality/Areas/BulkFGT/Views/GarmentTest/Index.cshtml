@@ -530,12 +530,7 @@
 
                                             @SendDateVal
                                         </td>
-                                        @*<td style="">
-                                            <img class="ReceiveMail" src="~/Image/Icon/Mail.png" width="30" />
-                                        </td>*@
-                                        <td class="Receiver" style="">
-                                            @*@Html.DisplayFor(o => Model.garmentTest_Details[i].Receiver, "", "")*@
-                                            
+                                        <td class="Receiver" style="">                                            
                                             <div class="input-group">
                                                 @Html.TextBoxFor(o => Model.garmentTest_Details[i].Receiver, new { @class = "Receiver", @style = "width: 6vw;margin-right:2px;" })
                                                 @Html.TextBoxFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_Receiver, "", new { @readonly = "readonly", @style = "width: 10vw;margin-right:2px;", @class = "ReceiverName" })
@@ -544,10 +539,10 @@
                                         </td>
                                         <td class="ReceiveDate" style="">
                                             @{
-                                                var ReceiveDateVal = Model.garmentTest_Details[i].ReceiveDate.HasValue ? Model.garmentTest_Details[i].ReceiveDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : "";
+                                                var ReceiveDateVal = Model.garmentTest_Details[i].ReceiveDate.HasValue ? Model.garmentTest_Details[i].ReceiveDate.Value.ToString("yyyy/MM/dd") : "";
                                             }
 
-                                            @Html.TextBoxFor(o => Model.garmentTest_Details[i].ReceiveDate, new { @class = "date-picker", @style = "" })
+                                            @Html.TextBoxFor(o => Model.garmentTest_Details[i].ReceiveDate, ReceiveDateVal, new { @class = "date-picker", @style = "" })
                                         </td>
                                         <td style="">
                                             @Html.DisplayFor(o => Model.garmentTest_Details[i].GarmentTest_Detail_AddName, "", "")
@@ -664,7 +659,7 @@
                 var no = fcol.attr("idv");
 
                 var NonSeamBreakageTest = $(this).children().find("input[type='checkbox']").prop("checked");
-                var OrderID, submitDate, inspector, Remark, approver, receiver;
+                var OrderID, submitDate, inspector, Remark, approver, receiver, receiveDate;
                 var SizeCode, MtlTypeID;
                 $(this).children().find("input[type='text']").each(function (index, value) {
                     switch (index) {
@@ -685,6 +680,9 @@
                             break;
                         case 7:
                             receiver = $(this).val();
+                            break;
+                        case 9:
+                            receiveDate = $(this).val();
                             break;
                     }
                 })
@@ -719,6 +717,7 @@
                     inspector: inspector,
                     Approver: approver,
                     Receiver: receiver,
+                    ReceiveDate: receiveDate,
                     Remark: Remark,
                     NonSeamBreakageTest: NonSeamBreakageTest,
                     SizeCode: SizeCode,
@@ -811,36 +810,6 @@
             var mailSubject = $(this).attr('MailSubject');
             var para = '?Subject=' + mailSubject;
             window.open('@Url.Action("SendMailer", "SendMailAttachfiles", new { Area=""})' + para, 'SendMail', config = 'toolbar=no,status=no,location=no,width=800,height=400');
-        });
-
-        $('.ReceiveMail').unbind('click').on('click', function () {
-            if ($('#garmentTest_ID').val() == "") {
-                return;
-            }
-
-            var tr = $(this).parent().parent();
-            var fcol = tr.children().find("a[class='detailA']");
-            var id = fcol.attr("idx");
-            var no = fcol.attr("idv");
-            $.ajax({
-                url: "@Url.Action("ReceiveMail", "GarmentTest", new { Area = "BulkFGT" })",
-                type: 'POST',
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ ID: id, No: no }),
-                async: true,
-                success: function (data) {
-                    if (data.SaveResult) {
-                        tr.find("td[class='Receiver']").html(data.Sender);
-                        tr.find("td[class='ReceiveDate']").html(data.SendDate);
-                    }
-                    else {
-                        msg.WithError(data.ErrMsg);
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    console.log(xhr.responseText);
-                }
-            });
         });
 
         $('.Detail_OrderID').unbind('blur').on('blur', function () {
