@@ -971,9 +971,6 @@ where flc.ID = @ID
             listPar.Add("@ID", fabricCrkShrkTestHeat_Result.ID);
             listPar.Add("@HeatRemark", fabricCrkShrkTestHeat_Result.Heat_Main.HeatRemark);
             listPar.Add("@HeatReceiveDate", fabricCrkShrkTestHeat_Result.Heat_Main.HeatReceiveDate);
-            //listPar.Add("@Heat_Temperature", fabricCrkShrkTestHeat_Result.Heat_Main.Heat_Temperature);
-            //listPar.Add("@Heat_Second", fabricCrkShrkTestHeat_Result.Heat_Main.Heat_Second);
-            //listPar.Add("@Heat_Pressure", fabricCrkShrkTestHeat_Result.Heat_Main.Heat_Pressure);
             listPar.Add("@HeatApprover", fabricCrkShrkTestHeat_Result.Heat_Main.HeatApprover ?? string.Empty);
             listPar.Add("@HeatTestBeforePicture", fabricCrkShrkTestHeat_Result.Heat_Main.HeatTestBeforePicture);
             listPar.Add("@HeatTestAfterPicture", fabricCrkShrkTestHeat_Result.Heat_Main.HeatTestAfterPicture);
@@ -983,6 +980,7 @@ SET XACT_ABORT ON
 -----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 update  FIR_Laboratory set  HeatRemark = @HeatRemark
                             ,HeatReceiveDate = @HeatReceiveDate
+                            ,HeatApprover = @HeatApprover
 where   ID = @ID 
 ;
 if exists(
