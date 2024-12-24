@@ -14,6 +14,8 @@ namespace DatabaseObject.ViewModel
         public string Above50 { get; set; }
         public string ReportNo { get; set; }
         public string NeckSelect { get; set; }
+        public string GarmentTest_Detail_Approver { get; set; }
+        public string GarmentTest_Detail_Receiver { get; set; }
         public string GarmentTest_Detail_Inspector { get; set; }
         public string GarmentTest_Detail_AddName { get; set; }
         public string GarmentTest_Detail_EditName { get; set; }
@@ -62,5 +64,6 @@ namespace DatabaseObject.ViewModel
 
         public string OdourAIComment { get; set; }
         public string MailSubject { get; set; }
+        public string Approver { get; set; }
     }
 }

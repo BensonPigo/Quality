@@ -27,6 +27,7 @@ namespace DatabaseObject.RequestModel
     {
         /// <inheritdoc/>
         public DateTime? DateSubmit { get; set; }
+        public DateTime? ReceiveDate { get; set; }
 
         /// <inheritdoc/>
         public decimal NumArriveQty { get; set; }

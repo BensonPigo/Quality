@@ -1150,8 +1150,9 @@ namespace BusinessLogicLayer.Service
 
                 // 填寫標題和主表資料
                 if (testCode.Any())
+                { 
                     worksheet.Cell("A1").Value = $"Quality Heat Test Report({testCode.First().TestCode})";
-
+                }
                 worksheet.Cell("B2").Value = fabricCrkShrkTestHeat_Main.ReportNo;
                 worksheet.Cell("B3").Value = fabricCrkShrkTestHeat_Main.POID;
                 worksheet.Cell("D3").Value = fabricCrkShrkTestHeat_Main.SEQ;
