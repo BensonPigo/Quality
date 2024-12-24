@@ -1,5 +1,6 @@
 ﻿using ADOHelper.Utility;
 using BusinessLogicLayer.Interface.BulkFGT;
+using ClosedXML.Excel;
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
@@ -366,7 +367,7 @@ namespace BusinessLogicLayer.Service
             return result;
         }
 
-        public BaseResult ToExcelFabricOvenTestDetail(string poID, string TestNo, out string excelFileName, bool isTest = false)
+        public BaseResult ToExcelFabricOvenTestDetail2(string poID, string TestNo, out string excelFileName, bool isTest = false)
         {
             _FabricOvenTestProvider = new FabricOvenTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
@@ -569,6 +570,131 @@ namespace BusinessLogicLayer.Service
             }
 
             return result;
+        }
+        public BaseResult ToExcelFabricOvenTestDetail(string poID, string testNo, out string excelFileName, bool isTest = false)
+        {
+            _FabricOvenTestProvider = new FabricOvenTestProvider(Common.ProductionDataAccessLayer);
+            _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            BaseResult result = new BaseResult();
+            excelFileName = string.Empty;
+
+            try
+            {
+                // 設定基底目錄
+                string baseFilePath = isTest ? Directory.GetCurrentDirectory() : System.Web.HttpContext.Current.Server.MapPath("~/");
+                string templateFilePath = Path.Combine(baseFilePath, "XLT", "FabricOvenTestDetailReport.xltx");
+                string tmpDir = Path.Combine(baseFilePath, "TMP");
+
+                if (!Directory.Exists(tmpDir))
+                {
+                    Directory.CreateDirectory(tmpDir);
+                }
+
+                // 獲取資料
+                DataTable dtOvenDetail = _FabricOvenTestProvider.GetOvenDetailForExcel(poID, testNo);
+                DataTable dtOven = _FabricOvenTestProvider.GetOven(poID, testNo);
+
+                if (dtOvenDetail.Rows.Count == 0)
+                {
+                    result.ErrorMessage = "Data not found!";
+                    result.Result = false;
+                    return result;
+                }
+
+                // 讀取訂單資訊
+                var orders = _OrdersProvider.Get(new Orders { ID = poID }).FirstOrDefault();
+                string styleID = orders?.StyleID ?? string.Empty;
+                string seasonID = orders?.SeasonID ?? string.Empty;
+                string brandID = orders?.BrandID ?? string.Empty;
+                string status = dtOven.Rows.Count > 0 ? dtOven.Rows[0]["status"].ToString() : string.Empty;
+
+                // 生成檔名
+                excelFileName = $"FabricOvenTestDetailReport_{DateTime.Now:yyyyMMddHHmmss}.xlsx";
+                string filePath = Path.Combine(tmpDir, excelFileName);
+
+                // 使用 ClosedXML 開啟範本並寫入資料
+                using (var workbook = new XLWorkbook(templateFilePath))
+                {
+                    var worksheet = workbook.Worksheet(1);
+
+                    // 填入基本資料
+                    worksheet.Cell(1, 2).Value = poID;
+                    worksheet.Cell(1, 4).Value = styleID;
+                    worksheet.Cell(1, 6).Value = seasonID;
+                    worksheet.Cell(1, 8).Value = dtOven.Rows[0]["Article"]?.ToString();
+                    worksheet.Cell(1, 10).Value = testNo;
+                    worksheet.Cell(2, 2).Value = status;
+                    worksheet.Cell(2, 4).Value = dtOven.Rows[0]["Result"]?.ToString();
+                    worksheet.Cell(2, 6).Value = dtOven.Rows[0]["InspDate"] == DBNull.Value ? string.Empty : ((DateTime)dtOven.Rows[0]["InspDate"]).ToString("yyyy/MM/dd");
+                    worksheet.Cell(2, 8).Value = dtOven.Rows[0]["Inspector"]?.ToString();
+                    worksheet.Cell(2, 10).Value = brandID;
+                    worksheet.Cell(3, 2).Value = dtOven.Rows[0]["ReportDate"] == DBNull.Value ? string.Empty : ((DateTime)dtOven.Rows[0]["ReportDate"]).ToString("yyyy/MM/dd");
+
+                    // 簽名檔
+                    AddImageToWorksheet(worksheet, dtOven.Rows[0]["Signature"] as byte[], 26, 4, 100, 24);
+                    AddImageToWorksheet(worksheet, dtOven.Rows[0]["ApvSignature"] as byte[], 26, 9, 100, 24);
+                    worksheet.Cell(24, 4).Value = dtOven.Rows[0]["InspectorName"]?.ToString();
+                    worksheet.Cell(24, 9).Value = dtOven.Rows[0]["ApproverName"]?.ToString();
+
+                    // 圖片
+                    AddImageToWorksheet(worksheet, dtOven.Rows[0]["TestBeforePicture"] as byte[], 8, 1, 370, 240);
+                    AddImageToWorksheet(worksheet, dtOven.Rows[0]["TestAfterPicture"] as byte[], 8, 7, 358, 240);
+
+                    // 表身資料
+                    string[] columnNames = { "OvenGroup", "SEQ", "Roll", "Dyelot", "SCIRefno", "ColorID", "Supplier", "Changescale", "StainingScale", "Result", "Remark" };
+                    int detailStartIdx = 5;
+
+                    for (int i = 0; i < dtOvenDetail.Rows.Count; i++)
+                    {// 第一筆資料不用複製
+                        if (i > 0)
+                        {
+                            // 1. 複製
+                            var rowToCopy = worksheet.Row(5);
+
+                            // 2. 插入一列
+                            worksheet.Row(6).InsertRowsAbove(1);
+
+                            // 3. 複製格式到新插入的列
+                            var newRow = worksheet.Row(6);
+
+                            rowToCopy.CopyTo(newRow);
+                        }
+                        for (int j = 0; j < columnNames.Length; j++)
+                        {
+                            worksheet.Cell(detailStartIdx + i, j + 1).Value = dtOvenDetail.Rows[i][columnNames[j]].ToString();
+                        }
+                    }
+
+                    // 自動調整欄寬
+                    worksheet.Columns().AdjustToContents();
+
+                    // 儲存檔案
+                    workbook.SaveAs(filePath);
+                }
+
+                result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.Message;
+            }
+
+            return result;
+        }
+
+        // 圖片處理共用方法
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
         }
 
         private void SetDetailData(Excel.Worksheet worksheet, int setRow, DataRow dr)
@@ -843,6 +969,21 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+
+        // 插入圖片的工具方法
+        private void InsertImage(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
+        }
+
         public BaseResult DeleteOven(string poID, string TestNo)
         {
             BaseResult baseResult = new BaseResult();

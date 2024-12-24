@@ -1,10 +1,13 @@
 ﻿using ADOHelper.Utility;
+using ClosedXML.Excel;
 using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Library;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Microsoft.Office.Interop.Excel;
@@ -278,7 +281,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
         }
 
 
-        public BaseResult ToReport(string ReportNo, bool IsPDF, out string FinalFilenmae, string AssignedFineName = "")
+        public BaseResult ToReport2(string ReportNo, bool IsPDF, out string FinalFilenmae, string AssignedFineName = "")
         {
 
             BaseResult result = new BaseResult();
@@ -404,6 +407,119 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(workBook);
                 Marshal.ReleaseComObject(excel);
+
+                result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.ToString();
+            }
+
+            return result;
+        }
+        public BaseResult ToReport(string ReportNo, bool IsPDF, out string FinalFilenmae, string AssignedFineName = "")
+        {
+            BaseResult result = new BaseResult();
+            _Provider = new DailyMoistureProvider(Common.ManufacturingExecutionDataAccessLayer);
+            FinalFilenmae = string.Empty;
+            string tmpName = string.Empty;
+
+            try
+            {
+                DailyMoisture_Result head = _Provider.GetMainData(new DailyMoisture_Request() { ReportNo = ReportNo });
+                List<DailyMoisture_Detail_Result> body = _Provider.GetDetailData(ReportNo).ToList();
+
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
+                string templatePath = Path.Combine(baseFilePath, "XLT", "DailyMoisture.xltx");
+                string outputDirectory = Path.Combine(baseFilePath, "TMP");
+
+                if (!File.Exists(templatePath))
+                {
+                    result.ErrorMessage = "Excel template not found!";
+                    result.Result = false;
+                    return result;
+                }
+
+                tmpName = string.IsNullOrWhiteSpace(AssignedFineName) ?
+                    $"Daily Moisture Test_{head.OrderID}_{head.StyleID}_{head.Line}_{head.Result}_{DateTime.Now:yyyyMMddHHmmss}" :
+                    AssignedFineName;
+
+                tmpName = Path.GetInvalidFileNameChars()
+                    .Concat(new[] { '-', '+' })
+                    .Aggregate(tmpName, (current, c) => current.Replace(c.ToString(), ""));
+
+                string excelFileName = $"{tmpName}.xlsx";
+                string excelPath = Path.Combine(outputDirectory, excelFileName);
+                string pdfFileName = $"{tmpName}.pdf";
+                string pdfPath = Path.Combine(outputDirectory, pdfFileName);
+
+                using (var workbook = new XLWorkbook(templatePath))
+                {
+                    var worksheet = workbook.Worksheet(1);
+
+                    // 填寫表頭資料
+                    worksheet.Cell(1, 2).Value = head.ReportDate?.ToString("yyyy-MM-dd") ?? string.Empty;
+                    worksheet.Cell(1, 4).Value = head.BrandID;
+                    worksheet.Cell(1, 6).Value = head.OrderID;
+                    worksheet.Cell(1, 8).Value = head.SeasonID;
+
+                    worksheet.Cell(2, 2).Value = head.StyleID;
+                    worksheet.Cell(2, 4).Value = head.Instrument;
+                    worksheet.Cell(2, 6).Value = head.Fabrication;
+                    worksheet.Cell(2, 8).Value = head.Standard * 0.01m;
+
+                    worksheet.Cell(3, 2).Value = head.Line;
+
+                    // 填寫表身資料
+                    if (!body.Any())
+                    {
+                        worksheet.Row(6).Delete();
+                    }
+                    else
+                    {
+                        int startRow = 6;
+                        for (int i = 0; i < body.Count - 1; i++)
+                        {
+                            worksheet.Row(startRow).InsertRowsBelow(1);
+                        }
+
+                        for (int i = 0; i < body.Count; i++)
+                        { 
+                            var row = startRow + i;
+                            worksheet.Cell(row, 1).Value = body[i].Area;
+                            worksheet.Cell(row, 2).Value = body[i].Fabric;
+                            worksheet.Cell(row, 3).Value = body[i].Point1;
+                            worksheet.Cell(row, 4).Value = body[i].Point2;
+                            worksheet.Cell(row, 5).Value = body[i].Point3;
+                            worksheet.Cell(row, 6).Value = body[i].Point4;
+                            worksheet.Cell(row, 7).Value = body[i].Point5;
+                            worksheet.Cell(row, 8).Value = body[i].Point6;
+                            worksheet.Cell(row, 9).Value = body[i].Result;
+                        }
+                    }
+                    workbook.SaveAs(excelPath);
+                    if (IsPDF)
+                    {
+
+                        string pdfFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.pdf");
+                        if (ConvertToPDF.ExcelToPDF(excelPath, pdfFilePath))
+                        {
+                            FinalFilenmae = pdfFileName;
+                            result.Result = true;
+                        }
+                        else
+                        {
+                            result.Result = false;
+                            result.ErrorMessage = "Convert to PDF failed.";
+                        }
+                    }
+                    else
+                    {
+                        workbook.SaveAs(excelPath);
+                        FinalFilenmae = excelFileName;
+                    }
+                }
 
                 result.Result = true;
             }

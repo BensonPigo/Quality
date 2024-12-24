@@ -7,21 +7,15 @@ using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Sci;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
 using System.Web.Mvc;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
-using ProductionDataAccessLayer.Provider.MSSQL;
-using System.Net.Mail;
-using System.Web.UI.WebControls;
 using System.Web;
+using ClosedXML.Excel;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -449,7 +443,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-        public HydrostaticPressureWaterproofTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
+        public HydrostaticPressureWaterproofTest_ViewModel GetReport2(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             HydrostaticPressureWaterproofTest_ViewModel result = new HydrostaticPressureWaterproofTest_ViewModel();
 
@@ -704,6 +698,159 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
             return result;
         }
+        public HydrostaticPressureWaterproofTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
+        {
+            HydrostaticPressureWaterproofTest_ViewModel result = new HydrostaticPressureWaterproofTest_ViewModel();
+
+            string basefileName = "HydrostaticPressureWaterproofTest";
+            string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+
+            if (!File.Exists(openfilepath))
+            {
+                throw new FileNotFoundException("Excel template not found", openfilepath);
+            }
+
+            string tmpName = string.Empty;
+
+            try
+            {
+                HydrostaticPressureWaterproofTest_ViewModel model = this.GetData(new HydrostaticPressureWaterproofTest_Request() { ReportNo = ReportNo });
+
+                _Provider = new HydrostaticPressureWaterproofTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                var testCode = _QualityBrandTestCodeProvider.Get(model.Main.BrandID, "Hydrostatic Pressure Waterproof Test");
+                DataTable ReportTechnician = _Provider.GetReportTechnician(new HydrostaticPressureWaterproofTest_Request() { ReportNo = ReportNo });
+
+                tmpName = $"Hydrostatic Pressure Waterproof Test_{model.Main.OrderID}_" +
+                          $"{model.Main.StyleID}_" +
+                          $"{model.Main.FabricRefNo}_" +
+                          $"{model.Main.FabricColor}_" +
+                          $"{model.Main.Result}_" +
+                          $"{DateTime.Now:yyyyMMddHHmmss}";
+
+                using (var workbook = new XLWorkbook(openfilepath))
+                {
+                    var worksheet = workbook.Worksheet(1);
+
+                    // 填入表頭資料
+                    if (testCode.Any())
+                    {
+                        worksheet.Cell(1, 1).Value = $"Hydrostatic pressure waterproof test({testCode.FirstOrDefault().TestCode})";
+                    }
+
+                    worksheet.Cell(3, 2).Value = model.Main.ReportNo;
+                    worksheet.Cell(4, 2).Value = model.Main.SubmitDateText;
+                    worksheet.Cell(4, 5).Value = model.Main.ReportDateText;
+                    worksheet.Cell(5, 2).Value = model.Main.OrderID;
+                    worksheet.Cell(5, 5).Value = model.Main.BrandID;
+                    worksheet.Cell(6, 2).Value = model.Main.StyleID;
+                    worksheet.Cell(6, 5).Value = model.Main.SeasonID;
+                    worksheet.Cell(7, 2).Value = model.Main.Article;
+                    worksheet.Cell(7, 5).Value = model.Main.FabricColor;
+                    worksheet.Cell(9, 2).Value = model.Main.Temperature;
+                    worksheet.Cell(9, 4).Value = model.Main.DryingCondition;
+                    worksheet.Cell(9, 6).Value = model.Main.WashCycles;
+                    worksheet.Cell(65, 2).Value = model.Main.Remark;
+
+                    // 插入圖片
+                    AddImageToWorksheet(worksheet, model.Main.TestBeforePicture, 67, 1, 200, 300);
+                    AddImageToWorksheet(worksheet, model.Main.TestAfterPicture, 67, 4, 200, 300);
+
+                    if (ReportTechnician.Rows.Count > 0)
+                    {
+                        string technicianName = ReportTechnician.Rows[0]["Technician"].ToString();
+                        worksheet.Cell(80, 5).Value = technicianName;
+
+                        if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                        {
+                            byte[] signature = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"];
+                            AddImageToWorksheet(worksheet, signature, 79, 5, 100, 24);
+                        }
+                    }
+
+                    // 表身資料處理
+                    foreach (var evaluationType in model.EvaluationTypeList)
+                    {
+                        var sameEvaluationType = model.DetailList.Where(o => o.EvaluationType == evaluationType).OrderBy(o => o.EvaluationItemSeq);
+
+                        int rowOffset = GetRowOffsetForEvaluationType(evaluationType);
+
+                        foreach (var item in sameEvaluationType)
+                        {
+                            worksheet.Cell(rowOffset, 1).Value = item.EvaluationItem;
+                            worksheet.Cell(rowOffset, 3).Value = model.GetStandard(evaluationType, item.EvaluationItem, "As received").Standard;
+                            worksheet.Cell(rowOffset, 4).Value = item.AsReceivedValue;
+                            worksheet.Cell(rowOffset, 6).Value = item.AsReceivedResult;
+                            rowOffset++;
+                        }
+                    }
+
+                    tmpName = RemoveInvalidFileNameChars(tmpName);
+
+                    string fileName = $"{tmpName}.xlsx";
+                    string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
+                    string filePdfName = $"{tmpName}.pdf";
+                    string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
+
+                    workbook.SaveAs(fullExcelFileName);
+                    if (isPDF)
+                    {
+                        ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
+                        result.TempFileName = filePdfName;
+                    }
+                    else
+                    {
+                        result.TempFileName = fileName;
+                    }
+                }
+
+                result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.Message;
+                result.Result = false;
+            }
+
+            return result;
+        }
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
+        }
+        private string RemoveInvalidFileNameChars(string input)
+        {
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+            foreach (char c in invalidChars)
+            {
+                input = input.Replace(c.ToString(), "");
+            }
+            return input;
+        }
+
+        private int GetRowOffsetForEvaluationType(string evaluationType)
+        {
+            if (evaluationType == "Seam procedure(mm)")
+                return 12;
+            if (evaluationType == "Fabric procedure")
+                return 33;
+            if (evaluationType == "Heat transfer/ logo procedure")
+                return 39;
+            if (evaluationType == "Seam procedure(min)")
+                return 46;
+
+            throw new ArgumentException("Invalid evaluation type", nameof(evaluationType));
+        }
+
         // 定義一個方法來將頁面從一個 PDF 複製到另一個 PDF
         public void CopyPages(PdfReader sourcePdf, Document destinationPdf, PdfWriter writer)
         {

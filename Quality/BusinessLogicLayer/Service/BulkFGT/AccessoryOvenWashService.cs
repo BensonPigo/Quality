@@ -1,14 +1,12 @@
 ﻿using ADOHelper.Utility;
+using ClosedXML.Excel;
 using DatabaseObject;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
-using Org.BouncyCastle.Asn1.Ocsp;
-using Org.BouncyCastle.Ocsp;
 using ProductionDataAccessLayer.Provider.MSSQL.BukkFGT;
-using Sci;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -16,13 +14,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
-using System.Web.UI.WebControls;
-using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -97,6 +89,18 @@ namespace BusinessLogicLayer.Service.BulkFGT
             _AccessoryOvenWashProvider.UpdateInspPercent(POID);
         }
 
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
+        }
         #region Oven
         public Accessory_Oven GetOvenTest(Accessory_Oven Req)
         {
@@ -261,7 +265,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-
         public BaseResult OvenTestExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName, string AssignedFineName = "")
         {
             _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
@@ -276,13 +279,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             try
             {
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
-                //DataTable dtOvenDetail = _AccessoryOvenWashProvider.GetOvenTestDataTable(new Accessory_Oven() 
-                //{ 
-                //    AIR_LaboratoryID = Convert.ToInt64( AIR_LaboratoryID),
-                //    POID = POID,
-                //    Seq1 = Seq1,
-                //    Seq2 = Seq2,
-                //});
 
                 Model = _AccessoryOvenWashProvider.GetOvenTestExcel(new Accessory_Oven()
                 {
@@ -292,16 +288,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Seq2 = Seq2,
                 });
 
-                var testCode = _QualityBrandTestCodeProvider.Get(Model.BrandID, "Accessory Oven & Wash Test-Oven");
-
-                tmpName = $"Accessory Oven Test"
-                    + $"_{POID}"
-                    + $"_{Model.StyleID}"
-                    + $"_{Model.Refno}"
-                    + $"_{Model.Color}"
-                    + $"_{Model.OvenResult}"
-                    + $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}";
-
                 if (Model == null)
                 {
                     result.ErrorMessage = "Data not found!";
@@ -309,98 +295,75 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     return result;
                 }
 
-                string strXltName = baseFilePath + "\\XLT\\AccessoryOvenTest.xltx";
-                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
-                if (excel == null)
+                var testCode = _QualityBrandTestCodeProvider.Get(Model.BrandID, "Accessory Oven & Wash Test-Oven");
+
+                tmpName = $"Accessory Oven Test_{POID}_{Model.StyleID}_{Model.Refno}_{Model.Color}_{Model.OvenResult}_{DateTime.Now:yyyyMMddHHmmss}";
+
+                string templatePath = Path.Combine(baseFilePath, "XLT", "AccessoryOvenTest.xltx");
+
+                if (!File.Exists(templatePath))
                 {
                     result.ErrorMessage = "Excel template not found!";
                     result.Result = false;
                     return result;
                 }
 
-                excel.DisplayAlerts = false;
-                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
-                if (testCode.Any())
+                string outputFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.xlsx");
+
+                using (var workbook = new XLWorkbook(templatePath))
                 {
-                    worksheet.Cells[1, 3] = $@"ACCESSORY COLOR MIGRATION TEST REPORT (Oven)({testCode.FirstOrDefault().TestCode})";
+                    var worksheet = workbook.Worksheet(1);
+
+                    // 填入主表數據
+                    if (testCode.Any())
+                    {
+                        worksheet.Cell(1, 3).Value = $@"ACCESSORY COLOR MIGRATION TEST REPORT (Oven)({testCode.First().TestCode})";
+                    }
+                    worksheet.Cell("B2").Value = Model.ReportNo;
+                    worksheet.Cell("F2").Value = Model.POID;
+                    worksheet.Cell("J2").Value = Model.Supplier;
+
+                    worksheet.Cell("B3").Value = Model.BrandID;
+                    worksheet.Cell("F3").Value = Model.Refno;
+                    worksheet.Cell("J3").Value = Model.WKNo;
+
+                    worksheet.Cell("B4").Value = "Bulk";
+                    worksheet.Cell("F4").Value = Model.Color;
+                    worksheet.Cell("J4").Value = string.Empty;
+
+                    worksheet.Cell("B5").Value = Model.StyleID;
+                    worksheet.Cell("F5").Value = Model.Size;
+                    worksheet.Cell("J5").Value = Model.SeasonID;
+                    worksheet.Cell("L5").Value = Model.Seq;
+
+                    worksheet.Cell("B9").Value = Model.OvenDate?.ToString("yyyy/MM/dd") ?? string.Empty;
+                    worksheet.Cell("J9").Value = DateTime.Now.ToString("yyyy/MM/dd");
+
+                    worksheet.Cell("B11").Value = Model.OvenResult;
+                    worksheet.Cell("E11").Value = string.Empty;
+                    worksheet.Cell("J11").Value = string.Empty;
+
+                    worksheet.Cell("B13").Value = Model.Remark;
+
+                    worksheet.Cell("C22").Value = Model.OvenInspector;
+                    worksheet.Cell("I22").Value = Model.OvenInspector;
+
+                    // 插入圖片（使用共用方法）
+                    AddImageToWorksheet(worksheet, Model.OvenTestBeforePicture, 20, 1, 400, 300);
+                    AddImageToWorksheet(worksheet, Model.OvenTestAfterPicture, 20, 7, 400, 300);
+
+                    workbook.SaveAs(outputFilePath);
+                    FileName = $"{tmpName}.xlsx";
                 }
-                worksheet.Cells[2, 2] = Model.ReportNo;
-                worksheet.Cells[2, 6] = Model.POID;
-                worksheet.Cells[2, 10] = Model.Supplier;
-
-                worksheet.Cells[3, 2] = Model.BrandID;
-                worksheet.Cells[3, 6] = Model.Refno;
-                worksheet.Cells[3, 10] = Model.WKNo;
-
-                worksheet.Cells[4, 2] = "Bulk";
-                worksheet.Cells[4, 6] = Model.Color;
-                worksheet.Cells[4, 10] = string.Empty;
-
-                worksheet.Cells[5, 2] = Model.StyleID;
-                worksheet.Cells[5, 6] = Model.Size;
-                worksheet.Cells[5, 10] = Model.SeasonID;
-                worksheet.Cells[5, 12] = Model.Seq;
-
-                worksheet.Cells[9, 2] = Model.OvenDate.HasValue ? Model.OvenDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-                worksheet.Cells[9, 10] = DateTime.Now.ToString("yyyy/MM/dd");
-
-                worksheet.Cells[11, 2] = Model.OvenResult;
-                worksheet.Cells[11, 5] = string.Empty;
-                worksheet.Cells[11, 10] = string.Empty;
-
-                worksheet.Cells[13, 2] = Model.Remark;
-
-                worksheet.Cells[22, 3] = Model.OvenInspector;
-                worksheet.Cells[22, 9] = Model.OvenInspector;
-
-                #region 添加圖片
-                Excel.Range cellBeforePicture = worksheet.Cells[20, 1];
-                if (Model.OvenTestBeforePicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(Model.OvenTestBeforePicture, Model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 400, 300);
-                }
-
-                Excel.Range cellAfterPicture = worksheet.Cells[20, 7];
-                if (Model.OvenTestAfterPicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(Model.OvenTestAfterPicture, Model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 400, 300);
-                }
-
-                #endregion
-
-
-                #region Save & Show Excel
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-
-                string pdfFileName = $"{tmpName}.pdf";
-                FileName = $"{tmpName}.xlsx";
-
-                string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
-                string excelPath = Path.Combine(baseFilePath, "TMP", FileName);
-
-                excel.ActiveWorkbook.SaveAs(excelPath);
-                excel.Quit();
 
                 if (isPDF)
                 {
-                    bool isCreatePdfOK = ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
-                    FileName = pdfFileName;
-                    if (!isCreatePdfOK)
+                    string pdfPath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.pdf");
+                    if (ConvertToPDF.ExcelToPDF(outputFilePath, pdfPath))
+                    {
+                        FileName = $"{tmpName}.pdf";
+                    }
+                    else
                     {
                         result.Result = false;
                         result.ErrorMessage = "ConvertToPDF fail";
@@ -408,18 +371,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(excel);
-                #endregion
+                result.Result = true;
             }
             catch (Exception ex)
             {
-
                 result.Result = false;
-                result.ErrorMessage = ex.ToString();
+                result.ErrorMessage = ex.Message;
             }
-
-
 
             return result;
         }
@@ -589,14 +547,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return result;
         }
-
         public BaseResult WashTestExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName, string AssignedFineName = "")
         {
             _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
             _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
 
             BaseResult result = new BaseResult();
-
             Accessory_WashExcel Model = new Accessory_WashExcel();
 
             FileName = string.Empty;
@@ -614,16 +570,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     Seq2 = Seq2,
                 });
 
-                var testCode = _QualityBrandTestCodeProvider.Get(Model.BrandID, "Accessory Oven & Wash Test-701Wash");
-
-                tmpName = $"Accessory Wash Test"
-                    + $"_{POID}"
-                    + $"_{Model.StyleID}"
-                    + $"_{Model.Refno}"
-                    + $"_{Model.Color}"
-                    + $"_{Model.WashResult}"
-                    + $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}";
-
                 if (Model == null)
                 {
                     result.ErrorMessage = "Data not found!";
@@ -631,101 +577,79 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     return result;
                 }
 
-                string strXltName = baseFilePath + "\\XLT\\AccessoryWashTest.xltx";
-                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
-                if (excel == null)
+                var testCode = _QualityBrandTestCodeProvider.Get(Model.BrandID, "Accessory Oven & Wash Test-701Wash");
+
+                tmpName = $"Accessory Wash Test_{POID}_{Model.StyleID}_{Model.Refno}_{Model.Color}_{Model.WashResult}_{DateTime.Now:yyyyMMddHHmmss}";
+
+                string templatePath = Path.Combine(baseFilePath, "XLT", "AccessoryWashTest.xltx");
+
+                if (!File.Exists(templatePath))
                 {
                     result.ErrorMessage = "Excel template not found!";
                     result.Result = false;
                     return result;
                 }
 
-                excel.DisplayAlerts = false;
-                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
-                if (testCode.Any())
+                string outputFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.xlsx");
+
+                using (var workbook = new XLWorkbook(templatePath))
                 {
-                    worksheet.Cells[1, 3] = $@"ACCESSORY WASH TEST REPORT({testCode.FirstOrDefault().TestCode})";
+                    var worksheet = workbook.Worksheet(1);
+
+                    // 填入主表數據
+                    if (testCode.Any())
+                    {
+                        worksheet.Cell(1, 3).Value = $@"ACCESSORY WASH TEST REPORT({testCode.First().TestCode})";
+                    }
+                    worksheet.Cell("B2").Value = Model.ReportNo;
+                    worksheet.Cell("F2").Value = Model.POID;
+                    worksheet.Cell("J2").Value = Model.Supplier;
+
+                    worksheet.Cell("B3").Value = Model.BrandID;
+                    worksheet.Cell("F3").Value = Model.Refno;
+                    worksheet.Cell("J3").Value = Model.WKNo;
+
+                    worksheet.Cell("B4").Value = "Bulk";
+                    worksheet.Cell("F4").Value = Model.Color;
+                    worksheet.Cell("J4").Value = string.Empty;
+
+                    worksheet.Cell("B5").Value = Model.StyleID;
+                    worksheet.Cell("F5").Value = Model.Size;
+                    worksheet.Cell("J5").Value = Model.SeasonID;
+                    worksheet.Cell("L5").Value = Model.Seq;
+
+                    worksheet.Cell("B9").Value = Model.WashDate?.ToString("yyyy/MM/dd") ?? string.Empty;
+                    worksheet.Cell("J9").Value = DateTime.Now.ToString("yyyy/MM/dd");
+
+                    worksheet.Cell("B12").Value = Model.MachineWash;
+                    worksheet.Cell("F12").Value = Model.WashingTemperature;
+                    worksheet.Cell("J12").Value = Model.DryProcess;
+
+                    worksheet.Cell("B13").Value = Model.MachineModel;
+                    worksheet.Cell("F13").Value = Model.WashingCycle;
+
+                    worksheet.Cell("B15").Value = Model.WashResult;
+                    worksheet.Cell("B17").Value = Model.Remark;
+
+                    worksheet.Cell("C26").Value = Model.WashInspector;
+                    worksheet.Cell("I26").Value = Model.WashInspector;
+
+                    // 插入圖片（使用共用方法）
+                    AddImageToWorksheet(worksheet, Model.WashTestBeforePicture, 24, 1, 400, 300);
+                    AddImageToWorksheet(worksheet, Model.WashTestAfterPicture, 24, 7, 400, 300);
+
+                    workbook.SaveAs(outputFilePath);
+                    FileName = $"{tmpName}.xlsx";
                 }
-                worksheet.Cells[2, 2] = Model.ReportNo;
-                worksheet.Cells[2, 6] = Model.POID;
-                worksheet.Cells[2, 10] = Model.Supplier;
-
-                worksheet.Cells[3, 2] = Model.BrandID;
-                worksheet.Cells[3, 6] = Model.Refno;
-                worksheet.Cells[3, 10] = Model.WKNo;
-
-                worksheet.Cells[4, 2] = "Bulk";
-                worksheet.Cells[4, 6] = Model.Color;
-                worksheet.Cells[4, 10] = string.Empty;
-
-                worksheet.Cells[5, 2] = Model.StyleID;
-                worksheet.Cells[5, 6] = Model.Size;
-                worksheet.Cells[5, 10] = Model.SeasonID;
-                worksheet.Cells[5, 12] = Model.Seq;
-
-                worksheet.Cells[9, 2] = Model.WashDate.HasValue ? Model.WashDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-                worksheet.Cells[9, 10] = DateTime.Now.ToString("yyyy/MM/dd");
-
-                worksheet.Cells[12, 2] = Model.MachineWash;
-                worksheet.Cells[12, 6] = Model.WashingTemperature;
-                worksheet.Cells[12, 10] = Model.DryProcess;
-
-                worksheet.Cells[13, 2] = Model.MachineModel;
-                worksheet.Cells[13, 6] = Model.WashingCycle;
-
-                worksheet.Cells[15, 2] = Model.WashResult;
-
-                worksheet.Cells[17, 2] = Model.Remark;
-
-                worksheet.Cells[26, 3] = Model.WashInspector;
-                worksheet.Cells[26, 9] = Model.WashInspector;
-
-                #region 添加圖片
-                Excel.Range cellBeforePicture = worksheet.Cells[24, 1];
-                if (Model.WashTestBeforePicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(Model.WashTestBeforePicture, Model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 400, 300);
-                }
-
-                Excel.Range cellAfterPicture = worksheet.Cells[24, 7];
-                if (Model.WashTestAfterPicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(Model.WashTestAfterPicture, Model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 400, 300);
-                }
-
-                #endregion
-
-
-                #region Save & Show Excel
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-                string pdfFileName = $"{tmpName}.pdf";
-                FileName = $"{tmpName}.xlsx";
-
-                string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
-                string excelPath = Path.Combine(baseFilePath, "TMP", FileName);
-
-                excel.ActiveWorkbook.SaveAs(excelPath);
-                excel.Quit();
 
                 if (isPDF)
                 {
-                    bool isCreatePdfOK = ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
-                    FileName = pdfFileName;
-                    if (!isCreatePdfOK)
+                    string pdfPath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.pdf");
+                    if (ConvertToPDF.ExcelToPDF(outputFilePath, pdfPath))
+                    {
+                        FileName = $"{tmpName}.pdf";
+                    }
+                    else
                     {
                         result.Result = false;
                         result.ErrorMessage = "ConvertToPDF fail";
@@ -733,21 +657,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                 }
 
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(excel);
-                #endregion
+                result.Result = true;
             }
             catch (Exception ex)
             {
-
                 result.Result = false;
-                result.ErrorMessage = ex.ToString();
+                result.ErrorMessage = ex.Message;
             }
-
-
 
             return result;
         }
+
         #endregion
 
         #region WashingFastness
@@ -928,237 +848,146 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
 
             return result;
-        }
-
+        }        
         public BaseResult WashingFastnessExcel(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool isPDF, out string FileName, string AssignedFineName = "")
+{
+    _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
+    _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+    BaseResult result = new BaseResult();
+    Accessory_WashingFastnessExcel Model = new Accessory_WashingFastnessExcel();
+
+    FileName = string.Empty;
+    string tmpName = string.Empty;
+
+    try
+    {
+        string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
+
+        Model = _AccessoryOvenWashProvider.GetWashingFastnessExcel(new Accessory_WashingFastness()
         {
-            _AccessoryOvenWashProvider = new AccessoryOvenWashProvider(Common.ProductionDataAccessLayer);
-            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+            AIR_LaboratoryID = Convert.ToInt64(AIR_LaboratoryID),
+            POID = POID,
+            Seq1 = Seq1,
+            Seq2 = Seq2,
+        });
 
-            BaseResult result = new BaseResult();
-
-            Accessory_WashingFastnessExcel Model = new Accessory_WashingFastnessExcel();
-
-            FileName = string.Empty;
-            string tmpName = string.Empty;
-
-            try
-            {
-                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
-
-                Model = _AccessoryOvenWashProvider.GetWashingFastnessExcel(new Accessory_WashingFastness()
-                {
-                    AIR_LaboratoryID = Convert.ToInt64(AIR_LaboratoryID),
-                    POID = POID,
-                    Seq1 = Seq1,
-                    Seq2 = Seq2,
-                });
-
-                var testCode = _QualityBrandTestCodeProvider.Get(Model.BrandID, "Accessory Oven & Wash Test-501Wash");
-
-                tmpName = $"Accessory Washing Fastness Test"
-                    + $"_{POID}"
-                    + $"_{Model.StyleID}"
-                    + $"_{Model.Refno}"
-                    + $"_{Model.Color}"
-                    + $"_{Model.WashingFastnessResult}"
-                    + $"_{DateTime.Now.ToString("yyyyMMddHHmmss")}";
-
-                if (Model == null)
-                {
-                    result.ErrorMessage = "Data not found!";
-                    result.Result = false;
-                    return result;
-                }
-
-                string strXltName = baseFilePath + "\\XLT\\AccessoryWashingFastness.xltx";
-                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
-                excel.Visible = false;
-                if (excel == null)
-                {
-                    result.ErrorMessage = "Excel template not found!";
-                    result.Result = false;
-                    return result;
-                }
-
-                excel.DisplayAlerts = false;
-                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
-
-                if (testCode.Any())
-                {
-                    worksheet.Cells[1, 1] = $@"Washing Fastness (Accessories) ({testCode.FirstOrDefault().TestCode})";
-                }
-                worksheet.Cells[2, 2] = Model.ReportNo;
-                worksheet.Cells[2, 6] = Model.WashingFastnessReceivedDate.HasValue ? Model.WashingFastnessReceivedDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-
-                worksheet.Cells[3, 2] = Model.FactoryID;
-                worksheet.Cells[3, 6] = Model.WashingFastnessReportDate.HasValue ? Model.WashingFastnessReportDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-
-                worksheet.Cells[4, 2] = Model.StyleID;
-
-                worksheet.Cells[5, 2] = Model.Article;
-                worksheet.Cells[5, 6] = Model.Refno;
-
-                worksheet.Cells[6, 2] = Model.SeasonID;
-                worksheet.Cells[6, 6] = Model.Color;
-
-                worksheet.Cells[8, 4] = Model.ChangeScale;
-                worksheet.Cells[8, 5] = Model.ResultChange;
-
-                worksheet.Cells[9, 4] = Model.AcetateScale;
-                worksheet.Cells[9, 5] = Model.ResultAcetate;
-
-                worksheet.Cells[10, 4] = Model.CottonScale;
-                worksheet.Cells[10, 5] = Model.ResultCotton;
-
-                worksheet.Cells[11, 4] = Model.NylonScale;
-                worksheet.Cells[11, 5] = Model.ResultNylon;
-
-                worksheet.Cells[12, 4] = Model.PolyesterScale;
-                worksheet.Cells[12, 5] = Model.ResultPolyester;
-
-                worksheet.Cells[13, 4] = Model.AcrylicScale;
-                worksheet.Cells[13, 5] = Model.ResultAcrylic;
-
-                worksheet.Cells[14, 4] = Model.WoolScale;
-                worksheet.Cells[14, 5] = Model.ResultWool;
-
-                worksheet.Cells[15, 4] = Model.CrossStainingScale;
-                worksheet.Cells[15, 5] = Model.ResultCrossStaining;
-
-
-                worksheet.Cells[51, 5] = Model.PreparedText;
-                //worksheet.Cells[56, 5] = Model.ExecutiveText;
-
-                if (Model.Conclusions == "APPROVED")
-                {
-                    worksheet.Cells[48, 2] = "V";
-                }
-                if (Model.Conclusions == "REJECTED")
-                {
-                    worksheet.Cells[48, 5] = "V";
-                }
-
-                #region 簽名檔圖片
-                Excel.Range cellPrepared = worksheet.Cells[51, 5];
-                if (Model.Prepared != null)
-                {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    if (IsTest.ToLower() == "true")
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = Model.Prepared;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellPrepared.Left + 2, cellPrepared.Top + 2, 400, 300);
-                }
-
-
-                Excel.Range cellExecutive = worksheet.Cells[56, 5];
-                if (Model.Executive != null)
-                {
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-
-                    if (IsTest.ToLower() == "true")
-                    {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
-                    }
-                    else
-                    {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-                    }
-
-                    byte[] bytes = Model.Executive;
-                    using (var imageFile = new FileStream(imgPath, FileMode.Create))
-                    {
-                        imageFile.Write(bytes, 0, bytes.Length);
-                        imageFile.Flush();
-                    }
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellExecutive.Left + 2, cellExecutive.Top + 2, 400, 300);
-                }
-                #endregion
-
-                #region 添加圖片
-                Excel.Range cellBeforePicture = worksheet.Cells[33, 1];
-                if (Model.WashingFastnessTestBeforePicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(Model.WashingFastnessTestBeforePicture, Model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 400, 300);
-                }
-
-                Excel.Range cellAfterPicture = worksheet.Cells[33, 5];
-                if (Model.WashingFastnessTestAfterPicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(Model.WashingFastnessTestAfterPicture, Model.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 400, 300);
-                }
-
-                #endregion
-
-
-                #region Save & Show Excel
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-                string pdfFileName = $"{tmpName}.pdf";
-                FileName = $"{tmpName}.xlsx";
-
-                string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
-                string excelPath = Path.Combine(baseFilePath, "TMP", FileName);
-
-                excel.ActiveWorkbook.SaveAs(excelPath);
-                excel.Quit();
-
-                if (isPDF)
-                {
-                    bool isCreatePdfOK = ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
-                    FileName = pdfFileName;
-                    if (!isCreatePdfOK)
-                    {
-                        result.Result = false;
-                        result.ErrorMessage = "ConvertToPDF fail";
-                        return result;
-                    }
-                }
-
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(excel);
-                #endregion
-            }
-            catch (Exception ex)
-            {
-
-                result.Result = false;
-                result.ErrorMessage = ex.ToString();
-            }
-
-
-
+        if (Model == null)
+        {
+            result.ErrorMessage = "Data not found!";
+            result.Result = false;
             return result;
         }
+
+        var testCode = _QualityBrandTestCodeProvider.Get(Model.BrandID, "Accessory Oven & Wash Test-501Wash");
+
+        tmpName = $"Accessory Washing Fastness Test_{POID}_{Model.StyleID}_{Model.Refno}_{Model.Color}_{Model.WashingFastnessResult}_{DateTime.Now:yyyyMMddHHmmss}";
+
+        string templatePath = Path.Combine(baseFilePath, "XLT", "AccessoryWashingFastness.xltx");
+
+        if (!File.Exists(templatePath))
+        {
+            result.ErrorMessage = "Excel template not found!";
+            result.Result = false;
+            return result;
+        }
+
+        string outputFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.xlsx");
+
+        using (var workbook = new XLWorkbook(templatePath))
+        {
+            var worksheet = workbook.Worksheet(1);
+
+            // 填入主表數據
+            if (testCode.Any())
+            {
+                worksheet.Cell(1, 1).Value = $@"Washing Fastness (Accessories) ({testCode.First().TestCode})";
+            }
+            worksheet.Cell("B2").Value = Model.ReportNo;
+            worksheet.Cell("F2").Value = Model.WashingFastnessReceivedDate?.ToString("yyyy/MM/dd") ?? string.Empty;
+
+            worksheet.Cell("B3").Value = Model.FactoryID;
+            worksheet.Cell("F3").Value = Model.WashingFastnessReportDate?.ToString("yyyy/MM/dd") ?? string.Empty;
+
+            worksheet.Cell("B4").Value = Model.StyleID;
+            worksheet.Cell("B5").Value = Model.Article;
+            worksheet.Cell("F5").Value = Model.Refno;
+
+            worksheet.Cell("B6").Value = Model.SeasonID;
+            worksheet.Cell("F6").Value = Model.Color;
+
+            worksheet.Cell("D8").Value = Model.ChangeScale;
+            worksheet.Cell("E8").Value = Model.ResultChange;
+
+            worksheet.Cell("D9").Value = Model.AcetateScale;
+            worksheet.Cell("E9").Value = Model.ResultAcetate;
+
+            worksheet.Cell("D10").Value = Model.CottonScale;
+            worksheet.Cell("E10").Value = Model.ResultCotton;
+
+            worksheet.Cell("D11").Value = Model.NylonScale;
+            worksheet.Cell("E11").Value = Model.ResultNylon;
+
+            worksheet.Cell("D12").Value = Model.PolyesterScale;
+            worksheet.Cell("E12").Value = Model.ResultPolyester;
+
+            worksheet.Cell("D13").Value = Model.AcrylicScale;
+            worksheet.Cell("E13").Value = Model.ResultAcrylic;
+
+            worksheet.Cell("D14").Value = Model.WoolScale;
+            worksheet.Cell("E14").Value = Model.ResultWool;
+
+            worksheet.Cell("D15").Value = Model.CrossStainingScale;
+            worksheet.Cell("E15").Value = Model.ResultCrossStaining;
+
+            worksheet.Cell("E51").Value = Model.PreparedText;
+
+            if (Model.Conclusions == "APPROVED")
+            {
+                worksheet.Cell("B48").Value = "V";
+            }
+            if (Model.Conclusions == "REJECTED")
+            {
+                worksheet.Cell("E48").Value = "V";
+            }
+
+            // 簽名檔圖片
+            AddImageToWorksheet(worksheet, Model.Prepared, 51, 5, 400, 300);
+            AddImageToWorksheet(worksheet, Model.Executive, 56, 5, 400, 300);
+
+            // 測試前後圖片
+            AddImageToWorksheet(worksheet, Model.WashingFastnessTestBeforePicture, 33, 1, 400, 300);
+            AddImageToWorksheet(worksheet, Model.WashingFastnessTestAfterPicture, 33, 5, 400, 300);
+
+            workbook.SaveAs(outputFilePath);
+            FileName = $"{tmpName}.xlsx";
+        }
+
+        if (isPDF)
+        {
+            string pdfPath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.pdf");
+            if (ConvertToPDF.ExcelToPDF(outputFilePath, pdfPath))
+            {
+                FileName = $"{tmpName}.pdf";
+            }
+            else
+            {
+                result.Result = false;
+                result.ErrorMessage = "ConvertToPDF fail";
+                return result;
+            }
+        }
+
+        result.Result = true;
+    }
+    catch (Exception ex)
+    {
+        result.Result = false;
+        result.ErrorMessage = ex.Message;
+    }
+
+    return result;
+}
         #endregion
     }
 }

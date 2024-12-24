@@ -1,36 +1,22 @@
 ﻿using ADOHelper.Utility;
-using ADOHelper.Utility.Interface;
 using BusinessLogicLayer.Helper;
-using DatabaseObject.ProductionDB;
+using ClosedXML.Excel;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Ict;
 using Library;
-using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
-using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Asn1.Pkcs;
-using Org.BouncyCastle.Ocsp;
-using ProductionDataAccessLayer.Provider.MSSQL;
-using Sci;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Net.Mail;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
 
 //using static Sci.MyUtility;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -508,273 +494,134 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
+        }
         public AgingHydrolysisTest_Detail_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             AgingHydrolysisTest_Detail_ViewModel result = new AgingHydrolysisTest_Detail_ViewModel();
-
-            string basefileName = "AgingHydrolysisTest";
-            string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
-            string tmpName = string.Empty;
-
-            Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
+            _Provider = new AgingHydrolysisTest_Provider(Common.ManufacturingExecutionDataAccessLayer);
+            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
 
             try
             {
-                _Provider = new AgingHydrolysisTest_Provider(Common.ManufacturingExecutionDataAccessLayer);
-                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+                string baseFileName = "AgingHydrolysisTest";
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
+                string templatePath = Path.Combine(baseFilePath, "XLT", $"{baseFileName}.xltx");
+                string tmpName = string.Empty;
 
                 // 取得報表資料
-                DataSet reportDataSet = _Provider.GetReport(new AgingHydrolysisTest_Request() { ReportNo = ReportNo });
+                DataSet reportDataSet = _Provider.GetReport(new AgingHydrolysisTest_Request { ReportNo = ReportNo });
+                DataTable reportTechnician = _Provider.GetReportTechnician(new AgingHydrolysisTest_Request { ReportNo = ReportNo });
+                DataTable detailTable = reportDataSet.Tables[0];
+                DataTable mockupTable = reportDataSet.Tables.Count > 1 ? reportDataSet.Tables[1] : null;
 
-                DataTable ReportTechnician = _Provider.GetReportTechnician(new AgingHydrolysisTest_Request() { ReportNo = ReportNo });
-
-                // AgingHydrolysisTest_Detail
-                DataTable agingHydrolysisTest_Detail = reportDataSet.Tables[0];
-
-                var testCode = _QualityBrandTestCodeProvider.Get(agingHydrolysisTest_Detail.Rows[0]["BrandID"].ToString(), "Accelerated Aging by Hydrolysis");
-
-                // AgingHydrolysisTest_Detail_Mockup
-                DataTable agingHydrolysisTest_Detail_Mockup = new DataTable();
-
-                if (reportDataSet.Tables == null || reportDataSet.Tables.Count == 0)
+                if (detailTable.Rows.Count == 0)
                 {
                     result.ErrorMessage = "Report No. not found.";
                     result.Result = false;
+                    return result;
                 }
 
-                tmpName = $"Accelerated Aging by Hydrolysis Test_{agingHydrolysisTest_Detail.Rows[0]["OrderID"]}_" +
-                $"{agingHydrolysisTest_Detail.Rows[0]["StyleID"]}_" +
-                $"{agingHydrolysisTest_Detail.Rows[0]["FabricRefNo"]}_" +
-                $"{agingHydrolysisTest_Detail.Rows[0]["FabricColor"]}_" +
-                $"{agingHydrolysisTest_Detail.Rows[0]["Result"]}_" +
-                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                // 生成檔案名稱
+                tmpName = $"Accelerated Aging by Hydrolysis Test_{detailTable.Rows[0]["OrderID"]}_{detailTable.Rows[0]["StyleID"]}_{detailTable.Rows[0]["FabricRefNo"]}_{detailTable.Rows[0]["FabricColor"]}_{detailTable.Rows[0]["Result"]}_{DateTime.Now:yyyyMMddHHmmss}";
+                tmpName = Regex.Replace(tmpName, @"[/:?""<>|*%\t]", string.Empty);
+                if (!string.IsNullOrWhiteSpace(AssignedFineName)) tmpName = AssignedFineName;
 
-                tmpName = Regex.Replace(tmpName, @"[/:?""<>|*%]", string.Empty);
+                string outputPath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.xlsx");
 
-                if (reportDataSet.Tables.Count == 2)
+                using (var workbook = new XLWorkbook(templatePath))
                 {
-                    agingHydrolysisTest_Detail_Mockup = reportDataSet.Tables[1];
-                }
+                    var worksheet = workbook.Worksheet(1);
 
-                excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-                Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-
-                // 取得工作表上所有圖形物件
-                Microsoft.Office.Interop.Excel.Shapes shapes = worksheet.Shapes;
-
-                // 根據名稱，搜尋文字方塊物件
-                Microsoft.Office.Interop.Excel.Shape ADIDAS_TextBox = shapes.Item("ADIDAS_TextBox");
-                Microsoft.Office.Interop.Excel.Shape REEBOK_TextBox = shapes.Item("REEBOK_TextBox");
-                Microsoft.Office.Interop.Excel.Shape Mockup_Pass_TextBox = shapes.Item("Mockup_Pass_TextBox");
-                Microsoft.Office.Interop.Excel.Shape Mockup_Fail_TextBox = shapes.Item("Mockup_Fail_TextBox");
-
-                // BrandID
-                if (agingHydrolysisTest_Detail.Rows[0]["BrandID"].ToString().ToUpper() == "ADIDAS")
-                {
-                    ADIDAS_TextBox.TextFrame.Characters().Text = "V";
-                }
-                if (agingHydrolysisTest_Detail.Rows[0]["BrandID"].ToString().ToUpper() == "REEBOK")
-                {
-                    REEBOK_TextBox.TextFrame.Characters().Text = "V";
-                }
-
-                // AgingHydrolysisTest_Detail.Result
-                if (agingHydrolysisTest_Detail.Rows[0]["Result"].ToString().ToUpper() == "PASS")
-                {
-                    Mockup_Pass_TextBox.TextFrame.Characters().Text = "V";
-                }
-                if (agingHydrolysisTest_Detail.Rows[0]["Result"].ToString().ToUpper() == "FAIL")
-                {
-                    Mockup_Fail_TextBox.TextFrame.Characters().Text = "V";
-                }
-
-                // Technician + Approver 欄位
-                if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
-                {
-                    string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
-
-                    // 姓名
-                    worksheet.Cells[29, 1] = TechnicianName;
-
-                    // Signture 圖片
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[31, 1];
-                    if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                    if (detailTable.Rows[0]["BrandID"]?.ToString() == "ADIDAS")
                     {
-
-                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
-
-                        MemoryStream ms = new MemoryStream(TestBeforePicture);
-                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-                        string imageName = $"{Guid.NewGuid()}.jpg";
-                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-
-                        img.Save(imgPath);
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
-
+                        worksheet.Cell("A2").Value = "☑";
+                    }
+                    else if (detailTable.Rows[0]["BrandID"]?.ToString() == "REEBOK")
+                    {
+                        worksheet.Cell("C2").Value = "☑";
                     }
 
-                    string ApproverName = ReportTechnician.Rows[0]["ApproverName"].ToString();
-
-                    // 姓名
-                    worksheet.Cells[29, 5] = ApproverName;
-
-                    // Signture 圖片
-                    cell = worksheet.Cells[31, 5];
-                    if (ReportTechnician.Rows[0]["ApproverSignture"] != DBNull.Value)
+                    if (detailTable.Rows[0]["Result"].ToString().ToUpper() == "PASS")
                     {
-
-                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["ApproverSignture"]; // 圖片的 byte[]
-
-                        MemoryStream ms = new MemoryStream(TestBeforePicture);
-                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-                        string imageName = $"{Guid.NewGuid()}.jpg";
-                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-
-                        img.Save(imgPath);
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
-
-                    }
-                }
-
-                //if (testCode.Any())
-                //{
-                //    worksheet.Cells[1, 1] =$@"Accelerated aging by hydrolysis({agingHydrolysisTest_Detail.Rows[0]["BrandID"]})";
-                //}
-
-                string reportNo = agingHydrolysisTest_Detail.Rows[0]["ReportNo"].ToString();
-                worksheet.Cells[3, 2] = agingHydrolysisTest_Detail.Rows[0]["ReportNo"].ToString();
-                worksheet.Cells[3, 6] = agingHydrolysisTest_Detail.Rows[0]["OrderID"].ToString();
-
-                worksheet.Cells[4, 2] = agingHydrolysisTest_Detail.Rows[0]["FactoryID"].ToString();
-                worksheet.Cells[4, 6] = agingHydrolysisTest_Detail.Rows[0]["ReceivedDate"] == DBNull.Value ? string.Empty : ((DateTime)agingHydrolysisTest_Detail.Rows[0]["ReceivedDate"]).ToString("yyyy/MM/dd");
-
-                worksheet.Cells[5, 2] = agingHydrolysisTest_Detail.Rows[0]["StyleID"].ToString();
-                worksheet.Cells[5, 6] = agingHydrolysisTest_Detail.Rows[0]["ReportDate"] == DBNull.Value ? string.Empty : ((DateTime)agingHydrolysisTest_Detail.Rows[0]["ReportDate"]).ToString("yyyy/MM/dd");
-
-                worksheet.Cells[6, 2] = agingHydrolysisTest_Detail.Rows[0]["Article"].ToString();
-                worksheet.Cells[6, 6] = agingHydrolysisTest_Detail.Rows[0]["FabricRefNo"].ToString();
-
-                worksheet.Cells[7, 2] = agingHydrolysisTest_Detail.Rows[0]["SeasonID"].ToString();
-                worksheet.Cells[7, 6] = agingHydrolysisTest_Detail.Rows[0]["FabricColor"].ToString();
-
-                worksheet.Cells[8, 2] = agingHydrolysisTest_Detail.Rows[0]["MaterialType"].ToString();
-
-                string comment = agingHydrolysisTest_Detail.Rows[0]["Comment"].ToString();
-                worksheet.Cells[8, 6] = comment;
-
-                if (comment.Length > 45)
-                {
-                    int rowCTn = (comment.Length / 45) + 1;
-
-                    Microsoft.Office.Interop.Excel.Range rangeRow = (Microsoft.Office.Interop.Excel.Range)worksheet.Rows[8, Type.Missing];
-                    rangeRow.RowHeight = 34.5 * rowCTn;
-                }
-                //worksheet.Cells[28, 5] = agingHydrolysisTest_Detail.Rows[0]["Technician"].ToString();
-
-                // 圖片
-                if (agingHydrolysisTest_Detail.Rows[0]["TestBeforePicture"] != DBNull.Value)
-                {
-                    byte[] TestBeforePicture = (byte[])agingHydrolysisTest_Detail.Rows[0]["TestBeforePicture"]; // 圖片的 byte[]
-
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[19, 1];
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(TestBeforePicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 360, 540);
-                }
-                if (agingHydrolysisTest_Detail.Rows[0]["TestAfterPicture"] != DBNull.Value)
-                {
-                    byte[] TestAfterPicture = (byte[])agingHydrolysisTest_Detail.Rows[0]["TestAfterPicture"]; // 圖片的 byte[]
-
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[19, 5];
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(TestAfterPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 360, 540);
-                }
-
-                //AgingHydrolysisTest_Detail_Mockup
-                if (agingHydrolysisTest_Detail_Mockup != null && agingHydrolysisTest_Detail_Mockup.Rows != null && agingHydrolysisTest_Detail_Mockup.Rows.Count >= 4)
-                {
-                    // Specimen1
-                    worksheet.Cells[11, 1] = agingHydrolysisTest_Detail_Mockup.Rows[0]["SpecimenName"].ToString();
-                    worksheet.Cells[11, 2] = agingHydrolysisTest_Detail_Mockup.Rows[0]["ChangeScale"].ToString();
-                    worksheet.Cells[11, 4] = agingHydrolysisTest_Detail_Mockup.Rows[0]["StainingScale"].ToString();
-                    worksheet.Cells[11, 5] = agingHydrolysisTest_Detail_Mockup.Rows[0]["Comment"].ToString();
-
-                    // Specimen2
-                    worksheet.Cells[12, 1] = agingHydrolysisTest_Detail_Mockup.Rows[1]["SpecimenName"].ToString();
-                    worksheet.Cells[12, 2] = agingHydrolysisTest_Detail_Mockup.Rows[1]["ChangeScale"].ToString();
-                    worksheet.Cells[12, 4] = agingHydrolysisTest_Detail_Mockup.Rows[1]["StainingScale"].ToString();
-                    worksheet.Cells[12, 5] = agingHydrolysisTest_Detail_Mockup.Rows[1]["Comment"].ToString();
-
-                    // Specimen3
-                    worksheet.Cells[13, 1] = agingHydrolysisTest_Detail_Mockup.Rows[2]["SpecimenName"].ToString();
-                    worksheet.Cells[13, 2] = agingHydrolysisTest_Detail_Mockup.Rows[2]["ChangeScale"].ToString();
-                    worksheet.Cells[13, 4] = agingHydrolysisTest_Detail_Mockup.Rows[2]["StainingScale"].ToString();
-                    worksheet.Cells[13, 5] = agingHydrolysisTest_Detail_Mockup.Rows[2]["Comment"].ToString();
-
-                    // Specimen4
-                    worksheet.Cells[14, 1] = agingHydrolysisTest_Detail_Mockup.Rows[3]["SpecimenName"].ToString();
-                    worksheet.Cells[14, 2] = agingHydrolysisTest_Detail_Mockup.Rows[3]["ChangeScale"].ToString();
-                    worksheet.Cells[14, 4] = agingHydrolysisTest_Detail_Mockup.Rows[3]["StainingScale"].ToString();
-                    worksheet.Cells[14, 5] = agingHydrolysisTest_Detail_Mockup.Rows[3]["Comment"].ToString();
-
-                    // Specimen5
-                    if (agingHydrolysisTest_Detail_Mockup.Rows.Count > 4)
-                    {
-                        worksheet.Cells[15, 1] = agingHydrolysisTest_Detail_Mockup.Rows[4]["SpecimenName"].ToString();
-                        worksheet.Cells[15, 2] = agingHydrolysisTest_Detail_Mockup.Rows[4]["ChangeScale"].ToString();
-                        worksheet.Cells[15, 4] = agingHydrolysisTest_Detail_Mockup.Rows[4]["StainingScale"].ToString();
-                        worksheet.Cells[15, 5] = agingHydrolysisTest_Detail_Mockup.Rows[4]["Comment"].ToString();
-                    }
-                }
-
-                //string tmpName = $"AgingHydrolysisTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-
-                string fileName = $"{tmpName}.xlsx";
-                string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
-
-                string filePdfName = $"{tmpName}.pdf";
-                string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
-
-
-                Microsoft.Office.Interop.Excel.Workbook workbook = excel.ActiveWorkbook;
-                workbook.SaveAs(fullExcelFileName);
-
-                workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-
-                // 轉PDF再繼續進行以下
-                if (isPDF)
-                {
-                    if (ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
-                    {
-                        result.TempFileName = filePdfName;
-                        result.Result = true;
+                        worksheet.Cell("I11").Value = "☑";
                     }
                     else
                     {
-                        result.ErrorMessage = "Convert To PDF Fail";
-                        result.Result = false;
+                        worksheet.Cell("I13").Value = "☑";
                     }
+
+                    // 填寫主要報表內容
+                    worksheet.Cell("B3").Value = detailTable.Rows[0]["ReportNo"]?.ToString();
+                    worksheet.Cell("F3").Value = detailTable.Rows[0]["OrderID"]?.ToString();
+                    worksheet.Cell("B4").Value = detailTable.Rows[0]["FactoryID"]?.ToString();
+                    worksheet.Cell("F4").Value = detailTable.Rows[0]["ReceivedDate"] == DBNull.Value ? string.Empty : Convert.ToDateTime(detailTable.Rows[0]["ReceivedDate"]).ToString("yyyy/MM/dd");
+                    worksheet.Cell("B5").Value = detailTable.Rows[0]["StyleID"]?.ToString();
+                    worksheet.Cell("F5").Value = detailTable.Rows[0]["ReportDate"] == DBNull.Value ? string.Empty : Convert.ToDateTime(detailTable.Rows[0]["ReportDate"]).ToString("yyyy/MM/dd");
+
+                    worksheet.Cell("B6").Value = detailTable.Rows[0]["Article"]?.ToString();
+                    worksheet.Cell("F6").Value = detailTable.Rows[0]["FabricRefNo"]?.ToString();
+                    worksheet.Cell("B7").Value = detailTable.Rows[0]["SeasonID"]?.ToString();
+                    worksheet.Cell("F7").Value = detailTable.Rows[0]["FabricColor"]?.ToString();
+                    worksheet.Cell("B8").Value = detailTable.Rows[0]["MaterialType"]?.ToString();
+                    worksheet.Cell("F8").Value = detailTable.Rows[0]["Comment"]?.ToString();
+
+                    // 插入圖片
+                    AddImageToWorksheet(worksheet, detailTable.Rows[0]["TestBeforePicture"] as byte[], 19, 1, 360, 540);
+                    AddImageToWorksheet(worksheet, detailTable.Rows[0]["TestAfterPicture"] as byte[], 19, 5, 360, 540);
+
+                    // 技術人員與簽名
+                    if (reportTechnician.Rows.Count > 0)
+                    {
+                        worksheet.Cell("A29").Value = reportTechnician.Rows[0]["Technician"].ToString();
+                        AddImageToWorksheet(worksheet, reportTechnician.Rows[0]["TechnicianSignture"] as byte[], 31, 1, 100, 24);
+
+                        worksheet.Cell("E29").Value = reportTechnician.Rows[0]["ApproverName"].ToString();
+                        AddImageToWorksheet(worksheet, reportTechnician.Rows[0]["ApproverSignture"] as byte[], 31, 5, 100, 24);
+                    }
+
+                    // 填寫 Mockup 資料
+                    if (mockupTable != null)
+                    {
+                        for (int i = 0; i < mockupTable.Rows.Count && i < 5; i++)
+                        {
+                            worksheet.Cell(11 + i, 1).Value = mockupTable.Rows[i]["SpecimenName"]?.ToString();
+                            worksheet.Cell(11 + i, 2).Value = mockupTable.Rows[i]["ChangeScale"]?.ToString();
+                            worksheet.Cell(11 + i, 4).Value = mockupTable.Rows[i]["StainingScale"]?.ToString();
+                            worksheet.Cell(11 + i, 5).Value = mockupTable.Rows[i]["Comment"]?.ToString();
+                        }
+                    }
+
+                    // 儲存 Excel 檔案
+                    workbook.SaveAs(outputPath);
                 }
-                else
+
+                result.TempFileName = $"{tmpName}.xlsx";
+                result.Result = true;
+
+                // PDF 轉換
+                if (isPDF)
                 {
-                    result.TempFileName = fileName;
-                    result.Result = true;
+                    string pdfPath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.pdf");
+                    if (ConvertToPDF.ExcelToPDF(outputPath, pdfPath))
+                    {
+                        result.TempFileName = $"{tmpName}.pdf";
+                    }
+                    else
+                    {
+                        result.Result = false;
+                        result.ErrorMessage = "Convert To PDF Fail";
+                    }
                 }
             }
             catch (Exception ex)
@@ -782,13 +629,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result.ErrorMessage = ex.Message;
                 result.Result = false;
             }
-            finally
-            {
-                Marshal.ReleaseComObject(excel);
-            }
+
             return result;
         }
-
         public SendMail_Result FailSendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             _Provider = new AgingHydrolysisTest_Provider(Common.ManufacturingExecutionDataAccessLayer);

@@ -1,5 +1,6 @@
 ﻿using ADOHelper.Utility;
 using BusinessLogicLayer.Interface.BulkFGT;
+using ClosedXML.Excel;
 using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.RequestModel;
@@ -389,15 +390,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-
         public Fabric_ColorFastness_Detail_ViewModel ToReport(string ID, bool IsPDF, string AssignedFineName = "")
         {
             Fabric_ColorFastness_Detail_ViewModel result = new Fabric_ColorFastness_Detail_ViewModel();
             _IColorFastnessDetailProvider = new ColorFastnessDetailProvider(Common.ProductionDataAccessLayer);
             _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
-            List<ColorFastness_Excel> dataList = new List<ColorFastness_Excel>();
+            List<ColorFastness_Excel> dataList = _IColorFastnessDetailProvider.GetExcel(ID).ToList();
 
-            dataList = _IColorFastnessDetailProvider.GetExcel(ID).ToList();
             if (!dataList.Any())
             {
                 result.Result = false;
@@ -407,189 +406,209 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             var testCode = _QualityBrandTestCodeProvider.Get(dataList[0].BrandID, "Washing Fastness");
 
-            string tmpName = $"Washing Fastness Test_{dataList[0].POID}_" +
-                    $"{dataList[0].StyleID}_" +
-                    $"{dataList[0].Article}_" +
-                    $"{dataList[0].ColorFastnessResult}_" +
-                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+            string tmpName = string.IsNullOrWhiteSpace(AssignedFineName) ?
+                $"Washing Fastness Test_{dataList[0].POID}_{dataList[0].StyleID}_{dataList[0].Article}_{dataList[0].ColorFastnessResult}_{DateTime.Now:yyyyMMddHHmmss}" :
+                AssignedFineName;
 
-            string basefileName = "FabricColorFastness_ToExcel";
-            string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+            tmpName = Path.GetInvalidFileNameChars()
+                .Concat(new[] { '-', '+' })
+                .Aggregate(tmpName, (current, c) => current.Replace(c.ToString(), ""));
 
-            Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
-            excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
+            string baseFileName = "FabricColorFastness_ToExcel";
+            string templatePath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "XLT", $"{baseFileName}.xltx");
+            string outputDirectory = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP");
 
-            Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-            if (testCode.Any())
+            if (!File.Exists(templatePath))
             {
-                worksheet.Cells[1, 1] = $@"Washing Fastness Test Report({testCode.FirstOrDefault().TestCode})";
-            }
-            worksheet.Cells[2, 3] = dataList[0].ReportNo;
-            worksheet.Cells[3, 3] = dataList[0].SubmitDate.HasValue ? dataList[0].SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-            worksheet.Cells[3, 8] = dataList[0].InspDate.HasValue ? dataList[0].InspDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-            worksheet.Cells[4, 3] = dataList[0].SeasonID;
-            worksheet.Cells[4, 8] = dataList[0].BrandID;
-            worksheet.Cells[5, 3] = dataList[0].StyleID;
-            worksheet.Cells[5, 8] = dataList[0].POID;
-            worksheet.Cells[6, 3] = dataList[0].Article;
-
-            worksheet.Cells[9, 2] = dataList[0].Temperature;
-            worksheet.Cells[9, 4] = dataList[0].Cycle;
-            worksheet.Cells[9, 7] = dataList[0].CycleTime;
-            worksheet.Cells[10, 2] = dataList[0].Detergent;
-            worksheet.Cells[10, 4] = dataList[0].Machine;
-            worksheet.Cells[10, 7] = dataList[0].Drying;
-
-            worksheet.Cells[13, 3] = dataList[0].Checkby;
-            Excel.Range cellSignature = worksheet.get_Range("D14:D15");
-            if (dataList[0].Signature != null)
-            {
-                string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].Signature, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellSignature.Left + 5, cellSignature.Top + 5, cellSignature.Width - 10, cellSignature.Height - 10);
-            }
-
-            Excel.Worksheet worksheet2 = excel.ActiveWorkbook.Worksheets[2];
-            Excel.Worksheet worksheet3 = excel.ActiveWorkbook.Worksheets[3]; //FOR UA
-            int nowRow = 12; //init
-            // 表格
-            if (dataList[0].BrandID == "U.ARMOUR")
-            {
-                Excel.Range rngToCopy = worksheet3.get_Range("A1:H1").EntireRow;
-                Excel.Range rngToInsert = worksheet.get_Range($"A{nowRow}", Type.Missing).EntireRow; // 選擇要被貼上的位置
-                rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
-
-                nowRow = nowRow + 1; //表格內容起始
-                foreach (ColorFastness_Excel item in dataList)
-                {
-                    rngToCopy = worksheet3.get_Range("A2:H2").EntireRow;
-                    rngToInsert = worksheet.get_Range($"A{nowRow}", Type.Missing).EntireRow; // 選擇要被貼上的位置
-                    rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
-
-                    worksheet.Cells[nowRow, 1] = item.SEQ;
-                    worksheet.Cells[nowRow, 2] = item.Roll;
-                    worksheet.Cells[nowRow, 3] = item.Dyelot;
-                    worksheet.Cells[nowRow, 4] = item.SCIRefno_Color;
-                    worksheet.Cells[nowRow, 5] = item.ChangeScale;
-                    worksheet.Cells[nowRow, 6] = item.StainingScale;
-                    worksheet.Cells[nowRow, 7] = item.Result;
-                    worksheet.Cells[nowRow, 8] = item.Remark;
-                    nowRow = nowRow + 1;
-                }
-            }
-            else
-            {
-                foreach (ColorFastness_Excel item in dataList)
-                {
-                    Excel.Range rngToCopy = worksheet2.get_Range("A1:H6").EntireRow;
-                    Excel.Range rngToInsert = worksheet.get_Range($"A{nowRow}", Type.Missing).EntireRow; // 選擇要被貼上的位置
-                    rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
-
-                    worksheet.Cells[nowRow, 2] = item.SEQ;
-                    worksheet.Cells[nowRow, 4] = item.Roll;
-                    worksheet.Cells[nowRow, 6] = item.Dyelot;
-                    worksheet.Cells[nowRow, 8] = item.SCIRefno_Color;
-
-                    worksheet.Cells[nowRow + 3, 2] = item.ChangeScale;
-                    worksheet.Cells[nowRow + 3, 3] = item.AcetateScale;
-                    worksheet.Cells[nowRow + 3, 4] = item.CottonScale;
-                    worksheet.Cells[nowRow + 3, 5] = item.NylonScale;
-                    worksheet.Cells[nowRow + 3, 6] = item.PolyesterScale;
-                    worksheet.Cells[nowRow + 3, 7] = item.AcrylicScale;
-                    worksheet.Cells[nowRow + 3, 8] = item.WoolScale;
-
-                    worksheet.Cells[nowRow + 4, 2] = item.ResultChange;
-                    worksheet.Cells[nowRow + 4, 3] = item.ResultAcetate;
-                    worksheet.Cells[nowRow + 4, 4] = item.ResultCotton;
-                    worksheet.Cells[nowRow + 4, 5] = item.ResultNylon;
-                    worksheet.Cells[nowRow + 4, 6] = item.ResultPolyester;
-                    worksheet.Cells[nowRow + 4, 7] = item.ResultAcrylic;
-                    worksheet.Cells[nowRow + 4, 8] = item.ResultWool;
-
-                    worksheet.Cells[nowRow + 5, 2] = item.Remark;
-                    nowRow = nowRow + 6;
-                }
-            }
-
-            // 圖片
-            Excel.Worksheet worksheet4 = excel.ActiveWorkbook.Worksheets[4];
-            nowRow = 17 + (dataList.Count * (dataList[0].BrandID == "U.ARMOUR" ? 2 : 6));
-            foreach (ColorFastness_Excel item in dataList)
-            {
-                Excel.Range rngToCopy = worksheet4.get_Range("A1:H42");
-                Excel.Range rngToInsert = worksheet.get_Range($"A{nowRow}", Type.Missing); // 選擇要被貼上的位置
-                rngToInsert.Insert(rngToCopy.Copy(Type.Missing)); // 貼上
-
-                Excel.Range cellBefore = worksheet.Cells[nowRow + 23, 1];
-                if (dataList[0].TestBeforePicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestBeforePicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left, cellBefore.Top, 200, 300);
-                }
-
-                Excel.Range cellAfter = worksheet.Cells[nowRow + 23, 5];
-                if (dataList[0].TestAfterPicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList[0].TestAfterPicture, dataList[0].ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left, cellAfter.Top, 200, 300);
-                }
-
-                nowRow = nowRow + 42;
-            }
-
-            #region Save & Show Excel
-
-            //string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-            if (!string.IsNullOrWhiteSpace(AssignedFineName))
-            {
-                tmpName = AssignedFineName;
-            }
-            char[] invalidChars = Path.GetInvalidFileNameChars();
-            char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-            char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-            foreach (char invalidChar in updatedInvalidChars)
-            {
-                tmpName = tmpName.Replace(invalidChar.ToString(), "");
-            }
-            string filexlsx = tmpName + ".xlsx";
-            string fileNamePDF = tmpName + ".pdf";
-
-            string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
-            string filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
-
-            Excel.Workbook workbook = excel.ActiveWorkbook;
-            worksheet2.Visible = Excel.XlSheetVisibility.xlSheetHidden;
-            worksheet3.Visible = Excel.XlSheetVisibility.xlSheetHidden;
-            worksheet4.Visible = Excel.XlSheetVisibility.xlSheetHidden;
-            workbook.SaveAs(filepath);
-            workbook.Close();
-            excel.Quit();
-            Marshal.ReleaseComObject(worksheet);
-            Marshal.ReleaseComObject(worksheet2);
-            Marshal.ReleaseComObject(worksheet3);
-            Marshal.ReleaseComObject(worksheet4);
-            Marshal.ReleaseComObject(workbook);
-            Marshal.ReleaseComObject(excel);
-
-            if (IsPDF && ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
-            {
-                result.reportPath = fileNamePDF;
-                result.Result = true;
-            }
-            else if (!IsPDF)
-            {
-                result.reportPath = filexlsx;
-                result.Result = true;
-            }
-            else
-            {
-                result.ErrorMessage = "Fail";
                 result.Result = false;
+                result.ErrorMessage = "Excel template not found!";
+                return result;
             }
-            #endregion
+
+            if (!Directory.Exists(outputDirectory))
+            {
+                Directory.CreateDirectory(outputDirectory);
+            }
+
+            string excelFileName = $"{tmpName}.xlsx";
+            string excelPath = Path.Combine(outputDirectory, excelFileName);
+            string pdfFileName = $"{tmpName}.pdf";
+            string pdfPath = Path.Combine(outputDirectory, pdfFileName);
+
+            try
+            {
+                using (var workbook = new XLWorkbook(templatePath))
+                {
+                    var worksheet = workbook.Worksheet(1);
+                    var worksheet2 = workbook.Worksheet(2);
+                    var worksheet3 = workbook.Worksheet(3);
+                    var worksheet4 = workbook.Worksheet(4);
+
+                    if (testCode.Any())
+                    {
+                        worksheet.Cell(1, 1).Value = $"Washing Fastness Test Report({testCode.FirstOrDefault().TestCode})";
+                    }
+
+                    worksheet.Cell(2, 3).Value = dataList[0].ReportNo;
+                    worksheet.Cell(3, 3).Value = dataList[0].SubmitDate?.ToString("yyyy/MM/dd") ?? string.Empty;
+                    worksheet.Cell(3, 8).Value = dataList[0].InspDate?.ToString("yyyy/MM/dd") ?? string.Empty;
+                    worksheet.Cell(4, 3).Value = dataList[0].SeasonID;
+                    worksheet.Cell(4, 8).Value = dataList[0].BrandID;
+                    worksheet.Cell(5, 3).Value = dataList[0].StyleID;
+                    worksheet.Cell(5, 8).Value = dataList[0].POID;
+                    worksheet.Cell(6, 3).Value = dataList[0].Article;
+
+                    worksheet.Cell(9, 2).Value = dataList[0].Temperature;
+                    worksheet.Cell(9, 4).Value = dataList[0].Cycle;
+                    worksheet.Cell(9, 7).Value = dataList[0].CycleTime;
+                    worksheet.Cell(10, 2).Value = dataList[0].Detergent;
+                    worksheet.Cell(10, 4).Value = dataList[0].Machine;
+                    worksheet.Cell(10, 7).Value = dataList[0].Drying;
+
+                    worksheet.Cell(13, 3).Value = dataList[0].Checkby;
+
+                    // 插入簽名圖片於 D14:D15
+                    if (dataList[0].Signature != null)
+                    {
+                        AddImageToWorksheet(worksheet, dataList[0].Signature, 15, 3, 40, 20);
+                    }
+
+
+                    int nowRow = 12;
+
+                    // 複製與插入邏輯
+                    if (dataList[0].BrandID == "U.ARMOUR")
+                    {
+
+                        // 插入每筆數據
+                        foreach (var item in dataList)
+                        {
+                            // 來源工作表 = Worksheet3
+                            var sourceRange = worksheet3.Range("A1:H2"); // 複製的範圍（標題）
+
+                            worksheet.Row(nowRow).InsertRowsAbove(2);
+
+                            // 插入表頭
+                            var destinationRange = worksheet.Range($"A{nowRow}:H{nowRow+1}");
+                            sourceRange.CopyTo(destinationRange);
+
+                            nowRow++;
+
+                            // 填充數據
+                            worksheet.Cell(nowRow, 1).Value = item.SEQ;
+                            worksheet.Cell(nowRow, 2).Value = item.Roll;
+                            worksheet.Cell(nowRow, 3).Value = item.Dyelot;
+                            worksheet.Cell(nowRow, 4).Value = item.SCIRefno_Color;
+                            worksheet.Cell(nowRow, 5).Value = item.ChangeScale;
+                            worksheet.Cell(nowRow, 6).Value = item.StainingScale;
+                            worksheet.Cell(nowRow, 7).Value = item.Result;
+                            worksheet.Cell(nowRow, 8).Value = item.Remark;
+
+                            nowRow++;
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in dataList)
+                        {
+                            // 複製模板行， 非 UA 的模板在第二個 Sheet
+                            var sourceRange = worksheet2.Range("A1:H6"); // 複製的範圍（6 行模板）
+
+                            worksheet.Row(nowRow).InsertRowsAbove(6);
+
+                            var destinationRange = worksheet.Range($"A{nowRow}:H{nowRow + 5}");
+                            sourceRange.CopyTo(destinationRange);
+
+                            // 填充數據
+                            worksheet.Cell(nowRow, 2).Value = item.SEQ;
+                            worksheet.Cell(nowRow, 4).Value = item.Roll;
+                            worksheet.Cell(nowRow, 6).Value = item.Dyelot;
+                            worksheet.Cell(nowRow, 8).Value = item.SCIRefno_Color;
+
+                            worksheet.Cell(nowRow + 3, 2).Value = item.ChangeScale;
+                            worksheet.Cell(nowRow + 3, 3).Value = item.AcetateScale;
+                            worksheet.Cell(nowRow + 3, 4).Value = item.CottonScale;
+                            worksheet.Cell(nowRow + 3, 5).Value = item.NylonScale;
+                            worksheet.Cell(nowRow + 3, 6).Value = item.PolyesterScale;
+                            worksheet.Cell(nowRow + 3, 7).Value = item.AcrylicScale;
+                            worksheet.Cell(nowRow + 3, 8).Value = item.WoolScale;
+
+                            worksheet.Cell(nowRow + 4, 2).Value = item.ResultChange;
+                            worksheet.Cell(nowRow + 4, 3).Value = item.ResultAcetate;
+                            worksheet.Cell(nowRow + 4, 4).Value = item.ResultCotton;
+                            worksheet.Cell(nowRow + 4, 5).Value = item.ResultNylon;
+                            worksheet.Cell(nowRow + 4, 6).Value = item.ResultPolyester;
+                            worksheet.Cell(nowRow + 4, 7).Value = item.ResultAcrylic;
+                            worksheet.Cell(nowRow + 4, 8).Value = item.ResultWool;
+
+                            worksheet.Cell(nowRow + 5, 2).Value = item.Remark;
+
+                            nowRow += 6;
+                        }
+                    }
+
+                    // 圖片
+                    nowRow = 17 + (dataList.Count * (dataList[0].BrandID == "U.ARMOUR" ? 2 : 6));
+
+                    foreach (ColorFastness_Excel item in dataList)
+                    {
+                        var sourceRange = worksheet4.Range("A1:H42"); // 複製的範圍
+
+                        worksheet.Row(nowRow).InsertRowsAbove(42);
+
+                        var destinationRange = worksheet.Range($"A{nowRow}:H{nowRow + 41}");
+                        sourceRange.CopyTo(destinationRange);
+
+                        if (dataList[0].TestBeforePicture != null)
+                        {
+                            AddImageToWorksheet(worksheet, dataList[0].TestBeforePicture, nowRow + 23, 1, 500, 400);
+                        }
+                        if (dataList[0].TestAfterPicture != null)
+                        {
+                            AddImageToWorksheet(worksheet, dataList[0].TestAfterPicture, nowRow + 23, 5, 500, 400);
+                        }
+
+                        nowRow = nowRow + 42;
+                    }
+
+                    workbook.SaveAs(excelPath);
+
+                    if (IsPDF)
+                    {
+                        ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+                        result.reportPath = pdfFileName;
+                    }
+                    else
+                    {
+                        result.reportPath = excelFileName;
+                    }
+
+                    result.Result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = $"Error: {ex.Message}, StackTrace: {ex.StackTrace}";
+            }
 
             return result;
         }
+
+
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
+        }
+
 
         public BaseResult DeleteColorFastness(string ID)
         {
