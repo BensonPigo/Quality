@@ -1,7 +1,10 @@
 ﻿using ADOHelper.Utility;
+using ClosedXML.Excel;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
+using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using Sci;
@@ -11,6 +14,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
@@ -418,7 +422,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return model;
         }
 
-        public SalivaFastnessTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
+        public SalivaFastnessTest_ViewModel GetReport2(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             SalivaFastnessTest_ViewModel result = new SalivaFastnessTest_ViewModel();
 
@@ -657,6 +661,195 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Marshal.ReleaseComObject(excel);
             }
             return result;
+        }
+        public SalivaFastnessTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
+        {
+            SalivaFastnessTest_ViewModel result = new SalivaFastnessTest_ViewModel();
+            string basefileName = "SalivaFastnessTest";
+            string tmpName = string.Empty;
+
+            try
+            {
+                // 取得報表資料
+                _Provider = new SalivaFastnessTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                SalivaFastnessTest_ViewModel model = this.GetData(new SalivaFastnessTest_Request() { ReportNo = ReportNo });
+                DataTable ReportTechnician = _Provider.GetReportTechnician(new SalivaFastnessTest_Request() { ReportNo = ReportNo });
+
+                tmpName = $"Saliva Fastness Test_{model.Main.OrderID}_" +
+                          $"{model.Main.StyleID}_{model.Main.FabricRefNo}_{model.Main.FabricColor}_" +
+                          $"{model.Main.Result}_{DateTime.Now:yyyyMMddHHmmss}";
+
+                tmpName = Regex.Replace(tmpName, @"[\/:*?""<>|]", ""); // 清除不合法字元
+
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
+                string fileName = $"{tmpName}.xlsx";
+                string fullExcelFileName = Path.Combine(baseFilePath, "TMP", fileName);
+                string filePdfName = $"{tmpName}.pdf";
+                string fullPdfFileName = Path.Combine(baseFilePath, "TMP", filePdfName);
+
+                string templatePath = Path.Combine(baseFilePath, "XLT", "SalivaFastnessTest.xltx");
+                // 建立 Excel 檔案
+                using (var workbook = new XLWorkbook(templatePath))
+                {
+                    var worksheet = workbook.Worksheet(1);
+
+                    // 填入基本資料
+                    worksheet.Cell("B3").Value = model.Main.ReportNo;
+                    worksheet.Cell(3, 6).Value = model.Main.OrderID;
+
+                    worksheet.Cell(4, 2).Value = model.Main.FactoryID;
+                    worksheet.Cell(4, 6).Value = model.Main.SubmitDateText;
+
+                    worksheet.Cell(5, 2).Value = model.Main.StyleID;
+                    worksheet.Cell(5, 6).Value = model.Main.ReportDateText;
+
+                    worksheet.Cell(6, 2).Value = model.Main.Article;
+                    worksheet.Cell(7, 2).Value = model.Main.SeasonID;
+                    worksheet.Cell(8, 2).Value = model.Main.FabricRefNo;
+                    worksheet.Cell(9, 2).Value = model.Main.FabricColor;
+                    worksheet.Cell(10, 2).Value = model.Main.FabricDescription;
+
+                    worksheet.Cell(11, 2).Value = model.Main.TypeOfPrint;
+                    worksheet.Cell(11, 6).Value = model.Main.PrintColor;
+
+                    // BrandID
+                    if (model.Main.BrandID.ToUpper() == "ADIDAS")
+                    {
+                        worksheet.Cell("B2").Value = "☑  ADIDAS";
+                    }
+                    if (model.Main.BrandID.ToUpper() == "REEBOK")
+                    {
+                        worksheet.Cell("D2").Value = "☑  REEBOK";
+                    }
+
+
+                    // ITEM TESTED
+                    if (model.Main.ItemTested.ToUpper() == "FABRIC")
+                    {
+                        worksheet.Cell("E7").Value = "FABRIC:  ☑";
+                    }
+                    if (model.Main.ItemTested.ToUpper() == "ACCESSORIES")
+                    {
+                        worksheet.Cell("F7").Value = "ACCESSORIES:  ☑";
+                    }
+                    if (model.Main.ItemTested.ToUpper() == "PRINTING")
+                    {
+                        worksheet.Cell("G7").Value = "PRINTING:  ☑";
+                    }
+
+
+                    // 簽名圖片
+                    if (ReportTechnician.Rows.Count > 0 && ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                    {
+                        byte[] signature = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"];
+                        using (var stream = new MemoryStream(signature))
+                        {
+                            var image = worksheet.AddPicture(stream)
+                                .MoveTo(worksheet.Cell(37, 6), 5, 5)
+                                .WithSize(100, 24);
+                        }
+                        worksheet.Cell(37, 5).Value = ReportTechnician.Rows[0]["Technician"]?.ToString();
+                    }
+
+                    // TestBeforePicture、TestAfterPicture 圖片
+                    if (model.Main.TestBeforePicture != null && model.Main.TestBeforePicture.Length > 1)
+                    {
+                        AddImageToWorksheet(worksheet, model.Main.TestBeforePicture, 23, 1, 400, 400);
+                    }
+                    if (model.Main.TestAfterPicture != null && model.Main.TestAfterPicture.Length > 1)
+                    {
+                        AddImageToWorksheet(worksheet, model.Main.TestAfterPicture, 23, 6, 400, 400);
+                    }
+                    // 處理 DetailList
+                    int startRow = 14;
+                    foreach (var detail in model.DetailList)
+                    {
+
+                        if (startRow == 14)
+                        {
+                            // 1. 複製格式
+                            var sourceRange = worksheet.Range("A14:I19"); // 複製的範圍（6 行模板）
+
+                            // 2. 插入
+                            worksheet.Row(startRow).InsertRowsAbove(6);
+
+                            // 3. 複製格式 貼上
+                            var destinationRange = worksheet.Range($"A{startRow}:I{startRow + 5}");
+                            sourceRange.CopyTo(destinationRange);
+
+                            // 4. 手動複製行高
+                            for (int i = 0; i < sourceRange.RowCount(); i++)
+                            {
+                                var sourceRow = sourceRange.FirstRow().RowNumber() + i;
+                                var targetRow = startRow + i;
+
+                                worksheet.Row(targetRow).Height = worksheet.Row(sourceRow).Height; // 複製行高
+                            }
+                        }
+
+                        worksheet.Cell(startRow, 4).Value = detail.AcetateScale;
+                        worksheet.Cell(startRow, 6).Value = detail.AcetateResult;
+                        worksheet.Cell(startRow + 1, 4).Value = detail.CottonScale;
+                        worksheet.Cell(startRow + 1, 6).Value = detail.CottonResult;
+                        worksheet.Cell(startRow + 2, 4).Value = detail.NylonScale;
+                        worksheet.Cell(startRow + 2, 6).Value = detail.NylonResult;
+
+                        worksheet.Cell(startRow + 3, 4).Value = detail.PolyesterScale;
+                        worksheet.Cell(startRow + 3, 6).Value = detail.PolyesterResult;
+                        worksheet.Cell(startRow + 4, 4).Value = detail.AcrylicScale;
+                        worksheet.Cell(startRow + 4, 6).Value = detail.AcrylicResult;
+                        worksheet.Cell(startRow + 5, 4).Value = detail.WoolScale;
+                        worksheet.Cell(startRow + 5, 6).Value = detail.WoolResult;
+
+                        // 結果標記
+                        if (detail.AllResult == "Pass")
+                        {
+                            worksheet.Cell(startRow, 8).Value = "☑";
+                        }
+                        else
+                        {
+                            worksheet.Cell(startRow + 3, 8).Value = "☑";
+                        }
+                        startRow += 6; // 移動到下一組
+                    }
+
+
+                    // 儲存 Excel 檔案
+                    workbook.SaveAs(fullExcelFileName);
+                }
+
+                // 若需要轉 PDF
+                if (isPDF && ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
+                {
+                    result.TempFileName = filePdfName;
+                }
+                else
+                {
+                    result.TempFileName = fileName;
+                }
+
+                result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMessage = ex.Message;
+                result.Result = false;
+            }
+
+            return result;
+        }
+
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
         }
 
         public SendMail_Result SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)

@@ -1,5 +1,6 @@
 ﻿using ADOHelper.Utility;
 using BusinessLogicLayer.Interface.BulkFGT;
+using ClosedXML.Excel;
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
@@ -7,22 +8,16 @@ using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Office.Interop.Excel;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
-using System.Runtime.InteropServices;
 using System.Web.Mvc;
-using System.Windows;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace BusinessLogicLayer.Service
 {
@@ -171,251 +166,139 @@ namespace BusinessLogicLayer.Service
             }
 
             string tmpName = string.Empty;
+
             try
             {
-                if (!(IsTest.ToLower() == "true"))
+                string basePath = IsTest.ToLower() == "true" ? AppDomain.CurrentDomain.BaseDirectory : System.Web.HttpContext.Current.Server.MapPath("~/");
+
+                string xltPath = Path.Combine(basePath, "XLT", mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? "MockupOven2.xltx" : "MockupOven.xltx");
+                string tmpPath = Path.Combine(basePath, "TMP");
+
+                if (!Directory.Exists(tmpPath)) Directory.CreateDirectory(tmpPath);
+
+                tmpName = $"Mockup Oven _{mockupOven.POID}_{mockupOven.StyleID}_{mockupOven.Article}_{mockupOven.Result}_{DateTime.Now:yyyyMMddHHmmss}";
+
+                if (!File.Exists(xltPath)) throw new FileNotFoundException("Template not found", xltPath);
+
+                using (var workbook = new XLWorkbook(xltPath))
                 {
-                    if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
+                    var worksheet = workbook.Worksheet(1);
+
+                    worksheet.Cell(2, 1).Value = mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER")
+                        ? "COLOR MIGRATION TEST (Oven) (HEAT TRANSFER)"
+                        : "COLOR MIGRATION TEST (Oven)";
+
+                    worksheet.Cell(4, 2).Value = mockupOven.ReportNo;
+                    worksheet.Cell(5, 2).Value = $"{mockupOven.T1Subcon} - {mockupOven.T1SubconAbb}";
+                    worksheet.Cell(6, 2).Value = $"{mockupOven.T2Supplier} - {mockupOven.T2SupplierAbb}";
+                    worksheet.Cell(7, 2).Value = mockupOven.BrandID;
+                    worksheet.Cell(8, 2).Value = $"5.14 color migration test ({mockupOven.TestTemperature} degree @ {mockupOven.TestTime} hours)";
+
+                    worksheet.Cell(4, 8).Value = mockupOven.ReleasedDate;
+                    worksheet.Cell(5, 8).Value = mockupOven.TestDate;
+                    worksheet.Cell(6, 8).Value = mockupOven.SeasonID;
+
+                    if (mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER"))
                     {
-                        System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\");
+                        worksheet.Cell(10, 2).Value = mockupOven.HTPlate;
+                        worksheet.Cell(11, 2).Value = mockupOven.HTFlim;
+                        worksheet.Cell(12, 2).Value = mockupOven.HTTime;
+                        worksheet.Cell(13, 2).Value = mockupOven.HTPressure;
+
+                        worksheet.Cell(10, 8).Value = mockupOven.HTPellOff;
+                        worksheet.Cell(11, 8).Value = mockupOven.HT2ndPressnoreverse;
+                        worksheet.Cell(12, 8).Value = mockupOven.HT2ndPressreversed;
+                        worksheet.Cell(13, 8).Value = mockupOven.HTCoolingTime;
                     }
 
-                    if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\"))
+                    worksheet.Cell(13 + (mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 2).Value = mockupOven.TechnicianName;
+                    AddImageToWorksheet(worksheet, mockupOven.Signature, 12 + (mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 2, 100, 24);
+
+                    AddImageToWorksheet(worksheet, mockupOven.TestBeforePicture, 16 + (mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 2, 288, 272);
+                    AddImageToWorksheet(worksheet, mockupOven.TestAfterPicture, 16 + (mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 8, 265, 272);
+
+                    if (mockupOven.MockupOven_Detail.Count > 0)
                     {
-                        System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
+                        for (int i = 1; i < mockupOven.MockupOven_Detail.Count; i++)
+                        {
+                            // 1. 複製第 10 列
+                            var rowToCopy = worksheet.Row(10);
+
+                            // 2. 插入一列，將第 10 和第 11 列之間騰出空間
+                            worksheet.Row(11).InsertRowsAbove(1);
+
+                            // 3. 複製內容與格式到新插入的第 11 列
+                            var newRow = worksheet.Row(11);
+                            rowToCopy.CopyTo(newRow);
+                        }
+
+                        int startRow = 10 + (mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0);
+
+                        foreach (var item in mockupOven.MockupOven_Detail)
+                        {
+                            worksheet.Cell(startRow, 1).Value = mockupOven.StyleID;
+                            worksheet.Cell(startRow, 2).Value = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : $"{item.FabricRefNo} - {item.FabricColorName}";
+                            worksheet.Cell(startRow, 3).Value = string.IsNullOrEmpty(mockupOven.ArtworkTypeID) ? $"{item.Design} - {item.ArtworkColorName}" : $"{mockupOven.ArtworkTypeID}/{item.Design} - {item.ArtworkColorName}";
+                            worksheet.Cell(startRow, 5).Value = item.ChangeScale;
+                            worksheet.Cell(startRow, 6).Value = item.ResultChange;
+                            worksheet.Cell(startRow, 7).Value = item.StainingScale;
+                            worksheet.Cell(startRow, 8).Value = item.ResultStain;
+                            worksheet.Cell(startRow, 9).Value = item.Remark;
+
+                            worksheet.Row(startRow).AdjustToContents();
+                            startRow++;
+                        }
                     }
-                }
 
-                tmpName = $"Mockup Oven _{mockupOven.POID}_" +
-                    $"{mockupOven.StyleID}_" +
-                    $"{mockupOven.Article}_" +
-                    $"{mockupOven.Result}_" +
-                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                    tmpName = RemoveInvalidFileNameChars(tmpName);
 
+                    string filePath = Path.Combine(tmpPath, $"{tmpName}.xlsx");
+                    string pdfPath = Path.Combine(tmpPath, $"{tmpName}.pdf");
 
-                _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
-                _InspectionTypeProvider = new InspectionTypeProvider(Common.ProductionDataAccessLayer);
-                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+                    workbook.SaveAs(filePath);
 
-                var testCode = _QualityBrandTestCodeProvider.Get(mockupOven.BrandID, "Mockup Oven Test");
-
-                List<InspectionType> InspectionTypes = _InspectionTypeProvider.Get_InspectionType("MockupOven", "Bulk", mockupOven.BrandID).ToList();
-                mockupOven.Requirements = InspectionTypes.Select(x => x.Comment).ToList();
-                var mockupOven_Detail = mockupOven.MockupOven_Detail;
-
-                bool haveHT = mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER");
-                string basefileName = haveHT ? "MockupOven2" : "MockupOven";
-                string openfilepath;
-                if (IsTest.ToLower() == "true")
-                {
-                    openfilepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XLT", $"{basefileName}.xltx");
-                }
-                else
-                {
-                    openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
-                }
-
-                Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
-                excelApp.DisplayAlerts = false;
-                Worksheet worksheet = excelApp.Sheets[1];
-                Worksheet worksheet2 = excelApp.Sheets[2];
-                int htRow = 6;
-                int haveHTrow = haveHT ? htRow : 0;
-
-                // 設定表頭資料
-                if (testCode.Any())
-                {
-                    worksheet.Cells[2, 1] = $@"COLOR MIGRATION TEST (Oven)({testCode.FirstOrDefault().TestCode})";
-                }
-                worksheet.Cells[4, 2] = mockupOven.ReportNo;
-                worksheet.Cells[5, 2] = mockupOven.T1Subcon + "-" + mockupOven.T1SubconAbb;
-                worksheet.Cells[6, 2] = mockupOven.T2Supplier + "-" + mockupOven.T2SupplierAbb;
-                worksheet.Cells[7, 2] = mockupOven.BrandID;
-                worksheet.Cells[8, 2] = $"5.14 color migration test({mockupOven.TestTemperature} degree @ {mockupOven.TestTime} hours)";
-
-                worksheet.Cells[4, 8] = mockupOven.ReleasedDate;
-                worksheet.Cells[5, 8] = mockupOven.TestDate;
-                worksheet.Cells[6, 8] = mockupOven.SeasonID;
-
-                if (haveHT)
-                {
-                    worksheet.Cells[10, 2] = mockupOven.HTPlate;
-                    worksheet.Cells[11, 2] = mockupOven.HTFlim;
-                    worksheet.Cells[12, 2] = mockupOven.HTTime;
-                    worksheet.Cells[13, 2] = mockupOven.HTPressure;
-                    worksheet.Cells[10, 8] = mockupOven.HTPellOff;
-                    worksheet.Cells[11, 8] = mockupOven.HT2ndPressnoreverse;
-                    worksheet.Cells[12, 8] = mockupOven.HT2ndPressreversed;
-                    worksheet.Cells[13, 8] = mockupOven.HTCoolingTime;
-                }
-
-                worksheet.Cells[13 + haveHTrow, 2] = mockupOven.TechnicianName;
-
-                Range cell = worksheet.Cells[12 + haveHTrow, 2];
-                if (mockupOven.Signature != null)
-                {
-                    MemoryStream ms = new MemoryStream(mockupOven.Signature);
-                    Image img = Image.FromStream(ms);
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-                    if (IsTest.ToLower() == "true")
+                    if (ConvertToPDF.ExcelToPDF(filePath, pdfPath))
                     {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                        result.TempFileName = $"{tmpName}.pdf";
+                        result.Result = true;
                     }
                     else
                     {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                        result.ErrorMessage = "Convert To PDF Fail";
+                        result.Result = false;
                     }
-
-                    img.Save(imgPath);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
-                }
-
-                Range pic = worksheet.get_Range($"B{16 + haveHTrow}:E{34 + haveHTrow}");
-                cell = worksheet.Cells[13 + haveHTrow + 3, 2];
-                if (mockupOven.TestBeforePicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupOven.TestBeforePicture, mockupOven.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, pic.Left, pic.Top, pic.Width, pic.Height);
-                }
-
-                pic = worksheet.get_Range($"H{16 + haveHTrow}:N{34 + haveHTrow}");
-                if (mockupOven.TestAfterPicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupOven.TestAfterPicture, mockupOven.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: IsTest.ToLower() == "true");
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, pic.Left, pic.Top, pic.Width, pic.Height);
-                }
-
-                #region 表身資料
-                // 插入多的row
-                if (mockupOven_Detail.Count > 0)
-                {
-                    Range rngToInsert = worksheet.get_Range($"A{10 + haveHTrow}:N{10 + haveHTrow}", Type.Missing).EntireRow;
-                    for (int i = 1; i < mockupOven_Detail.Count; i++)
-                    {
-                        rngToInsert.Insert(XlInsertShiftDirection.xlShiftDown);
-                        worksheet.get_Range(string.Format("C{0}:D{0}", (10 + haveHTrow + i - 1).ToString())).Merge(false);
-                        worksheet.get_Range(string.Format("I{0}:K{0}", (10 + haveHTrow + i - 1).ToString())).Merge(false);
-                    }
-
-                    worksheet.get_Range(string.Format("L{0}:N{1}", (10 + haveHTrow).ToString(), (10 + haveHTrow + mockupOven_Detail.Count - 1).ToString())).Merge(false);
-                    Marshal.ReleaseComObject(rngToInsert);
-                }
-
-                // ISP20230792
-                if ((mockupOven.HTPlate > 0)
-                    || (mockupOven.HTFlim > 0)
-                    || (mockupOven.HTTime > 0)
-                    || (mockupOven.HTPressure > 0)
-                    || !string.IsNullOrEmpty(mockupOven.HTPellOff) 
-                    || (mockupOven.HT2ndPressnoreverse > 0)
-                    || (mockupOven.HT2ndPressreversed > 0)
-                    || (mockupOven.HTCoolingTime > 0))
-                {
-                    int aRow = 11 + haveHTrow + mockupOven_Detail.Count - 1;
-                    Range rngToCopy = worksheet2.get_Range($"A1:N5", Type.Missing).EntireRow;
-                    Range rngToInsert = worksheet.get_Range($"A{aRow}", Type.Missing).EntireRow; // 選擇要被貼上的位置
-                    rngToInsert.Insert(XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
-
-                    worksheet.Cells[aRow + 1, 3] = mockupOven.HTPlate;
-                    worksheet.Cells[aRow + 2, 3] = mockupOven.HTFlim;
-                    worksheet.Cells[aRow + 3, 3] = mockupOven.HTTime;
-                    worksheet.Cells[aRow + 4, 3] = mockupOven.HTPressure;
-                    worksheet.Cells[aRow + 1, 11] = mockupOven.HTPellOff;
-                    worksheet.Cells[aRow + 2, 11] = mockupOven.HT2ndPressnoreverse;
-                    worksheet.Cells[aRow + 3, 11] = mockupOven.HT2ndPressreversed;
-                    worksheet.Cells[aRow + 4, 11] = mockupOven.HTCoolingTime;
-                }
-
-                // 塞進資料
-                int start_row = 10 + haveHTrow;
-                worksheet.Cells[start_row, 12] = mockupOven.Requirements.JoinToString(Environment.NewLine);
-                foreach (var item in mockupOven_Detail)
-                {
-                    string remark = item.Remark;
-                    string fabric = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : item.FabricRefNo + " - " + item.FabricColorName;
-                    string artwork = string.IsNullOrEmpty(mockupOven.ArtworkTypeID) ? item.Design + " - " + item.ArtworkColorName : mockupOven.ArtworkTypeID + "/" + item.Design + " - " + item.ArtworkColorName;
-                    worksheet.Cells[start_row, 1] = mockupOven.StyleID;
-                    worksheet.Cells[start_row, 2] = fabric;
-                    worksheet.Cells[start_row, 3] = artwork;
-                    worksheet.Cells[start_row, 5] = item.ChangeScale;
-                    worksheet.Cells[start_row, 6] = item.ResultChange;
-                    worksheet.Cells[start_row, 7] = item.StainingScale;
-                    worksheet.Cells[start_row, 8] = item.ResultStain;
-                    worksheet.Cells[start_row, 9] = item.Remark;                    
-                    worksheet.Rows[start_row].Font.Bold = false;
-                    worksheet.Rows[start_row].WrapText = true;
-                    worksheet.Rows[start_row].HorizontalAlignment = XlHAlign.xlHAlignCenter;
-
-                    int maxLength = fabric.Length > remark.Length ? fabric.Length : remark.Length;
-                    maxLength = maxLength > artwork.Length ? maxLength : artwork.Length;
-                    worksheet.Range[$"A{start_row}", $"N{start_row}"].RowHeight = ((maxLength / 20) + 1) * 16.5;
-
-                    start_row++;
-                }
-
-
-                #endregion
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-                string filexlsx = tmpName + ".xlsx";
-                string fileNamePDF = tmpName + ".pdf";
-
-                string filepath;
-                string filepathpdf;
-                if (IsTest.ToLower() == "true")
-                {
-                    filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx);
-                    filepathpdf = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF);
-                }
-                else
-                {
-                    filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
-                    filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
-                }
-
-
-                Workbook workbook = excelApp.ActiveWorkbook;
-                worksheet2.Visible = XlSheetVisibility.xlSheetHidden;
-                workbook.SaveAs(filepath);
-                workbook.Close();
-                excelApp.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(worksheet2);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excelApp);
-
-
-                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
-                {
-                    result.TempFileName = fileNamePDF;
-                    result.Result = true;
-                }
-                else
-                {
-                    result.ErrorMessage = "Convert To PDF Fail";
-                    result.Result = false;
                 }
             }
             catch (Exception ex)
             {
-                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
+                result.ErrorMessage = ex.Message;
                 result.Result = false;
             }
 
             return result;
+        }
+
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
+        }
+
+        private string RemoveInvalidFileNameChars(string input)
+        {
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+            foreach (char c in invalidChars)
+            {
+                input = input.Replace(c.ToString(), "");
+            }
+            return input;
         }
 
         public BaseResult Create(MockupOven_ViewModel MockupOven, string Mdivision, string userid, out string NewReportNo)

@@ -1,26 +1,17 @@
 ﻿using ADOHelper.Utility;
-using BusinessLogicLayer.Helper;
-using DatabaseObject.ProductionDB;
+using ClosedXML.Excel;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
-using Org.BouncyCastle.Tsp;
-using Sci;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
-using static Sci.MyUtility;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -436,7 +427,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-
         public MartindalePillingTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             MartindalePillingTest_ViewModel result = new MartindalePillingTest_ViewModel();
@@ -444,7 +434,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
             string basefileName = "MartindalePillingTest";
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
 
-            Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
+            if (!System.IO.File.Exists(openfilepath))
+            {
+                throw new FileNotFoundException("Excel template not found", openfilepath);
+            }
+
             string tmpName = string.Empty;
 
             try
@@ -452,210 +446,147 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 _Provider = new MartindalePillingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
 
-                // 取得報表資料
-
                 MartindalePillingTest_ViewModel model = this.GetData(new MartindalePillingTest_Request() { ReportNo = ReportNo });
-
                 var testCode = _QualityBrandTestCodeProvider.Get(model.Main.BrandID, "T-Peel Strength Test");
-
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new MartindalePillingTest_Request() { ReportNo = ReportNo });
 
                 tmpName = $"Martindale Pilling Test Evaporation Rate Test_{model.Main.OrderID}_" +
-                $"{model.Main.StyleID}_" +
-                $"{model.Main.FabricRefNo}_" +
-                $"{model.Main.FabricColor}_" +
-                $"{model.Main.Result}_" +
-                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                          $"{model.Main.StyleID}_" +
+                          $"{model.Main.FabricRefNo}_" +
+                          $"{model.Main.FabricColor}_" +
+                          $"{model.Main.Result}_" +
+                          $"{DateTime.Now:yyyyMMddHHmmss}";
 
-                excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-                Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-
-                // 取得工作表上所有圖形物件
-                Microsoft.Office.Interop.Excel.Shapes shapes = worksheet.Shapes;
-
-                // 根據名稱，搜尋文字方塊物件
-                Microsoft.Office.Interop.Excel.Shape Woven_TextBox = shapes.Item("Woven_TextBox");
-                Microsoft.Office.Interop.Excel.Shape Knit_TextBox = shapes.Item("Knit_TextBox");
-
-                // 固定欄位
-
-                // FabricType
-                if (model.Main.FabricType.ToUpper() == "WOVEN")
+                using (var workbook = new XLWorkbook(openfilepath))
                 {
-                    Woven_TextBox.TextFrame.Characters().Text = "V";
-                }
-                if (model.Main.FabricType.ToUpper() == "KNIT")
-                {
-                    Knit_TextBox.TextFrame.Characters().Text = "V";
-                }
+                    var worksheet = workbook.Worksheet(1);
 
-                string reportNo = model.Main.ReportNo;
-                worksheet.Cells[3, 2] = model.Main.ReportNo;
-                worksheet.Cells[3, 6] = model.Main.OrderID;
-
-                worksheet.Cells[4, 2] = model.Main.FactoryID;
-                worksheet.Cells[4, 6] = model.Main.SubmitDateText;
-
-                worksheet.Cells[5, 2] = model.Main.StyleID;
-                worksheet.Cells[5, 6] = model.Main.ReportDateText;
-
-                worksheet.Cells[6, 2] = model.Main.Article;
-                worksheet.Cells[6, 6] = model.Main.FabricRefNo;
-
-                worksheet.Cells[7, 2] = model.Main.SeasonID;
-                worksheet.Cells[7, 6] = model.Main.FabricColor;
-
-                if (model.Main.Result == "Pass")
-                {
-                    worksheet.Cells[11, 9] = "V";
-                }
-                else
-                {
-                    worksheet.Cells[14, 9] = "V";
-                }
-
-                // Technician 欄位
-                if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
-                {
-                    string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
-
-                    // 姓名
-                    worksheet.Cells[45, 5] = TechnicianName;
-
-                    // Signture 圖片
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[45, 6];
-                    if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                    if (testCode.Any())
                     {
-
-                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
-
-                        MemoryStream ms = new MemoryStream(TestBeforePicture);
-                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-                        string imageName = $"{Guid.NewGuid()}.jpg";
-                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-
-                        img.Save(imgPath);
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
-
-                    }
-                }
-
-                // TestBeforePicture、TestAfterPicture 圖片
-                if (model.Main.TestBeforePicture != null && model.Main.TestBeforePicture.Length > 1)
-                {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[18, 1];
-                    Microsoft.Office.Interop.Excel.Range cell2 = worksheet.Cells[31, 1];
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestBeforePicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell2.Left + 5, cell2.Top + 5, 200, 300);
-                }
-                if (model.Main.Test500AfterPicture != null && model.Main.Test500AfterPicture.Length > 1)
-                {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[18, 6];
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.Test500AfterPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
-                }
-                if (model.Main.Test2000AfterPicture != null && model.Main.Test2000AfterPicture.Length > 1)
-                {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[31, 6];
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.Test2000AfterPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
-                }
-
-                // 表身處理 單筆和多筆分開
-                if (model.DetailList.Any() && model.DetailList.Count > 1)
-                {
-                    int rowIdx = 0;
-                    foreach (var rubTimes in model.DefaultRubTimes)
-                    {
-                        // Rub Times
-                        worksheet.Cells[10 + rowIdx, 1] = rubTimes;
-
-                        MartindalePillingTest_Detail WorstDetail = model.DetailList.Where(o => o.RubTimes == rubTimes).OrderBy(o => o.Scale).FirstOrDefault();
-
-                        //
-                        worksheet.Cells[10 + rowIdx, 6] = $@"{model.Main.TestStandard} {WorstDetail.Scale}";
-
-                        rowIdx += 3;
-                    }
-                    rowIdx = 0;
-                    foreach (var detailData in model.DetailList)
-                    {
-                        worksheet.Cells[10 + rowIdx, 2] = detailData.EvaluationItem;
-                        worksheet.Cells[10 + rowIdx, 4] = $@"{model.Main.TestStandard} {detailData.Scale}";
-                        rowIdx += 1;
+                        worksheet.Cell(1, 1).Value = $"T-Peel Strength Test ({testCode.FirstOrDefault().TestCode})";
                     }
 
-                }
-                else
-                {
-                    foreach (var detailData in model.DetailList)
+                    worksheet.Cell(3, 2).Value = model.Main.ReportNo;
+                    worksheet.Cell(3, 6).Value = model.Main.OrderID;
+                    worksheet.Cell(4, 2).Value = model.Main.FactoryID;
+                    worksheet.Cell(4, 6).Value = model.Main.SubmitDateText;
+                    worksheet.Cell(5, 2).Value = model.Main.StyleID;
+                    worksheet.Cell(5, 6).Value = model.Main.ReportDateText;
+                    worksheet.Cell(6, 2).Value = model.Main.Article;
+                    worksheet.Cell(6, 6).Value = model.Main.FabricRefNo;
+                    worksheet.Cell(7, 2).Value = model.Main.SeasonID;
+                    worksheet.Cell(7, 6).Value = model.Main.FabricColor;
+
+                    if (model.Main.FabricType == "WOVEN")
                     {
-                        worksheet.Cells[10, 2] = detailData.EvaluationItem;
-                        worksheet.Cells[10, 4] = $@"{model.Main.TestStandard} {detailData.Scale}";
+                        worksheet.Cell("A8").Value = "FABRIC TYPE:               ☑";
                     }
-                }
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-
-                string fileName = $"{tmpName}.xlsx";
-                string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
-
-                string filePdfName = $"{tmpName}.pdf";
-                string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
-
-
-                Microsoft.Office.Interop.Excel.Workbook workbook = excel.ActiveWorkbook;
-                workbook.SaveAs(fullExcelFileName);
-
-                workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-
-                // 轉PDF再繼續進行以下
-                if (isPDF)
-                {
-                    if (ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
+                    if (model.Main.FabricType == "KNIT")
                     {
-                        result.TempFileName = filePdfName;
-                        result.Result = true;
+                        worksheet.Cell("D8").Value = "☑";
+                    }
+
+                    if (model.Main.Result == "Pass")
+                    {
+                        worksheet.Cell("I10").Value = "☑";
                     }
                     else
                     {
-                        result.ErrorMessage = "Convert To PDF Fail";
-                        result.Result = false;
+                        worksheet.Cell("I13").Value = "☑";
+                    }
+
+                    AddImageToWorksheet(worksheet, model.Main.TestBeforePicture, 18, 1, 200, 300);
+                    AddImageToWorksheet(worksheet, model.Main.TestBeforePicture, 31, 1, 200, 300);
+                    AddImageToWorksheet(worksheet, model.Main.Test500AfterPicture, 18, 6, 200, 300);
+                    AddImageToWorksheet(worksheet, model.Main.Test2000AfterPicture, 31, 6, 200, 300);
+
+                    if (ReportTechnician.Rows.Count > 0)
+                    {
+                        string technicianName = ReportTechnician.Rows[0]["Technician"].ToString();
+                        worksheet.Cell(45, 5).Value = technicianName;
+
+                        if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                        {
+                            byte[] signature = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"];
+                            AddImageToWorksheet(worksheet, signature, 45, 6, 100, 24);
+                        }
+                    }
+
+                    if (model.DetailList.Any())
+                    {
+                        int rowIdx = 0;
+                        foreach (var rubTimes in model.DefaultRubTimes)
+                        {
+                            worksheet.Cell(10 + rowIdx, 1).Value = rubTimes;
+
+                            MartindalePillingTest_Detail WorstDetail = model.DetailList.Where(o => o.RubTimes == rubTimes).OrderBy(o => o.Scale).FirstOrDefault();
+                            worksheet.Cell(10 + rowIdx, 6).Value = $"{model.Main.TestStandard} {WorstDetail?.Scale}";
+
+                            rowIdx += 3;
+                        }
+
+                        rowIdx = 0;
+                        foreach (var detailData in model.DetailList)
+                        {
+                            worksheet.Cell(10 + rowIdx, 2).Value = detailData.EvaluationItem;
+                            worksheet.Cell(10 + rowIdx, 4).Value = $"{model.Main.TestStandard} {detailData.Scale}";
+                            rowIdx++;
+                        }
+                    }
+
+                    tmpName = RemoveInvalidFileNameChars(tmpName);
+
+                    string fileName = $"{tmpName}.xlsx";
+                    string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
+                    string filePdfName = $"{tmpName}.pdf";
+                    string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
+
+                    workbook.SaveAs(fullExcelFileName);
+                    if (isPDF)
+                    {
+                        ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
+                        result.TempFileName = filePdfName;
+                    }
+                    else
+                    {
+                        result.TempFileName = fileName;
                     }
                 }
-                else
-                {
-                    result.TempFileName = fileName;
-                    result.Result = true;
-                }
+
+                result.Result = true;
             }
             catch (Exception ex)
             {
                 result.ErrorMessage = ex.Message;
                 result.Result = false;
             }
-            finally
-            {
-                Marshal.ReleaseComObject(excel);
-            }
+
             return result;
         }
+
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
+        }
+
+        private string RemoveInvalidFileNameChars(string input)
+        {
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+            foreach (char c in invalidChars)
+            {
+                input = input.Replace(c.ToString(), "");
+            }
+            return input;
+        }
+
 
 
         public SendMail_Result SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)

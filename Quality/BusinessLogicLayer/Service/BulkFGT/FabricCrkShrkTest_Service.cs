@@ -1,12 +1,12 @@
 ﻿using ADOHelper.Utility;
 using BusinessLogicLayer.Interface;
+using ClosedXML.Excel;
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
-using Org.BouncyCastle.Ocsp;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
@@ -16,14 +16,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
-using System.Web.UI.WebControls;
-using Excel = Microsoft.Office.Interop.Excel;
-using Style = DatabaseObject.ProductionDB.Style;
 
 namespace BusinessLogicLayer.Service
 {
@@ -927,15 +920,203 @@ namespace BusinessLogicLayer.Service
         }
 
 
+        public BaseResult ToReport_Crocking(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "")
+        {
+            BaseResult result = new BaseResult();
+            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+            List<Crocking_Excel> dataList_Head = _FabricCrkShrkTestProvider.CrockingTest_ToExcel_Head(ID).ToList();
+            List<Crocking_Excel> dataList_Body = _FabricCrkShrkTestProvider.CrockingTest_ToExcel_Body(ID).ToList();
+            excelFileName = string.Empty;
+
+            if (!dataList_Head.Any())
+            {
+                result.Result = false;
+                result.ErrorMessage = "Data not found!";
+                return result;
+            }
+
+            // 設定範本檔名
+            string basefileName = "FabricCrockingTest";
+            switch (dataList_Head.First().BrandID.ToUpper())
+            {
+                case "ADIDAS":
+                case "U.ARMOUR":
+                case "NIKE":
+                case "GYMSHARK":
+                    basefileName = "FabricCrockingTest_ByBrand_A";
+                    break;
+                case "LLL":
+                case "N.FACE":
+                case "REI":
+                    basefileName = "FabricCrockingTest_ByBrand_B";
+                    break;
+            }
+
+            // 生成檔案名稱
+            var headData = dataList_Head.First();
+            string tmpName = $"Fabric Crocking Test_{headData.POID}_{headData.StyleID}_{headData.Refno}_{headData.Color}_{headData.Crocking}_{DateTime.Now:yyyyMMddHHmmss}";
+            foreach (var invalidChar in Path.GetInvalidFileNameChars())
+            {
+                tmpName = tmpName.Replace(invalidChar.ToString(), "");
+            }
+
+            string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
+
+            // 開啟範本檔案
+            var workbook = new XLWorkbook(openfilepath);
+            var worksheet = workbook.Worksheet(1);
+
+            // 填寫表頭資料
+            var testCode = _QualityBrandTestCodeProvider.Get(headData.BrandID, "Fabric Crocking & Shrinkage Test-Crocking");
+            if (testCode.Any())
+            {
+                worksheet.Cell("A1").Value = $"Crocking Fastness Test Report({testCode.First().TestCode})";
+            }
+
+            worksheet.Cell("C2").Value = headData.ReportNo;
+            worksheet.Cell("C3").Value = headData.CrockingReceiveDate?.ToShortDateString();
+            worksheet.Cell("G3").Value = headData.SubmitDate;
+            worksheet.Cell("C4").Value = headData.SeasonID;
+            worksheet.Cell("G4").Value = headData.BrandID;
+            worksheet.Cell("C5").Value = headData.StyleID;
+            worksheet.Cell("G5").Value = headData.POID;
+            worksheet.Cell("C6").Value = headData.Article;
+            worksheet.Cell("C7").Value = headData.SCIRefno_Color;
+            worksheet.Cell("G8").Value = headData.Color;
+            worksheet.Cell("B16").Value = headData.Remark;
+
+            // 插入圖片與簽名
+            InsertCrockingImages(worksheet, headData);
+
+            // 動態插入表身資料
+            if (dataList_Body.Count > 1)
+            {
+                int templateRows = 2;
+                for (int i = 1; i < dataList_Body.Count; i++)
+                {
+                    worksheet.Row(13).InsertRowsBelow(templateRows);
+                    worksheet.Range("A13:H14").CopyTo(worksheet.Cell(13 + i * templateRows, 1));
+                }
+            }
+
+            for (int i = 0; i < dataList_Body.Count; i++)
+            {
+                int rowIdx = i * 2;
+                var item = dataList_Body[i];
+
+                worksheet.Cell(13 + rowIdx, 1).Value = item.Roll;
+                worksheet.Cell(13 + rowIdx, 2).Value = item.Dyelot;
+                worksheet.Cell(13 + rowIdx, 4).Value = item.DryScale;
+                worksheet.Cell(13 + rowIdx, 5).Value = item.DryScale_Weft;
+                worksheet.Cell(13 + rowIdx, 6).Value = item.WetScale;
+                worksheet.Cell(13 + rowIdx, 7).Value = item.WetScale_Weft;
+
+                worksheet.Cell(14 + rowIdx, 4).Value = item.ResultDry;
+                worksheet.Cell(14 + rowIdx, 5).Value = item.ResultDry_Weft;
+                worksheet.Cell(14 + rowIdx, 6).Value = item.ResultWet;
+                worksheet.Cell(14 + rowIdx, 7).Value = item.ResultWet_Weft;
+            }
+
+            // 儲存報表
+            string filexlsx = $"{tmpName}.xlsx";
+            string fileNamePDF = $"{tmpName}.pdf";
+            string outputPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/TMP/"), filexlsx);
+            workbook.SaveAs(outputPath);
+            excelFileName = filexlsx;
+
+            if (IsPDF)
+            {
+                string pdfPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/TMP/"), fileNamePDF);
+                if (ConvertToPDF.ExcelToPDF(outputPath, pdfPath))
+                {
+                    excelFileName = fileNamePDF;
+                }
+                else
+                {
+                    result.Result = false;
+                    result.ErrorMessage = "Convert To PDF Fail";
+                    return result;
+                }
+            }
+
+            result.Result = true;
+            return result;
+        }
+        private void InsertCrockingImages(IXLWorksheet worksheet, Crocking_Excel headData)
+        {
+            int signatureWidth = 133, signatureHeight = 32;
+            int testPictureWidth = 323, testPictureHeight = 255;
+
+            // 根據品牌調整圖片與簽名位置
+            switch (headData.BrandID.ToUpper())
+            {
+                case "ADIDAS":
+                case "U.ARMOUR":
+                case "NIKE":
+                case "GYMSHARK":
+                    AddImageToWorksheet(worksheet, headData.InspectorSignature, 74, 3, signatureWidth, signatureHeight);
+                    AddImageToWorksheet(worksheet, headData.ApproverSignature, 74, 7, signatureWidth, signatureHeight);
+                    AddImageToWorksheet(worksheet, headData.CrockingTestPicture1, 18, 1, testPictureWidth, testPictureHeight);
+                    AddImageToWorksheet(worksheet, headData.CrockingTestPicture2, 18, 5, testPictureWidth, testPictureHeight);
+                    AddImageToWorksheet(worksheet, headData.CrockingTestPicture3, 46, 1, testPictureWidth, testPictureHeight);
+                    AddImageToWorksheet(worksheet, headData.CrockingTestPicture4, 46, 5, testPictureWidth, testPictureHeight);
+                    break;
+
+                case "LLL":
+                case "N.FACE":
+                case "REI":
+                    AddImageToWorksheet(worksheet, headData.InspectorSignature, 48, 3, signatureWidth, signatureHeight);
+                    AddImageToWorksheet(worksheet, headData.ApproverSignature, 48, 7, signatureWidth, signatureHeight);
+                    AddImageToWorksheet(worksheet, headData.CrockingTestPicture1, 18, 1, testPictureWidth, testPictureHeight);
+                    AddImageToWorksheet(worksheet, headData.CrockingTestPicture2, 18, 5, testPictureWidth, testPictureHeight);
+                    break;
+
+                default: // Default 情況
+                    AddImageToWorksheet(worksheet, headData.InspectorSignature, 74, 3, signatureWidth, signatureHeight);
+                    AddImageToWorksheet(worksheet, headData.ApproverSignature, 74, 7, signatureWidth, signatureHeight);
+                    AddImageToWorksheet(worksheet, headData.CrockingTestPicture1, 18, 1, testPictureWidth, testPictureHeight);
+                    AddImageToWorksheet(worksheet, headData.CrockingTestPicture2, 18, 5, testPictureWidth, testPictureHeight);
+                    AddImageToWorksheet(worksheet, headData.CrockingTestPicture3, 46, 1, testPictureWidth, testPictureHeight);
+                    AddImageToWorksheet(worksheet, headData.CrockingTestPicture4, 46, 5, testPictureWidth, testPictureHeight);
+                    break;
+            }
+        }
+
+        // 儲存報表
+        private string SaveReport(XLWorkbook workbook, string tmpName, bool IsPDF, out string excelFileName)
+        {
+            string basePath = System.Web.HttpContext.Current.Server.MapPath("~/TMP/");
+            string filepath = Path.Combine(basePath, tmpName + ".xlsx");
+            workbook.SaveAs(filepath);
+            excelFileName = tmpName + ".xlsx";
+
+            if (IsPDF)
+            {
+                string filepathpdf = Path.Combine(basePath, tmpName + ".pdf");
+                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                {
+                    excelFileName = tmpName + ".pdf";
+                }
+                else
+                {
+                    throw new Exception("Convert To PDF Fail");
+                }
+            }
+            return filepath;
+        }
 
         public BaseResult ToReport_Heat(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "")
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
             _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+
             BaseResult result = new BaseResult();
             excelFileName = string.Empty;
             string tmpName = string.Empty;
+
             try
             {
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
@@ -943,23 +1124,9 @@ namespace BusinessLogicLayer.Service
                 FabricCrkShrkTestHeat_Main fabricCrkShrkTestHeat_Main = _FabricCrkShrkTestProvider.GetFabricHeatTest_Main(ID);
                 var testCode = _QualityBrandTestCodeProvider.Get(fabricCrkShrkTestHeat_Main.BrandID, "Fabric Crocking & Shrinkage Test-Heat");
 
-                string excelName = baseFilePath + "\\XLT\\FabricHeatTest.xltx";
-                string[] columnNames = new string[]
-                {
-                "Roll", "Dyelot", "HorizontalOriginal", "VerticalOriginal", "Result", "HorizontalTest1", "HorizontalTest2", "HorizontalTest3", "HorizontalAverage", "HorizontalRate",
-                "VerticalTest1", "VerticalTest2", "VerticalTest3", "VerticalAverage", "VerticalRate", "InspDate", "Inspector", "Name", "Remark", "LastUpdate",
-                };
+                string excelName = Path.Combine(baseFilePath, "XLT", "FabricHeatTest.xltx");
 
-                var ret = Array.CreateInstance(typeof(object), dtHeatDetail.Rows.Count, columnNames.Length) as object[,];
-                for (int i = 0; i < dtHeatDetail.Rows.Count; i++)
-                {
-                    DataRow row = dtHeatDetail.Rows[i];
-                    for (int j = 0; j < columnNames.Length; j++)
-                    {
-                        ret[i, j] = row[columnNames[j]];
-                    }
-                }
-
+                // 如果資料為空，返回錯誤
                 if (dtHeatDetail.Rows.Count == 0)
                 {
                     result.Result = false;
@@ -968,175 +1135,131 @@ namespace BusinessLogicLayer.Service
                 }
 
                 tmpName = $"Fabric Heat Test_{fabricCrkShrkTestHeat_Main.POID}_" +
-                        $"{fabricCrkShrkTestHeat_Main.StyleID}_" +
-                        $"{fabricCrkShrkTestHeat_Main.Refno}_" +
-                        $"{fabricCrkShrkTestHeat_Main.ColorID}_" +
-                        $"{fabricCrkShrkTestHeat_Main.Heat}_" +
-                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                          $"{fabricCrkShrkTestHeat_Main.StyleID}_" +
+                          $"{fabricCrkShrkTestHeat_Main.Refno}_" +
+                          $"{fabricCrkShrkTestHeat_Main.ColorID}_" +
+                          $"{fabricCrkShrkTestHeat_Main.Heat}_" +
+                          $"{DateTime.Now:yyyyMMddHHmmss}";
 
+                string seasonID = _OrdersProvider.Get(new Orders() { ID = fabricCrkShrkTestHeat_Main.POID })
+                                                 .FirstOrDefault()?.SeasonID ?? string.Empty;
 
-                // 撈seasonID
-                // 撈取seasonID
-                List<Orders> listOrders = _OrdersProvider.Get(new Orders() { ID = fabricCrkShrkTestHeat_Main.POID }).ToList();
+                // 開啟範本檔案
+                var workbook = new XLWorkbook(excelName);
+                var worksheet = workbook.Worksheet(1);
 
-                string seasonID;
-
-                if (listOrders.Count == 0)
-                {
-                    seasonID = string.Empty;
-                }
-                else
-                {
-                    seasonID = listOrders[0].SeasonID;
-                }
-
-                Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(excelName);
-
-                Microsoft.Office.Interop.Excel.Worksheet excelSheets = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
+                // 填寫標題和主表資料
                 if (testCode.Any())
-                {
-                    excelSheets.Cells[1, 1] = $@"Quality Heat Test Report({testCode.FirstOrDefault().TestCode})";
+                { 
+                    worksheet.Cell("A1").Value = $"Quality Heat Test Report({testCode.First().TestCode})";
                 }
-                excelSheets.Cells[2, 2] = fabricCrkShrkTestHeat_Main.ReportNo;
-                excelSheets.Cells[3, 2] = fabricCrkShrkTestHeat_Main.POID;
-                excelSheets.Cells[3, 4] = fabricCrkShrkTestHeat_Main.SEQ;
-                excelSheets.Cells[3, 6] = fabricCrkShrkTestHeat_Main.ColorID;
-                excelSheets.Cells[3, 8] = fabricCrkShrkTestHeat_Main.StyleID;
-                excelSheets.Cells[3, 10] = seasonID;
-                excelSheets.Cells[4, 2] = fabricCrkShrkTestHeat_Main.SCIRefno;
-                excelSheets.Cells[4, 4] = fabricCrkShrkTestHeat_Main.ExportID;
-                excelSheets.Cells[4, 6] = fabricCrkShrkTestHeat_Main.Heat;
-                excelSheets.Cells[4, 8] = fabricCrkShrkTestHeat_Main.HeatDate == null ? string.Empty : ((DateTime)fabricCrkShrkTestHeat_Main.HeatDate).ToString("yyyy/MM/dd");
-                excelSheets.Cells[4, 10] = fabricCrkShrkTestHeat_Main.BrandID;
-                excelSheets.Cells[5, 2] = fabricCrkShrkTestHeat_Main.Refno;
-                excelSheets.Cells[5, 4] = fabricCrkShrkTestHeat_Main.ArriveQty;
-                excelSheets.Cells[5, 6] = fabricCrkShrkTestHeat_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestHeat_Main.WhseArrival).ToString("yyyy/MM/dd");
-                excelSheets.Cells[5, 8] = fabricCrkShrkTestHeat_Main.Supp;
-                excelSheets.Cells[5, 10] = fabricCrkShrkTestHeat_Main.NonHeat.ToString();
-                excelSheets.Cells[6, 2] = fabricCrkShrkTestHeat_Main.HeatReceiveDate.HasValue ? fabricCrkShrkTestHeat_Main.HeatReceiveDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-                //excelSheets.Cells[6, 4] = fabricCrkShrkTestHeat_Main.Heat_Temperature;
-                //excelSheets.Cells[6, 6] = fabricCrkShrkTestHeat_Main.Heat_Second;
-                //excelSheets.Cells[6, 8] = fabricCrkShrkTestHeat_Main.Heat_Pressure;
+                worksheet.Cell("B2").Value = fabricCrkShrkTestHeat_Main.ReportNo;
+                worksheet.Cell("B3").Value = fabricCrkShrkTestHeat_Main.POID;
+                worksheet.Cell("D3").Value = fabricCrkShrkTestHeat_Main.SEQ;
+                worksheet.Cell("F3").Value = fabricCrkShrkTestHeat_Main.ColorID;
+                worksheet.Cell("H3").Value = fabricCrkShrkTestHeat_Main.StyleID;
+                worksheet.Cell("J3").Value = seasonID;
 
-                excelSheets.Cells[30, 4] = fabricCrkShrkTestHeat_Main.HeatInspectorName;
-                excelSheets.Cells[30, 9] = fabricCrkShrkTestHeat_Main.HeatApproverName;
+                worksheet.Cell("B4").Value = fabricCrkShrkTestHeat_Main.SCIRefno;
+                worksheet.Cell("D4").Value = fabricCrkShrkTestHeat_Main.ExportID;
+                worksheet.Cell("F4").Value = fabricCrkShrkTestHeat_Main.Heat;
+                worksheet.Cell("H4").Value = fabricCrkShrkTestHeat_Main.HeatDate?.ToString("yyyy/MM/dd");
+                worksheet.Cell("J4").Value = fabricCrkShrkTestHeat_Main.BrandID;
 
-                int defaultRowCount = 1;
-                int detailStartIdx = 8;
-                int otherCount = (dtHeatDetail.Rows.Count - defaultRowCount) > 0 ? dtHeatDetail.Rows.Count - defaultRowCount : 0;
-                if (otherCount > 0)
+                // 動態填充明細資料
+                int detailStartRow = 8;
+                for (int i = 0; i < dtHeatDetail.Rows.Count; i++)
                 {
-                    // Rate List 複製Row：若有第4筆，則複製一次；有第5筆，則複製2次
-                    for (int i = 0; i < otherCount; i++)
+                    // 第一筆資料不用複製
+                    if (i > 0)
                     {
-                        Microsoft.Office.Interop.Excel.Range paste = excelSheets.get_Range($"A{detailStartIdx + i}", Type.Missing);
-                        Microsoft.Office.Interop.Excel.Range copyRow = excelSheets.get_Range($"A{detailStartIdx}").EntireRow;
-                        paste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
+                        // 1. 複製第 10 列
+                        var rowToCopy = worksheet.Row(8);
+
+                        // 2. 插入一列，將第 8 和第 9 列之間騰出空間
+                        worksheet.Row(9).InsertRowsAbove(1);
+
+                        // 3. 複製格式到新插入的列
+                        var newRow = worksheet.Row(9);
+
+                        rowToCopy.CopyTo(newRow);
+                    }
+
+                    var row = dtHeatDetail.Rows[i];
+                    for (int col = 0; col < dtHeatDetail.Columns.Count; col++)
+                    {
+                        switch (row[col].GetType().Name)
+                        {
+                            case "String":
+                                worksheet.Cell(detailStartRow + i, col + 1).Value = row[col].ToString();
+                                break;
+                            case "Int32":
+                                worksheet.Cell(detailStartRow + i, col + 1).Value = row[col].ToValue<Int32>();
+                                break;
+                            case "Decimal":
+                                worksheet.Cell(detailStartRow + i, col + 1).Value = row[col].ToValue<decimal>();
+                                break;
+                            case "DateTime":
+                                worksheet.Cell(detailStartRow + i, col + 1).Value = row[col].ToValue<DateTime>();
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
 
-                int RowIdx = 0;
-                foreach (DataRow dr in dtHeatDetail.Rows)
-                {
-                    int colIndex = 1;
-                    foreach (string col in columnNames)
-                    {
-                        excel.Cells[RowIdx + detailStartIdx, colIndex] = dtHeatDetail.Rows[RowIdx][col].ToString();
-                        colIndex++;
-                    }
-
-                    RowIdx++;
-                }
-
-                #region 添加圖片
-                Excel.Range cellBeforePicture = excelSheets.Cells[10 + otherCount, 1];
+                // 添加圖片
                 if (fabricCrkShrkTestHeat_Main.HeatTestBeforePicture != null)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestHeat_Main.HeatTestBeforePicture, fabricCrkShrkTestHeat_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
+                    using (var stream = new MemoryStream(fabricCrkShrkTestHeat_Main.HeatTestBeforePicture))
+                    {
+                        var beforePic = worksheet.AddPicture(stream)
+                                                 .MoveTo(worksheet.Cell(10 + dtHeatDetail.Rows.Count, 1))
+                                                 .WithSize(323, 255);
+                    }
                 }
 
-                Excel.Range cellAfterPicture = excelSheets.Cells[10 + otherCount, 7];
                 if (fabricCrkShrkTestHeat_Main.HeatTestAfterPicture != null)
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestHeat_Main.HeatTestAfterPicture, fabricCrkShrkTestHeat_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 323, 255);
+                    using (var stream = new MemoryStream(fabricCrkShrkTestHeat_Main.HeatTestAfterPicture))
+                    {
+                        var afterPic = worksheet.AddPicture(stream)
+                                                .MoveTo(worksheet.Cell(10 + dtHeatDetail.Rows.Count, 7))
+                                                .WithSize(430, 340);
+                    }
                 }
 
-                Excel.Range rgInspectorSignature = excelSheets.Cells[32 + otherCount, 4];
-                if (fabricCrkShrkTestHeat_Main.InspectorSignature != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestHeat_Main.InspectorSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgInspectorSignature.Left, rgInspectorSignature.Top, 100, 24);
-                }
-
-                Excel.Range rgApproverignature = excelSheets.Cells[32 + otherCount, 9];
-                if (fabricCrkShrkTestHeat_Main.ApproverSignature != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestHeat_Main.ApproverSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgApproverignature.Left, rgApproverignature.Top, 100, 24);
-                }
-                #endregion
-
-                excel.Cells.EntireColumn.AutoFit();    // 自動欄寬
-                excel.Cells.EntireRow.AutoFit();       ////自動欄高
-
-                #region Save & Show Excel
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-
-                string filexlsx = tmpName + ".xlsx";
-                string fileNamePDF = tmpName + ".pdf";
-
-                string filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
-                string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
-
-
-                Excel.Workbook workbook = excel.ActiveWorkbook;
-                workbook.SaveAs(filepath);
-
+                // 儲存 Excel 檔案
+                string filexlsx = $"{tmpName}.xlsx";
+                string outputDir = Path.Combine(baseFilePath, "TMP");
+                string outputPath = Path.Combine(outputDir, filexlsx);
+                workbook.SaveAs(outputPath);
                 excelFileName = filexlsx;
 
+                result.Result = true;
+
+                // 如果需要轉換 PDF
                 if (IsPDF)
                 {
-                    if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                    string pdfPath = Path.Combine(outputDir, $"{tmpName}.pdf");
+                    if (ConvertToPDF.ExcelToPDF(outputPath, pdfPath))
                     {
-                        excelFileName = fileNamePDF;
-                        result.Result = true;
+                        excelFileName = $"{tmpName}.pdf";
                     }
                     else
                     {
-                        result.ErrorMessage = "Convert To PDF Fail";
                         result.Result = false;
+                        result.ErrorMessage = "Convert To PDF Fail";
                     }
-
                 }
-
-                workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(excel);
-                Marshal.ReleaseComObject(excelSheets);
-                #endregion
             }
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
+                result.ErrorMessage = ex.Message;
             }
 
             return result;
-
         }
         public BaseResult ToReport_Iron(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "")
         {
@@ -1152,22 +1275,7 @@ namespace BusinessLogicLayer.Service
                 DataTable dtIronDetail = _FabricCrkShrkTestProvider.GetIronDetailForReport(ID);
                 FabricCrkShrkTestIron_Main fabricCrkShrkTestIron_Main = _FabricCrkShrkTestProvider.GetFabricIronTest_Main(ID);
 
-                string excelName = baseFilePath + "\\XLT\\FabricIronTest.xltx";
-                string[] columnNames = new string[]
-                {
-                "Roll", "Dyelot", "HorizontalOriginal", "VerticalOriginal", "Result", "HorizontalTest1", "HorizontalTest2", "HorizontalTest3", "HorizontalAverage", "HorizontalRate",
-                "VerticalTest1", "VerticalTest2", "VerticalTest3", "VerticalAverage", "VerticalRate", "InspDate", "Inspector", "Name", "Remark", "LastUpdate",
-                };
-
-                var ret = Array.CreateInstance(typeof(object), dtIronDetail.Rows.Count, columnNames.Length) as object[,];
-                for (int i = 0; i < dtIronDetail.Rows.Count; i++)
-                {
-                    DataRow row = dtIronDetail.Rows[i];
-                    for (int j = 0; j < columnNames.Length; j++)
-                    {
-                        ret[i, j] = row[columnNames[j]];
-                    }
-                }
+                string templatePath = Path.Combine(baseFilePath, "XLT", "FabricIronTest.xltx");
 
                 if (dtIronDetail.Rows.Count == 0)
                 {
@@ -1177,158 +1285,113 @@ namespace BusinessLogicLayer.Service
                 }
 
                 tmpName = $"Fabric Iron Test_{fabricCrkShrkTestIron_Main.POID}_" +
-                        $"{fabricCrkShrkTestIron_Main.StyleID}_" +
-                        $"{fabricCrkShrkTestIron_Main.Refno}_" +
-                        $"{fabricCrkShrkTestIron_Main.ColorID}_" +
-                        $"{fabricCrkShrkTestIron_Main.Iron}_" +
-                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                          $"{fabricCrkShrkTestIron_Main.StyleID}_" +
+                          $"{fabricCrkShrkTestIron_Main.Refno}_" +
+                          $"{fabricCrkShrkTestIron_Main.ColorID}_" +
+                          $"{fabricCrkShrkTestIron_Main.Iron}_" +
+                          $"{DateTime.Now:yyyyMMddHHmmss}";
 
-                // 撈seasonID
-                // 撈取seasonID
-                List<Orders> listOrders = _OrdersProvider.Get(new Orders() { ID = fabricCrkShrkTestIron_Main.POID }).ToList();
+                string seasonID = _OrdersProvider.Get(new Orders { ID = fabricCrkShrkTestIron_Main.POID })
+                                    .FirstOrDefault()?.SeasonID ?? string.Empty;
 
-                string seasonID;
+                string outputFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.xlsx");
 
-                if (listOrders.Count == 0)
+                using (var workbook = new XLWorkbook(templatePath))
                 {
-                    seasonID = string.Empty;
-                }
-                else
-                {
-                    seasonID = listOrders[0].SeasonID;
-                }
+                    var worksheet = workbook.Worksheet(1);
 
-                Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(excelName);
+                    // 填入主表數據
+                    worksheet.Cell("B2").Value = fabricCrkShrkTestIron_Main.ReportNo;
+                    worksheet.Cell("B3").Value = fabricCrkShrkTestIron_Main.POID;
+                    worksheet.Cell("D3").Value = fabricCrkShrkTestIron_Main.SEQ;
+                    worksheet.Cell("F3").Value = fabricCrkShrkTestIron_Main.ColorID;
+                    worksheet.Cell("H3").Value = fabricCrkShrkTestIron_Main.StyleID;
+                    worksheet.Cell("J3").Value = seasonID;
+                    worksheet.Cell("B4").Value = fabricCrkShrkTestIron_Main.SCIRefno;
+                    worksheet.Cell("D4").Value = fabricCrkShrkTestIron_Main.ExportID;
+                    worksheet.Cell("F4").Value = fabricCrkShrkTestIron_Main.Iron;
+                    worksheet.Cell("H4").Value = fabricCrkShrkTestIron_Main.IronDate?.ToString("yyyy/MM/dd") ?? string.Empty;
+                    worksheet.Cell("J4").Value = fabricCrkShrkTestIron_Main.BrandID;
+                    worksheet.Cell("B5").Value = fabricCrkShrkTestIron_Main.Refno;
+                    worksheet.Cell("D5").Value = fabricCrkShrkTestIron_Main.ArriveQty;
+                    worksheet.Cell("F5").Value = fabricCrkShrkTestIron_Main.WhseArrival?.ToString("yyyy/MM/dd") ?? string.Empty;
+                    worksheet.Cell("H5").Value = fabricCrkShrkTestIron_Main.Supp;
+                    worksheet.Cell("J5").Value = fabricCrkShrkTestIron_Main.NonIron.ToString();
+                    worksheet.Cell("B6").Value = fabricCrkShrkTestIron_Main.IronReceiveDate?.ToString("yyyy/MM/dd") ?? string.Empty;
 
-                Microsoft.Office.Interop.Excel.Worksheet excelSheets = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-                excelSheets.Cells[2, 2] = fabricCrkShrkTestIron_Main.ReportNo;
-                excelSheets.Cells[3, 2] = fabricCrkShrkTestIron_Main.POID;
-                excelSheets.Cells[3, 4] = fabricCrkShrkTestIron_Main.SEQ;
-                excelSheets.Cells[3, 6] = fabricCrkShrkTestIron_Main.ColorID;
-                excelSheets.Cells[3, 8] = fabricCrkShrkTestIron_Main.StyleID;
-                excelSheets.Cells[3, 10] = seasonID;
-                excelSheets.Cells[4, 2] = fabricCrkShrkTestIron_Main.SCIRefno;
-                excelSheets.Cells[4, 4] = fabricCrkShrkTestIron_Main.ExportID;
-                excelSheets.Cells[4, 6] = fabricCrkShrkTestIron_Main.Iron;
-                excelSheets.Cells[4, 8] = fabricCrkShrkTestIron_Main.IronDate == null ? string.Empty : ((DateTime)fabricCrkShrkTestIron_Main.IronDate).ToString("yyyy/MM/dd");
-                excelSheets.Cells[4, 10] = fabricCrkShrkTestIron_Main.BrandID;
-                excelSheets.Cells[5, 2] = fabricCrkShrkTestIron_Main.Refno;
-                excelSheets.Cells[5, 4] = fabricCrkShrkTestIron_Main.ArriveQty;
-                excelSheets.Cells[5, 6] = fabricCrkShrkTestIron_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestIron_Main.WhseArrival).ToString("yyyy/MM/dd");
-                excelSheets.Cells[5, 8] = fabricCrkShrkTestIron_Main.Supp;
-                excelSheets.Cells[5, 10] = fabricCrkShrkTestIron_Main.NonIron.ToString();
-                excelSheets.Cells[6, 2] = fabricCrkShrkTestIron_Main.IronReceiveDate.HasValue ? fabricCrkShrkTestIron_Main.IronReceiveDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+                    worksheet.Cell("D30").Value = fabricCrkShrkTestIron_Main.IronInspectorName;
+                    worksheet.Cell("I30").Value = fabricCrkShrkTestIron_Main.IronApproverName;
 
-                excelSheets.Cells[30, 4] = fabricCrkShrkTestIron_Main.IronInspectorName;
-                excelSheets.Cells[30, 9] = fabricCrkShrkTestIron_Main.IronApproverName;
-
-                int defaultRowCount = 1;
-                int detailStartIdx = 8;
-                int otherCount = (dtIronDetail.Rows.Count - defaultRowCount) > 0 ? dtIronDetail.Rows.Count - defaultRowCount : 0;
-                if (otherCount > 0)
-                {
-                    // Rate List 複製Row：若有第4筆，則複製一次；有第5筆，則複製2次
-                    for (int i = 0; i < otherCount; i++)
+                    // 填入詳細數據
+                    int detailStartRow = 8;
+                    for (int i = 0; i < dtIronDetail.Rows.Count; i++)
                     {
-                        Microsoft.Office.Interop.Excel.Range paste = excelSheets.get_Range($"A{detailStartIdx + i}", Type.Missing);
-                        Microsoft.Office.Interop.Excel.Range copyRow = excelSheets.get_Range($"A{detailStartIdx}").EntireRow;
-                        paste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
+                        // 第一筆資料不用複製
+                        if (i > 0)
+                        {
+                            // 1. 複製第 10 列
+                            var rowToCopy = worksheet.Row(8);
+
+                            // 2. 插入一列，將第 8 和第 9 列之間騰出空間
+                            worksheet.Row(9).InsertRowsAbove(1);
+
+                            // 3. 複製格式到新插入的列
+                            var newRow = worksheet.Row(9);
+
+                            rowToCopy.CopyTo(newRow);
+                        }
+
+                        var row = dtIronDetail.Rows[i];
+                        for (int j = 0; j < dtIronDetail.Columns.Count; j++)
+                        {
+                            switch (row[j].GetType().Name)
+                            {
+                                case "String":
+                                    worksheet.Cell(detailStartRow + i, j + 1).Value = row[j].ToString();
+                                    break;
+                                case "Int32":
+                                    worksheet.Cell(detailStartRow + i, j + 1).Value = row[j].ToValue<Int32>();
+                                    break;
+                                case "Decimal":
+                                    worksheet.Cell(detailStartRow + i, j + 1).Value = row[j].ToValue<decimal>();
+                                    break;
+                                case "DateTime":
+                                    worksheet.Cell(detailStartRow + i, j + 1).Value = row[j].ToValue<DateTime>();
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
                     }
+
+                    // 插入圖片（使用共用方法）
+                    AddImageToWorksheet(worksheet, fabricCrkShrkTestIron_Main.IronTestBeforePicture, 10 + dtIronDetail.Rows.Count, 1, 323, 255);
+                    AddImageToWorksheet(worksheet, fabricCrkShrkTestIron_Main.IronTestAfterPicture, 10 + dtIronDetail.Rows.Count, 7, 323, 255);
+                    AddImageToWorksheet(worksheet, fabricCrkShrkTestIron_Main.InspectorSignature, 32 + dtIronDetail.Rows.Count, 4, 100, 24);
+                    AddImageToWorksheet(worksheet, fabricCrkShrkTestIron_Main.ApproverSignature, 32 + dtIronDetail.Rows.Count, 9, 100, 24);
+
+                    workbook.SaveAs(outputFilePath);
+                    excelFileName = $"{tmpName}.xlsx";
                 }
-
-                int RowIdx = 0;
-                foreach (DataRow dr in dtIronDetail.Rows)
-                {
-                    int colIndex = 1;
-                    foreach (string col in columnNames)
-                    {
-                        excel.Cells[RowIdx + detailStartIdx, colIndex] = dtIronDetail.Rows[RowIdx][col].ToString();
-                        colIndex++;
-                    }
-
-                    RowIdx++;
-                }
-
-                #region 添加圖片
-                Excel.Range cellBeforePicture = excelSheets.Cells[10 + otherCount, 1];
-                if (fabricCrkShrkTestIron_Main.IronTestBeforePicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestIron_Main.IronTestBeforePicture, fabricCrkShrkTestIron_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 323, 255);
-                }
-
-                Excel.Range cellAfterPicture = excelSheets.Cells[10 + otherCount, 7];
-                if (fabricCrkShrkTestIron_Main.IronTestAfterPicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestIron_Main.IronTestAfterPicture, fabricCrkShrkTestIron_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 323, 255);
-                }
-
-                Excel.Range rgInspectorSignature = excelSheets.Cells[32 + otherCount, 4];
-                if (fabricCrkShrkTestIron_Main.InspectorSignature != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestIron_Main.InspectorSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgInspectorSignature.Left, rgInspectorSignature.Top, 100, 24);
-                }
-
-                Excel.Range rgApproverignature = excelSheets.Cells[32 + otherCount, 9];
-                if (fabricCrkShrkTestIron_Main.ApproverSignature != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestIron_Main.ApproverSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgApproverignature.Left, rgApproverignature.Top, 100, 24);
-                }
-                #endregion
-
-                excel.Cells.EntireColumn.AutoFit();    // 自動欄寬
-                excel.Cells.EntireRow.AutoFit();       ////自動欄高
-
-                #region Save & Show Excel
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-
-                string filexlsx = tmpName + ".xlsx";
-                string fileNamePDF = tmpName + ".pdf";
-
-                string filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
-                string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
-
-
-                Excel.Workbook workbook = excel.ActiveWorkbook;
-                workbook.SaveAs(filepath);
-
-                excelFileName = filexlsx;
 
                 if (IsPDF)
                 {
-                    if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                    string pdfFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.pdf");
+                    if (ConvertToPDF.ExcelToPDF(outputFilePath, pdfFilePath))
                     {
-                        excelFileName = fileNamePDF;
+                        excelFileName = $"{tmpName}.pdf";
                         result.Result = true;
                     }
                     else
                     {
-                        result.ErrorMessage = "Convert To PDF Fail";
                         result.Result = false;
+                        result.ErrorMessage = "Convert to PDF failed.";
                     }
-
                 }
-
-                workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(excel);
-                Marshal.ReleaseComObject(excelSheets);
-                #endregion
+                else
+                {
+                    result.Result = true;
+                }
             }
             catch (Exception ex)
             {
@@ -1337,7 +1400,6 @@ namespace BusinessLogicLayer.Service
             }
 
             return result;
-
         }
         public BaseResult ToReport_Wash(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "")
         {
@@ -1350,32 +1412,13 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
 
                 DataTable dtWashDetail = _FabricCrkShrkTestProvider.GetWashDetailForReport(ID);
                 FabricCrkShrkTestWash_Main fabricCrkShrkTestWash_Main = _FabricCrkShrkTestProvider.GetFabricWashTest_Main(ID);
                 var testCode = _QualityBrandTestCodeProvider.Get(fabricCrkShrkTestWash_Main.BrandID, "Fabric Crocking & Shrinkage Test-Wash");
 
-                string excelName = baseFilePath + "\\XLT\\FabricWashTest.xltx";
-
-                string[] columnNames = new string[]
-                {
-                "Roll", "Dyelot", "HorizontalOriginal", "VerticalOriginal", "Result", "HorizontalTest1", "HorizontalTest2", "HorizontalTest3", "HorizontalAverage", "HorizontalRate",
-                "VerticalTest1", "VerticalTest2", "VerticalTest3", "VerticalAverage", "VerticalRate", "SkewnessTest1", "SkewnessTest2", "SkewnessTest3", "SkewnessTest4", "SkewnessRate", "InspDate", "Inspector", "Name", "Remark", "LastUpdate",
-                };
-
-                string skewnessOption = fabricCrkShrkTestWash_Main.SkewnessOptionID;
-
-                var ret = Array.CreateInstance(typeof(object), dtWashDetail.Rows.Count, columnNames.Length) as object[,];
-                for (int i = 0; i < dtWashDetail.Rows.Count; i++)
-                {
-                    DataRow row = dtWashDetail.Rows[i];
-                    for (int j = 0; j < columnNames.Length; j++)
-                    {
-                        ret[i, j] = row[columnNames[j]];
-                    }
-                }
+                string templatePath = Path.Combine(baseFilePath, "XLT", "FabricWashTest.xltx");
 
                 if (dtWashDetail.Rows.Count == 0)
                 {
@@ -1385,196 +1428,145 @@ namespace BusinessLogicLayer.Service
                 }
 
                 tmpName = $"Fabric Wash Test_{fabricCrkShrkTestWash_Main.POID}_" +
-                        $"{fabricCrkShrkTestWash_Main.StyleID}_" +
-                        $"{fabricCrkShrkTestWash_Main.Refno}_" +
-                        $"{fabricCrkShrkTestWash_Main.ColorID}_" +
-                        $"{fabricCrkShrkTestWash_Main.Wash}_" +
-                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                          $"{fabricCrkShrkTestWash_Main.StyleID}_" +
+                          $"{fabricCrkShrkTestWash_Main.Refno}_" +
+                          $"{fabricCrkShrkTestWash_Main.ColorID}_" +
+                          $"{fabricCrkShrkTestWash_Main.Wash}_" +
+                          $"{DateTime.Now:yyyyMMddHHmmss}";
 
-                // 撈seasonID
-                List<Orders> listOrders = _OrdersProvider.Get(new Orders() { ID = fabricCrkShrkTestWash_Main.POID }).ToList();
+                string seasonID = _OrdersProvider.Get(new Orders { ID = fabricCrkShrkTestWash_Main.POID })
+                                    .FirstOrDefault()?.SeasonID ?? string.Empty;
 
-                string seasonID;
+                string outputFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.xlsx");
 
-                if (listOrders.Count == 0)
+                using (var workbook = new XLWorkbook(templatePath))
                 {
-                    seasonID = string.Empty;
-                }
-                else
-                {
-                    seasonID = listOrders[0].SeasonID;
-                }
+                    var worksheet = workbook.Worksheet(1);
 
-                Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(excelName);
-
-                Microsoft.Office.Interop.Excel.Worksheet excelSheets = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-                if (testCode.Any())
-                {
-                    excelSheets.Cells[1, 1] = $@"Quality Wash Test Report({testCode.FirstOrDefault().TestCode})";
-                }
-                excelSheets.Cells[2, 2] = fabricCrkShrkTestWash_Main.ReportNo;
-                excelSheets.Cells[3, 2] = fabricCrkShrkTestWash_Main.POID;
-                excelSheets.Cells[3, 4] = fabricCrkShrkTestWash_Main.SEQ;
-                excelSheets.Cells[3, 6] = fabricCrkShrkTestWash_Main.ColorID;
-                excelSheets.Cells[3, 8] = fabricCrkShrkTestWash_Main.StyleID;
-                excelSheets.Cells[3, 10] = seasonID;
-                excelSheets.Cells[4, 2] = fabricCrkShrkTestWash_Main.SCIRefno;
-                excelSheets.Cells[4, 4] = fabricCrkShrkTestWash_Main.ExportID;
-                excelSheets.Cells[4, 6] = fabricCrkShrkTestWash_Main.Wash;
-                excelSheets.Cells[4, 8] = fabricCrkShrkTestWash_Main.WashDate == null ? string.Empty : ((DateTime)fabricCrkShrkTestWash_Main.WashDate).ToString("yyyy/MM/dd");
-                excelSheets.Cells[4, 10] = fabricCrkShrkTestWash_Main.BrandID;
-                excelSheets.Cells[5, 2] = fabricCrkShrkTestWash_Main.Refno;
-                excelSheets.Cells[5, 4] = fabricCrkShrkTestWash_Main.ArriveQty;
-                excelSheets.Cells[5, 6] = fabricCrkShrkTestWash_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestWash_Main.WhseArrival).ToString("yyyy/MM/dd");
-                excelSheets.Cells[5, 8] = fabricCrkShrkTestWash_Main.Supp;
-                excelSheets.Cells[5, 10] = fabricCrkShrkTestWash_Main.NonWash;
-                excelSheets.Cells[6, 2] = fabricCrkShrkTestWash_Main.WashReceiveDate.HasValue ? fabricCrkShrkTestWash_Main.WashReceiveDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-
-                excelSheets.Cells[30, 4] = fabricCrkShrkTestWash_Main.WashInspectorName;
-                excelSheets.Cells[30, 9] = fabricCrkShrkTestWash_Main.WashApproverName;
-
-                int defaultRowCount = 1;
-                int detailStartIdx = 8;
-                int otherCount = (dtWashDetail.Rows.Count - defaultRowCount) > 0 ? dtWashDetail.Rows.Count - defaultRowCount : 0;
-                if (otherCount > 0)
-                {
-                    // Rate List 複製Row：若有第4筆，則複製一次；有第5筆，則複製2次
-                    for (int i = 0; i < otherCount; i++)
+                    // 填入主表數據
+                    if (testCode.Any())
                     {
-                        Microsoft.Office.Interop.Excel.Range paste = excelSheets.get_Range($"A{detailStartIdx + i}", Type.Missing);
-                        Microsoft.Office.Interop.Excel.Range copyRow = excelSheets.get_Range($"A{detailStartIdx}").EntireRow;
-                        paste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
+                        worksheet.Cell(1, 1).Value = $@"Quality Wash Test Report({testCode.First().TestCode})";
                     }
-                }
+                    worksheet.Cell("B2").Value = fabricCrkShrkTestWash_Main.ReportNo;
+                    worksheet.Cell("B3").Value = fabricCrkShrkTestWash_Main.POID;
+                    worksheet.Cell("D3").Value = fabricCrkShrkTestWash_Main.SEQ;
+                    worksheet.Cell("F3").Value = fabricCrkShrkTestWash_Main.ColorID;
+                    worksheet.Cell("H3").Value = fabricCrkShrkTestWash_Main.StyleID;
+                    worksheet.Cell("J3").Value = seasonID;
+                    worksheet.Cell("B4").Value = fabricCrkShrkTestWash_Main.SCIRefno;
+                    worksheet.Cell("D4").Value = fabricCrkShrkTestWash_Main.ExportID;
+                    worksheet.Cell("F4").Value = fabricCrkShrkTestWash_Main.Wash;
+                    worksheet.Cell("H4").Value = fabricCrkShrkTestWash_Main.WashDate?.ToString("yyyy/MM/dd") ?? string.Empty;
+                    worksheet.Cell("J4").Value = fabricCrkShrkTestWash_Main.BrandID;
+                    worksheet.Cell("B5").Value = fabricCrkShrkTestWash_Main.Refno;
+                    worksheet.Cell("D5").Value = fabricCrkShrkTestWash_Main.ArriveQty;
+                    worksheet.Cell("F5").Value = fabricCrkShrkTestWash_Main.WhseArrival?.ToString("yyyy/MM/dd") ?? string.Empty;
+                    worksheet.Cell("H5").Value = fabricCrkShrkTestWash_Main.Supp;
+                    worksheet.Cell("J5").Value = fabricCrkShrkTestWash_Main.NonWash.HasValue ? fabricCrkShrkTestWash_Main.NonWash.Value : false;
+                    worksheet.Cell("B6").Value = fabricCrkShrkTestWash_Main.WashReceiveDate?.ToString("yyyy/MM/dd") ?? string.Empty;
 
-                int RowIdx = 0;
-                foreach (DataRow dr in dtWashDetail.Rows)
-                {
-                    int colIndex = 1;
-                    foreach (string col in columnNames)
+                    worksheet.Cell("D30").Value = fabricCrkShrkTestWash_Main.WashInspectorName;
+                    worksheet.Cell("I30").Value = fabricCrkShrkTestWash_Main.WashApproverName;
+
+                    // 填入詳細數據
+                    int detailStartRow = 8;
+                    for (int i = 0; i < dtWashDetail.Rows.Count; i++)
                     {
-                        excelSheets.Cells[RowIdx + detailStartIdx, colIndex] = dtWashDetail.Rows[RowIdx][col].ToString();
-                        colIndex++;
+                        // 第一筆資料不用複製
+                        if (i > 0)
+                        {
+                            // 1. 複製第 10 列
+                            var rowToCopy = worksheet.Row(8);
+
+                            // 2. 插入一列，將第 8 和第 9 列之間騰出空間
+                            worksheet.Row(9).InsertRowsAbove(1);
+
+                            // 3. 複製格式到新插入的列
+                            var newRow = worksheet.Row(9);
+
+                            rowToCopy.CopyTo(newRow);
+                        }
+
+                        var row = dtWashDetail.Rows[i];
+                        for (int j = 0; j < dtWashDetail.Columns.Count; j++)
+                        {
+                            switch (row[j].GetType().Name)
+                            {
+                                case "String":
+                                    worksheet.Cell(detailStartRow + i, j + 1).Value = row[j].ToString();
+                                    break;
+                                case "Int32":
+                                    worksheet.Cell(detailStartRow + i, j + 1).Value = row[j].ToValue<Int32>();
+                                    break;
+                                case "Decimal":
+                                    worksheet.Cell(detailStartRow + i, j + 1).Value = row[j].ToValue<decimal>();
+                                    break;
+                                case "DateTime":
+                                    worksheet.Cell(detailStartRow + i, j + 1).Value = row[j].ToValue<DateTime>();
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
                     }
 
-                    RowIdx++;
+                    // SkewnessOption欄位名稱處理
+                    switch (fabricCrkShrkTestWash_Main.SkewnessOptionID)
+                    {
+                        case "1":
+                            worksheet.Cell("P6").Value = "AC";
+                            worksheet.Cell("Q6").Value = "BD";
+                            break;
+                        case "2":
+                            worksheet.Cell("P6").Value = "AA’";
+                            worksheet.Cell("Q6").Value = "DD’";
+                            worksheet.Cell("R6").Value = "AB";
+                            worksheet.Cell("S6").Value = "CD";
+                            break;
+                        case "3":
+                            worksheet.Cell("P6").Value = "AA’";
+                            worksheet.Cell("Q6").Value = "AB";
+                            break;
+                        default:
+                            break;
+                    }
+
+                    // 隱藏多餘欄位
+                    if (fabricCrkShrkTestWash_Main.SkewnessOptionID != "2")
+                    {
+                        worksheet.Column("R").Hide();
+                        worksheet.Column("S").Hide();
+                    }
+
+                    // 插入圖片（使用共用方法）
+                    AddImageToWorksheet(worksheet, fabricCrkShrkTestWash_Main.WashTestBeforePicture, 10 + dtWashDetail.Rows.Count, 1, 323, 255);
+                    AddImageToWorksheet(worksheet, fabricCrkShrkTestWash_Main.WashTestAfterPicture, 10 + dtWashDetail.Rows.Count, 7, 323, 255);
+                    AddImageToWorksheet(worksheet, fabricCrkShrkTestWash_Main.InspectorSignature, 32 + dtWashDetail.Rows.Count, 4, 100, 24);
+                    AddImageToWorksheet(worksheet, fabricCrkShrkTestWash_Main.ApproverSignature, 32 + dtWashDetail.Rows.Count, 9, 100, 24);
+
+                    workbook.SaveAs(outputFilePath);
+                    excelFileName = $"{tmpName}.xlsx";
                 }
-
-                // SkewnessOption欄位名稱改變
-                switch (skewnessOption)
-                {
-                    case "1":
-                        excelSheets.Cells[6, 16] = "AC";
-                        excelSheets.Cells[6, 17] = "BD";
-                        break;
-                    case "2":
-                        excelSheets.Cells[6, 16] = "AA’";
-                        excelSheets.Cells[6, 17] = "DD’";
-                        excelSheets.Cells[6, 18] = "AB";
-                        excelSheets.Cells[6, 19] = "CD";
-                        break;
-                    case "3":
-                        excelSheets.Cells[6, 16] = "AA’";
-                        excelSheets.Cells[6, 17] = "AB";
-                        break;
-                    default:
-                        break;
-                }
-
-                // 只有2 有4欄，因此1和3藏起來
-                if (skewnessOption != "2")
-                {
-                    excelSheets.get_Range("R:R").EntireColumn.Hidden = true;
-                    excelSheets.get_Range("S:S").EntireColumn.Hidden = true;
-                }
-
-                excel.Cells.EntireColumn.AutoFit();    // 自動欄寬
-                excel.Cells.EntireRow.AutoFit();      ////自動欄高
-
-                // 只有2 有4欄，因此1和3藏起來
-                if (skewnessOption != "2")
-                {
-                    excelSheets.get_Range("R:R").EntireColumn.Hidden = true;
-                    excelSheets.get_Range("S:S").EntireColumn.Hidden = true;
-                }
-
-                #region 添加圖片
-                Excel.Range cellBeforePicture = excelSheets.Cells[10 + otherCount, 1];
-                if (fabricCrkShrkTestWash_Main.WashTestBeforePicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestWash_Main.WashTestBeforePicture, fabricCrkShrkTestWash_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 20, 323, 255);
-                }
-
-                Excel.Range cellAfterPicture = excelSheets.Cells[10 + otherCount, 7];
-                if (fabricCrkShrkTestWash_Main.WashTestAfterPicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestWash_Main.WashTestAfterPicture, fabricCrkShrkTestWash_Main.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 20, 323, 255);
-                }
-
-                Excel.Range rgInspectorSignature = excelSheets.Cells[32 + otherCount, 4];
-                if (fabricCrkShrkTestWash_Main.InspectorSignature != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestWash_Main.InspectorSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgInspectorSignature.Left, rgInspectorSignature.Top, 100, 24);
-                }
-
-                Excel.Range rgApproverignature = excelSheets.Cells[32 + otherCount, 9];
-                if (fabricCrkShrkTestWash_Main.ApproverSignature != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(fabricCrkShrkTestWash_Main.ApproverSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    excelSheets.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgApproverignature.Left, rgApproverignature.Top, 100, 24);
-                }
-                #endregion
-
-                #region Save & Show 
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-                string filexlsx = tmpName + ".xlsx";
-                string fileNamePDF = tmpName + ".pdf";
-
-                string filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
-                string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
-
-
-                Excel.Workbook workbook = excel.ActiveWorkbook;
-                workbook.SaveAs(filepath);
-
-                excelFileName = filexlsx;
 
                 if (IsPDF)
                 {
-                    if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                    string pdfFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.pdf");
+                    if (ConvertToPDF.ExcelToPDF(outputFilePath, pdfFilePath))
                     {
-                        excelFileName = fileNamePDF;
+                        excelFileName = $"{tmpName}.pdf";
                         result.Result = true;
                     }
                     else
                     {
-                        result.ErrorMessage = "Convert To PDF Fail";
                         result.Result = false;
+                        result.ErrorMessage = "Convert to PDF failed.";
                     }
-
                 }
-
-                workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(excel);
-                Marshal.ReleaseComObject(excelSheets);
-                #endregion
+                else
+                {
+                    result.Result = true;
+                }
             }
             catch (Exception ex)
             {
@@ -1584,302 +1576,19 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
-        public BaseResult ToReport_Crocking(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "")
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
         {
-            BaseResult result = new BaseResult();
-            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
-            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
-            List<Crocking_Excel> dataList_Head = new List<Crocking_Excel>();
-            List<Crocking_Excel> dataList_Body = new List<Crocking_Excel>();
-            excelFileName = string.Empty;
-            string tmpName = string.Empty;
-
-            dataList_Head = _FabricCrkShrkTestProvider.CrockingTest_ToExcel_Head(ID).ToList();
-            dataList_Body = _FabricCrkShrkTestProvider.CrockingTest_ToExcel_Body(ID).ToList();
-
-            if (!dataList_Head.Any())
+            if (imageData != null)
             {
-                result.Result = false;
-                result.ErrorMessage = "Data not found!";
-                return result;
-            }
-
-            var testCode = _QualityBrandTestCodeProvider.Get(dataList_Head.FirstOrDefault().BrandID, "Fabric Crocking & Shrinkage Test-Crocking");
-
-            tmpName = $"Fabric Crocking Test_{dataList_Head.FirstOrDefault().POID}_" +
-                    $"{dataList_Head.FirstOrDefault().StyleID}_" +
-                    $"{dataList_Head.FirstOrDefault().Refno}_" +
-                    $"{dataList_Head.FirstOrDefault().Color}_" +
-                    $"{dataList_Head.FirstOrDefault().Crocking}_" +
-                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
-
-            string basefileName = "FabricCrockingTest";
-
-            switch (dataList_Head.FirstOrDefault().BrandID.ToUpper())
-            {
-                case "ADIDAS":
-                    basefileName = "FabricCrockingTest_ByBrand_A";
-                    break;
-                case "U.ARMOUR":
-                    basefileName = "FabricCrockingTest_ByBrand_A";
-                    break;
-                case "NIKE":
-                    basefileName = "FabricCrockingTest_ByBrand_A";
-                    break;
-                case "GYMSHARK":
-                    basefileName = "FabricCrockingTest_ByBrand_A";
-                    break;
-                case "LLL":
-                    basefileName = "FabricCrockingTest_ByBrand_B";
-                    break;
-                case "N.FACE":
-                    basefileName = "FabricCrockingTest_ByBrand_B";
-                    break;
-                case "REI":
-                    basefileName = "FabricCrockingTest_ByBrand_B";
-                    break;
-                default:
-                    basefileName = "FabricCrockingTest";
-                    break;
-            }
-
-            string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
-
-            Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
-            excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-            //excel.Visible = true;
-            Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-
-            if (testCode.Any())
-            {
-                worksheet.Cells[1, 1] = $@"Crocking Fastness Test Report({testCode.FirstOrDefault().TestCode})";
-            }
-            worksheet.Cells[2, 3] = dataList_Head.FirstOrDefault().ReportNo;
-
-            worksheet.Cells[3, 3] = dataList_Head.FirstOrDefault().CrockingReceiveDate.HasValue ? dataList_Head.FirstOrDefault().CrockingReceiveDate.Value.ToShortDateString() : string.Empty;
-            worksheet.Cells[3, 7] = dataList_Head.FirstOrDefault().SubmitDate;
-
-            worksheet.Cells[4, 3] = dataList_Head.FirstOrDefault().SeasonID;
-            worksheet.Cells[4, 7] = dataList_Head.FirstOrDefault().BrandID;
-
-            worksheet.Cells[5, 3] = dataList_Head.FirstOrDefault().StyleID;
-            worksheet.Cells[5, 7] = dataList_Head.FirstOrDefault().POID;
-
-            worksheet.Cells[6, 3] = dataList_Head.FirstOrDefault().Article;
-
-            worksheet.Cells[7, 3] = dataList_Head.FirstOrDefault().SCIRefno_Color;
-            worksheet.Cells[8, 7] = dataList_Head.FirstOrDefault().Color;
-
-            worksheet.Cells[16, 2] = dataList_Head.FirstOrDefault().Remark;
-
-            #region 根據品牌調整圖片、簽名
-
-            worksheet.Cells[72, 3] = dataList_Head.FirstOrDefault().CrockingInspectorName;
-            worksheet.Cells[72, 7] = dataList_Head.FirstOrDefault().CrockingApproverName;
-
-            if (basefileName == "FabricCrockingTest")
-            {
-                Excel.Range rgInspectorSignature = worksheet.Cells[74, 3];
-                if (dataList_Head.FirstOrDefault().InspectorSignature != null)
+                using (var stream = new MemoryStream(imageData))
                 {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().InspectorSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgInspectorSignature.Left, rgInspectorSignature.Top, 100, 24);
-                }
-
-                Excel.Range rgApproverignature = worksheet.Cells[74, 7];
-                if (dataList_Head.FirstOrDefault().ApproverSignature != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().ApproverSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgApproverignature.Left, rgApproverignature.Top, 100, 24);
-                }
-
-                Excel.Range CrockingTestPicture1 = worksheet.Cells[18, 1];
-                if (dataList_Head.FirstOrDefault().CrockingTestPicture1 != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestPicture1, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, CrockingTestPicture1.Left + 2, CrockingTestPicture1.Top + 2, 323, 255);
-                }
-
-                Excel.Range CrockingTestPicture2 = worksheet.Cells[18, 5];
-                if (dataList_Head.FirstOrDefault().CrockingTestPicture2 != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestPicture2, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, CrockingTestPicture2.Left + 2, CrockingTestPicture2.Top + 2, 323, 255);
-                }
-                Excel.Range CrockingTestPicture3 = worksheet.Cells[46, 1];
-                if (dataList_Head.FirstOrDefault().CrockingTestPicture3 != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestPicture3, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, CrockingTestPicture3.Left + 2, CrockingTestPicture3.Top + 2, 323, 255);
-                }
-
-                Excel.Range CrockingTestPicture4 = worksheet.Cells[46, 5];
-                if (dataList_Head.FirstOrDefault().CrockingTestPicture4 != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestPicture4, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, CrockingTestPicture4.Left + 2, CrockingTestPicture4.Top + 2, 323, 255);
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
                 }
             }
-            else if (basefileName == "FabricCrockingTest_ByBrand_A")
-            {
-                Excel.Range rgInspectorSignature = worksheet.Cells[74, 3];
-                if (dataList_Head.FirstOrDefault().InspectorSignature != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().InspectorSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgInspectorSignature.Left, rgInspectorSignature.Top, 100, 24);
-                }
-
-                Excel.Range rgApproverignature = worksheet.Cells[74, 7];
-                if (dataList_Head.FirstOrDefault().ApproverSignature != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().ApproverSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgApproverignature.Left, rgApproverignature.Top, 100, 24);
-                }
-
-                Excel.Range CrockingTestPicture1 = worksheet.Cells[18, 1];
-                if (dataList_Head.FirstOrDefault().CrockingTestPicture1 != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestPicture1, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, CrockingTestPicture1.Left + 2, CrockingTestPicture1.Top + 2, 323, 255);
-                }
-
-                Excel.Range CrockingTestPicture2 = worksheet.Cells[18, 5];
-                if (dataList_Head.FirstOrDefault().CrockingTestPicture2 != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestPicture2, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, CrockingTestPicture2.Left + 2, CrockingTestPicture2.Top + 2, 323, 255);
-                }
-                Excel.Range CrockingTestPicture3 = worksheet.Cells[46, 1];
-                if (dataList_Head.FirstOrDefault().CrockingTestPicture3 != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestPicture3, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, CrockingTestPicture3.Left + 2, CrockingTestPicture3.Top + 2, 323, 255);
-                }
-
-                Excel.Range CrockingTestPicture4 = worksheet.Cells[46, 5];
-                if (dataList_Head.FirstOrDefault().CrockingTestPicture4 != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestPicture4, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, CrockingTestPicture4.Left + 2, CrockingTestPicture4.Top + 2, 323, 255);
-                }
-            }
-            else if (basefileName == "FabricCrockingTest_ByBrand_B")
-            {
-                Excel.Range rgInspectorSignature = worksheet.Cells[48, 3];
-                if (dataList_Head.FirstOrDefault().InspectorSignature != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().InspectorSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgInspectorSignature.Left, rgInspectorSignature.Top, 100, 24);
-                }
-
-                Excel.Range rgApproverignature = worksheet.Cells[48, 7];
-                if (dataList_Head.FirstOrDefault().ApproverSignature != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().ApproverSignature, string.Empty, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, rgApproverignature.Left, rgApproverignature.Top, 100, 24);
-                }
-
-                Excel.Range CrockingTestPicture1 = worksheet.Cells[18, 1];
-                if (dataList_Head.FirstOrDefault().CrockingTestPicture1 != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestPicture1, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, CrockingTestPicture1.Left + 2, CrockingTestPicture1.Top + 2, 323, 255);
-                }
-
-                Excel.Range CrockingTestPicture2 = worksheet.Cells[18, 5];
-                if (dataList_Head.FirstOrDefault().CrockingTestPicture2 != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(dataList_Head.FirstOrDefault().CrockingTestPicture2, dataList_Head.FirstOrDefault().ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, CrockingTestPicture2.Left + 2, CrockingTestPicture2.Top + 2, 323, 255);
-                }
-            }
-            #endregion
-
-            // 複製Row：表身幾筆，就幾個Row
-            if (dataList_Body.Any() && dataList_Body.Count > 1)
-            {
-                int copyCtn = dataList_Body.Count - 1;
-                Excel.Range paste = worksheet.get_Range($"A13:A13", Type.Missing).EntireRow;
-                Excel.Range copyRange = worksheet.get_Range("A13:H14").EntireRow;
-                for (int j = 1; j <= copyCtn; j++)
-                {
-                    paste.Insert(Excel.XlInsertShiftDirection.xlShiftDown, copyRange.Copy(Type.Missing));
-                }
-            }
-
-            int ctn = 0;
-            foreach (var item in dataList_Body)
-            {
-                int rowIdx = ctn * 2;
-                worksheet.Cells[13 + rowIdx, 1] = item.Roll;
-                worksheet.Cells[13 + rowIdx, 2] = item.Dyelot;
-
-                worksheet.Cells[13 + rowIdx, 4] = item.DryScale;
-                worksheet.Cells[13 + rowIdx, 5] = item.DryScale_Weft;
-                worksheet.Cells[13 + rowIdx, 6] = item.WetScale;
-                worksheet.Cells[13 + rowIdx, 7] = item.WetScale_Weft;
-
-                worksheet.Cells[14 + rowIdx, 4] = item.ResultDry;
-                worksheet.Cells[14 + rowIdx, 5] = item.ResultDry_Weft;
-                worksheet.Cells[14 + rowIdx, 6] = item.ResultWet;
-                worksheet.Cells[14 + rowIdx, 7] = item.ResultWet_Weft;
-                ctn++;
-            }
-
-            #region Save & Show Excel
-
-            if (!string.IsNullOrWhiteSpace(AssignedFineName))
-            {
-                tmpName = AssignedFineName;
-            }
-            char[] invalidChars = Path.GetInvalidFileNameChars();
-            char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-            char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-            foreach (char invalidChar in updatedInvalidChars)
-            {
-                tmpName = tmpName.Replace(invalidChar.ToString(), "");
-            }
-
-            string filexlsx = tmpName + ".xlsx";
-            string fileNamePDF = tmpName + ".pdf";
-
-            string filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
-            string filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
-
-
-            Excel.Workbook workbook = excel.ActiveWorkbook;
-            workbook.SaveAs(filepath);
-
-            excelFileName = filexlsx;
-
-            if (IsPDF)
-            {
-                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
-                {
-                    excelFileName = fileNamePDF;
-                    result.Result = true;
-                }
-                else
-                {
-                    result.ErrorMessage = "Convert To PDF Fail";
-                    result.Result = false;
-                }
-
-            }
-
-            workbook.Close();
-            excel.Quit();
-            Marshal.ReleaseComObject(worksheet);
-            Marshal.ReleaseComObject(workbook);
-            Marshal.ReleaseComObject(excel);
-
-
-            result.Result = true;
-            #endregion
-
-            return result;
         }
+
         private class PageInfoForPDF
         {
             public int StartRow { get; set; }

@@ -1,6 +1,6 @@
-﻿using ADOHelper.Template.MSSQL;
-using ADOHelper.Utility;
+﻿using ADOHelper.Utility;
 using BusinessLogicLayer.Interface.BulkFGT;
+using ClosedXML.Excel;
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
@@ -13,14 +13,11 @@ using Sci;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
 using System.Web.Mvc;
-using System.Windows;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BusinessLogicLayer.Service
@@ -113,7 +110,7 @@ namespace BusinessLogicLayer.Service
             }
         }
 
-        public Report_Result GetPDF(MockupCrocking_ViewModel mockupCrocking, bool test = false, string AssignedFineName = "")
+        public Report_Result GetPDF(MockupCrocking_ViewModel mockupCrocking, string AssignedFineName = "")
         {
             Report_Result result = new Report_Result();
             if (mockupCrocking == null)
@@ -127,188 +124,118 @@ namespace BusinessLogicLayer.Service
 
             try
             {
-                if (!test)
+                string basePath = System.Web.HttpContext.Current.Server.MapPath("~/");
+
+                string templatePath = Path.Combine(basePath, "XLT", "MockupCrocking.xltx");
+                string tmpPath = Path.Combine(basePath, "TMP");
+
+
+                tmpName = $"Mockup Crocking _{mockupCrocking.POID}_{mockupCrocking.StyleID}_{mockupCrocking.Article}_{mockupCrocking.Result}_{DateTime.Now:yyyyMMddHHmmss}";
+
+                if (!File.Exists(templatePath)) throw new FileNotFoundException("Template not found", templatePath);
+
+                using (var workbook = new XLWorkbook(templatePath))
                 {
-                    if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
+                    var worksheet = workbook.Worksheet(1);
+
+                    worksheet.Cell(4, 2).Value = mockupCrocking.ReportNo;
+                    worksheet.Cell(5, 2).Value = $"{mockupCrocking.T1Subcon}-{mockupCrocking.T1SubconAbb}";
+                    worksheet.Cell(6, 2).Value = mockupCrocking.BrandID;
+                    worksheet.Cell(4, 7).Value = mockupCrocking.ReleasedDate;
+                    worksheet.Cell(5, 7).Value = mockupCrocking.TestDate;
+                    worksheet.Cell(6, 7).Value = mockupCrocking.SeasonID;
+                    worksheet.Cell(13, 2).Value = mockupCrocking.TechnicianName;
+
+                    AddImageToWorksheet(worksheet, mockupCrocking.Signature, 12, 2, 100, 24);
+                    AddImageToWorksheet(worksheet, mockupCrocking.TestBeforePicture, 16, 1, 288, 272);
+                    AddImageToWorksheet(worksheet, mockupCrocking.TestAfterPicture, 16, 5, 265, 272);
+
+                    // 表身筆數處理，複製儲存格
+                    if (mockupCrocking.MockupCrocking_Detail.Count > 1)
                     {
-                        System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\");
+                        for (int i = 1; i < mockupCrocking.MockupCrocking_Detail.Count; i++)
+                        {
+                            // 1. 複製第 10 列
+                            var rowToCopy = worksheet.Row(10);
+
+                            // 2. 插入一列，將第 10 和第 11 列之間騰出空間
+                            worksheet.Row(11).InsertRowsAbove(1);
+
+                            // 3. 複製內容與格式到新插入的第 11 列
+                            var newRow = worksheet.Row(11);
+                            rowToCopy.CopyTo(newRow);
+                        }
                     }
 
-                    if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\"))
+                    int startRow = 10;
+                    foreach (var item in mockupCrocking.MockupCrocking_Detail)
                     {
-                        System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
+                        string fabric = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : $"{item.FabricRefNo} - {item.FabricColorName}";
+                        string artwork = string.IsNullOrEmpty(mockupCrocking.ArtworkTypeID) ? $"{item.Design} - {item.ArtworkColorName}" : $"{mockupCrocking.ArtworkTypeID}/{item.Design} - {item.ArtworkColorName}";
+
+                        worksheet.Cell(startRow, 1).Value = mockupCrocking.StyleID;
+                        worksheet.Cell(startRow, 2).Value = fabric;
+                        worksheet.Cell(startRow, 3).Value = artwork;
+                        worksheet.Cell(startRow, 5).Value = string.IsNullOrEmpty(item.DryScale) ? string.Empty : $"GRADE {item.DryScale}";
+                        worksheet.Cell(startRow, 6).Value = string.IsNullOrEmpty(item.WetScale) ? string.Empty : $"GRADE {item.WetScale}";
+                        worksheet.Cell(startRow, 7).Value = item.Result;
+                        worksheet.Cell(startRow, 8).Value = item.Remark;
+
+                        worksheet.Row(startRow).AdjustToContents();
+                        startRow++;
                     }
-                }
 
-                tmpName = $"Mockup Crocking _{mockupCrocking.POID}_" +
-                $"{mockupCrocking.StyleID}_" +
-                $"{mockupCrocking.Article}_" +
-                $"{mockupCrocking.Result}_" +
-                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                    tmpName = RemoveInvalidFileNameChars(tmpName);
 
-                var mockupCrocking_Detail = mockupCrocking.MockupCrocking_Detail;
-                string basefileName = "MockupCrocking";
-                string openfilepath;
-                if (test)
-                {
-                    openfilepath = "C:\\Git\\Quality\\Quality\\Quality\\bin\\XLT\\MockupCrocking.xltx";
-                }
-                else
-                {
-                    openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
-                }
+                    string xlsxPath = Path.Combine(tmpPath, tmpName + ".xlsx");
+                    string pdfPath = Path.Combine(tmpPath, tmpName + ".pdf");
 
-                Excel.Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
+                    workbook.SaveAs(xlsxPath);
 
 
-
-                excelApp.DisplayAlerts = false;
-                Excel.Worksheet worksheet = excelApp.Sheets[1];
-
-                // 設定表頭資料
-                worksheet.Cells[4, 2] = mockupCrocking.ReportNo;
-                worksheet.Cells[5, 2] = mockupCrocking.T1Subcon + "-" + mockupCrocking.T1SubconAbb;
-
-                worksheet.Cells[6, 2] = mockupCrocking.BrandID;
-                worksheet.Cells[4, 7] = mockupCrocking.ReleasedDate;
-                worksheet.Cells[5, 7] = mockupCrocking.TestDate;
-                worksheet.Cells[6, 7] = mockupCrocking.SeasonID;
-
-                worksheet.Cells[13, 2] = mockupCrocking.TechnicianName;
-                Excel.Range cell = worksheet.Cells[12, 2];
-
-                if (mockupCrocking.Signature != null)
-                {
-                    MemoryStream ms = new MemoryStream(mockupCrocking.Signature);
-                    Image img = Image.FromStream(ms);
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-                    if (test)
+                    if (ConvertToPDF.ExcelToPDF(xlsxPath, pdfPath))
                     {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                        result.TempFileName = tmpName + ".pdf";
+                        result.Result = true;
                     }
                     else
                     {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                        result.ErrorMessage = "Convert To PDF Fail";
+                        result.Result = false;
                     }
-
-                    img.Save(imgPath);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
-                }
-
-                Excel.Range cellBefore = worksheet.Cells[16, 1];
-                if (mockupCrocking.TestBeforePicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupCrocking.TestBeforePicture, mockupCrocking.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left + 5, cellBefore.Top + 5, 288, 272);
-                }
-
-                Excel.Range cellAfter = worksheet.Cells[16, 5];
-                if (mockupCrocking.TestAfterPicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupCrocking.TestAfterPicture, mockupCrocking.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left + 5, cellAfter.Top + 5, 265, 272);
-                }
-
-                #region 表身資料
-                // 插入多的row
-                if (mockupCrocking_Detail.Count > 0)
-                {
-                    Excel.Range rngToInsert = worksheet.get_Range("A10:G10", Type.Missing).EntireRow;
-                    for (int i = 1; i < mockupCrocking_Detail.Count; i++)
-                    {
-                        rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown);
-                    }
-
-                    Marshal.ReleaseComObject(rngToInsert);
-                }
-
-                // 塞進資料
-                int start_row = 10;
-                foreach (var item in mockupCrocking_Detail)
-                {
-                    string fabric = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : item.FabricRefNo + " - " + item.FabricColorName;
-                    string artwork = string.IsNullOrEmpty(mockupCrocking.ArtworkTypeID) ? item.Design + " - " + item.ArtworkColorName : mockupCrocking.ArtworkTypeID + "/" + item.Design + " - " + item.ArtworkColorName;
-                    string remark = item.Remark;
-                    worksheet.Cells[start_row, 1] = mockupCrocking.StyleID;
-                    worksheet.Cells[start_row, 2] = fabric;
-                    worksheet.Cells[start_row, 3] = artwork;
-                    worksheet.Cells[start_row, 5] = string.IsNullOrEmpty(item.DryScale) ? string.Empty : "GRADE" + item.DryScale;
-                    worksheet.Cells[start_row, 6] = string.IsNullOrEmpty(item.WetScale) ? string.Empty : "GRADE" + item.WetScale;
-                    worksheet.Cells[start_row, 7] = item.Result;
-                    worksheet.Cells[start_row, 8] = item.Remark;
-                    worksheet.Rows[start_row].Font.Bold = false;
-                    worksheet.Rows[start_row].WrapText = true;
-                    worksheet.Rows[start_row].HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
-
-                    int maxLength = fabric.Length > remark.Length ? fabric.Length : remark.Length;
-                    maxLength = maxLength > artwork.Length ? maxLength : artwork.Length;
-                    worksheet.Range[$"A{start_row}", $"H{start_row}"].RowHeight = ((maxLength / 20) + 1) * 16.5;
-
-                    start_row++;
-                }
-                #endregion
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-
-                string filexlsx = tmpName + ".xlsx";
-                string fileNamePDF = tmpName + ".pdf";
-
-                string filepath;
-                string filepathpdf;
-                if (test)
-                {
-                    filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx);
-                    filepathpdf = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF);
-                }
-                else
-                {
-                    filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
-                    filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
-                }
-
-
-                Excel.Workbook workbook = excelApp.ActiveWorkbook;
-                workbook.SaveAs(filepath);
-                workbook.Close();
-                excelApp.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excelApp);
-
-
-                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
-                {
-                    result.TempFileName = fileNamePDF;
-                    result.Result = true;
-                }
-                else
-                {
-                    result.ErrorMessage = "Convert To PDF Fail";
-                    result.Result = false;
                 }
             }
             catch (Exception ex)
             {
-                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
+                result.ErrorMessage = ex.Message;
                 result.Result = false;
             }
 
             return result;
         }
 
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
+        }
+
+        private string RemoveInvalidFileNameChars(string input)
+        {
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+            foreach (char c in invalidChars)
+            {
+                input = input.Replace(c.ToString(), "");
+            }
+            return input;
+        }
         public BaseResult Create(MockupCrocking_ViewModel model, string Mdivision, string userid, out string NewReportNo)
         {
             NewReportNo = string.Empty;

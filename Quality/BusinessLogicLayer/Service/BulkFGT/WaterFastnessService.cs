@@ -1,7 +1,6 @@
 ﻿using ADOHelper.Utility;
-using BusinessLogicLayer.Interface.BulkFGT;
+using ClosedXML.Excel;
 using DatabaseObject;
-using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Library;
@@ -13,17 +12,11 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.UI.WebControls;
-using Excel = Microsoft.Office.Interop.Excel;
+//using Excel = Microsoft.Office.Interop.Excel;
 
 
 namespace BusinessLogicLayer.Service.BulkFGT
@@ -408,40 +401,26 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        private void SetDetailData(Excel.Worksheet worksheet, int setRow, DataRow dr)
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
         {
-            worksheet.Cells[setRow, 2] = dr["Refno"];
-            worksheet.Cells[setRow, 3] = dr["Colorid"];
-            worksheet.Cells[setRow, 4] = dr["Dyelot"];
-            worksheet.Cells[setRow, 6] = dr["Roll"];
-            worksheet.Cells[setRow, 7] = dr["Changescale"];
-            worksheet.Cells[setRow, 8] = dr["ResultChange"];
-            worksheet.Cells[setRow, 9] = dr["Acetatescale"];
-            worksheet.Cells[setRow, 10] = dr["ResultAcetate"];
-            worksheet.Cells[setRow, 11] = dr["Cottonscale"];
-            worksheet.Cells[setRow, 12] = dr["ResultCotton"];
-            worksheet.Cells[setRow, 13] = dr["Nylonscale"];
-            worksheet.Cells[setRow, 14] = dr["ResultNylon"];
-            worksheet.Cells[setRow, 15] = dr["Polyesterscale"];
-            worksheet.Cells[setRow, 16] = dr["ResultPolyester"];
-            worksheet.Cells[setRow, 17] = dr["Acrylicscale"];
-            worksheet.Cells[setRow, 18] = dr["ResultAcrylic"];
-            worksheet.Cells[setRow, 19] = dr["Woolscale"];
-            worksheet.Cells[setRow, 20] = dr["ResultWool"];
-            worksheet.Cells[setRow, 21] = MyUtility.Convert.GetString(dr["Temperature"]) + "˚C";
-            worksheet.Cells[setRow, 22] = MyUtility.Convert.GetString(dr["Time"]) + " hrs";
-            worksheet.Cells[setRow, 23] = dr["Remark"];
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
         }
-
         public BaseResult ToReport(string ID, out string FileName, bool isPDF, bool isTest = false, string AssignedFineName = "")
         {
             BaseResult result = new BaseResult();
             _WaterFastnessProvider = new WaterFastnessProvider(Common.ProductionDataAccessLayer);
             _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
-            List<WaterFastness_Excel> dataList = new List<WaterFastness_Excel>();
+            List<WaterFastness_Excel> dataList;
 
             string tmpName = string.Empty;
-
             FileName = string.Empty;
 
             try
@@ -455,174 +434,111 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     return result;
                 }
 
-                tmpName = $"Water Fastness Test_{dataList.FirstOrDefault().POID}_" +
-                        $"{dataList.FirstOrDefault().StyleID}_" +
-                        $"{dataList.FirstOrDefault().Article}_" +
-                        $"{dataList.FirstOrDefault().AllResult}_" +
-                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                tmpName = $"Water Fastness Test_{dataList.FirstOrDefault()?.POID}_" +
+                          $"{dataList.FirstOrDefault()?.StyleID}_" +
+                          $"{dataList.FirstOrDefault()?.Article}_" +
+                          $"{dataList.FirstOrDefault()?.AllResult}_" +
+                          $"{DateTime.Now:yyyyMMddHHmmss}";
+                tmpName = Regex.Replace(tmpName, @"[/:?""<>|*%]", string.Empty);
+                if (!string.IsNullOrWhiteSpace(AssignedFineName)) tmpName = AssignedFineName;
 
-                string basefileName = "WaterFastness_ToExcel";
-                string openfilepath;
+                string baseFileName = "WaterFastness_ToExcel";
+                string baseFilePath = isTest
+                    ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XLT", $"{baseFileName}.xltx")
+                    : Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "XLT", $"{baseFileName}.xltx");
 
-                if (isTest)
+                string outputDirectory = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP");
+                string filePath = Path.Combine(outputDirectory, $"{tmpName}.xlsx");
+                string pdfPath = Path.Combine(outputDirectory, $"{tmpName}.pdf");
+
+                using (var workbook = new XLWorkbook(baseFilePath))
                 {
-                    openfilepath = $"C:\\Willy_Repository\\Quality_KPI\\Quality\\Quality\\bin\\XLT\\{basefileName}.xltx";
-                }
-                else
-                {
-                    openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
-                }
+                    var templateSheet = workbook.Worksheet(1);
 
-
-
-                Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
-                excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-                Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-
-                Excel.Worksheet worksheetn;
-                // 複製分頁：表身幾筆，就幾個sheet
-                for (int j = 1; j < dataList.Count; j++)
-                {
-                    //Excel.Worksheet worksheetFirst = excel.Worksheets[1];
-                    worksheetn = (Excel.Worksheet)excel.ActiveWorkbook.Worksheets[j];
-
-                    worksheet.Copy(worksheetn);
-                }
-                //開始填資料
-                for (int j = 1; j <= dataList.Count; j++)
-                {
-                    Excel.Worksheet currenSheet = excel.ActiveWorkbook.Worksheets[j];
-                    currenSheet.Name = j.ToString();
-                    WaterFastness_Excel currenData = dataList[j - 1];
-
-                    var testCode = _QualityBrandTestCodeProvider.Get(currenData.BrandID, "Water Fastness Test");
-                    if (testCode.Any())
+                    // 複製分頁：每筆資料一個分頁
+                    for (int i = 0; i < dataList.Count; i++)
                     {
-                        currenSheet.Cells[1, 1] = $@"Water Fastness Test Report({testCode.FirstOrDefault().TestCode})";
+                        var data = dataList[i];
+                        var currentSheet = i == 0 ? templateSheet : templateSheet.CopyTo($"Sheet_{i + 1}");
+
+                        var testCode = _QualityBrandTestCodeProvider.Get(data.BrandID, "Water Fastness Test");
+                        if (testCode.Any())
+                        {
+                            currentSheet.Cell("A1").Value = $"Water Fastness Test Report({testCode.FirstOrDefault()?.TestCode})";
+                        }
+
+                        // 填寫資料
+                        currentSheet.Cell("C2").Value = data.ReportNo;
+                        currentSheet.Cell("C3").Value = data.SubmitDate?.ToString("yyyy/MM/dd");
+                        currentSheet.Cell("H3").Value = DateTime.Now.ToString("yyyy/MM/dd");
+
+                        currentSheet.Cell("C4").Value = data.SeasonID;
+                        currentSheet.Cell("H4").Value = data.BrandID;
+
+                        currentSheet.Cell("C5").Value = data.StyleID;
+                        currentSheet.Cell("H5").Value = data.POID;
+
+                        currentSheet.Cell("C6").Value = data.Roll;
+                        currentSheet.Cell("H6").Value = data.Dyelot;
+
+                        currentSheet.Cell("C7").Value = data.SCIRefno_Color;
+                        currentSheet.Cell("C9").Value = data.Temperature;
+                        currentSheet.Cell("H9").Value = data.Time;
+
+                        currentSheet.Cell("B13").Value = data.ChangeScale;
+                        currentSheet.Cell("C13").Value = data.AcetateScale;
+                        currentSheet.Cell("D13").Value = data.CottonScale;
+                        currentSheet.Cell("E13").Value = data.NylonScale;
+                        currentSheet.Cell("F13").Value = data.PolyesterScale;
+                        currentSheet.Cell("G13").Value = data.AcrylicScale;
+                        currentSheet.Cell("H13").Value = data.WoolScale;
+
+                        currentSheet.Cell("B14").Value = data.ResultChange;
+                        currentSheet.Cell("C14").Value = data.ResultAcetate;
+                        currentSheet.Cell("D14").Value = data.ResultCotton;
+                        currentSheet.Cell("E14").Value = data.ResultNylon;
+                        currentSheet.Cell("F14").Value = data.ResultPolyester;
+                        currentSheet.Cell("G14").Value = data.ResultAcrylic;
+                        currentSheet.Cell("H14").Value = data.ResultWool;
+
+                        currentSheet.Cell("B15").Value = data.Remark;
+                        currentSheet.Cell("C71").Value = data.Inspector;
+                        currentSheet.Cell("G71").Value = data.Inspector;
+
+                        // 添加圖片
+                        AddImageToWorksheet(currentSheet, data.TestBeforePicture, 46, 1, 380, 300);
+                        AddImageToWorksheet(currentSheet, data.TestAfterPicture, 46, 5, 380, 300);
                     }
 
-                    currenSheet.Cells[2, 3] = currenData.ReportNo;
-
-                    currenSheet.Cells[3, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-                    currenSheet.Cells[3, 8] = DateTime.Now.ToString("yyyy/MM/dd");
-
-                    currenSheet.Cells[4, 3] = currenData.SeasonID;
-                    currenSheet.Cells[4, 8] = currenData.BrandID;
-
-                    currenSheet.Cells[5, 3] = currenData.StyleID;
-                    currenSheet.Cells[5, 8] = currenData.POID;
-
-                    currenSheet.Cells[6, 3] = currenData.Roll;
-                    currenSheet.Cells[6, 8] = currenData.Dyelot;
-
-                    currenSheet.Cells[7, 3] = currenData.SCIRefno_Color;
-
-                    // Test Request
-                    currenSheet.Cells[9, 3] = currenData.Temperature;
-                    currenSheet.Cells[9, 8] = currenData.Time;
-
-                    currenSheet.Cells[13, 2] = currenData.ChangeScale;
-                    currenSheet.Cells[13, 3] = currenData.AcetateScale;
-                    currenSheet.Cells[13, 4] = currenData.CottonScale;
-                    currenSheet.Cells[13, 5] = currenData.NylonScale;
-                    currenSheet.Cells[13, 6] = currenData.PolyesterScale;
-                    currenSheet.Cells[13, 7] = currenData.AcrylicScale;
-                    currenSheet.Cells[13, 8] = currenData.WoolScale;
-
-                    currenSheet.Cells[14, 2] = currenData.ResultChange;
-                    currenSheet.Cells[14, 3] = currenData.ResultAcetate;
-                    currenSheet.Cells[14, 4] = currenData.ResultCotton;
-                    currenSheet.Cells[14, 5] = currenData.ResultNylon;
-                    currenSheet.Cells[14, 6] = currenData.ResultPolyester;
-                    currenSheet.Cells[14, 7] = currenData.ResultAcrylic;
-                    currenSheet.Cells[14, 8] = currenData.ResultWool;
-
-                    currenSheet.Cells[15, 2] = currenData.Remark;
-                    currenSheet.Cells[71, 3] = currenData.Inspector;
-                    currenSheet.Cells[71, 7] = currenData.Inspector;
-
-
-                    #region 添加圖片
-                    Excel.Range cellBeforePicture = currenSheet.Cells[46, 1];
-                    if (currenData.TestBeforePicture != null)
-                    {
-                        string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestBeforePicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: isTest);
-                        currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 380, 300);
-                    }
-
-                    Excel.Range cellAfterPicture = currenSheet.Cells[46, 5];
-                    if (currenData.TestAfterPicture != null)
-                    {
-                        string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestAfterPicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: isTest);
-                        currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 380, 300);
-                    }
-                    #endregion
-
+                    // 儲存 Excel 檔案
+                    workbook.SaveAs(filePath);
                 }
 
-                #region Save & Show Excel
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-                string filexlsx = tmpName + ".xlsx";
-                string fileNamePDF = tmpName + ".pdf";
-
-                string filepath;
-                string filepathpdf;
-                if (isTest)
-                {
-                    filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx);
-                    filepathpdf = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF);
-                }
-                else
-                {
-                    filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
-                    filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
-                }
-
-                Excel.Workbook workbook = excel.ActiveWorkbook;
-                workbook.SaveAs(filepath);
-                workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excel);
-
-                FileName = filexlsx;
-                result.Result = true;
-
+                // PDF 轉換
                 if (isPDF)
                 {
-                    if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                    if (ConvertToPDF.ExcelToPDF(filePath, pdfPath))
                     {
-                        FileName = fileNamePDF;
-                        result.Result = true;
+                        FileName = Path.GetFileName(pdfPath);
                     }
                     else
                     {
-                        result.ErrorMessage = "Convert To PDF Fail";
                         result.Result = false;
+                        result.ErrorMessage = "Convert To PDF Fail";
+                        return result;
                     }
                 }
+                else
+                {
+                    FileName = Path.GetFileName(filePath);
+                }
 
-                #endregion
-
+                result.Result = true;
             }
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.ToString();
+                result.ErrorMessage = ex.Message;
             }
 
             return result;

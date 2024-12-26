@@ -1,7 +1,6 @@
 ﻿using ADOHelper.Utility;
-using BusinessLogicLayer.Interface.BulkFGT;
+using ClosedXML.Excel;
 using DatabaseObject;
-using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using Library;
@@ -13,17 +12,10 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
-using System.Web.UI.WebControls;
-using Excel = Microsoft.Office.Interop.Excel;
 
 
 namespace BusinessLogicLayer.Service.BulkFGT
@@ -471,7 +463,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-
         public BaseResult ToReport(string ID, out string FileName, bool isPDF, bool isTest = false, string AssignedFineName = "")
         {
             BaseResult result = new BaseResult();
@@ -493,189 +484,147 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     return result;
                 }
 
-                tmpName = $"Perspiration Fastness Test_{dataList.FirstOrDefault().POID}_" +
-                       $"{dataList.FirstOrDefault().StyleID}_" +
-                       $"{dataList.FirstOrDefault().Article}_" +
-                       $"{dataList.FirstOrDefault().AllResult}_" +
-                       $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                tmpName = $"Perspiration Fastness Test_{dataList.FirstOrDefault().POID}_{dataList.FirstOrDefault().StyleID}_{dataList.FirstOrDefault().Article}_{dataList.FirstOrDefault().AllResult}_{DateTime.Now:yyyyMMddHHmmss}";
 
-                string basefileName = "PerspirationFastness_ToExcel";
-                string openfilepath;
+                string basePath = isTest ? AppDomain.CurrentDomain.BaseDirectory : System.Web.HttpContext.Current.Server.MapPath("~/");
+                string xltPath = Path.Combine(basePath, "XLT", "PerspirationFastness_ToExcel.xltx");
+                string tmpPath = Path.Combine(basePath, "TMP");
 
-                if (isTest)
+                if (!Directory.Exists(tmpPath)) Directory.CreateDirectory(tmpPath);
+
+                if (!File.Exists(xltPath)) throw new FileNotFoundException("Template not found", xltPath);
+
+                using (var workbook = new XLWorkbook(xltPath))
                 {
-                    openfilepath = $"C:\\Willy_Repository\\Quality_KPI\\Quality\\Quality\\bin\\XLT\\{basefileName}.xltx";
-                }
-                else
-                {
-                    openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
-                }
+                    var worksheetTemplate = workbook.Worksheet(1);
 
-                Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
-                excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-                Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-
-                Excel.Worksheet worksheetn;
-                // 複製分頁：表身幾筆，就幾個sheet
-                for (int j = 1; j < dataList.Count; j++)
-                {
-                    //Excel.Worksheet worksheetFirst = excel.Worksheets[1];
-                    worksheetn = (Excel.Worksheet)excel.ActiveWorkbook.Worksheets[j];
-
-                    worksheet.Copy(worksheetn);
-                }
-                //開始填資料
-                for (int j = 1; j <= dataList.Count; j++)
-                {
-                    Excel.Worksheet currenSheet = excel.ActiveWorkbook.Worksheets[j];
-                    currenSheet.Name = j.ToString();
-                    PerspirationFastness_Excel currenData = dataList[j - 1];
-                    var testCode = _QualityBrandTestCodeProvider.Get(currenData.BrandID, "Perspiration Fastness Test");
-                    if (testCode.Any())
+                    for (int i = 1; i < dataList.Count; i++)
                     {
-                        currenSheet.Cells[1, 1] = $@"Perspiration Fastness Test Report({testCode.FirstOrDefault().TestCode})";
-                    }
-                    currenSheet.Cells[2, 3] = currenData.ReportNo;
-                    currenSheet.Cells[3, 3] = currenData.SubmitDate.HasValue ? currenData.SubmitDate.Value.ToString("yyyy/MM/dd") : string.Empty;
-                    currenSheet.Cells[3, 8] = DateTime.Now.ToString("yyyy/MM/dd");
-
-                    currenSheet.Cells[4, 3] = currenData.SeasonID;
-                    currenSheet.Cells[4, 8] = currenData.BrandID;
-
-                    currenSheet.Cells[5, 3] = currenData.StyleID;
-                    currenSheet.Cells[5, 8] = currenData.POID;
-
-                    currenSheet.Cells[6, 3] = currenData.Roll;
-                    currenSheet.Cells[6, 8] = currenData.Dyelot;
-
-                    currenSheet.Cells[7, 3] = currenData.SCIRefno_Color;
-                    currenSheet.Cells[8, 3] = currenData.MetalContent;
-
-                    // Test Request
-                    currenSheet.Cells[10, 3] = currenData.Temperature;
-                    currenSheet.Cells[10, 8] = currenData.Time;
-
-                    currenSheet.Cells[14, 2] = currenData.AlkalineChangeScale;
-                    currenSheet.Cells[14, 3] = currenData.AlkalineAcetateScale;
-                    currenSheet.Cells[14, 4] = currenData.AlkalineCottonScale;
-                    currenSheet.Cells[14, 5] = currenData.AlkalineNylonScale;
-                    currenSheet.Cells[14, 6] = currenData.AlkalinePolyesterScale;
-                    currenSheet.Cells[14, 7] = currenData.AlkalineAcrylicScale;
-                    currenSheet.Cells[14, 8] = currenData.AlkalineWoolScale;
-
-                    currenSheet.Cells[15, 2] = currenData.AlkalineResultChange;
-                    currenSheet.Cells[15, 3] = currenData.AlkalineResultAcetate;
-                    currenSheet.Cells[15, 4] = currenData.AlkalineResultCotton;
-                    currenSheet.Cells[15, 5] = currenData.AlkalineResultNylon;
-                    currenSheet.Cells[15, 6] = currenData.AlkalineResultPolyester;
-                    currenSheet.Cells[15, 7] = currenData.AlkalineResultAcrylic;
-                    currenSheet.Cells[15, 8] = currenData.AlkalineResultWool;
-
-                    currenSheet.Cells[19, 2] = currenData.AcidChangeScale;
-                    currenSheet.Cells[19, 3] = currenData.AcidAcetateScale;
-                    currenSheet.Cells[19, 4] = currenData.AcidCottonScale;
-                    currenSheet.Cells[19, 5] = currenData.AcidNylonScale;
-                    currenSheet.Cells[19, 6] = currenData.AcidPolyesterScale;
-                    currenSheet.Cells[19, 7] = currenData.AcidAcrylicScale;
-                    currenSheet.Cells[19, 8] = currenData.AcidWoolScale;
-
-                    currenSheet.Cells[20, 2] = currenData.AcidResultChange;
-                    currenSheet.Cells[20, 3] = currenData.AcidResultAcetate;
-                    currenSheet.Cells[20, 4] = currenData.AcidResultCotton;
-                    currenSheet.Cells[20, 5] = currenData.AcidResultNylon;
-                    currenSheet.Cells[20, 6] = currenData.AcidResultPolyester;
-                    currenSheet.Cells[20, 7] = currenData.AcidResultAcrylic;
-                    currenSheet.Cells[20, 8] = currenData.AcidResultWool;
-
-                    currenSheet.Cells[21, 2] = currenData.Remark;
-                    currenSheet.Cells[77, 3] = currenData.Inspector;
-                    currenSheet.Cells[77, 7] = currenData.Inspector;
-
-
-                    #region 添加圖片
-                    Excel.Range cellBeforePicture = currenSheet.Cells[52, 1];
-                    if (currenData.TestBeforePicture != null)
-                    {
-                        string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestBeforePicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: isTest);
-                        currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBeforePicture.Left + 2, cellBeforePicture.Top + 2, 380, 300);
+                        var copiedSheet = worksheetTemplate.CopyTo($"Sheet{i + 1}");
+                        //var newSheet = workbook.AddWorksheet($"Sheet{i + 1}");
+                        //worksheetTemplate.CopyTo(newSheet.Name);
                     }
 
-                    Excel.Range cellAfterPicture = currenSheet.Cells[52, 5];
-                    if (currenData.TestAfterPicture != null)
+                    for (int i = 0; i < dataList.Count; i++)
                     {
-                        string imgPath = ToolKit.PublicClass.AddImageSignWord(currenData.TestAfterPicture, currenData.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: isTest);
-                        currenSheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfterPicture.Left + 2, cellAfterPicture.Top + 2, 380, 300);
+                        var currentSheet = workbook.Worksheet(i + 1);
+                        var currentData = dataList[i];
+
+                        var testCode = _QualityBrandTestCodeProvider.Get(currentData.BrandID, "Perspiration Fastness Test");
+                        if (testCode.Any())
+                        {
+                            currentSheet.Cell(1, 1).Value = $"Perspiration Fastness Test Report({testCode.FirstOrDefault().TestCode})";
+                        }
+
+                        currentSheet.Cell(2, 3).Value = currentData.ReportNo;
+                        currentSheet.Cell(3, 3).Value = currentData.SubmitDate?.ToString("yyyy/MM/dd") ?? string.Empty;
+                        currentSheet.Cell(3, 8).Value = DateTime.Now.ToString("yyyy/MM/dd");
+                        currentSheet.Cell(4, 3).Value = currentData.SeasonID;
+                        currentSheet.Cell(4, 8).Value = currentData.BrandID;
+                        currentSheet.Cell(5, 3).Value = currentData.StyleID;
+                        currentSheet.Cell(5, 8).Value = currentData.POID;
+                        currentSheet.Cell(6, 3).Value = currentData.Roll;
+                        currentSheet.Cell(6, 8).Value = currentData.Dyelot;
+                        currentSheet.Cell(7, 3).Value = currentData.SCIRefno_Color;
+                        currentSheet.Cell(8, 3).Value = currentData.MetalContent;
+                        currentSheet.Cell(10, 3).Value = currentData.Temperature;
+                        currentSheet.Cell(10, 8).Value = currentData.Time;
+
+                        currentSheet.Cell(14, 2).Value = currentData.AlkalineChangeScale;
+                        currentSheet.Cell(14, 3).Value = currentData.AlkalineAcetateScale;
+                        currentSheet.Cell(14, 4).Value = currentData.AlkalineCottonScale;
+                        currentSheet.Cell(14, 5).Value = currentData.AlkalineNylonScale;
+                        currentSheet.Cell(14, 6).Value = currentData.AlkalinePolyesterScale;
+                        currentSheet.Cell(14, 7).Value = currentData.AlkalineAcrylicScale;
+                        currentSheet.Cell(14, 8).Value = currentData.AlkalineWoolScale;
+
+                        currentSheet.Cell(15, 2).Value = currentData.AlkalineResultChange;
+                        currentSheet.Cell(15, 3).Value = currentData.AlkalineResultAcetate;
+                        currentSheet.Cell(15, 4).Value = currentData.AlkalineResultCotton;
+                        currentSheet.Cell(15, 5).Value = currentData.AlkalineResultNylon;
+                        currentSheet.Cell(15, 6).Value = currentData.AlkalineResultPolyester;
+                        currentSheet.Cell(15, 7).Value = currentData.AlkalineResultAcrylic;
+                        currentSheet.Cell(15, 8).Value = currentData.AlkalineResultWool;
+
+                        currentSheet.Cell(19, 2).Value = currentData.AcidChangeScale;
+                        currentSheet.Cell(19, 3).Value = currentData.AcidAcetateScale;
+                        currentSheet.Cell(19, 4).Value = currentData.AcidCottonScale;
+                        currentSheet.Cell(19, 5).Value = currentData.AcidNylonScale;
+                        currentSheet.Cell(19, 6).Value = currentData.AcidPolyesterScale;
+                        currentSheet.Cell(19, 7).Value = currentData.AcidAcrylicScale;
+                        currentSheet.Cell(19, 8).Value = currentData.AcidWoolScale;
+
+                        currentSheet.Cell(20, 2).Value = currentData.AcidResultChange;
+                        currentSheet.Cell(20, 3).Value = currentData.AcidResultAcetate;
+                        currentSheet.Cell(20, 4).Value = currentData.AcidResultCotton;
+                        currentSheet.Cell(20, 5).Value = currentData.AcidResultNylon;
+                        currentSheet.Cell(20, 6).Value = currentData.AcidResultPolyester;
+                        currentSheet.Cell(20, 7).Value = currentData.AcidResultAcrylic;
+                        currentSheet.Cell(20, 8).Value = currentData.AcidResultWool;
+
+                        currentSheet.Cell(21, 2).Value = currentData.Remark;
+                        currentSheet.Cell(77, 3).Value = currentData.Inspector;
+                        currentSheet.Cell(77, 7).Value = currentData.Inspector;
+
+                        AddImageToWorksheet(currentSheet, currentData.TestBeforePicture, 52, 1, 380, 300);
+                        AddImageToWorksheet(currentSheet, currentData.TestAfterPicture, 52, 5, 380, 300);
                     }
-                    #endregion
 
-                }
+                    tmpName = RemoveInvalidFileNameChars(tmpName);
 
-                #region Save & Show Excel
+                    string filePath = Path.Combine(tmpPath, $"{tmpName}.xlsx");
+                    string pdfPath = Path.Combine(tmpPath, $"{tmpName}.pdf");
 
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
+                    workbook.SaveAs(filePath);
 
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
+                    FileName = $"{tmpName}.xlsx";
+                    result.Result = true;
 
-                string filexlsx = tmpName + ".xlsx";
-                string fileNamePDF = tmpName + ".pdf";
-
-                string filepath;
-                string filepathpdf;
-                if (isTest)
-                {
-                    filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx);
-                    filepathpdf = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF);
-                }
-                else
-                {
-                    filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
-                    filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
-                }
-
-                Excel.Workbook workbook = excel.ActiveWorkbook;
-                workbook.SaveAs(filepath);
-                workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excel);
-
-                FileName = filexlsx;
-                result.Result = true;
-
-                if (isPDF)
-                {
-                    if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
+                    if (isPDF)
                     {
-                        FileName = fileNamePDF;
-                        result.Result = true;
-                    }
-                    else
-                    {
-                        result.ErrorMessage = "Convert To PDF Fail";
-                        result.Result = false;
+                        if (ConvertToPDF.ExcelToPDF(filePath, pdfPath))
+                        {
+                            FileName = $"{tmpName}.pdf";
+                            result.Result = true;
+                        }
+                        else
+                        {
+                            result.ErrorMessage = "Convert To PDF Fail";
+                            result.Result = false;
+                        }
                     }
                 }
-
-                #endregion
-
             }
             catch (Exception ex)
             {
                 result.Result = false;
-                result.ErrorMessage = ex.ToString();
+                result.ErrorMessage = ex.Message;
             }
 
             return result;
+        }
+
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
+        }
+
+        private string RemoveInvalidFileNameChars(string input)
+        {
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+            foreach (char c in invalidChars)
+            {
+                input = input.Replace(c.ToString(), "");
+            }
+            return input;
         }
 
         public BaseResult DeletePerspirationFastness(string poID, string TestNo)
