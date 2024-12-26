@@ -6,27 +6,16 @@ using DatabaseObject.ViewModel.BulkFGT;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
-using Sci;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Mvc;
-using Excel = Microsoft.Office.Interop.Excel;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
-using Microsoft.Office.Interop.Excel;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
 using DatabaseObject.ResultModel;
 using Library;
-using System.Web.UI.WebControls;
-using static Ict.Win.Design.DateTimeConverter;
 using System.Web;
-using System.Xml.Linq;
+using ClosedXML.Excel;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -269,7 +258,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
         public BaseResult ToReport(string ReportNo, bool IsPDF, out string FinalFilenmae, string AssignedFineName = "")
         {
-
             BaseResult result = new BaseResult();
             _Provider = new HeatTransferWashProvider(Common.ManufacturingExecutionDataAccessLayer);
             _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
@@ -291,204 +279,154 @@ namespace BusinessLogicLayer.Service.BulkFGT
                        $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
-                string strXltName = baseFilePath + "\\XLT\\HeatTransferWash.xltx";
-                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
-                if (excel == null)
+                string strXltName = baseFilePath + $@"\XLT\HeatTransferWash.xltx";
+
+                if (!File.Exists(strXltName))
                 {
                     result.ErrorMessage = "Excel template not found!";
                     result.Result = false;
                     return result;
                 }
-                excel.Visible = false;
-                excel.DisplayAlerts = false;
 
-                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
-
-
-                // 表頭填入
-                if (testCode.Any())
+                using (var workbook = new XLWorkbook(strXltName))
                 {
-                    worksheet.Cells[1, 1] = head.ArtworkTypeID + $@" - Daily wash test report({testCode.FirstOrDefault().TestCode})";
-                }
-                else
-                {
-                    worksheet.Cells[1, 1] = head.ArtworkTypeID + " - Daily wash test report";
-                }
+                    var worksheet = workbook.Worksheet(1);
 
-                worksheet.Cells[2, 2] = head.OrderID;
-                worksheet.Cells[2, 7] = head.ReportDate.HasValue ? head.ReportDate.Value.ToString("yyyy-MM-dd") : string.Empty;
-
-                worksheet.Cells[3, 2] = head.ReceivedDate.HasValue ? head.ReceivedDate.Value.ToString("yyyy-MM-dd") : string.Empty;
-                worksheet.Cells[3, 7] = head.AddDate.HasValue ? head.AddDate.Value.ToString("yyyy-MM-dd") : string.Empty;
-
-                worksheet.Cells[4, 2] = head.SeasonID;
-                worksheet.Cells[4, 7] = head.Teamwear ? "V" : string.Empty;
-
-                worksheet.Cells[5, 2] = head.Article;
-                worksheet.Cells[5, 7] = head.StyleID;
-
-                worksheet.Cells[6, 2] = head.BrandID;
-                worksheet.Cells[6, 7] = head.Line;
-
-                worksheet.Cells[7, 2] = head.ArtworkTypeID;
-                worksheet.Cells[7, 7] = head.Machine;
-
-                worksheet.Cells[8, 3] = head.ArtworkTypeID + " machine parameter";
-
-                if (head.ArtworkTypeID == "BO" || head.ArtworkTypeID == "FU")
-                {
-                    worksheet.Cells[9, 2] = "Film ref#";
-                }
-                else if (head.ArtworkTypeID == "HT")
-                {
-                    worksheet.Cells[9, 2] = "HT ref#";
-                }
-
-                //worksheet.Cells[10, 3] = head.Time;
-                //worksheet.Cells[11, 3] = head.Pressure;
-                //worksheet.Cells[12, 3] = head.PeelOff;
-                //worksheet.Cells[14, 1] = head.Cycles;
-                //worksheet.Cells[14, 3] = head.TemperatureUnit;
-
-                if (head.Result == "Pass")
-                {
-                    worksheet.Cells[12, 2] = "V";
-                }
-                else if (head.Result == "Fail")
-                {
-                    worksheet.Cells[12, 7] = "V";
-                }
-                worksheet.Cells[14, 1] = head.Remark;
-
-                string imgPath_BeforePicture = string.Empty;
-                string imgPath_AfterPicture = string.Empty;
-                string imgPath_Signture = string.Empty;
-                if (head.TestBeforePicture != null)
-                {
-                    byte[] beforePic = head.TestBeforePicture;
-                    imgPath_BeforePicture = ToolKit.PublicClass.AddImageSignWord(beforePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    Excel.Range cell = worksheet.Cells[17, 1];
-                    worksheet.Shapes.AddPicture(imgPath_BeforePicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 2, cell.Top + 2, 220, 130);
-                }
-                if (head.TestAfterPicture != null)
-                {
-                    byte[] beforePic = head.TestAfterPicture;
-                    imgPath_AfterPicture = ToolKit.PublicClass.AddImageSignWord(beforePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    Excel.Range cell = worksheet.Cells[17, 6];
-                    worksheet.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 2, cell.Top + 2, 220, 130);
-                }
-                if (head.Signature != null)
-                {
-                    byte[] SignturePic = head.Signature;
-                    imgPath_Signture = ToolKit.PublicClass.AddImageSignWord(SignturePic, head.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic);
-                    Excel.Range cell = worksheet.Cells[30, 7];
-                    worksheet.Shapes.AddPicture(imgPath_Signture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 40, 20);
-                }
-
-                // Technician 欄位
-                if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
-                {
-                    string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
-
-                    // 姓名
-                    worksheet.Cells[20, 6] = TechnicianName;
-
-                    // Signture 圖片
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[30, 7];
-                    if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                    // 表頭填入
+                    if (testCode.Any())
                     {
+                        worksheet.Cell(1, 1).Value = head.ArtworkTypeID + $" - Daily wash test report({testCode.FirstOrDefault().TestCode})";
+                    }
+                    else
+                    {
+                        worksheet.Cell(1, 1).Value = head.ArtworkTypeID + " - Daily wash test report";
+                    }
 
-                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
+                    worksheet.Cell(2, 2).Value = head.OrderID;
+                    worksheet.Cell(2, 7).Value = head.ReportDate?.ToString("yyyy-MM-dd") ?? string.Empty;
 
-                        MemoryStream ms = new MemoryStream(TestBeforePicture);
-                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-                        string imageName = $"{Guid.NewGuid()}.jpg";
-                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                    worksheet.Cell(3, 2).Value = head.ReceivedDate?.ToString("yyyy-MM-dd") ?? string.Empty;
+                    worksheet.Cell(3, 7).Value = head.AddDate?.ToString("yyyy-MM-dd") ?? string.Empty;
 
-                        img.Save(imgPath);
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+                    worksheet.Cell(4, 2).Value = head.SeasonID;
+                    worksheet.Cell(4, 7).Value = head.Teamwear ? "V" : string.Empty;
+
+                    worksheet.Cell(5, 2).Value = head.Article;
+                    worksheet.Cell(5, 7).Value = head.StyleID;
+
+                    worksheet.Cell(6, 2).Value = head.BrandID;
+                    worksheet.Cell(6, 7).Value = head.Line;
+
+                    worksheet.Cell(7, 2).Value = head.ArtworkTypeID;
+                    worksheet.Cell(7, 7).Value = head.Machine;
+
+                    worksheet.Cell(8, 3).Value = head.ArtworkTypeID + " machine parameter";
+
+                    if (head.ArtworkTypeID == "BO" || head.ArtworkTypeID == "FU")
+                    {
+                        worksheet.Cell(9, 2).Value = "Film ref#";
+                    }
+                    else if (head.ArtworkTypeID == "HT")
+                    {
+                        worksheet.Cell(9, 2).Value = "HT ref#";
+                    }
+
+                    if (head.Result == "Pass")
+                    {
+                        worksheet.Cell(12, 2).Value = "V";
+                    }
+                    else if (head.Result == "Fail")
+                    {
+                        worksheet.Cell(12, 7).Value = "V";
+                    }
+
+                    worksheet.Cell(14, 1).Value = head.Remark;
+
+                    // 插入圖片
+                    AddImageToWorksheet(worksheet, head.TestBeforePicture, 17, 1, 220, 130);
+                    AddImageToWorksheet(worksheet, head.TestAfterPicture, 17, 6, 220, 130);
+                    AddImageToWorksheet(worksheet, head.Signature, 30, 7, 40, 20);
+
+                    // 表身筆數處理，複製儲存格
+                    if (!body.Any())
+                    {
+                        worksheet.Row(10).Delete();
 
                     }
-                }
-
-                // ISP20230055 簽名、名字一起顯示
-                worksheet.Cells[29, 7] = head.LastEditText;
-
-                // 表身筆數處理
-                if (!body.Any())
-                {
-                    worksheet.get_Range("A10").EntireRow.Delete();
-                }
-                else
-                {
-                    int copyCount = body.Count - 1;
-
-                    for (int i = 0; i < copyCount; i++)
+                    else
                     {
-                        Excel.Range paste1 = worksheet.get_Range($"A{i + 10}", Type.Missing);
-                        Excel.Range copyRow = worksheet.get_Range("A10").EntireRow;
-                        paste1.Insert(Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
+                        int copyCount = body.Count - 1;
+
+                        for (int i = 0; i < copyCount; i++)
+                        {
+                            // 1. 複製第 10 列
+                            var rowToCopy = worksheet.Row(10);
+
+                            // 2. 插入一列，將第 10 和第 11 列之間騰出空間
+                            worksheet.Row(11).InsertRowsAbove(1);
+
+                            // 3. 複製內容與格式到新插入的第 11 列
+                            var newRow = worksheet.Row(11);
+                            rowToCopy.CopyTo(newRow);
+
+                        }
                     }
+
+
+                    // 表身填入
+                    int bodyStart = 10;
+                    foreach (var item in body)
+                    {
+                        worksheet.Cell(bodyStart, 1).Value = item.FabricRefNo;
+                        worksheet.Cell(bodyStart, 2).Value = item.HTRefNo;
+                        worksheet.Cell(bodyStart, 3).Value = item.Temperature;
+                        worksheet.Cell(bodyStart, 4).Value = item.Time;
+                        worksheet.Cell(bodyStart, 5).Value = item.SecondTime;
+                        worksheet.Cell(bodyStart, 6).Value = item.Pressure;
+                        worksheet.Cell(bodyStart, 7).Value = item.PeelOff;
+                        worksheet.Cell(bodyStart, 8).Value = item.Cycles;
+                        worksheet.Cell(bodyStart, 9).Value = item.TemperatureUnit;
+                        worksheet.Cell(bodyStart, 10).Value = item.Remark;
+                        bodyStart++;
+                    }
+
+                    // 儲存檔案
+                    if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                    {
+                        tmpName = AssignedFineName;
+                    }
+
+                    tmpName = RemoveInvalidFileNameChars(tmpName);
+
+                    string fileName = $"{tmpName}.xlsx";
+                    string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
+
+                    workbook.SaveAs(fullExcelFileName);
+
+
+                    if (IsPDF)
+                    {
+                        string pdfFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.pdf");
+                        if (ConvertToPDF.ExcelToPDF(fullExcelFileName, pdfFilePath))
+                        {
+                            FinalFilenmae = $"{tmpName}.pdf";
+                            result.Result = true;
+                        }
+                        else
+                        {
+                            result.Result = false;
+                            result.ErrorMessage = "Convert to PDF failed.";
+                        }
+                    }
+                    else
+                    {
+                        FinalFilenmae = fileName;
+                        result.Result = true;
+                    }
+
+
+                    // 若需要生成 PDF，可以使用第三方工具例如 iTextSharp 來完成
                 }
-
-
-                // 表身填入
-                int bodyStart = 10;
-                foreach (var item in body)
-                {
-                    worksheet.Cells[bodyStart, 1] = item.FabricRefNo;
-                    worksheet.Cells[bodyStart, 2] = item.HTRefNo;
-                    worksheet.Cells[bodyStart, 3] = item.Temperature;
-                    worksheet.Cells[bodyStart, 4] = item.Time;
-                    worksheet.Cells[bodyStart, 5] = item.SecondTime;
-                    worksheet.Cells[bodyStart, 6] = item.Pressure;
-                    worksheet.Cells[bodyStart, 7] = item.PeelOff;
-                    worksheet.Cells[bodyStart, 8] = item.Cycles;
-                    worksheet.Cells[bodyStart, 9] = item.TemperatureUnit;
-                    worksheet.Cells[bodyStart, 10] = item.Remark;
-                    bodyStart++;
-                }
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-                string fileName = $"{tmpName}.xlsx";
-                string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
-
-                string filePdfName = $"{tmpName}.pdf";
-                string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
-
-                Excel.Workbook workBook = excel.ActiveWorkbook;
-                if (IsPDF)
-                {
-                    Microsoft.Office.Interop.Excel.XlFixedFormatType targetType = Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF;
-
-                    workBook.ExportAsFixedFormat(targetType, fullPdfFileName);
-                    Marshal.ReleaseComObject(workBook);
-                    FinalFilenmae = filePdfName;
-                }
-                else
-                {
-                    workBook.SaveAs(fullExcelFileName);
-                    //excel.ActiveWorkbook.SaveAs(excelPath);
-                    FinalFilenmae = fileName;
-                }
-
-                workBook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workBook);
-                Marshal.ReleaseComObject(excel);
             }
             catch (Exception ex)
             {
@@ -499,6 +437,28 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
+        private string RemoveInvalidFileNameChars(string input)
+        {
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+            foreach (char c in invalidChars)
+            {
+                input = input.Replace(c.ToString(), "");
+            }
+            return input;
+        }
+
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
+        }
         public List<Orders> GetOrders(Orders orders)
         {
             _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);

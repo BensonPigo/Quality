@@ -1,19 +1,13 @@
 ﻿using BusinessLogicLayer.Interface.BulkFGT;
+using ClosedXML.Excel;
 using DatabaseObject.ViewModel.BulkFGT;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
-using Org.BouncyCastle.Ocsp;
-using Sci;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Mvc;
-using Excel = Microsoft.Office.Interop.Excel;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -65,44 +59,58 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             if (model.DataList.Count > 0)
             {
-                string basefileName = "Search List";
-                string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xlsx";
-                Microsoft.Office.Interop.Excel.Application objApp = MyUtility.Excel.ConnectExcel(openfilepath);
-                objApp.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-                Microsoft.Office.Interop.Excel.Worksheet worksheet = objApp.ActiveWorkbook.Worksheets[1]; // 取得工作表
+                string baseFileName = "Search List";
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
+                string fileName = $"{baseFileName}_{DateTime.Now:yyyyMMdd}_{Guid.NewGuid()}.xlsx";
+                string filePath = Path.Combine(baseFilePath, "TMP", fileName);
 
-                for (int i = 0; i <= model.DataList.Count - 1; i++)
+                string templatePath = Path.Combine(baseFilePath, "XLT", "Search List.xlsx");
+                // 建立 ClosedXML 工作簿
+                using (var workbook = new XLWorkbook(templatePath))
                 {
-                    worksheet.Cells[i + 2, 1] = model.DataList[i].Type;
-                    worksheet.Cells[i + 2, 2] = model.DataList[i].ReportNo;
-                    worksheet.Cells[i + 2, 3] = model.DataList[i].OrderID;
-                    worksheet.Cells[i + 2, 4] = model.DataList[i].BrandID;
-                    worksheet.Cells[i + 2, 5] = model.DataList[i].StyleID;
-                    worksheet.Cells[i + 2, 6] = model.DataList[i].SeasonID;
-                    worksheet.Cells[i + 2, 7] = model.DataList[i].Article;
-                    worksheet.Cells[i + 2, 8] = model.DataList[i].Line;
-                    worksheet.Cells[i + 2, 9] = model.DataList[i].Artwork;
-                    worksheet.Cells[i + 2, 10] = model.DataList[i].Result;
-                    worksheet.Cells[i + 2, 11] = model.DataList[i].ReceivedDate.HasValue ? model.DataList[i].ReceivedDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
-                    worksheet.Cells[i + 2, 12] = model.DataList[i].ReportDate.HasValue ? model.DataList[i].ReportDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
-                    worksheet.Cells[i + 2, 13] = model.DataList[i].TestDate.HasValue ? model.DataList[i].TestDate.Value.ToString("yyyy/MM/dd HH:mm:ss") : string.Empty;
-                    worksheet.Cells[i + 2, 14] = model.DataList[i].AddName;
+                    var worksheet = workbook.Worksheets.Add("Sheet1");
+
+                    // 建立標題列
+                    worksheet.Cell(1, 1).Value = "Type";
+                    worksheet.Cell(1, 2).Value = "ReportNo";
+                    worksheet.Cell(1, 3).Value = "OrderID";
+                    worksheet.Cell(1, 4).Value = "BrandID";
+                    worksheet.Cell(1, 5).Value = "StyleID";
+                    worksheet.Cell(1, 6).Value = "SeasonID";
+                    worksheet.Cell(1, 7).Value = "Article";
+                    worksheet.Cell(1, 8).Value = "Line";
+                    worksheet.Cell(1, 9).Value = "Artwork";
+                    worksheet.Cell(1, 10).Value = "Result";
+                    worksheet.Cell(1, 11).Value = "ReceivedDate";
+                    worksheet.Cell(1, 12).Value = "ReportDate";
+                    worksheet.Cell(1, 13).Value = "TestDate";
+                    worksheet.Cell(1, 14).Value = "AddName";
+
+                    // 填入資料列
+                    for (int i = 0; i < model.DataList.Count; i++)
+                    {
+                        worksheet.Cell(i + 2, 1).Value = model.DataList[i].Type;
+                        worksheet.Cell(i + 2, 2).Value = model.DataList[i].ReportNo;
+                        worksheet.Cell(i + 2, 3).Value = model.DataList[i].OrderID;
+                        worksheet.Cell(i + 2, 4).Value = model.DataList[i].BrandID;
+                        worksheet.Cell(i + 2, 5).Value = model.DataList[i].StyleID;
+                        worksheet.Cell(i + 2, 6).Value = model.DataList[i].SeasonID;
+                        worksheet.Cell(i + 2, 7).Value = model.DataList[i].Article;
+                        worksheet.Cell(i + 2, 8).Value = model.DataList[i].Line;
+                        worksheet.Cell(i + 2, 9).Value = model.DataList[i].Artwork;
+                        worksheet.Cell(i + 2, 10).Value = model.DataList[i].Result;
+                        worksheet.Cell(i + 2, 11).Value = model.DataList[i].ReceivedDate?.ToString("yyyy/MM/dd HH:mm:ss");
+                        worksheet.Cell(i + 2, 12).Value = model.DataList[i].ReportDate?.ToString("yyyy/MM/dd HH:mm:ss");
+                        worksheet.Cell(i + 2, 13).Value = model.DataList[i].TestDate?.ToString("yyyy/MM/dd HH:mm:ss");
+                        worksheet.Cell(i + 2, 14).Value = model.DataList[i].AddName;
+                    }
+
+                    // 自動調整欄寬
+                    worksheet.Columns().AdjustToContents();
+
+                    // 儲存 Excel 檔案
+                    workbook.SaveAs(filePath);
                 }
-
-                worksheet.Columns.AutoFit();
-
-                // Save Excel
-                string fileName = $"{basefileName}_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
-                string filepath;
-                filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
-
-                Excel.Workbook workbook = objApp.ActiveWorkbook;
-                workbook.SaveAs(filepath);
-                workbook.Close();
-                objApp.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(objApp);
 
                 model.Result = true;
                 model.TempFileName = fileName;
@@ -110,10 +118,23 @@ namespace BusinessLogicLayer.Service.BulkFGT
             else
             {
                 model.Result = false;
-                model.TempFileName = "";
+                model.TempFileName = string.Empty;
             }
 
             return model;
+        }
+
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
         }
 
     }

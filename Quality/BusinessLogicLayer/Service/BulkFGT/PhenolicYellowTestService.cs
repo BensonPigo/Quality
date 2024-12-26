@@ -1,6 +1,4 @@
 ﻿using ADOHelper.Utility;
-using BusinessLogicLayer.Helper;
-using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
@@ -13,13 +11,8 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
-using static Sci.MyUtility;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {

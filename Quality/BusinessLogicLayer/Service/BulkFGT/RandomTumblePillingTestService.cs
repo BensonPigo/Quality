@@ -1,26 +1,18 @@
 ﻿using ADOHelper.Utility;
-using BusinessLogicLayer.Helper;
-using DatabaseObject.ProductionDB;
+using ClosedXML.Excel;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
-using Org.BouncyCastle.Tsp;
-using Sci;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
-using static Sci.MyUtility;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -435,244 +427,166 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-
         public RandomTumblePillingTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             RandomTumblePillingTest_ViewModel result = new RandomTumblePillingTest_ViewModel();
-
-            string basefileName = "RandomTumblePillingTest";
-            string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
             string tmpName = string.Empty;
-
-            Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
 
             try
             {
-                _Provider = new RandomTumblePillingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
-
                 // 取得報表資料
-
+                _Provider = new RandomTumblePillingTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 RandomTumblePillingTest_ViewModel model = this.GetData(new RandomTumblePillingTest_Request() { ReportNo = ReportNo });
-
                 DataTable ReportTechnician = _Provider.GetReportTechnician(new RandomTumblePillingTest_Request() { ReportNo = ReportNo });
 
-                tmpName = $"Random Tumble Pilling Test_{model.Main.OrderID}_" +
-                $"{model.Main.StyleID}_" +
-                $"{model.Main.FabricRefNo}_" +
-                $"{model.Main.FabricColor}_" +
-                $"{model.Main.Result}_" +
-                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                tmpName = $"Random Tumble Pilling Test_{model.Main.OrderID}_{model.Main.StyleID}_" +
+                          $"{model.Main.FabricRefNo}_{model.Main.FabricColor}_{model.Main.Result}_" +
+                          $"{DateTime.Now:yyyyMMddHHmmss}";
+                tmpName = Regex.Replace(tmpName, @"[\/:*?""<>|]", ""); // 移除非法字元
 
-                excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-                Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
+                string templateFilePath = Path.Combine(baseFilePath, "XLT", "RandomTumblePillingTest.xltx");
+                string fileName = $"{tmpName}.xlsx";
+                string fullExcelFileName = Path.Combine(baseFilePath, "TMP", fileName);
+                string filePdfName = $"{tmpName}.pdf";
+                string fullPdfFileName = Path.Combine(baseFilePath, "TMP", filePdfName);
 
-                // 取得工作表上所有圖形物件
-                Microsoft.Office.Interop.Excel.Shapes shapes = worksheet.Shapes;
-
-                // 根據名稱，搜尋文字方塊物件
-                Microsoft.Office.Interop.Excel.Shape ADIDAS_TextBox = shapes.Item("ADIDAS_TextBox");
-                Microsoft.Office.Interop.Excel.Shape REEBOK_TextBox = shapes.Item("REEBOK_TextBox");
-                Microsoft.Office.Interop.Excel.Shape Fleece_TextBox = shapes.Item("Fleece_TextBox");
-                Microsoft.Office.Interop.Excel.Shape Frencht_TextBox = shapes.Item("Frencht_TextBox");
-                Microsoft.Office.Interop.Excel.Shape Normal_TextBox = shapes.Item("Normal_TextBox");
-
-                if (model.Main.BrandID == "ADIDAS")
+                // 開啟範本檔案進行操作
+                using (var workbook = new XLWorkbook(templateFilePath))
                 {
-                    ADIDAS_TextBox.TextFrame.Characters().Text = "V";
-                }
-                if (model.Main.BrandID == "REEBOK")
-                {
-                    REEBOK_TextBox.TextFrame.Characters().Text = "V";
-                }
+                    var worksheet = workbook.Worksheet(1);
 
-                if (model.Main.TestStandard == "Fleece/Polar Fleece")
-                {
-                    Fleece_TextBox.TextFrame.Characters().Text = "V";
-                }
-                if (model.Main.TestStandard == "French Terry")
-                {
-                    Frencht_TextBox.TextFrame.Characters().Text = "V";
-                }
-                if (model.Main.TestStandard == "Normal Fabric")
-                {
-                    Normal_TextBox.TextFrame.Characters().Text = "V";
-                }
+                    // 固定欄位填寫
+                    worksheet.Cell(3, 2).Value = model.Main.ReportNo;
+                    worksheet.Cell(3, 6).Value = model.Main.OrderID;
 
-                // 固定欄位
+                    worksheet.Cell(4, 2).Value = model.Main.FactoryID;
+                    worksheet.Cell(4, 6).Value = model.Main.SubmitDateText;
 
-                string reportNo = model.Main.ReportNo;
-                worksheet.Cells[3, 2] = model.Main.ReportNo;
-                worksheet.Cells[3, 6] = model.Main.OrderID;
+                    worksheet.Cell(5, 2).Value = model.Main.StyleID;
+                    worksheet.Cell(5, 6).Value = model.Main.ReportDateText;
 
-                worksheet.Cells[4, 2] = model.Main.FactoryID;
-                worksheet.Cells[4, 6] = model.Main.SubmitDateText;
+                    worksheet.Cell(6, 2).Value = model.Main.Article;
+                    worksheet.Cell(6, 6).Value = model.Main.SeasonID;
 
-                worksheet.Cells[5, 2] = model.Main.StyleID;
-                worksheet.Cells[5, 6] = model.Main.ReportDateText;
+                    worksheet.Cell(7, 2).Value = model.Main.SeasonID;
+                    worksheet.Cell(7, 6).Value = model.Main.FabricColor;
 
-                worksheet.Cells[6, 2] = model.Main.Article;
-                worksheet.Cells[6, 6] = model.Main.SeasonID;
-
-                worksheet.Cells[7, 2] = model.Main.SeasonID;
-                worksheet.Cells[7, 6] = model.Main.FabricColor;
-
-                if (model.Main.Result == "Pass")
-                {
-                    worksheet.Cells[11, 9] = "V";
-                }
-                else
-                {
-                    worksheet.Cells[14, 9] = "V";
-                }
-
-                // Technician 欄位
-                if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
-                {
-                    string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
-
-                    // 姓名
-                    worksheet.Cells[48, 5] = TechnicianName;
-
-                    // Signture 圖片
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[48, 6];
-                    if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                    // BrandID
+                    if (model.Main.BrandID == "ADIDAS")
                     {
-
-                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
-
-                        MemoryStream ms = new MemoryStream(TestBeforePicture);
-                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-                        string imageName = $"{Guid.NewGuid()}.jpg";
-                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-
-                        img.Save(imgPath);
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
-
+                        worksheet.Cell("B2").Value = "☑  ADIDAS";
                     }
-                }
+                    if (model.Main.BrandID == "REEBOK")
+                    {
+                        worksheet.Cell("D2").Value = "☑  REEBOK";
+                    }
 
-                // TestBeforePicture、TestAfterPicture 圖片
-                if (model.Main.TestFaceSideBeforePicture != null && model.Main.TestFaceSideBeforePicture.Length > 1)
-                {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[21, 1];
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestFaceSideBeforePicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
-                }
-                if (model.Main.TestFaceSideAfterPicture != null && model.Main.TestFaceSideAfterPicture.Length > 1)
-                {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[21, 6];
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestFaceSideAfterPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
-                }
-                if (model.Main.TestBackSideBeforePicture != null && model.Main.TestBackSideBeforePicture.Length > 1)
-                {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[34, 1];
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestBackSideBeforePicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
-                }
-                if (model.Main.TestBackSideAfterPicture != null && model.Main.TestBackSideAfterPicture.Length > 1)
-                {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[34, 6];
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestBackSideAfterPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
-                }
+                    // TestStandard
+                    if (model.Main.TestStandard == "Fleece/Polar Fleece")
+                    {
+                        worksheet.Cell("B8").Value = "☑  Fleece/Polar Fleece";
+                    }
+                    if (model.Main.TestStandard == "French Terry")
+                    {
+                        worksheet.Cell("E8").Value = "☑  French Terry ";
+                    }
+                    if (model.Main.TestStandard == "Normal Fabric")
+                    {
+                        worksheet.Cell("F8").Value = "☑  Normal Fabric ";
+                    }
 
-                int rowIdx = 0;
-                // 表身處理
-                if (model.DetailList.Any() && model.DetailList.Count > 1)
-                {
+
+                    // 結果標記
+                    if (model.Main.Result == "Pass")
+                        worksheet.Cell("I10").Value = "☑";
+                    else
+                        worksheet.Cell("I13").Value = "☑";
+
+
+                    // 簽名圖片
+                    if (ReportTechnician.Rows.Count > 0 && ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                    {
+                        byte[] signature = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"];
+                        AddImageToWorksheet(worksheet, signature, 48, 6, 100, 24);
+                        worksheet.Cell(48, 5).Value = ReportTechnician.Rows[0]["Technician"]?.ToString();
+                    }
+
+                    // TestBeforePicture 和 TestAfterPicture
+                    AddImageToWorksheet(worksheet, model.Main.TestFaceSideBeforePicture, 21, 1, 200, 300);
+                    AddImageToWorksheet(worksheet, model.Main.TestFaceSideAfterPicture, 21, 6, 200, 300);
+                    AddImageToWorksheet(worksheet, model.Main.TestBackSideBeforePicture, 34, 1, 200, 300);
+                    AddImageToWorksheet(worksheet, model.Main.TestBackSideAfterPicture, 34, 6, 200, 300);
+
+                    // 處理 DetailList
+                    int rowIdx = 10;
                     foreach (var item in model.DetailList)
                     {
                         List<string> WorstScale = new List<string>();
 
-                        // 每個Side 開始填入時，先填Worst Scale
-                        if (rowIdx == 0 || rowIdx == 3)
+                        // 每個 Side 開始填入時，先填 Worst Scale
+                        if (rowIdx == 10 || rowIdx == 13)
                         {
-                            if (item.Side == "Face Side")
-                            {
-                                string WorstFirst = model.DetailList.Where(o => o.Side == item.Side).OrderBy(o => o.FirstScale).FirstOrDefault().FirstScale;
-                                string WorstSecond = model.DetailList.Where(o => o.Side == item.Side).OrderBy(o => o.SecondScale).FirstOrDefault().SecondScale;
+                            var worstFirst = model.DetailList
+                                                 .Where(o => o.Side == item.Side)
+                                                 .OrderBy(o => o.FirstScale)
+                                                 .FirstOrDefault()?.FirstScale;
 
-                                WorstScale.Add(WorstFirst);
-                                WorstScale.Add(WorstSecond);
-                            }
-                            if (item.Side == "Back Side")
-                            {
-                                string WorstFirst = model.DetailList.Where(o => o.Side == item.Side).OrderBy(o => o.FirstScale).FirstOrDefault().FirstScale;
-                                string WorstSecond = model.DetailList.Where(o => o.Side == item.Side).OrderBy(o => o.SecondScale).FirstOrDefault().SecondScale;
+                            var worstSecond = model.DetailList
+                                                  .Where(o => o.Side == item.Side)
+                                                  .OrderBy(o => o.SecondScale)
+                                                  .FirstOrDefault()?.SecondScale;
 
-                                WorstScale.Add(WorstFirst);
-                                WorstScale.Add(WorstSecond);
-                            }
+                            if (!string.IsNullOrEmpty(worstFirst)) WorstScale.Add(worstFirst);
+                            if (!string.IsNullOrEmpty(worstSecond)) WorstScale.Add(worstSecond);
 
-                            worksheet.Cells[10 + rowIdx, 7] = WorstScale.OrderBy(o => o).FirstOrDefault();
+                            worksheet.Cell(rowIdx, 7).Value = WorstScale.OrderBy(o => o).FirstOrDefault();
                         }
-                        worksheet.Cells[10 + rowIdx, 2] = item.EvaluationItem;
-                        worksheet.Cells[10 + rowIdx, 4] = item.FirstScale;
-                        worksheet.Cells[10 + rowIdx, 6] = item.SecondScale;
+
+                        worksheet.Cell(rowIdx, 2).Value = item.EvaluationItem;
+                        worksheet.Cell(rowIdx, 4).Value = item.FirstScale;
+                        worksheet.Cell(rowIdx, 6).Value = item.SecondScale;
 
                         rowIdx++;
                     }
+
+                    // 儲存 Excel 檔案
+                    workbook.SaveAs(fullExcelFileName);
                 }
 
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                // 轉換為 PDF（若需要）
+                if (isPDF && ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
                 {
-                    tmpName = AssignedFineName;
-                }
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-
-                string fileName = $"{tmpName}.xlsx";
-                string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
-
-                string filePdfName = $"{tmpName}.pdf";
-                string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
-
-
-                Microsoft.Office.Interop.Excel.Workbook workbook = excel.ActiveWorkbook;
-                workbook.SaveAs(fullExcelFileName);
-
-                workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-
-                // 轉PDF再繼續進行以下
-                if (isPDF)
-                {
-                    if (ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
-                    {
-                        result.TempFileName = filePdfName;
-                        result.Result = true;
-                    }
-                    else
-                    {
-                        result.ErrorMessage = "Convert To PDF Fail";
-                        result.Result = false;
-                    }
+                    result.TempFileName = filePdfName;
                 }
                 else
                 {
                     result.TempFileName = fileName;
-                    result.Result = true;
                 }
+
+                result.Result = true;
             }
             catch (Exception ex)
             {
                 result.ErrorMessage = ex.Message;
                 result.Result = false;
             }
-            finally
-            {
-                Marshal.ReleaseComObject(excel);
-            }
+
             return result;
+        }
+
+        // 新增圖片的共用方法
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5) // 微調圖片位置
+                             .WithSize(width, height);
+                }
+            }
         }
 
         public SendMail_Result SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)

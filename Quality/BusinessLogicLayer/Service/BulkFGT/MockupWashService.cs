@@ -1,5 +1,6 @@
 ﻿using ADOHelper.Utility;
 using BusinessLogicLayer.Interface.BulkFGT;
+using ClosedXML.Excel;
 using DatabaseObject;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
@@ -7,19 +8,15 @@ using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
-using Microsoft.Office.Interop.Excel;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
 using Sci;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
-using System.Runtime.InteropServices;
 using System.Web.Mvc;
-using System.Windows;
 
 namespace BusinessLogicLayer.Service
 {
@@ -157,7 +154,6 @@ namespace BusinessLogicLayer.Service
                 return null;
             }
         }
-
         public Report_Result GetPDF(MockupWash_ViewModel mockupWash, bool test = false, string AssignedFineName = "")
         {
             Report_Result result = new Report_Result();
@@ -169,244 +165,135 @@ namespace BusinessLogicLayer.Service
                 return result;
             }
 
-
             try
             {
-                if (!test)
+                string basePath = test ? AppDomain.CurrentDomain.BaseDirectory : System.Web.HttpContext.Current.Server.MapPath("~/");
+
+                string xltPath = Path.Combine(basePath, "XLT", mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? "MockupWash2.xltx" : "MockupWash.xltx");
+                string tmpPath = Path.Combine(basePath, "TMP");
+
+                if (!Directory.Exists(tmpPath)) Directory.CreateDirectory(tmpPath);
+
+                tmpName = $"Mockup Wash _{mockupWash.POID}_{mockupWash.StyleID}_{mockupWash.Article}_{mockupWash.Result}_{DateTime.Now:yyyyMMddHHmmss}";
+
+                if (!File.Exists(xltPath)) throw new FileNotFoundException("Template not found", xltPath);
+
+                using (var workbook = new XLWorkbook(xltPath))
                 {
-                    if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\"))
+                    var worksheet = workbook.Worksheet(1);
+
+                    worksheet.Cell(2, 1).Value = mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER")
+                        ? "Wash TEST (HEAT TRANSFER)"
+                        : "Wash TEST";
+
+                    worksheet.Cell(4, 2).Value = mockupWash.ReportNo;
+                    worksheet.Cell(5, 2).Value = $"{mockupWash.T1Subcon} - {mockupWash.T1SubconAbb}";
+                    worksheet.Cell(6, 2).Value = $"{mockupWash.T2Supplier} - {mockupWash.T2SupplierAbb}";
+                    worksheet.Cell(7, 2).Value = mockupWash.MethodDescription;
+
+                    worksheet.Cell(4, 6).Value = mockupWash.ReleasedDate;
+                    worksheet.Cell(5, 6).Value = mockupWash.TestDate;
+                    worksheet.Cell(6, 6).Value = mockupWash.ReceivedDate;
+                    worksheet.Cell(7, 6).Value = mockupWash.SeasonID;
+
+                    if (mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER"))
                     {
-                        System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\XLT\\");
+                        worksheet.Cell(10, 2).Value = mockupWash.HTPlate;
+                        worksheet.Cell(11, 2).Value = mockupWash.HTFlim;
+                        worksheet.Cell(12, 2).Value = mockupWash.HTTime;
+                        worksheet.Cell(13, 2).Value = mockupWash.HTPressure;
+
+                        worksheet.Cell(10, 6).Value = mockupWash.HTPellOff;
+                        worksheet.Cell(11, 6).Value = mockupWash.HT2ndPressnoreverse;
+                        worksheet.Cell(12, 6).Value = mockupWash.HT2ndPressreversed;
+                        worksheet.Cell(13, 6).Value = mockupWash.HTCoolingTime;
                     }
 
-                    if (!System.IO.Directory.Exists(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\"))
+                    worksheet.Cell(13 + (mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 2).Value = mockupWash.TechnicianName;
+                    AddImageToWorksheet(worksheet, mockupWash.Signature, 12 + (mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 2, 100, 24);
+
+                    AddImageToWorksheet(worksheet, mockupWash.TestBeforePicture, 18 + (mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 1, 288, 272);
+                    AddImageToWorksheet(worksheet, mockupWash.TestAfterPicture, 18 + (mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 4, 265, 272);
+
+                    if (mockupWash.MockupWash_Detail.Count > 0)
                     {
-                        System.IO.Directory.CreateDirectory(System.Web.HttpContext.Current.Server.MapPath("~/") + "\\TMP\\");
+                        for (int i = 1; i < mockupWash.MockupWash_Detail.Count; i++)
+                        {
+                            // 1. 複製第 10 列
+                            var rowToCopy = worksheet.Row(10);
+
+                            // 2. 插入一列，將第 10 和第 11 列之間騰出空間
+                            worksheet.Row(11).InsertRowsAbove(1);
+
+                            // 3. 複製內容與格式到新插入的第 11 列
+                            var newRow = worksheet.Row(11);
+                            rowToCopy.CopyTo(newRow);
+                        }
+
+                        int startRow = 10 + (mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0);
+
+                        foreach (var item in mockupWash.MockupWash_Detail)
+                        {
+                            worksheet.Cell(startRow, 1).Value = mockupWash.StyleID;
+                            worksheet.Cell(startRow, 2).Value = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : $"{item.FabricRefNo} - {item.FabricColorName}";
+                            worksheet.Cell(startRow, 3).Value = string.IsNullOrEmpty(mockupWash.ArtworkTypeID) ? $"{item.Design} - {item.ArtworkColorName}" : $"{mockupWash.ArtworkTypeID}/{item.Design} - {item.ArtworkColorName}";
+                            worksheet.Cell(startRow, 4).Value = item.Result;
+                            worksheet.Cell(startRow, 5).Value = item.Remark;
+
+                            worksheet.Row(startRow).AdjustToContents();
+                            startRow++;
+                        }
                     }
-                }
-                tmpName = $"Mockup Wash _{mockupWash.POID}_" +
-                    $"{mockupWash.StyleID}_" +
-                    $"{mockupWash.Article}_" +
-                    $"{mockupWash.Result}_" +
-                    $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-                _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
-                _InspectionTypeProvider = new InspectionTypeProvider(Common.ProductionDataAccessLayer);
-                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+                    tmpName = RemoveInvalidFileNameChars(tmpName);
 
-                var testCode = _QualityBrandTestCodeProvider.Get(mockupWash.BrandID, "Mockup Wash Test");
+                    string filePath = Path.Combine(tmpPath, $"{tmpName}.xlsx");
+                    string pdfPath = Path.Combine(tmpPath, $"{tmpName}.pdf");
 
-                List<InspectionType> InspectionTypes = _InspectionTypeProvider.Get_InspectionType("MockupWash", "Bulk", mockupWash.BrandID).ToList();
-                mockupWash.Requirements = InspectionTypes.Select(x => x.Comment).ToList();
-                var mockupWash_Detail = mockupWash.MockupWash_Detail;
-                bool haveHT = mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER");
-                string basefileName = haveHT ? "MockupWash2" : "MockupWash";
-                string openfilepath;
-                if (test)
-                {
-                    openfilepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XLT", $"{basefileName}.xltx");
-                }
-                else
-                {
-                    openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
-                }
+                    workbook.SaveAs(filePath);
 
-                Application excelApp = MyUtility.Excel.ConnectExcel(openfilepath);
-                excelApp.DisplayAlerts = false;
-                Worksheet worksheet = excelApp.Sheets[1];
-                Worksheet worksheet2 = excelApp.Sheets[2];
-                int htRow = 6;
-                int haveHTrow = haveHT ? htRow : 0;
-
-                // 設定表頭資料
-                if (testCode.Any())
-                {
-                    worksheet.Cells[2, 1] = $@"Wash TEST ({testCode.FirstOrDefault().TestCode})";
-                }
-
-                worksheet.Cells[4, 2] = mockupWash.ReportNo;
-                worksheet.Cells[5, 2] = mockupWash.T1Subcon + "-" + mockupWash.T1SubconAbb; ;
-                worksheet.Cells[6, 2] = mockupWash.T2Supplier + "-" + mockupWash.T2SupplierAbb;
-
-                worksheet.Cells[7, 2] = mockupWash.MethodDescription;
-                worksheet.Cells[4, 6] = mockupWash.ReleasedDate;
-                worksheet.Cells[5, 6] = mockupWash.TestDate;
-                worksheet.Cells[6, 6] = mockupWash.ReceivedDate;
-                worksheet.Cells[7, 6] = mockupWash.SeasonID;
-
-                if (haveHT)
-                {
-                    worksheet.Cells[10, 2] = mockupWash.HTPlate;
-                    worksheet.Cells[11, 2] = mockupWash.HTFlim;
-                    worksheet.Cells[12, 2] = mockupWash.HTTime;
-                    worksheet.Cells[13, 2] = mockupWash.HTPressure;
-                    worksheet.Cells[10, 6] = mockupWash.HTPellOff;
-                    worksheet.Cells[11, 6] = mockupWash.HT2ndPressnoreverse;
-                    worksheet.Cells[12, 6] = mockupWash.HT2ndPressreversed;
-                    worksheet.Cells[13, 6] = mockupWash.HTCoolingTime;
-                }
-
-                worksheet.Cells[13 + haveHTrow, 2] = mockupWash.TechnicianName;
-
-                Range cell = worksheet.Cells[12 + haveHTrow, 2];
-
-                if (mockupWash.Signature != null)
-                {
-                    MemoryStream ms = new MemoryStream(mockupWash.Signature);
-                    Image img = Image.FromStream(ms);
-                    string imageName = $"{Guid.NewGuid()}.jpg";
-                    string imgPath;
-                    if (test)
+                    if (ConvertToPDF.ExcelToPDF(filePath, pdfPath))
                     {
-                        imgPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", imageName);
+                        result.TempFileName = $"{tmpName}.pdf";
+                        result.Result = true;
                     }
                     else
                     {
-                        imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                        result.ErrorMessage = "Convert To PDF Fail";
+                        result.Result = false;
                     }
-
-                    img.Save(imgPath);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
-                }
-
-                Range cellBefore = worksheet.get_Range($"A{18 + haveHTrow}:C{39 + haveHTrow}");
-                if (mockupWash.TestBeforePicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupWash.TestBeforePicture, mockupWash.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellBefore.Left, cellBefore.Top, cellBefore.Width, cellBefore.Height);
-                }
-
-                Range cellAfter = worksheet.get_Range($"D{18 + haveHTrow}:J{39 + haveHTrow}");
-                if (mockupWash.TestAfterPicture != null)
-                {
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(mockupWash.TestAfterPicture, mockupWash.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: test);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cellAfter.Left, cellAfter.Top, cellAfter.Width, cellAfter.Height);
-                }
-
-                #region 表身資料
-                // 插入多的row
-                if (mockupWash_Detail.Count > 0)
-                {
-                    Range rngToInsert = worksheet.get_Range($"A{10 + haveHTrow}:J{10 + haveHTrow}", Type.Missing).EntireRow;
-                    for (int i = 1; i < mockupWash_Detail.Count; i++)
-                    {
-                        rngToInsert.Insert(XlInsertShiftDirection.xlShiftDown);
-                        worksheet.get_Range(string.Format("E{0}:G{0}", (10 + haveHTrow + i - 1).ToString())).Merge(false);
-                    }
-
-                    worksheet.get_Range(string.Format("H{0}:J{1}", (10 + haveHTrow).ToString(), (10 + haveHTrow + mockupWash_Detail.Count - 1).ToString())).Merge(false);
-                    Marshal.ReleaseComObject(rngToInsert);
-                }
-
-                // ISP20230792
-                if ((mockupWash.HTPlate > 0)
-                    || (mockupWash.HTFlim > 0)
-                    || (mockupWash.HTTime > 0)
-                    || (mockupWash.HTPressure > 0)
-                    || !string.IsNullOrEmpty(mockupWash.HTPellOff)
-                    || (mockupWash.HT2ndPressnoreverse > 0)
-                    || (mockupWash.HT2ndPressreversed > 0)
-                    || !string.IsNullOrEmpty(mockupWash.HTCoolingTime))
-                {
-                    int aRow = 11 + haveHTrow + mockupWash_Detail.Count - 1;
-                    Range rngToCopy = worksheet2.get_Range($"A1:J5", Type.Missing).EntireRow;
-                    Range rngToInsert = worksheet.get_Range($"A{aRow}", Type.Missing).EntireRow; // 選擇要被貼上的位置
-                    rngToInsert.Insert(XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
-
-                    worksheet.Cells[aRow + 1, 3] = mockupWash.HTPlate;
-                    worksheet.Cells[aRow + 2, 3] = mockupWash.HTFlim;
-                    worksheet.Cells[aRow + 3, 3] = mockupWash.HTTime;
-                    worksheet.Cells[aRow + 4, 3] = mockupWash.HTPressure;
-                    worksheet.Cells[aRow + 1, 8] = mockupWash.HTPellOff;
-                    worksheet.Cells[aRow + 2, 8] = mockupWash.HT2ndPressnoreverse;
-                    worksheet.Cells[aRow + 3, 8] = mockupWash.HT2ndPressreversed;
-                    worksheet.Cells[aRow + 4, 8] = mockupWash.HTCoolingTime;
-                }
-
-                // 塞進資料
-                int start_row = 10 + haveHTrow;
-                worksheet.Cells[start_row, 8] = mockupWash.Requirements.JoinToString(Environment.NewLine);
-                foreach (var item in mockupWash_Detail)
-                {
-                    string remark = item.Remark;
-                    string fabric = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : item.FabricRefNo + " - " + item.FabricColorName;
-                    string artwork = string.IsNullOrEmpty(mockupWash.ArtworkTypeID) ? item.Design + " - " + item.ArtworkColorName : mockupWash.ArtworkTypeID + "/" + item.Design + " - " + item.ArtworkColorName;
-                    worksheet.Cells[start_row, 1] = mockupWash.StyleID;
-                    worksheet.Cells[start_row, 2] = fabric;
-                    worksheet.Cells[start_row, 3] = artwork;
-                    worksheet.Cells[start_row, 4] = item.Result;
-                    worksheet.Cells[start_row, 5] = item.Remark;
-                    worksheet.Rows[start_row].Font.Bold = false;
-                    worksheet.Rows[start_row].WrapText = true;
-                    worksheet.Rows[start_row].HorizontalAlignment = XlHAlign.xlHAlignCenter;
-
-                    int maxLength = fabric.Length > remark.Length ? fabric.Length : remark.Length;
-                    maxLength = maxLength > artwork.Length ? maxLength : artwork.Length;
-                    worksheet.Range[$"A{start_row}", $"J{start_row}"].RowHeight = ((maxLength / 20) + 1) * 16.5;
-
-                    start_row++;
-                }
-                #endregion
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-                string filexlsx = tmpName + ".xlsx";
-                string fileNamePDF = tmpName + ".pdf";
-
-                string filepath;
-                string filepathpdf;
-                if (test)
-                {
-                    filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", filexlsx);
-                    filepathpdf = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileNamePDF);
-                }
-                else
-                {
-                    filepath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filexlsx);
-                    filepathpdf = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileNamePDF);
-                }
-
-
-                Workbook workbook = excelApp.ActiveWorkbook;
-                worksheet2.Visible = XlSheetVisibility.xlSheetHidden;
-                workbook.SaveAs(filepath);
-                workbook.Close();
-                excelApp.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(worksheet2);
-                Marshal.ReleaseComObject(workbook);
-                Marshal.ReleaseComObject(excelApp);
-
-
-                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
-                {
-                    result.TempFileName = fileNamePDF;
-                    result.Result = true;
-                }
-                else
-                {
-                    result.ErrorMessage = "Convert To PDF Fail";
-                    result.Result = false;
                 }
             }
             catch (Exception ex)
             {
-                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
+                result.ErrorMessage = ex.Message;
                 result.Result = false;
             }
 
             return result;
+        }
+
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
+        }
+
+        private string RemoveInvalidFileNameChars(string input)
+        {
+            char[] invalidChars = Path.GetInvalidFileNameChars();
+            foreach (char c in invalidChars)
+            {
+                input = input.Replace(c.ToString(), "");
+            }
+            return input;
         }
 
         public BaseResult Create(MockupWash_ViewModel MockupWash, string Mdivision, string userid, out string NewReportNo)

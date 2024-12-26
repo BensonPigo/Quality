@@ -2,24 +2,20 @@
 using DatabaseObject.ViewModel.BulkFGT;
 using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
-using Sci;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using System.Web;
+using ClosedXML.Excel;
+using System.Text.RegularExpressions;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -433,255 +429,144 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-
+        private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
+        {
+            if (imageData != null)
+            {
+                using (var stream = new MemoryStream(imageData))
+                {
+                    worksheet.AddPicture(stream)
+                             .MoveTo(worksheet.Cell(row, col), 5, 5)
+                             .WithSize(width, height);
+                }
+            }
+        }
         public TPeelStrengthTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             TPeelStrengthTest_ViewModel result = new TPeelStrengthTest_ViewModel();
 
-            string basefileName = "TPeelStrengthTest";
-            string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
-            string tmpName = string.Empty;
-
-            Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
-
             try
             {
-                _Provider = new TPeelStrengthTestProvider(Common.ManufacturingExecutionDataAccessLayer);
-                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+                // 初始化變數
+                string baseFileName = "TPeelStrengthTest";
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
+                string templatePath = Path.Combine(baseFilePath, "XLT", $"{baseFileName}.xltx");
+                string tmpName;
 
                 // 取得報表資料
-
-                TPeelStrengthTest_ViewModel model = this.GetData(new TPeelStrengthTest_Request() { ReportNo = ReportNo });
-
+                _Provider = new TPeelStrengthTestProvider(Common.ManufacturingExecutionDataAccessLayer);
+                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+                TPeelStrengthTest_ViewModel model = this.GetData(new TPeelStrengthTest_Request { ReportNo = ReportNo });
+                DataTable reportTechnician = _Provider.GetReportTechnician(new TPeelStrengthTest_Request { ReportNo = ReportNo });
                 var testCode = _QualityBrandTestCodeProvider.Get(model.Main.BrandID, "T-Peel Strength Test");
 
-                DataTable ReportTechnician = _Provider.GetReportTechnician(new TPeelStrengthTest_Request() { ReportNo = ReportNo });
+                // 處理檔案名稱
+                tmpName = $"T-Peel Strength Test_{model.Main.OrderID}_{model.Main.StyleID}_" +
+                          $"{model.Main.FabricRefNo}_{model.Main.FabricColor}_{model.Main.Result}_{DateTime.Now:yyyyMMddHHmmss}";
+                tmpName = Regex.Replace(tmpName, @"[/:?""<>|*%]", string.Empty);
+                if (!string.IsNullOrWhiteSpace(AssignedFineName)) tmpName = AssignedFineName;
 
-                tmpName = $"T-Peel Strength Test_{model.Main.OrderID}_" +
-                $"{model.Main.StyleID}_" +
-                $"{model.Main.FabricRefNo}_" +
-                $"{model.Main.FabricColor}_" +
-                $"{model.Main.Result}_" +
-                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
+                string outputDirectory = Path.Combine(baseFilePath, "TMP");
+                string filePath = Path.Combine(outputDirectory, $"{tmpName}.xlsx");
+                string pdfPath = Path.Combine(outputDirectory, $"{tmpName}.pdf");
 
-                excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-                Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.Sheets[1]; // 取得工作表
-
-
-                string reportNo = model.Main.ReportNo;
-                string machineReport = string.IsNullOrEmpty(model.Main.MachineReport) ? string.Empty : model.Main.MachineReport;
-
-                if (testCode.Any())
+                // 開啟模板並填寫資料
+                using (var workbook = new XLWorkbook(templatePath))
                 {
-                    worksheet.Cells[1, 1] = $@"T-peel strength test({testCode.FirstOrDefault().TestCode})";
-                }
+                    var worksheet = workbook.Worksheet(1);
 
-                worksheet.Cells[3, 2] = model.Main.ReportNo;
-
-                worksheet.Cells[4, 2] = model.Main.SubmitDateText;
-                worksheet.Cells[4, 5] = model.Main.ReportDateText;
-
-                worksheet.Cells[5, 2] = model.Main.OrderID;
-                worksheet.Cells[5, 5] = model.Main.BrandID;
-
-                worksheet.Cells[6, 2] = model.Main.StyleID;
-                worksheet.Cells[6, 5] = model.Main.SeasonID;
-
-                worksheet.Cells[7, 2] = model.Main.Article;
-                worksheet.Cells[7, 5] = model.Main.MachineNo;
-
-                worksheet.Cells[8, 2] = model.Main.FabricRefNo;
-                worksheet.Cells[8, 5] = model.Main.FabricColor;
-
-
-                // Technician 欄位
-                if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
-                {
-                    string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
-
-                    // 姓名
-                    worksheet.Cells[20, 6] = TechnicianName;
-
-                    // Signture 圖片
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[19, 6];
-                    if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                    // 填寫標題
+                    if (testCode.Any())
                     {
-
-                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
-
-                        MemoryStream ms = new MemoryStream(TestBeforePicture);
-                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-                        string imageName = $"{Guid.NewGuid()}.jpg";
-                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-
-                        img.Save(imgPath);
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
-
-                    }
-                }
-
-                // TestAfterPicture 圖片
-                if (model.Main.TestAfterPicture != null && model.Main.TestAfterPicture.Length > 1)
-                {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[17, 2];
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestAfterPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
-                }
-
-                // 表身處理
-                if (model.DetailList.Any() && model.DetailList.Count > 1)
-                {
-                    //// 先處理Remark
-                    string allRemark = string.Join(Environment.NewLine, model.DetailList.Select(o => o.Remark));
-
-                    //// 全部擠在一起，但是要分行
-                    worksheet.Cells[14, 2] = allRemark;
-
-                    // 複製欄位
-                    int copyCount = model.DetailList.Count - 1;
-                    for (int i = 0; i < copyCount; i++)
-                    {
-                        Microsoft.Office.Interop.Excel.Range paste1 = worksheet.get_Range($"A12", Type.Missing);
-                        Microsoft.Office.Interop.Excel.Range copyRow = worksheet.get_Range("12:12");
-                        paste1.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
+                        worksheet.Cell("A1").Value = $"T-peel strength test({testCode.FirstOrDefault().TestCode})";
                     }
 
-                    int rowIdx = 0;
-                    foreach (var detailData in model.DetailList)
-                    {
-                        // Wash Before or Wash After
-                        worksheet.Cells[12 + rowIdx, 1] = $@"Wash {detailData.EvaluationItem}";
+                    worksheet.Cell("B3").Value = model.Main.ReportNo;
+                    worksheet.Cell("B4").Value = model.Main.SubmitDateText;
+                    worksheet.Cell("E4").Value = model.Main.ReportDateText;
+                    worksheet.Cell("B5").Value = model.Main.OrderID;
+                    worksheet.Cell("E5").Value = model.Main.BrandID;
+                    worksheet.Cell("B6").Value = model.Main.StyleID;
+                    worksheet.Cell("E6").Value = model.Main.SeasonID;
+                    worksheet.Cell("B7").Value = model.Main.Article;
+                    worksheet.Cell("E7").Value = model.Main.MachineNo;
+                    worksheet.Cell("B8").Value = model.Main.FabricRefNo;
+                    worksheet.Cell("E8").Value = model.Main.FabricColor;
 
-                        if (detailData.EvaluationItem.ToLower() == "before")
+                    // Technician 資料處理
+                    if (reportTechnician.Rows.Count > 0)
+                    {
+                        worksheet.Cell("F20").Value = reportTechnician.Rows[0]["Technician"]?.ToString();
+                        AddImageToWorksheet(worksheet, reportTechnician.Rows[0]["TechnicianSignture"] as byte[], 19, 6, 100, 24);
+                    }
+
+                    // TestAfterPicture 圖片
+                    AddImageToWorksheet(worksheet, model.Main.TestAfterPicture, 17, 2, 200, 300);
+
+                    // 表身處理
+                    if (model.DetailList.Any())
+                    {
+                        string allRemark = string.Join(Environment.NewLine, model.DetailList.Select(o => o.Remark));
+                        worksheet.Cell("B14").Value = allRemark;
+
+                        // 複製欄位
+                        int copyCount = model.DetailList.Count - 1;
+                        for (int i = 0; i < copyCount; i++)
                         {
-                            worksheet.Cells[12 + rowIdx, 3] = detailData.WarpValue;
-                            worksheet.Cells[12 + rowIdx, 4] = detailData.WarpResult;
-                            worksheet.Cells[12 + rowIdx, 5] = detailData.WeftValue;
-                            worksheet.Cells[12 + rowIdx, 6] = detailData.WeftResult;
-                        }
-                        if (detailData.EvaluationItem.ToLower() == "after")
-                        {
-                            worksheet.Cells[12 + rowIdx, 3] = detailData.WarpValue;
-                            worksheet.Cells[12 + rowIdx, 4] = detailData.WarpResult;
-                            worksheet.Cells[12 + rowIdx, 5] = detailData.WeftValue;
-                            worksheet.Cells[12 + rowIdx, 6] = detailData.WeftResult;
+                            // 1. 複製第 12 列
+                            var rowToCopy = worksheet.Row(12);
+
+                            // 2. 插入一列，將第 12 和第 13 列之間騰出空間
+                            worksheet.Row(13).InsertRowsAbove(1);
+
+                            // 3. 複製內容與格式到新插入的第 13 列
+                            var newRow = worksheet.Row(13);
+                            rowToCopy.CopyTo(newRow);
                         }
 
-                        //worksheet.Cells[15 + rowIdx, 2] = detailData.Remark;
-                        rowIdx += 1;
+                        int rowIdx = 12;
+                        foreach (var detailData in model.DetailList)
+                        {
+                            worksheet.Cell(rowIdx, 1).Value = $"Wash {detailData.EvaluationItem}";
+                            worksheet.Cell(rowIdx, 3).Value = detailData.WarpValue;
+                            worksheet.Cell(rowIdx, 4).Value = detailData.WarpResult;
+                            worksheet.Cell(rowIdx, 5).Value = detailData.WeftValue;
+                            worksheet.Cell(rowIdx, 6).Value = detailData.WeftResult;
+                            rowIdx++;
+                        }
                     }
+
+                    // 儲存 Excel 檔案
+                    workbook.SaveAs(filePath);
                 }
 
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                // 轉 PDF
+                if (isPDF)
                 {
-                    tmpName = AssignedFineName;
-                }
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-
-                string fileName = $"{tmpName}.xlsx";
-                string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
-
-                string filePdfName = $"{tmpName}.pdf";
-                string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
-
-
-                Microsoft.Office.Interop.Excel.Workbook workbook = excel.ActiveWorkbook;
-                workbook.SaveAs(fullExcelFileName);
-
-                workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-
-                if (ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
-                {
-                    string outputPdfName = $"TPeelStrengthTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.pdf";
-                    string outputPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", outputPdfName);
-                    string pdf1Path = fullPdfFileName;
-
-
-                    if (!string.IsNullOrEmpty(machineReport))
+                    if (ConvertToPDF.ExcelToPDF(filePath, pdfPath))
                     {
-                        string machineReportFile = this.UploadFilePath + machineReport;
-                        string pdf2Path = machineReportFile;
-
-                        // 建立一個新的 PDF 文件
-                        Document mergedDocument = new Document();
-
-                        // 建立一個 PDFWriter 來寫入合併後的 PDF
-                        PdfWriter writer = PdfWriter.GetInstance(mergedDocument, new FileStream(outputPdfFileName, FileMode.Create));
-
-                        // 開啟合併後的 PDF 文件
-                        mergedDocument.Open();
-
-                        // 合併第一個 PDF
-                        PdfReader pdf1 = new PdfReader(pdf1Path);
-                        CopyPages(pdf1, mergedDocument, writer);
-
-                        // 合併第二個 PDF
-                        PdfReader pdf2 = new PdfReader(pdf2Path);
-                        CopyPages(pdf2, mergedDocument, writer);
-
-                        // 關閉合併後的 PDF 文件
-                        mergedDocument.Close();
-
-                        // 釋放資源
-                        pdf1.Close();
-                        pdf2.Close();
-
-                        result.TempFileName = outputPdfName;
+                        result.TempFileName = $"{tmpName}.pdf";
                     }
                     else
                     {
-                        result.TempFileName = filePdfName;
+                        result.Result = false;
+                        result.ErrorMessage = "Convert To PDF Fail";
+                        return result;
                     }
-                    result.Result = true;
-
-
                 }
                 else
                 {
-                    result.ErrorMessage = "Convert To PDF Fail";
-                    result.Result = false;
+                    result.TempFileName = $"{tmpName}.xlsx";
                 }
 
-
-                //// 轉PDF再繼續進行以下
-                //if (isPDF)
-                //{
-                //    if (ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
-                //    {
-                //        result.TempFileName = filePdfName;
-                //        result.Result = true;
-                //    }
-                //    else
-                //    {
-                //        result.ErrorMessage = "Convert To PDF Fail";
-                //        result.Result = false;
-                //    }
-                //}
-                //else
-                //{
-                //    result.TempFileName = fileName;
-                //    result.Result = true;
-                //}
+                result.Result = true;
             }
             catch (Exception ex)
             {
-                result.ErrorMessage = ex.Message;
                 result.Result = false;
+                result.ErrorMessage = ex.Message;
             }
-            finally
-            {
-                Marshal.ReleaseComObject(excel);
-            }
+
             return result;
         }
 
