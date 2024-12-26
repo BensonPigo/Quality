@@ -26,6 +26,7 @@ using System.Web.UI.WebControls;
 using System.Web;
 using Org.BouncyCastle.Asn1.Ocsp;
 using static Sci.MyUtility;
+using Microsoft.Office.Core;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -718,6 +719,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
+                // 取得工作表上所有圖形物件
+                Microsoft.Office.Interop.Excel.Shapes shapes = worksheet.Shapes;
+
+                // 根據名稱，搜尋文字方塊物件
+                Microsoft.Office.Interop.Excel.Shape beforeChart1 = shapes.Item("BeforeChart1");
+                Microsoft.Office.Interop.Excel.Shape beforeChart2 = shapes.Item("BeforeChart2");
+                Microsoft.Office.Interop.Excel.Shape beforeChart3 = shapes.Item("BeforeChart3");
+                Microsoft.Office.Interop.Excel.Shape beforeChart4 = shapes.Item("BeforeChart4");
+                Microsoft.Office.Interop.Excel.Shape beforeChart5 = shapes.Item("BeforeChart5");
+
                 tmpName = $"Evaporation Rate Test_{model.Main.OrderID}_" +
                    $"{model.Main.StyleID}_" +
                    $"{model.Main.FabricRefNo}_" +
@@ -793,7 +804,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 var specimenBeforeList = model.SpecimenList.Where(o => o.DetailType == "Before").OrderBy(o => o.SpecimenID).ToList();
 
-                Dictionary<string, int> dicSpecimenColIndex = new Dictionary<string, int>() 
+                Dictionary<string, int> dicSpecimenColIndex = new Dictionary<string, int>()
                 {
                     ["Specimen 1"] = 2,
                     ["Specimen 2"] = 9,
@@ -804,7 +815,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 int specimenStartColIdx = 2;
                 int specimenAvgIdx = 53;
-                // 開始填入Mass
+
+                // specimen逐一開始填入Mass
                 foreach (var specimen in specimenBeforeList)
                 {
                     // B15
@@ -816,14 +828,25 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     var specimenAvg = specimen.RateAverage;
                     worksheet.Cells[specimenAvgIdx, 12] = specimenAvg; // L53
+                    if (specimenAvg == 0)
+                    {
+                        worksheet.Cells[specimenAvgIdx, 12] = null;
+                        worksheet.Cells[specimenAvgIdx, 13] = null;
+                    }
                     specimenAvgIdx++;
+
+                    // 若整個Mass都為空，把不需要的公式清空，跳過Specimen
+                    if (!timeListt.Any(o => o.Mass > 0))
+                    {
+                        continue;
+                    }
 
                     // Mss填入
                     foreach (var t in timeListt)
                     {
                         if (t.IsInitialMass)
                         {
-                            worksheet.Cells[13, massInputColIdx] = t.Mass; // B13
+                            //worksheet.Cells[13, massInputColIdx] = t.Mass; // B13
                             worksheet.Cells[13, massInputColIdx + 2] = t.Mass; // D13
                         }
                         worksheet.Cells[massInputRowIndex, massInputColIdx] = t.Mass;
@@ -839,7 +862,52 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         // 清空範圍的值
                         range.ClearContents();
                     }
-                    
+
+                    // 設定圖表的資料範圍，由於前面欄位是多抓一格，所以這邊扣掉1才是正確的範圍
+                    massInputRowIndex--;
+                    if (specimen.SpecimenID == "Specimen 1")
+                    {
+                        Chart chart = beforeChart1.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='BEFORE WASH'!$A$15:$A${massInputRowIndex},'BEFORE WASH'!$C$15:$C${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+
+                    }
+                    else if (specimen.SpecimenID == "Specimen 2")
+                    {
+                        Chart chart = beforeChart2.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='BEFORE WASH'!$H$15:$H${massInputRowIndex},'BEFORE WASH'!$J$15:$J${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+                    }
+                    else if (specimen.SpecimenID == "Specimen 3")
+                    {
+                        Chart chart = beforeChart3.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='BEFORE WASH'!$O$15:$O${massInputRowIndex},'BEFORE WASH'!$Q$15:$Q${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+                    }
+                    else if (specimen.SpecimenID == "Specimen 4")
+                    {
+                        Chart chart = beforeChart4.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='BEFORE WASH'!$V$15:$V${massInputRowIndex},'BEFORE WASH'!$X$15:$X${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+                    }
+                    else if (specimen.SpecimenID == "Specimen 5")
+                    {
+                        Chart chart = beforeChart5.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='BEFORE WASH'!$AC$15:$AC${massInputRowIndex},'BEFORE WASH'!$AE$15:$AE${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+                    }
+
+
                     // 下一個Specimen間隔6 column
                     specimenStartColIdx += 7;
                 }
@@ -849,6 +917,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 specimenStartColIdx = 2;
                 #region After Sheet
                 worksheet = excel.ActiveWorkbook.Worksheets[2];
+                shapes = worksheet.Shapes;
+                Microsoft.Office.Interop.Excel.Shape afterChart1 = shapes.Item("AfterChart1");
+                Microsoft.Office.Interop.Excel.Shape afterChart2 = shapes.Item("AfterChart2");
+                Microsoft.Office.Interop.Excel.Shape afterChart3 = shapes.Item("AfterChart3");
+                Microsoft.Office.Interop.Excel.Shape afterChart4 = shapes.Item("AfterChart4");
+                Microsoft.Office.Interop.Excel.Shape afterChart5 = shapes.Item("AfterChart5");
 
                 worksheet.Cells[3, 10] = model.Main.ReportNo;
                 worksheet.Cells[3, 17] = model.Main.ReportDateText;
@@ -930,14 +1004,25 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     var specimenAvg = specimen.RateAverage;
                     worksheet.Cells[specimenAvgIdx, 12] = specimenAvg; // L53
+                    if (specimenAvg == 0)
+                    {
+                        worksheet.Cells[specimenAvgIdx, 12] = null;
+                        worksheet.Cells[specimenAvgIdx, 13] = null;
+                    }
                     specimenAvgIdx++;
+
+                    // 若整個Mass都為空，把不需要的公式清空，跳過Specimen
+                    if (!timeListt.Any(o => o.Mass > 0))
+                    {
+                        continue;
+                    }
 
                     // Mss填入
                     foreach (var t in timeListt)
                     {
                         if (t.IsInitialMass)
                         {
-                            worksheet.Cells[13, massInputColIdx] = t.Mass; // B13
+                            //worksheet.Cells[13, massInputColIdx] = t.Mass; // B13
                             worksheet.Cells[13, massInputColIdx + 2] = t.Mass; // D13
                         }
                         worksheet.Cells[massInputRowIndex, massInputColIdx] = t.Mass;
@@ -952,6 +1037,50 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         Range range = worksheet.Range[$"{MyUtility.Excel.ConvertNumericToExcelColumn(specimenStartColIdx)}{massInputRowIndex}:{MyUtility.Excel.ConvertNumericToExcelColumn(specimenStartColIdx + 4)}35"];
                         // 清空範圍的值
                         range.ClearContents();
+                    }
+
+                    // 設定圖表的資料範圍，由於前面欄位是多抓一格，所以這邊扣掉1才是正確的範圍
+                    massInputRowIndex--;
+                    if (specimen.SpecimenID == "Specimen 1")
+                    {
+                        Chart chart = afterChart1.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='AFTER 5TH WASH'!$A$15:$A${massInputRowIndex},'AFTER 5TH WASH'!$C$15:$C${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+
+                    }
+                    else if (specimen.SpecimenID == "Specimen 2")
+                    {
+                        Chart chart = afterChart2.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='AFTER 5TH WASH'!$H$15:$H${massInputRowIndex},'AFTER 5TH WASH'!$J$15:$J${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+                    }
+                    else if (specimen.SpecimenID == "Specimen 3")
+                    {
+                        Chart chart = afterChart3.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='AFTER 5TH WASH'!$O$15:$O${massInputRowIndex},'AFTER 5TH WASH'!$Q$15:$Q${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+                    }
+                    else if (specimen.SpecimenID == "Specimen 4")
+                    {
+                        Chart chart = afterChart4.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='AFTER 5TH WASH'!$V$15:$V${massInputRowIndex},'AFTER 5TH WASH'!$X$15:$X${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+                    }
+                    else if (specimen.SpecimenID == "Specimen 5")
+                    {
+                        Chart chart = afterChart5.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='AFTER 5TH WASH'!$AC$15:$AC${massInputRowIndex},'AFTER 5TH WASH'!$AE$15:$AE${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
                     }
 
                     // 下一個Specimen間隔6 column

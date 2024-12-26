@@ -36,10 +36,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 model = (EvaporationRateTest_ViewModel)TempData["EditSaveEvaporationRateTestModel"];
             }
-            else if (TempData["DeleteEvaporationRateTestModel"] != null)
-            {
-                model = (EvaporationRateTest_ViewModel)TempData["DeleteEvaporationRateTestModel"];
-            }
 
             return View(model);
         }
@@ -135,7 +131,6 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("'", string.Empty)}"");";
                 return View("Index", model);
             }
-            TempData["DeleteEvaporationRateTestModel"] = model;
             return RedirectToAction("Index");
         }
 

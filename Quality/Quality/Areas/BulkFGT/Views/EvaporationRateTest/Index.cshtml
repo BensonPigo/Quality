@@ -1170,7 +1170,7 @@
             });
         });
     }
-    
+
     function SpecimenChartToggle(detailType, specimenID) {
         $(`.divSpecimenChart`).hide();
         $(`.divSpecimenChart[DetailType='${detailType}'][SpecimenID='${specimenID}']`).toggle();
@@ -2744,6 +2744,9 @@
                 });
             }
         });
+    }
+    function ExistsTestFailMailList() {
+        $("#btnQuery").click();
     }
 
     function GetSendMailer(data) {
