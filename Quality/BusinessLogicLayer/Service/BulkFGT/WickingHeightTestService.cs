@@ -507,16 +507,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // 轉換為 PDF
                 if (isPDF)
                 {
-                    string pdfPath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.pdf");
-                    if (ConvertToPDF.ExcelToPDF(outputPath, pdfPath))
-                    {
-                        result.TempFileName = $"{tmpName}.pdf";
-                    }
-                    else
-                    {
-                        result.Result = false;
-                        result.ErrorMessage = "Convert To PDF Fail";
-                    }
+                    //string pdfPath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.pdf");
+
+                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+
+                    result.TempFileName = $"{tmpName}.pdf";
                 }
             }
             catch (Exception ex)

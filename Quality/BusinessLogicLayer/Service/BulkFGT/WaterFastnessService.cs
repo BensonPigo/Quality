@@ -517,16 +517,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // PDF 轉換
                 if (isPDF)
                 {
-                    if (ConvertToPDF.ExcelToPDF(filePath, pdfPath))
-                    {
-                        FileName = Path.GetFileName(pdfPath);
-                    }
-                    else
-                    {
-                        result.Result = false;
-                        result.ErrorMessage = "Convert To PDF Fail";
-                        return result;
-                    }
+                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    FileName = Path.GetFileName(pdfPath);
                 }
                 else
                 {

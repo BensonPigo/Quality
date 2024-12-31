@@ -245,6 +245,7 @@
     <Compile Include="Service\FinalInspection\FinalInspectionAddDefectService.cs" />
     <Compile Include="Service\BulkFGT\GarmentTest_Service.cs" />
     <Compile Include="Service\FinalInspection\QueryService.cs" />
+    <Compile Include="Service\LibreOfficeService.cs" />
     <Compile Include="Service\MailToolsService.cs" />
     <Compile Include="Service\SampleRFT\CFTCommentsService.cs" />
     <Compile Include="Service\PublicWindowService.cs" />

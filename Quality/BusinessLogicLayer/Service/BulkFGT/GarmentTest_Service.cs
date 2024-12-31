@@ -1231,17 +1231,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                                     #region 照片
                                     if (all_Data.Detail.TestBeforePicture != null)
                                     {
-                                        //Excel.Range cell = worksheet.Cells[94, 2];
-                                        //string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestBeforePicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                                        //worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 328, 247);
                                         this.AddImageToWorksheet(worksheet, all_Data.Detail.TestBeforePicture, 94, 2, 328, 247);
                                     }
 
                                     if (all_Data.Detail.TestAfterPicture != null)
                                     {
-                                        //Excel.Range cell = worksheet.Cells[94, 7];
-                                        //string imgPath = ToolKit.PublicClass.AddImageSignWord(all_Data.Detail.TestAfterPicture, all_Data.Detail.ReportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                                        //worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 300, 248);
                                         this.AddImageToWorksheet(worksheet, all_Data.Detail.TestAfterPicture, 94, 7, 328, 247);
                                     }
                                     #endregion
@@ -1288,27 +1282,23 @@ and t.GarmentTest=1
                                         string technicianName = string.Empty;
                                         DataTable dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
 
-                                        if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != null)
+                                        if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
                                         {
                                             technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
-                                            byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
+                                            if (dtTechnicianInfo.Rows[0]["SignaturePic"] != DBNull.Value)
+                                            {
 
-                                            string imageName = $"{Guid.NewGuid()}.jpg";
-                                            string imgPath;
+                                                byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
 
-                                            imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                                                string imageName = $"{Guid.NewGuid()}.jpg";
+                                                string imgPath;
 
-                                            // Name
-                                            worksheet.Cell(86, 8).Value = technicianName;
-                                            this.AddImageToWorksheet(worksheet, imgData, 88, 8, 100, 24);
-                                            //Excel.Range cell = worksheet.Cell(88, 8).Value;
+                                                imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
 
-                                            //using (MemoryStream ms = new MemoryStream(imgData))
-                                            //{
-                                            //    Image img = Image.FromStream(ms);
-                                            //    img.Save(imgPath);
-                                            //}
-                                            //worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+                                                // Name
+                                                worksheet.Cell(86, 8).Value = technicianName;
+                                                this.AddImageToWorksheet(worksheet, imgData, 88, 8, 100, 24);
+                                            }
                                         }
                                     }
 
@@ -1326,27 +1316,23 @@ and t.GarmentTest=1
                                         string approverName = string.Empty;
                                         DataTable dtApproverInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sql_cmd, new ADOHelper.Template.MSSQL.SQLParameterCollection(), Common.ProductionDataAccessLayer);
 
-                                        if (dtApproverInfo != null && dtApproverInfo.Rows.Count > 0 && dtApproverInfo.Rows[0]["SignaturePic"] != null)
+                                        if (dtApproverInfo != null && dtApproverInfo.Rows.Count > 0)
                                         {
                                             approverName = dtApproverInfo.Rows[0]["name"].ToString();
-                                            byte[] imgData = (byte[])dtApproverInfo.Rows[0]["SignaturePic"];
+                                            if (dtApproverInfo.Rows[0]["SignaturePic"] != DBNull.Value)
+                                            {
 
-                                            string imageName = $"{Guid.NewGuid()}.jpg";
-                                            string imgPath;
+                                                byte[] imgData = (byte[])dtApproverInfo.Rows[0]["SignaturePic"];
 
-                                            imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+                                                string imageName = $"{Guid.NewGuid()}.jpg";
+                                                string imgPath;
 
-                                            // Name
-                                            worksheet.Cell(86, 10).Value = approverName;
-                                            this.AddImageToWorksheet(worksheet, imgData, 88, 10, 100, 24);
-                                            //Excel.Range cell = worksheet.Cells[88, 10];
+                                                imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
 
-                                            //using (MemoryStream ms = new MemoryStream(imgData))
-                                            //{
-                                            //    Image img = Image.FromStream(ms);
-                                            //    img.Save(imgPath);
-                                            //}
-                                            //worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+                                                // Name
+                                                worksheet.Cell(86, 10).Value = approverName;
+                                                this.AddImageToWorksheet(worksheet, imgData, 88, 10, 100, 24);
+                                            }
                                         }
                                     }
 
@@ -2014,7 +2000,7 @@ and t.GarmentTest=1
                                         {
                                             for (int c = 3; c < dt.Columns.Count; c++)
                                             {
-                                                worksheet.Cell(20 + r, c).Value= this.AddShrinkageUnit_18(dt, r, c);
+                                                worksheet.Cell(20 + r, c).Value = this.AddShrinkageUnit_18(dt, r, c);
                                             }
                                         }
                                     }
@@ -2830,8 +2816,10 @@ and t.GarmentTest=1
                                 workbook.SaveAs(filepath_2018);
                                 if (isToPDF)
                                 {
-                                    ConvertToPDF.ExcelToPDF(filepath_2018, filepathpdf_2018);
+                                    //ConvertToPDF.ExcelToPDF(filepath_2018, filepathpdf_2018);
 
+                                    LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                                    s.ConvertExcelToPdf(filepath_2018, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
                                     //);
                                     dicRt["reportPath"] = fileNamePDF_2018;
                                     dicRt["reportFileFullPath"] = filepathpdf_2018;
@@ -2924,7 +2912,7 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest = 1";
 
                                     var dtApproverInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sqlCmd, new SQLParameterCollection(), Common.ProductionDataAccessLayer);
 
-                                    if (dtApproverInfo != null && dtApproverInfo.Rows.Count > 0 && dtApproverInfo.Rows[0]["SignaturePic"] != DBNull.Value)
+                                    if (dtApproverInfo != null && dtApproverInfo.Rows.Count > 0)
                                     {
                                         string approverName = dtApproverInfo.Rows[0]["name"].ToString();
                                         // 填寫名字
@@ -3022,8 +3010,9 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest = 1";
                                 workbook.SaveAs(excelPath);
                                 if (isToPDF)
                                 {
-                                    ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
-
+                                    //ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+                                    LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                                    s.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
                                     dicRt["reportPath"] = $"{sanitizedTypeName}.pdf";
                                     dicRt["reportFileFullPath"] = pdfPath;
                                 }
@@ -3084,16 +3073,19 @@ inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID
 where t.ID = '{all_Data.Detail.inspector}' and t.GarmentTest=1";
                                     var dtTechnicianInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sqlCmd, new SQLParameterCollection(), Common.ProductionDataAccessLayer);
 
-                                    if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0 && dtTechnicianInfo.Rows[0]["SignaturePic"] != DBNull.Value)
+                                    if (dtTechnicianInfo != null && dtTechnicianInfo.Rows.Count > 0)
                                     {
                                         string technicianName = dtTechnicianInfo.Rows[0]["name"].ToString();
-                                        byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
+                                        if (dtTechnicianInfo.Rows[0]["SignaturePic"] != DBNull.Value)
+                                        {
+                                            byte[] imgData = (byte[])dtTechnicianInfo.Rows[0]["SignaturePic"];
 
-                                        // 填寫名字
-                                        worksheet_Physical.Cell(117, 5).Value = technicianName;
+                                            // 填寫名字
+                                            worksheet_Physical.Cell(117, 5).Value = technicianName;
 
-                                        // 使用共用函數插入圖片
-                                        AddImageToWorksheet(worksheet_Physical, imgData, 119, 5, 100, 24);
+                                            // 使用共用函數插入圖片
+                                            AddImageToWorksheet(worksheet_Physical, imgData, 119, 5, 100, 24);
+                                        }
                                     }
                                 }
 
@@ -3106,16 +3098,19 @@ inner join Production.dbo.pass1 p WITH (NOLOCK) on t.ID = p.ID
 where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest=1";
                                     var dtApproverInfo = ADOHelper.Template.MSSQL.SQLDAL.ExecuteDataTable(CommandType.Text, sqlCmd, new SQLParameterCollection(), Common.ProductionDataAccessLayer);
 
-                                    if (dtApproverInfo != null && dtApproverInfo.Rows.Count > 0 && dtApproverInfo.Rows[0]["SignaturePic"] != DBNull.Value)
+                                    if (dtApproverInfo != null && dtApproverInfo.Rows.Count > 0)
                                     {
                                         string approverName = dtApproverInfo.Rows[0]["name"].ToString();
-                                        byte[] imgData = (byte[])dtApproverInfo.Rows[0]["SignaturePic"];
+                                        if (dtApproverInfo.Rows[0]["SignaturePic"] != DBNull.Value)
+                                        {
+                                            byte[] imgData = (byte[])dtApproverInfo.Rows[0]["SignaturePic"];
 
-                                        // 填寫名字
-                                        worksheet_Physical.Cell(117, 7).Value = approverName;
+                                            // 填寫名字
+                                            worksheet_Physical.Cell(117, 7).Value = approverName;
 
-                                        // 使用共用函數插入圖片
-                                        AddImageToWorksheet(worksheet_Physical, imgData, 119, 7, 100, 24);
+                                            // 使用共用函數插入圖片
+                                            AddImageToWorksheet(worksheet_Physical, imgData, 119, 7, 100, 24);
+                                        }
                                     }
                                 }
                                 #endregion
@@ -3196,7 +3191,7 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest=1";
 
                                     // adidas pass
                                     worksheet_Physical.Cell(startRowIndex_Pyhsical, 7).Value = MyUtility.Convert.GetString(dr.Result);
-                                    
+
                                     worksheet_Physical.Row(startRowIndex_Pyhsical).Height = CalculateRowHeight(worksheet_Physical.Row(startRowIndex_Pyhsical).Cells());
 
                                     startRowIndex_Pyhsical++;
@@ -3255,7 +3250,8 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest=1";
 
                                 if (isToPDF)
                                 {
-                                    ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+                                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                                    officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
 
                                     dicRt["reportPath"] = $"{sanitizedTypeName}.pdf";
                                     dicRt["reportFileFullPath"] = pdfPath;
