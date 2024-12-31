@@ -555,8 +555,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 // 轉換為 PDF（若需要）
-                if (isPDF && ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
+                if (isPDF)
                 {
+                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
                     result.TempFileName = filePdfName;
                 }
                 else

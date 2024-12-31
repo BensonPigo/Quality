@@ -634,22 +634,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // 轉PDF再繼續進行以下
                 if (isPDF)
                 {
-                    if (ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
-                    {
-                        result.TempFileName = filePdfName;
-                        result.Result = true;
-                    }
-                    else
-                    {
-                        result.ErrorMessage = "Convert To PDF Fail";
-                        result.Result = false;
-                    }
+                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    result.TempFileName = filePdfName;
                 }
                 else
                 {
                     result.TempFileName = fileName;
-                    result.Result = true;
                 }
+                result.Result = true;
             }
             catch (Exception ex)
             {
@@ -813,14 +806,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         startRow += 6; // 移動到下一組
                     }
 
-
                     // 儲存 Excel 檔案
                     workbook.SaveAs(fullExcelFileName);
                 }
 
                 // 若需要轉 PDF
-                if (isPDF && ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName))
+                if (isPDF)
                 {
+                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
                     result.TempFileName = filePdfName;
                 }
                 else

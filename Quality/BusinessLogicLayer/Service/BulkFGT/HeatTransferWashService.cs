@@ -406,26 +406,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     if (IsPDF)
                     {
-                        string pdfFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.pdf");
-                        if (ConvertToPDF.ExcelToPDF(fullExcelFileName, pdfFilePath))
-                        {
-                            FinalFilenmae = $"{tmpName}.pdf";
-                            result.Result = true;
-                        }
-                        else
-                        {
-                            result.Result = false;
-                            result.ErrorMessage = "Convert to PDF failed.";
-                        }
+                        LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                        officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                        FinalFilenmae = $"{tmpName}.pdf";
                     }
                     else
                     {
                         FinalFilenmae = fileName;
-                        result.Result = true;
                     }
-
-
-                    // 若需要生成 PDF，可以使用第三方工具例如 iTextSharp 來完成
+                    result.Result = true;
                 }
             }
             catch (Exception ex)

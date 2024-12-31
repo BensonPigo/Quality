@@ -2816,8 +2816,10 @@ and t.GarmentTest=1
                                 workbook.SaveAs(filepath_2018);
                                 if (isToPDF)
                                 {
-                                    ConvertToPDF.ExcelToPDF(filepath_2018, filepathpdf_2018);
+                                    //ConvertToPDF.ExcelToPDF(filepath_2018, filepathpdf_2018);
 
+                                    LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                                    s.ConvertExcelToPdf(filepath_2018, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
                                     //);
                                     dicRt["reportPath"] = fileNamePDF_2018;
                                     dicRt["reportFileFullPath"] = filepathpdf_2018;
@@ -3008,8 +3010,9 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest = 1";
                                 workbook.SaveAs(excelPath);
                                 if (isToPDF)
                                 {
-                                    ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
-
+                                    //ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+                                    LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                                    s.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
                                     dicRt["reportPath"] = $"{sanitizedTypeName}.pdf";
                                     dicRt["reportFileFullPath"] = pdfPath;
                                 }
@@ -3247,7 +3250,8 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest=1";
 
                                 if (isToPDF)
                                 {
-                                    ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+                                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                                    officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
 
                                     dicRt["reportPath"] = $"{sanitizedTypeName}.pdf";
                                     dicRt["reportFileFullPath"] = pdfPath;
