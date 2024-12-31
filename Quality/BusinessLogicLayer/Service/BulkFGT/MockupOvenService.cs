@@ -257,16 +257,10 @@ namespace BusinessLogicLayer.Service
 
                     workbook.SaveAs(filePath);
 
-                    if (ConvertToPDF.ExcelToPDF(filePath, pdfPath))
-                    {
-                        result.TempFileName = $"{tmpName}.pdf";
-                        result.Result = true;
-                    }
-                    else
-                    {
-                        result.ErrorMessage = "Convert To PDF Fail";
-                        result.Result = false;
-                    }
+                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    result.TempFileName = $"{tmpName}.pdf";
+                    result.Result = true;
                 }
             }
             catch (Exception ex)

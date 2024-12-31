@@ -501,22 +501,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     workbook.SaveAs(excelPath);
                     if (IsPDF)
                     {
+                        LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                        officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
 
-                        string pdfFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.pdf");
-                        if (ConvertToPDF.ExcelToPDF(excelPath, pdfFilePath))
-                        {
-                            FinalFilenmae = pdfFileName;
-                            result.Result = true;
-                        }
-                        else
-                        {
-                            result.Result = false;
-                            result.ErrorMessage = "Convert to PDF failed.";
-                        }
+                        FinalFilenmae = pdfFileName;
                     }
                     else
                     {
-                        workbook.SaveAs(excelPath);
                         FinalFilenmae = excelFileName;
                     }
                 }

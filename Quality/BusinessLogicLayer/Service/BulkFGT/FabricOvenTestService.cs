@@ -946,17 +946,16 @@ namespace BusinessLogicLayer.Service
                 excel.ActiveWorkbook.SaveAs(excelPath);
                 excel.Quit();
 
-                bool isCreatePdfOK = ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
-                if (!isCreatePdfOK)
-                {
-                    result.Result = false;
-                    result.ErrorMessage = "ConvertToPDF fail";
-                    return result;
-                }
-
-                #endregion
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(excel);
+                #endregion
+
+                // To PDF
+                LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+
+                result.Result = true;
+
             }
             catch (Exception ex)
             {

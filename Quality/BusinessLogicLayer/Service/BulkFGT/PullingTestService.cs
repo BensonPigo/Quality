@@ -352,16 +352,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 // 轉 PDF
-                if (ConvertToPDF.ExcelToPDF(excelFilePath, pdfFilePath))
-                {
-                    result.TempFileName = $"{tmpName}.pdf";
-                }
-                else
-                {
-                    result.ErrorMessage = "Convert To PDF Fail";
-                    result.Result = false;
-                }
-
+                LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                officeService.ConvertExcelToPdf(excelFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                result.TempFileName = $"{tmpName}.pdf";
                 result.Result = true;
             }
             catch (Exception ex)

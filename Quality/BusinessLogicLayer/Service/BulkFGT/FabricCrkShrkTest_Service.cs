@@ -1028,17 +1028,9 @@ namespace BusinessLogicLayer.Service
 
             if (IsPDF)
             {
-                string pdfPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/TMP/"), fileNamePDF);
-                if (ConvertToPDF.ExcelToPDF(outputPath, pdfPath))
-                {
-                    excelFileName = fileNamePDF;
-                }
-                else
-                {
-                    result.Result = false;
-                    result.ErrorMessage = "Convert To PDF Fail";
-                    return result;
-                }
+                LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                excelFileName = fileNamePDF;
             }
 
             result.Result = true;
@@ -1094,15 +1086,9 @@ namespace BusinessLogicLayer.Service
 
             if (IsPDF)
             {
-                string filepathpdf = Path.Combine(basePath, tmpName + ".pdf");
-                if (ConvertToPDF.ExcelToPDF(filepath, filepathpdf))
-                {
-                    excelFileName = tmpName + ".pdf";
-                }
-                else
-                {
-                    throw new Exception("Convert To PDF Fail");
-                }
+                LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                officeService.ConvertExcelToPdf(filepath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                excelFileName = tmpName + ".pdf";
             }
             return filepath;
         }
@@ -1241,16 +1227,9 @@ namespace BusinessLogicLayer.Service
                 // 如果需要轉換 PDF
                 if (IsPDF)
                 {
-                    string pdfPath = Path.Combine(outputDir, $"{tmpName}.pdf");
-                    if (ConvertToPDF.ExcelToPDF(outputPath, pdfPath))
-                    {
-                        excelFileName = $"{tmpName}.pdf";
-                    }
-                    else
-                    {
-                        result.Result = false;
-                        result.ErrorMessage = "Convert To PDF Fail";
-                    }
+                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    excelFileName = $"{tmpName}.pdf";
                 }
             }
             catch (Exception ex)
@@ -1376,22 +1355,11 @@ namespace BusinessLogicLayer.Service
 
                 if (IsPDF)
                 {
-                    string pdfFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.pdf");
-                    if (ConvertToPDF.ExcelToPDF(outputFilePath, pdfFilePath))
-                    {
-                        excelFileName = $"{tmpName}.pdf";
-                        result.Result = true;
-                    }
-                    else
-                    {
-                        result.Result = false;
-                        result.ErrorMessage = "Convert to PDF failed.";
-                    }
+                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    excelFileName = $"{tmpName}.pdf";
                 }
-                else
-                {
-                    result.Result = true;
-                }
+                result.Result = true;
             }
             catch (Exception ex)
             {
@@ -1551,22 +1519,12 @@ namespace BusinessLogicLayer.Service
 
                 if (IsPDF)
                 {
-                    string pdfFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.pdf");
-                    if (ConvertToPDF.ExcelToPDF(outputFilePath, pdfFilePath))
-                    {
-                        excelFileName = $"{tmpName}.pdf";
-                        result.Result = true;
-                    }
-                    else
-                    {
-                        result.Result = false;
-                        result.ErrorMessage = "Convert to PDF failed.";
-                    }
+                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+
+                    excelFileName = $"{tmpName}.pdf";
                 }
-                else
-                {
-                    result.Result = true;
-                }
+                result.Result = true;              
             }
             catch (Exception ex)
             {
