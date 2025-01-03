@@ -6,7 +6,6 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
-using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
@@ -180,6 +179,8 @@ namespace BusinessLogicLayer.Service
 
                 using (var workbook = new XLWorkbook(xltPath))
                 {
+                    bool isHT = mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER");
+                    int haveHTrow = isHT ? 6 : 0;
                     var worksheet = workbook.Worksheet(1);
 
                     worksheet.Cell(2, 1).Value = mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER")
@@ -196,7 +197,7 @@ namespace BusinessLogicLayer.Service
                     worksheet.Cell(6, 6).Value = mockupWash.ReceivedDate;
                     worksheet.Cell(7, 6).Value = mockupWash.SeasonID;
 
-                    if (mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER"))
+                    if (isHT)
                     {
                         worksheet.Cell(10, 2).Value = mockupWash.HTPlate;
                         worksheet.Cell(11, 2).Value = mockupWash.HTFlim;
@@ -209,12 +210,13 @@ namespace BusinessLogicLayer.Service
                         worksheet.Cell(13, 6).Value = mockupWash.HTCoolingTime;
                     }
 
-                    worksheet.Cell(13 + (mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 2).Value = mockupWash.TechnicianName;
-                    AddImageToWorksheet(worksheet, mockupWash.Signature, 12 + (mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 2, 100, 24);
+                    worksheet.Cell(13 + haveHTrow, 2).Value = mockupWash.TechnicianName;
+                    AddImageToWorksheet(worksheet, mockupWash.Signature, 12 + haveHTrow, 2, 100, 24);
 
-                    AddImageToWorksheet(worksheet, mockupWash.TestBeforePicture, 18 + (mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 1, 288, 272);
-                    AddImageToWorksheet(worksheet, mockupWash.TestAfterPicture, 18 + (mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 4, 265, 272);
+                    AddImageToWorksheet(worksheet, mockupWash.TestBeforePicture, 18 + haveHTrow, 1, 288, 272);
+                    AddImageToWorksheet(worksheet, mockupWash.TestAfterPicture, 18 + haveHTrow, 4, 265, 272);
 
+                    int startRow = 10 + haveHTrow;
                     if (mockupWash.MockupWash_Detail.Count > 0)
                     {
                         for (int i = 1; i < mockupWash.MockupWash_Detail.Count; i++)
@@ -230,21 +232,49 @@ namespace BusinessLogicLayer.Service
                             rowToCopy.CopyTo(newRow);
                         }
 
-                        int startRow = 10 + (mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0);
-
                         foreach (var item in mockupWash.MockupWash_Detail)
                         {
+                            string fabric = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : item.FabricRefNo + " - " + item.FabricColorName;
+                            string artwork = string.IsNullOrEmpty(mockupWash.ArtworkTypeID) ? item.Design + " - " + item.ArtworkColorName : mockupWash.ArtworkTypeID + "/" + item.Design + " - " + item.ArtworkColorName;
                             worksheet.Cell(startRow, 1).Value = mockupWash.StyleID;
-                            worksheet.Cell(startRow, 2).Value = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : $"{item.FabricRefNo} - {item.FabricColorName}";
-                            worksheet.Cell(startRow, 3).Value = string.IsNullOrEmpty(mockupWash.ArtworkTypeID) ? $"{item.Design} - {item.ArtworkColorName}" : $"{mockupWash.ArtworkTypeID}/{item.Design} - {item.ArtworkColorName}";
+                            worksheet.Cell(startRow, 2).Value = fabric;
+                            worksheet.Cell(startRow, 3).Value = artwork;
                             worksheet.Cell(startRow, 4).Value = item.Result;
                             worksheet.Cell(startRow, 5).Value = item.Remark;
 
-                            worksheet.Row(startRow).AdjustToContents();
+                            int maxLength = fabric.Length > item.Remark.Length ? fabric.Length : item.Remark.Length;
+                            maxLength = maxLength > artwork.Length ? maxLength : artwork.Length;
+                            worksheet.Range(worksheet.Cell(startRow, 1), worksheet.Cell(startRow, 5)).Row(startRow).Style.Font.Bold = false;
+                            worksheet.Range(worksheet.Cell(startRow, 1), worksheet.Cell(startRow, 5)).Row(startRow).Style.Alignment.WrapText = true;                            
+                            worksheet.Row(startRow).Height = ((maxLength / 20) + 1) * 16.5;
                             startRow++;
                         }
                     }
 
+                    // ISP20230792
+                    if ((mockupWash.HTPlate > 0)
+                        || (mockupWash.HTFlim > 0)
+                        || (mockupWash.HTTime > 0)
+                        || (mockupWash.HTPressure > 0)
+                        || !string.IsNullOrEmpty(mockupWash.HTPellOff)
+                        || (mockupWash.HT2ndPressnoreverse > 0)
+                        || (mockupWash.HT2ndPressreversed > 0)
+                        || !string.IsNullOrEmpty(mockupWash.HTCoolingTime))
+                    {
+                        worksheet.Row(startRow).InsertRowsAbove(5);
+                        int aRow = startRow;
+                        workbook.Worksheet(2).Range("A1:J5").CopyTo(worksheet.Range($"A{aRow}:J{aRow + 4}"));
+                        worksheet.Cell(aRow + 1, 3).Value = mockupWash.HTPlate;
+                        worksheet.Cell(aRow + 2, 3).Value = mockupWash.HTFlim;
+                        worksheet.Cell(aRow + 3, 3).Value = mockupWash.HTTime;
+                        worksheet.Cell(aRow + 4, 3).Value = mockupWash.HTPressure;
+                        worksheet.Cell(aRow + 1, 8).Value = mockupWash.HTPellOff;
+                        worksheet.Cell(aRow + 2, 8).Value = mockupWash.HT2ndPressnoreverse;
+                        worksheet.Cell(aRow + 3, 8).Value = mockupWash.HT2ndPressreversed;
+                        worksheet.Cell(aRow + 4, 8).Value = mockupWash.HTCoolingTime;
+                    }
+
+                    workbook.Worksheet(2).Delete();
                     tmpName = RemoveInvalidFileNameChars(tmpName);
 
                     string filePath = Path.Combine(tmpPath, $"{tmpName}.xlsx");
