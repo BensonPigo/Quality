@@ -6,7 +6,6 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
-using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
@@ -170,8 +169,10 @@ namespace BusinessLogicLayer.Service
             try
             {
                 string basePath = IsTest.ToLower() == "true" ? AppDomain.CurrentDomain.BaseDirectory : System.Web.HttpContext.Current.Server.MapPath("~/");
+                bool isHeatTransfer = mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER");
+                int haveHTrow = isHeatTransfer ? 6 : 0;
 
-                string xltPath = Path.Combine(basePath, "XLT", mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? "MockupOven2.xltx" : "MockupOven.xltx");
+                string xltPath = Path.Combine(basePath, "XLT", isHeatTransfer ? "MockupOven2.xltx" : "MockupOven.xltx");
                 string tmpPath = Path.Combine(basePath, "TMP");
 
                 if (!Directory.Exists(tmpPath)) Directory.CreateDirectory(tmpPath);
@@ -184,7 +185,7 @@ namespace BusinessLogicLayer.Service
                 {
                     var worksheet = workbook.Worksheet(1);
 
-                    worksheet.Cell(2, 1).Value = mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER")
+                    worksheet.Cell(2, 1).Value = isHeatTransfer
                         ? "COLOR MIGRATION TEST (Oven) (HEAT TRANSFER)"
                         : "COLOR MIGRATION TEST (Oven)";
 
@@ -198,7 +199,7 @@ namespace BusinessLogicLayer.Service
                     worksheet.Cell(5, 8).Value = mockupOven.TestDate;
                     worksheet.Cell(6, 8).Value = mockupOven.SeasonID;
 
-                    if (mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER"))
+                    if (isHeatTransfer)
                     {
                         worksheet.Cell(10, 2).Value = mockupOven.HTPlate;
                         worksheet.Cell(11, 2).Value = mockupOven.HTFlim;
@@ -211,12 +212,13 @@ namespace BusinessLogicLayer.Service
                         worksheet.Cell(13, 8).Value = mockupOven.HTCoolingTime;
                     }
 
-                    worksheet.Cell(13 + (mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 2).Value = mockupOven.TechnicianName;
-                    AddImageToWorksheet(worksheet, mockupOven.Signature, 12 + (mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 2, 100, 24);
+                    worksheet.Cell(13 + haveHTrow, 2).Value = mockupOven.TechnicianName;
+                    AddImageToWorksheet(worksheet, mockupOven.Signature, 12 + haveHTrow, 2, 100, 24);
 
-                    AddImageToWorksheet(worksheet, mockupOven.TestBeforePicture, 16 + (mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 2, 288, 272);
-                    AddImageToWorksheet(worksheet, mockupOven.TestAfterPicture, 16 + (mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0), 8, 265, 272);
+                    AddImageToWorksheet(worksheet, mockupOven.TestBeforePicture, 16 + haveHTrow, 2, 288, 272);
+                    AddImageToWorksheet(worksheet, mockupOven.TestAfterPicture, 16 + haveHTrow, 8, 265, 272);
 
+                    int startRow = 10 + haveHTrow;
                     if (mockupOven.MockupOven_Detail.Count > 0)
                     {
                         for (int i = 1; i < mockupOven.MockupOven_Detail.Count; i++)
@@ -232,24 +234,53 @@ namespace BusinessLogicLayer.Service
                             rowToCopy.CopyTo(newRow);
                         }
 
-                        int startRow = 10 + (mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? 6 : 0);
-
                         foreach (var item in mockupOven.MockupOven_Detail)
                         {
+                            string fabric = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : item.FabricRefNo + " - " + item.FabricColorName;
+                            string artwork = string.IsNullOrEmpty(mockupOven.ArtworkTypeID) ? item.Design + " - " + item.ArtworkColorName : mockupOven.ArtworkTypeID + "/" + item.Design + " - " + item.ArtworkColorName;
                             worksheet.Cell(startRow, 1).Value = mockupOven.StyleID;
-                            worksheet.Cell(startRow, 2).Value = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : $"{item.FabricRefNo} - {item.FabricColorName}";
-                            worksheet.Cell(startRow, 3).Value = string.IsNullOrEmpty(mockupOven.ArtworkTypeID) ? $"{item.Design} - {item.ArtworkColorName}" : $"{mockupOven.ArtworkTypeID}/{item.Design} - {item.ArtworkColorName}";
+                            worksheet.Cell(startRow, 2).Value = fabric;
+                            worksheet.Cell(startRow, 3).Value = artwork;
                             worksheet.Cell(startRow, 5).Value = item.ChangeScale;
                             worksheet.Cell(startRow, 6).Value = item.ResultChange;
                             worksheet.Cell(startRow, 7).Value = item.StainingScale;
                             worksheet.Cell(startRow, 8).Value = item.ResultStain;
                             worksheet.Cell(startRow, 9).Value = item.Remark;
 
-                            worksheet.Row(startRow).AdjustToContents();
+                            worksheet.Range(worksheet.Cell(startRow, 1), worksheet.Cell(startRow, 9)).Row(startRow).Style.Font.Bold = false;
+                            worksheet.Range(worksheet.Cell(startRow, 1), worksheet.Cell(startRow, 5)).Row(startRow).Style.Alignment.WrapText = true;
+                            int maxLength = fabric.Length > item.Remark.Length ? fabric.Length : item.Remark.Length;
+                            maxLength = maxLength > artwork.Length ? maxLength : artwork.Length;
+                            worksheet.Row(startRow).Height = ((maxLength / 20) + 1) * 16.5;
+
                             startRow++;
                         }
                     }
 
+                    // ISP20230792
+                    if ((mockupOven.HTPlate > 0)
+                        || (mockupOven.HTFlim > 0)
+                        || (mockupOven.HTTime > 0)
+                        || (mockupOven.HTPressure > 0)
+                        || !string.IsNullOrEmpty(mockupOven.HTPellOff)
+                        || (mockupOven.HT2ndPressnoreverse > 0)
+                        || (mockupOven.HT2ndPressreversed > 0)
+                        || (mockupOven.HTCoolingTime > 0))
+                    {
+                        worksheet.Row(startRow).InsertRowsAbove(5);
+                        int aRow = startRow;
+                        workbook.Worksheet(2).Range("A1:N5").CopyTo(worksheet.Range($"A{aRow}:N{aRow + 4}"));
+                        worksheet.Cell(aRow + 1, 3).Value = mockupOven.HTPlate;
+                        worksheet.Cell(aRow + 2, 3).Value = mockupOven.HTFlim;
+                        worksheet.Cell(aRow + 3, 3).Value = mockupOven.HTTime;
+                        worksheet.Cell(aRow + 4, 3).Value = mockupOven.HTPressure;
+                        worksheet.Cell(aRow + 1, 11).Value = mockupOven.HTPellOff;
+                        worksheet.Cell(aRow + 2, 11).Value = mockupOven.HT2ndPressnoreverse;
+                        worksheet.Cell(aRow + 3, 11).Value = mockupOven.HT2ndPressreversed;
+                        worksheet.Cell(aRow + 4, 11).Value = mockupOven.HTCoolingTime;
+                    }
+
+                    workbook.Worksheet(2).Delete();
                     tmpName = RemoveInvalidFileNameChars(tmpName);
 
                     string filePath = Path.Combine(tmpPath, $"{tmpName}.xlsx");
