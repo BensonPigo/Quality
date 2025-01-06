@@ -986,8 +986,10 @@ namespace BusinessLogicLayer.Service
             worksheet.Cell("C7").Value = headData.SCIRefno_Color;
             worksheet.Cell("G8").Value = headData.Color;
             worksheet.Cell("B16").Value = headData.Remark;
+            worksheet.Cell("C72").Value = dataList_Head.FirstOrDefault().CrockingInspectorName;
+            worksheet.Cell("G72").Value = dataList_Head.FirstOrDefault().CrockingApproverName;
 
-            // 插入圖片與簽名
+            // 插入圖片
             InsertCrockingImages(worksheet, headData);
 
             // 動態插入表身資料
@@ -1140,6 +1142,7 @@ namespace BusinessLogicLayer.Service
                     worksheet.Cell("A1").Value = $"Quality Heat Test Report({testCode.First().TestCode})";
                 }
                 worksheet.Cell("B2").Value = fabricCrkShrkTestHeat_Main.ReportNo;
+
                 worksheet.Cell("B3").Value = fabricCrkShrkTestHeat_Main.POID;
                 worksheet.Cell("D3").Value = fabricCrkShrkTestHeat_Main.SEQ;
                 worksheet.Cell("F3").Value = fabricCrkShrkTestHeat_Main.ColorID;
@@ -1151,6 +1154,22 @@ namespace BusinessLogicLayer.Service
                 worksheet.Cell("F4").Value = fabricCrkShrkTestHeat_Main.Heat;
                 worksheet.Cell("H4").Value = fabricCrkShrkTestHeat_Main.HeatDate?.ToString("yyyy/MM/dd");
                 worksheet.Cell("J4").Value = fabricCrkShrkTestHeat_Main.BrandID;
+
+                worksheet.Cell("B5").Value = fabricCrkShrkTestHeat_Main.Refno;
+                worksheet.Cell("D5").Value = fabricCrkShrkTestHeat_Main.ArriveQty;
+                worksheet.Cell("F5").Value = fabricCrkShrkTestHeat_Main.WhseArrival == null ? string.Empty : ((DateTime)fabricCrkShrkTestHeat_Main.WhseArrival).ToString("yyyy/MM/dd");
+                worksheet.Cell("H5").Value = fabricCrkShrkTestHeat_Main.Supp;
+                worksheet.Cell("J5").Value = fabricCrkShrkTestHeat_Main.NonHeat.ToString();
+
+                worksheet.Cell("B6").Value = fabricCrkShrkTestHeat_Main.HeatReceiveDate.HasValue ? fabricCrkShrkTestHeat_Main.HeatReceiveDate.Value.ToString("yyyy/MM/dd") : string.Empty;
+
+                worksheet.Cell("D30").Value = fabricCrkShrkTestHeat_Main.HeatInspectorName;
+                worksheet.Cell("I30").Value = fabricCrkShrkTestHeat_Main.HeatApproverName;
+
+                // 簽名檔圖片
+                int signatureWidth = 133, signatureHeight = 32;
+                AddImageToWorksheet(worksheet, fabricCrkShrkTestHeat_Main.InspectorSignature, 32, 4, signatureWidth, signatureHeight);
+                AddImageToWorksheet(worksheet, fabricCrkShrkTestHeat_Main.ApproverSignature, 32, 9, signatureWidth, signatureHeight);
 
                 // 動態填充明細資料
                 int detailStartRow = 8;
