@@ -1178,14 +1178,14 @@ namespace BusinessLogicLayer.Service
                     // 第一筆資料不用複製
                     if (i > 0)
                     {
-                        // 1. 複製第 10 列
-                        var rowToCopy = worksheet.Row(8);
+                        // 1. 複製上一列的格式
+                        var rowToCopy = worksheet.Row(detailStartRow);
 
-                        // 2. 插入一列，將第 8 和第 9 列之間騰出空間
-                        worksheet.Row(9).InsertRowsAbove(1);
+                        // 2. 插入新的列
+                        worksheet.Row(detailStartRow + i).InsertRowsAbove(1);
 
-                        // 3. 複製格式到新插入的列
-                        var newRow = worksheet.Row(9);
+                        // 3. 複製格式
+                        var newRow = worksheet.Row(detailStartRow + i);
 
                         rowToCopy.CopyTo(newRow);
                     }
@@ -1328,13 +1328,13 @@ namespace BusinessLogicLayer.Service
                         if (i > 0)
                         {
                             // 1. 複製第 10 列
-                            var rowToCopy = worksheet.Row(8);
+                            var rowToCopy = worksheet.Row(detailStartRow);
 
                             // 2. 插入一列，將第 8 和第 9 列之間騰出空間
-                            worksheet.Row(9).InsertRowsAbove(1);
+                            worksheet.Row(detailStartRow + i).InsertRowsAbove(1);
 
                             // 3. 複製格式到新插入的列
-                            var newRow = worksheet.Row(9);
+                            var newRow = worksheet.Row(detailStartRow + i);
 
                             rowToCopy.CopyTo(newRow);
                         }
@@ -1464,13 +1464,13 @@ namespace BusinessLogicLayer.Service
                         if (i > 0)
                         {
                             // 1. 複製第 10 列
-                            var rowToCopy = worksheet.Row(8);
+                            var rowToCopy = worksheet.Row(detailStartRow);
 
                             // 2. 插入一列，將第 8 和第 9 列之間騰出空間
-                            worksheet.Row(9).InsertRowsAbove(1);
+                            worksheet.Row(detailStartRow + i).InsertRowsAbove(1);
 
                             // 3. 複製格式到新插入的列
-                            var newRow = worksheet.Row(9);
+                            var newRow = worksheet.Row(detailStartRow + i);
 
                             rowToCopy.CopyTo(newRow);
                         }
