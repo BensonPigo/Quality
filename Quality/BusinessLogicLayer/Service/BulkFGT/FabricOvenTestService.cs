@@ -649,13 +649,13 @@ namespace BusinessLogicLayer.Service
                         if (i > 0)
                         {
                             // 1. 複製
-                            var rowToCopy = worksheet.Row(5);
+                            var rowToCopy = worksheet.Row(detailStartIdx);
 
                             // 2. 插入一列
-                            worksheet.Row(6).InsertRowsAbove(1);
+                            worksheet.Row(detailStartIdx + i).InsertRowsAbove(1);
 
                             // 3. 複製格式到新插入的列
-                            var newRow = worksheet.Row(6);
+                            var newRow = worksheet.Row(detailStartIdx + i);
 
                             rowToCopy.CopyTo(newRow);
                         }
