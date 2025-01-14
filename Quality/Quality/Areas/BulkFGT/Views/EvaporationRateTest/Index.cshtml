@@ -1970,15 +1970,14 @@
         });
 
         $('#Undo').on('click', function () {
-            @*if (EditType == 'New') {
+            if (EditType == 'New') {
                 window.location.href="@Url.Action("Index")";
-            }*@
+            }
             if ($("#Main_ReportNo").val() != '') {
                 // 重新Query 一次Detail
-                window.location.reload();
+                $("#btnQuery").click();
             }
             else {
-                $("#btnQuery").click();
                 EditMode = false;
                 EditType = '';
                 IsEditModeChange();
