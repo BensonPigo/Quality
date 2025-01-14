@@ -103,50 +103,25 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     // EvaporationRateTest_Specimen_Time
                     foreach (var specimen in model.SpecimenList)
                     {
-
-                        for (int time = 0; time <= 15; time += 3)
+                        model.TimeList.Add(new EvaporationRateTest_Specimen_Time()
                         {
-                            model.TimeList.Add(new EvaporationRateTest_Specimen_Time()
-                            {
-                                DetailType = specimen.DetailType,
-                                SpecimenID = specimen.SpecimenID,
-                                Time = time,
-                                IsInitialMass = time == 0,
-                            });
-                        }
-                    }
+                            DetailType = specimen.DetailType,
+                            SpecimenID = specimen.SpecimenID,
+                            Time = 0,
+                            IsInitialMass = true,
+                        });
 
-                    //// EvaporationRateTest_Specimen_Rate
-                    //foreach (var specimen in model.SpecimenList)
-                    //{
-                    //    model.RateList.Add(new EvaporationRateTest_Specimen_Rate()
-                    //    {
-                    //        DetailType = specimen.DetailType,
-                    //        SpecimenID = specimen.SpecimenID,
-                    //        RateName = "R1",
-                    //        Subtrahend_Time = 0,
-                    //        Minuend_Time = 10,
-                    //        Ratio = 6,
-                    //    });
-                    //    model.RateList.Add(new EvaporationRateTest_Specimen_Rate()
-                    //    {
-                    //        DetailType = specimen.DetailType,
-                    //        SpecimenID = specimen.SpecimenID,
-                    //        RateName = "R2",
-                    //        Subtrahend_Time = 10,
-                    //        Minuend_Time = 20,
-                    //        Ratio = 6,
-                    //    });
-                    //    model.RateList.Add(new EvaporationRateTest_Specimen_Rate()
-                    //    {
-                    //        DetailType = specimen.DetailType,
-                    //        SpecimenID = specimen.SpecimenID,
-                    //        RateName = "R3",
-                    //        Subtrahend_Time = 20,
-                    //        Minuend_Time = 30,
-                    //        Ratio = 6,
-                    //    });
-                    //}
+                        //for (int time = 0; time <= 15; time += 3)
+                        //{
+                        //    model.TimeList.Add(new EvaporationRateTest_Specimen_Time()
+                        //    {
+                        //        DetailType = specimen.DetailType,
+                        //        SpecimenID = specimen.SpecimenID,
+                        //        Time = time,
+                        //        IsInitialMass = time == 0,
+                        //    });
+                        //}
+                    }
                 }
                 model.Result = true;
             }

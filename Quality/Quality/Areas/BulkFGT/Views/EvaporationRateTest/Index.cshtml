@@ -799,6 +799,28 @@
                                                 var timeList = Model.TimeList.Where(o => o.DetailType == detail.Type && o.SpecimenID == specimenID);
                                                 //var rateList = Model.RateList.Where(o => o.DetailType == detail.Type && o.SpecimenID == specimenID);
                                                 string divID = $"tab0{detail.Type}{IdxDivID}";
+                                                string typeColor = detail.Type == "Before" ? "aquamarine" : "darksalmon";
+                                                string specimenColor = detail.Type == "Before" ? "aquamarine" : "darksalmon";
+                                                switch (specimen.SpecimenID)
+                                                {
+                                                    case "Specimen 1":
+                                                        specimenColor = "RGB(234, 182, 248)";
+                                                        break;
+                                                    case "Specimen 2":
+                                                        specimenColor = "RGB(214, 162, 228)";
+                                                        break;
+                                                    case "Specimen 3":
+                                                        specimenColor = "RGB(194, 142, 208)";
+                                                        break;
+                                                    case "Specimen 4":
+                                                        specimenColor = "RGB(174, 122, 188)";
+                                                        break;
+                                                    case "Specimen 5":
+                                                        specimenColor = "RGB(154, 102, 168)";
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
 
                                                 @Html.Hidden($"SpecimenList[{SpecimenListIdx}].Ukey", specimen.Ukey, new { @class = "", @style = "width:100%" })
                                                 @Html.Hidden($"SpecimenList[{SpecimenListIdx}].SpecimenID", specimen.SpecimenID, new { @class = "", @style = "width:100%" })
@@ -808,66 +830,6 @@
 
 
                                                 <div id="@divID" class="tab-inner">
-
-                                                    @*<div class="divTabInnerLeft">
-                                                        <div class="divRate">
-                                                            <div class="divRateInner1 colHead" style="background-color:aquamarine">
-                                                                @detail.Type Average
-                                                            </div>
-                                                            <div class="divRateInner1">
-                                                                @Html.TextBox($"SpecimenList[{SpecimenListIdx}].RateAverage", specimen.RateAverage, new
-                                                                {
-                                                                   @class = "RateAverage",
-                                                                   @style = "width:100%",
-                                                                   @DetailType = detail.Type,
-                                                                   @SpecimenID = specimen.SpecimenID,
-                                                               })
-                                                            </div>
-
-                                                            <div class="divRateInner1 colHead">
-                                                                Rate of time
-                                                            </div>
-                                                            <div class="divRateInner1 colHead">
-                                                                Evaporation Rate
-                                                            </div>
-                                                            @foreach (var rate in rateList)
-                                                            {
-                                                                <div class="divRateInner1">
-                                                                    @Html.Hidden($"RateList[{RateListIdx}].Ukey", rate.Ukey, new { @class = "", @style = "width:100%" })
-                                                                    @Html.Hidden($"RateList[{RateListIdx}].SpecimenUkey", rate.SpecimenUkey, new { @class = "", @style = "width:100%" })
-                                                                    @Html.Hidden($"RateList[{RateListIdx}].Subtrahend_Time", rate.Subtrahend_Time, new { @class = "", @style = "width:100%" })
-                                                                    @Html.Hidden($"RateList[{RateListIdx}].Minuend_Time", rate.Minuend_Time, new { @class = "", @style = "width:100%" })
-                                                                    @Html.Hidden($"RateList[{RateListIdx}].Subtrahend_TimeUkey", rate.Subtrahend_TimeUkey, new { @class = "", @style = "width:100%" })
-                                                                    @Html.Hidden($"RateList[{RateListIdx}].Minuend_TimeUkey", rate.Minuend_TimeUkey, new { @class = "", @style = "width:100%" })
-                                                                    @Html.Hidden($"RateList[{RateListIdx}].DetailType", rate.DetailType, new { @class = "", @style = "width:100%" })
-                                                                    @Html.Hidden($"RateList[{RateListIdx}].SpecimenID", rate.SpecimenID, new { @class = "", @style = "width:100%" })
-                                                                    @Html.Hidden($"RateList[{RateListIdx}].Ratio", rate.Ratio, new { @class = "", @style = "width:100%" })
-
-                                                                    @Html.TextBox($"RateList[{RateListIdx}].RateName", rate.RateName, new { @class = "", @style = "width:100%" })
-                                                                </div>
-                                                                <div class="divRateInner1">
-                                                                    <input type="hidden" class="detailRateListIdx" name="name" value="@RateListIdx" />
-                                                                    @Html.TextBox($"RateList[{RateListIdx}].Value", rate.Value, new
-                                                               {
-                                                                   @class = "RateValue",
-                                                                   @style = "width:100%",
-                                                                   @DetailType = detail.Type,
-                                                                   @SpecimenID = specimen.SpecimenID,
-                                                                   @Subtrahend_Time = rate.Subtrahend_Time,
-                                                                   @Minuend_Time = rate.Minuend_Time,
-                                                                   @Ratio = rate.Ratio,
-                                                                   @RateListIdx = MaxRateListIdx,
-                                                                   @RateName = rate.RateName,
-                                                                   @parentTabID = divID,
-                                                                   @SpecimenListIdx = SpecimenListIdx
-                                                               })
-                                                                </div>
-                                                                RateListIdx++;
-                                                            }
-                                                        </div>
-                                                    </div>*@
-
-
                                                     <div class="divTabInnerBlank">
                                                         <button onclick="GotoType('@anotherType')" type="button" style="margin:0;min-width:0;width:100%;" class="btn btn-blue">
                                                             To
@@ -884,16 +846,15 @@
                                                     </div>
                                                     <div class="divTabInnerRight">
                                                         <div class="divTime">
-
                                                             <!--#region Before Result(g/h) -->
-                                                            <div class="divTime20 colHead" style="background-color:aquamarine">
+                                                            <div class="divTime20 colHead" style="background-color:@typeColor">
                                                                 @detail.Type Result(g/h)
                                                             </div>
                                                             <div class="divTime20">
                                                                 @Html.TextBox($"SpecimenList[{SpecimenListIdx}].RateAverage", specimen.RateAverage, new
                                                                 {
                                                                    @class = "RateAverage",
-                                                                   @style = "width:100%",
+                                                                   @style = $"width:100%;background-color:{specimenColor};",
                                                                    @DetailType = detail.Type,
                                                                    @SpecimenID = specimen.SpecimenID,
                                                                })
@@ -902,7 +863,7 @@
                                                             <!--#endregion-->
 
                                                             <!--#region Specimen Mass(g) -->
-                                                            <div class="divTime20 colHead" style="background-color:aquamarine">
+                                                            <div class="divTime20 colHead" style="background-color:@typeColor">
                                                                 Specimen Mass(g)
                                                             </div>
                                                             <div class="divTime20">
@@ -910,7 +871,7 @@
                                                                 @Html.TextBox($"SpecimenMassG[{SpecimenListIdx}]", timeList.Where(o => o.IsInitialMass).FirstOrDefault().Mass, new
                                                                 {
                                                                    @class = "SpecimenMassG",
-                                                                   @style = "width:100%",
+                                                                   @style = $"width:100%;background-color:{specimenColor};",
                                                                    @DetailType = detail.Type,
                                                                    @SpecimenID = specimen.SpecimenID,
                                                                    @readonly="readonly",
@@ -1023,8 +984,13 @@
     var msg = new MessagerAlert();
     var EditType = "@Model.Main.EditType";
     var EditMode;
-    let fcousDetailType = 'Before';
-    let fcousSpecimenID = 'Specimen 1';
+
+    // 紀錄每次點擊的tab，用於後續鎖定
+    let focusObj = {
+        DetailType: 'Before',
+        BeforeSpecimenID: 'Specimen 1',
+        AfterSpecimenID: 'Specimen 1'
+    };
     let MaxTimeListIdx = @MaxTimeListIdx;
     let ttlSpecimenCount = 0;
 
@@ -2004,14 +1970,15 @@
         });
 
         $('#Undo').on('click', function () {
-            if (EditType == 'New') {
+            @*if (EditType == 'New') {
                 window.location.href="@Url.Action("Index")";
-            }
+            }*@
             if ($("#Main_ReportNo").val() != '') {
                 // 重新Query 一次Detail
                 window.location.reload();
             }
             else {
+                $("#btnQuery").click();
                 EditMode = false;
                 EditType = '';
                 IsEditModeChange();
@@ -2430,8 +2397,15 @@
         //MaxRateListIdx += 1;
         MaxTimeListIdx += 1;
         //  必要參數
-        var detailType = fcousDetailType;
-        var specimenID = fcousSpecimenID;
+
+        var detailType = focusObj.DetailType;
+        var specimenID = '';
+        if (detailType == 'Before') {
+            specimenID = focusObj.BeforeSpecimenID;
+        }
+        else {
+            specimenID = focusObj.AfterSpecimenID;
+        }
 
         let parentTabID = '';
 
@@ -2445,20 +2419,6 @@
         }
         let TimeListIdx = MaxTimeListIdx;
         parentTabID = $(lastEvaporation).attr("parentTabID");
-
-        /*
-        let rateValueList = $(`.RateValue[detailType="${detailType}"][specimenID="${specimenID}"]`);
-        let lastRateValue = rateValueList[rateValueList.length - 1];
-
-        // Rate List 必要參數
-        let lastRateName = parseInt($(lastRateValue).attr("RateName")[1]) + 1;
-        let RateListIdx = MaxRateListIdx;
-
-        let SpecimenListIdx = parseInt($(lastRateValue).attr("SpecimenListIdx")) + 1;
-        let subtrahendTime = parseInt($(lastRateValue).attr("subtrahend-time")) + 10;
-        let minuendTime = parseInt($(lastRateValue).attr("minuend-time")) + 10;
-        */
-
 
         $.ajax({
             url: "@Url.Action("AddTimeRow")",
@@ -2526,11 +2486,12 @@
         $($liBefore.eq(0).addClass('active').attr('link')).siblings('.tab-inner').hide();
         $liBefore.click(function () {
             $($(this).attr('link')).show().siblings('.tab-inner').hide();
-            $(this).addClass('active').siblings('.active').removeClass('active');
+            $(this).siblings('.active').removeClass('active');
+            $(this).addClass('active');
 
             // 將當前點選的Type + Specimen 記錄下來
-            fcousDetailType = "Before";
-            fcousSpecimenID = $(this).text();
+            focusObj.DetailType = "Before";
+            focusObj.BeforeSpecimenID = $(this).text();
             $(".divSpecimenChart").hide();
         });
 
@@ -2540,11 +2501,12 @@
         $($liAfter.eq(0).addClass('active').attr('link')).siblings('.tab-inner').hide();
         $liAfter.click(function () {
             $($(this).attr('link')).show().siblings('.tab-inner').hide();
-            $(this).addClass('active').siblings('.active').removeClass('active');
+            $(this).siblings('.active').removeClass('active');
+            $(this).addClass('active');
 
             // 將當前點選的Type + Specimen 記錄下來
-            fcousDetailType = "After";
-            fcousSpecimenID = $(this).text();
+            focusObj.DetailType = "After";
+            focusObj.AfterSpecimenID = $(this).text();
             $(".divSpecimenChart").hide();
         });
 
@@ -2555,7 +2517,7 @@
         $(`.divDetailType[detailtype="${type}"]`).show();
         $(`.divDetailType[detailtype!="${type}"]`).hide();
         SpecimenChartToggle();
-        fcousDetailType = type;
+        focusObj.DetailType = type;
     }
 
     function AutoUpdateTime(updatedObj) {

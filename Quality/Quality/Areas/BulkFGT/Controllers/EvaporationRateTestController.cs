@@ -60,6 +60,10 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("'", string.Empty)}"");";
             }
+            else
+            {
+                TempData["QueryModel"] = model;
+            }
 
             return View("Index", model);
         }
@@ -74,6 +78,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("'", string.Empty)}"");";
             }
+            TempData["QueryModel"] = model;
 
             return View("Index", model);
         }
@@ -81,7 +86,11 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult New()
         {
             EvaporationRateTest_ViewModel model = _Service.GetDefaultModel(true);
-
+            if (TempData["QueryModel"] != null)
+            {
+                EvaporationRateTest_ViewModel queryModel = (EvaporationRateTest_ViewModel)TempData["QueryModel"];
+                model.Request = queryModel.Request;
+            }
             model.Main.EditType = "New";
 
             return View("Index", model);
