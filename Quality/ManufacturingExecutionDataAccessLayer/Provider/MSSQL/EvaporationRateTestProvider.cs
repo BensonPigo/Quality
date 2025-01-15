@@ -59,10 +59,13 @@ where o.Category ='B'  --只抓大貨單
 
             string sqlcmd = $@"
 select a.*
+		,ApproverName = ISNULL(p1.Name,p2.Name)
         ,d.TestAfterPicture
         ,d.TestBeforePicture
 from EvaporationRateTest a
 left join PMSFile.dbo.EvaporationRateTest d WITH(NOLOCK) on a.ReportNo = d.ReportNo
+left join ManufacturingExecution.dbo.Pass1 p1 on a.Approver = p1.ID
+left join SciProduction_Pass1 p2 on a.Approver = p2.ID
 where 1=1
 ";
             if (!string.IsNullOrEmpty(Req.BrandID))
@@ -205,6 +208,7 @@ where 1=1
                 { "@SubmitDate", Req.Main.SubmitDate} ,
                 { "@Seq1", DbType.String, Req.Main.Seq1 ?? "" } ,
                 { "@Seq2", DbType.String, Req.Main.Seq2 ?? "" } ,
+                { "@Approver", DbType.String, Req.Main.Approver ?? "" } ,
                 { "@FabricRefNo", DbType.String, Req.Main.FabricRefNo ?? "" } ,
                 { "@FabricColor", DbType.String, Req.Main.FabricColor ?? "" } ,
                 { "@FabricDescription", DbType.String, Req.Main.FabricDescription ?? "" } ,
@@ -243,6 +247,7 @@ INSERT INTO dbo.EvaporationRateTest
            ,SubmitDate
            ,Seq1
            ,Seq2
+           ,Approver
            ,FabricRefNo
            ,FabricColor
            ,FabricDescription
@@ -262,6 +267,7 @@ VALUES
            ,@SubmitDate
            ,@Seq1
            ,@Seq2
+           ,@Approver
            ,@FabricRefNo
            ,@FabricColor
            ,@FabricDescription
@@ -297,6 +303,7 @@ END
                 { "@SubmitDate", Req.Main.SubmitDate} ,
                 { "@Seq1", DbType.String, Req.Main.Seq1 ?? "" } ,
                 { "@Seq2", DbType.String, Req.Main.Seq2 ?? "" } ,
+                { "@Approver", DbType.String, Req.Main.Approver ?? "" } ,
                 { "@FabricRefNo", DbType.String, Req.Main.FabricRefNo ?? "" } ,
                 { "@FabricColor", DbType.String, Req.Main.FabricColor ?? "" } ,
                 { "@FabricDescription", DbType.String, Req.Main.FabricDescription ?? "" } ,
@@ -332,6 +339,7 @@ UPDATE EvaporationRateTest
       ,SubmitDate = @SubmitDate
       ,Seq1 = @Seq1
       ,Seq2 = @Seq2
+      ,Approver = @Approver
       ,FabricRefNo = @FabricRefNo
       ,FabricColor = @FabricColor
       ,FabricDescription = @FabricDescription
@@ -869,12 +877,17 @@ WHERE ReportNo = @ReportNo
             paras.Add("@ReportNo", Req.ReportNo);
 
             string sqlCmd = $@"
-select Technician = ISNULL(mp.Name,pp.Name)
+select TechnicianName = ISNULL(mp.Name,pp.Name)
 	   ,TechnicianSignture = t.Signature
+	   ,ApproverName = ISNULL(mp2.Name,pp2.Name)
+	   ,ApproverSignture = t2.Signature
 from EvaporationRateTest a
 left join Pass1 mp on mp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
 left join MainServer.Production.dbo.Pass1 pp on pp.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
 left join MainServer.Production.dbo.Technician t on t.ID = IIF(a.EditName = '' ,a.AddName ,a.EditName)
+left join Pass1 mp2 on mp2.ID = a.Approver
+left join MainServer.Production.dbo.Pass1 pp2 on pp2.ID = a.Approver
+left join MainServer.Production.dbo.Technician t2 on t2.ID = a.Approver
 where a.ReportNo = @ReportNo
 ;
 

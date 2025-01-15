@@ -30,7 +30,7 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public List<EvaporationRateTest_Specimen_Time> TimeList { get; set; }
 
         /// <summary>
-        /// R1 / R2 / R3 .....
+        /// R1 / R2 / R3 ..... ISP20241087改規則用不到，但是先保留
         /// </summary>
         public List<EvaporationRateTest_Specimen_Rate> RateList { get; set; }
 
@@ -83,6 +83,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public decimal AfterAverageRate { get; set; }
 
 
+        public string Approver { get; set; }
+        public string ApproverName { get; set; }
         public string Remark { get; set; }
         public string Result { get; set; }
         public string Status { get; set; }
