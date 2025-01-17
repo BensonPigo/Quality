@@ -1,6 +1,7 @@
 ﻿using DatabaseObject;
 using DatabaseObject.ManufacturingExecutionDB;
 using DatabaseObject.ProductionDB;
+using DatabaseObject.ResultModel.EtoEFlowChart;
 using DatabaseObject.ViewModel.FinalInspection;
 using ManufacturingExecutionDataAccessLayer.Interface;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
@@ -88,7 +89,6 @@ namespace BusinessLogicLayer.Service
                 result.SelectedPO = _FinalInspFromPMSProvider.GetSelectedPOForInspection(finalInspectionID).ToList();
                 result.SelectOrderShipSeq = _FinalInspFromPMSProvider.GetSelectOrderShipSeqForSetting(finalInspectionID).ToList();
                 result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(finalInspectionID).ToList();
-
                 foreach (SelectedPO selectedPOItem in result.SelectedPO)
                 {
                     var selectedOrderShipSeq = result.SelectOrderShipSeq.Where(s => s.Selected && s.OrderID == selectedPOItem.OrderID);
@@ -109,6 +109,12 @@ namespace BusinessLogicLayer.Service
 
                     selectedPOItem.Cartons = selectedCartons.Select(s => s.CTNNo).JoinToString(",");
                 }
+
+
+                result.SelectQtyBreakdownList = _FinalInspFromPMSProvider.GetSelectedQtyBreakdownForSetting(finalInspectionID).ToList();
+
+                // 排序、預設值設定
+                //result.SelectQtyBreakdownList.ProcessSelectQtyBreakdown();
 
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
                 var tmpAcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand" || o.BrandID == finalInspection.BrandID);
@@ -165,6 +171,12 @@ namespace BusinessLogicLayer.Service
                         item.Selected = true;
                     }
                 }
+
+                result.SelectQtyBreakdownList = _FinalInspFromPMSProvider.GetSelectedQtyBreakdownForSetting(listOrderID).ToList();
+
+                // 排序、預設值設定
+                //result.SelectQtyBreakdownList.ProcessSelectQtyBreakdown();
+
                 _FinalInspFromPMSProvider = new FinalInspFromPMSProvider(Common.ProductionDataAccessLayer);
                 result.SewingLineID = string.Join(",", result.SelectedSewing.Where(o => o.Selected).Select(o => o.SewingLine));
 
@@ -172,6 +184,7 @@ namespace BusinessLogicLayer.Service
                 result.SelectedPO = _FinalInspFromPMSProvider.GetSelectedPOForInspection(listOrderID).ToList();
                 result.SelectOrderShipSeq = _FinalInspFromPMSProvider.GetSelectOrderShipSeqForSetting(listOrderID).ToList();
                 result.SelectCarton = _FinalInspFromPMSProvider.GetSelectedCartonForSetting(listOrderID).ToList();
+
 
                 // AQL 現有兩種規則
                 // AcceptableQualityLevels：根據訂單數量，有不同的抽樣數量標準，每個標準有對應的瑕疵數量上限，e.g 數量500瑕疵上限10；數量1200瑕疵上限15

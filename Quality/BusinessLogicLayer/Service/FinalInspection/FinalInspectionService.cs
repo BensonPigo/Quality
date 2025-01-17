@@ -24,6 +24,8 @@ using ADOHelper.Utility;
 using System.Reflection.Emit;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Policy;
+using System.Windows.Ink;
+using com.itextpdf.text.pdf;
 
 namespace BusinessLogicLayer.Service
 {
@@ -1059,8 +1061,10 @@ from
             }
         }
 
-        public List<SentPivot88Result> SentPivot88(PivotTransferRequest pivotTransferRequest)
+        public List<SentPivot88Result> SentPivot88(PivotTransferRequest pivotTransferRequest, ref string p88Json)
         {
+            p88Json = string.Empty;
+            string tmpp88Json = string.Empty;
             List<string> listInspectionID = new List<string>();
             List<SentPivot88Result> sentPivot88Results = new List<SentPivot88Result>();
 
@@ -1070,7 +1074,7 @@ from
             switch (pivotTransferRequest.InspectionType)
             {
                 case "FinalInspection":
-                    listInspectionID = _FinalInspectionProvider.GetPivot88FinalInspectionID(pivotTransferRequest.InspectionID);
+                    listInspectionID = _FinalInspectionProvider.GetPivot88FinalInspectionID(pivotTransferRequest.InspectionID, pivotTransferRequest.IsAutoSend);
                     break;
                 case "InlineInspection":
                     listInspectionID = _FinalInspectionProvider.GetPivot88InlineInspectionID(pivotTransferRequest.InspectionID);
@@ -1234,7 +1238,7 @@ from
                 bool isSuccess = true;
                 string errorMsg = string.Empty;
                 string postBody = string.Empty;
-                string uniqueKey = "sintex" + inspectionID + "Trans4m"; // 新版本 + Trans4m
+                string uniqueKey = string.IsNullOrEmpty(pivotTransferRequest.P88UniqueKey) ? "sintex" + inspectionID + "Trans4m" : pivotTransferRequest.P88UniqueKey; // 新版本 + Trans4m
                 string requestUri = pivotTransferRequest.RequestUri + uniqueKey;
 
                 try
@@ -1244,6 +1248,7 @@ from
                     postBody = pivotTransferRequest.InspectionType == "FinalInspection" ?
                     JsonConvert.SerializeObject(GetPivot88Json(inspectionID, isNewType: true)) :
                     JsonConvert.SerializeObject(GetEndInlinePivot88Json(inspectionID, pivotTransferRequest.InspectionType, isNewType: true));
+                    tmpp88Json = postBody;
 
                     WebApiBaseResult webApiBaseResult = WebApiTool.WebApiSend(pivotTransferRequest.BaseUri, requestUri, postBody, HttpMethod.Put, headers: pivotTransferRequest.Headers);
 
@@ -1365,6 +1370,8 @@ from
                     errorMsg = errorMsg,
                 };
             }).ToList();
+
+            p88Json = tmpp88Json;
 
             return sentPivot88Results;
         }
