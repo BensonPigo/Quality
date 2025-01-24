@@ -158,7 +158,7 @@ namespace Quality.Areas.StyleManagement.Controllers
             string tempFilePath = model.TempFileName;
 
             // 2. 取得hotst name，串成下載URL ，傳到準備前端下載
-            tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
+            tempFilePath = "/TMP/" + tempFilePath;
 
             // 3. 前端下載方式：請參考Index.cshtml的 「window.location.href = '@download'」;            
 
@@ -239,7 +239,7 @@ namespace Quality.Areas.StyleManagement.Controllers
             {
                 using (WebClient wc = new WebClient())
                 {
-                    string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.reportPath;
+                    string reportPath = "/TMP/" + result.reportPath;
                     byte[] b = wc.DownloadData(reportPath);
                     Response.Clear();
                     Response.AddHeader("Content-Disposition", "attachment;filename=" + result.reportPath);

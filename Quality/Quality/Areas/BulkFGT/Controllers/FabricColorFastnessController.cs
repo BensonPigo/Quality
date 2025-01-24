@@ -381,7 +381,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             string FileName = result.reportPath;
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            string reportPath = "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
