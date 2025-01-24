@@ -870,7 +870,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             BaseResult result;
             result = _FabricCrkShrkTest_Service.ToReport_Wash(ID, IsToPDF, out string FileName);
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Host + ":" + Request.Url.Port + "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
