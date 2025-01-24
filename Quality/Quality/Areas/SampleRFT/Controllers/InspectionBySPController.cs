@@ -1623,7 +1623,7 @@ namespace Quality.Areas.SampleRFT.Controllers
             zip.Save(zipName);
 
             string tempFilePath = zipName;
-            tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + zipName;
+            tempFilePath = "/TMP/" + zipName;
 
             return Json(new { Result = r.Result, reportPath = tempFilePath, FileName = zipName });
         }

@@ -466,7 +466,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult Report(string ReportNo, bool IsToPDF)
         {
             BaseResult result = _Service.ToReport(ReportNo, IsToPDF, out string FileName);
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            string reportPath = "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 

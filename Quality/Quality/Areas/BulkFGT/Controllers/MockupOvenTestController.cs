@@ -329,7 +329,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             Report_Result report_Result = _MockupOvenService.GetPDF(model);
             string tempFilePath = report_Result.TempFileName;
-            tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
+            tempFilePath = "/TMP/" + tempFilePath;
             if (!report_Result.Result)
             {
                 report_Result.ErrorMessage = report_Result.ErrorMessage.ToString();
