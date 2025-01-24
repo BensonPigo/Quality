@@ -328,11 +328,9 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             TPeelStrengthTest_ViewModel result =  _Service.GetReport(ReportNo, false);
 
-            string filename = result.TempFileName;
-            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", result.TempFileName));
+            string reportPath = "/TMP/" + result.TempFileName;
 
-            // 設置回應為文件下載
-            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
         [HttpPost]
         [SessionAuthorizeAttribute]
@@ -340,12 +338,11 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             TPeelStrengthTest_ViewModel result = _Service.GetReport(ReportNo, true);
 
-            string filename = result.TempFileName;
-            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", result.TempFileName));
+            string reportPath = "/TMP/" + result.TempFileName;
 
-            // 設置回應為文件下載
-            return File(fileBytes, "application/pdf", filename);
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
+
         public JsonResult SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             SendMail_Result result = _Service.SendMail(ReportNo, TO, CC, Subject, Body, Files);

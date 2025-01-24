@@ -253,18 +253,8 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             result = _Service.OvenTestExcel(AIR_LaboratoryID, POID, Seq1, Seq2, IsToPDF, out FileName);
 
-            if (IsToPDF)
-            {
-                byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
-                // 設置回應為文件下載
-                return File(fileBytes, "application/pdf", FileName);
-            }
-            else
-            {
-                byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
-                // 設置回應為文件下載
-                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n", FileName);
-            }
+            string reportPath = "/TMP/" + FileName;
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         #endregion
@@ -426,18 +416,8 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             result = _Service.WashTestExcel(AIR_LaboratoryID, POID, Seq1, Seq2, IsToPDF, out FileName);
 
-            if (IsToPDF)
-            {
-                byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
-                // 設置回應為文件下載
-                return File(fileBytes, "application/pdf", FileName);
-            }
-            else
-            {
-                byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
-                // 設置回應為文件下載
-                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n", FileName);
-            }
+            string reportPath = "/TMP/" + FileName;
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         #endregion
@@ -599,18 +579,8 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             result = _Service.WashingFastnessExcel(AIR_LaboratoryID, POID, Seq1, Seq2, IsToPDF, out FileName);
 
-            if (IsToPDF)
-            {
-                byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
-                // 設置回應為文件下載
-                return File(fileBytes, "application/pdf", FileName);
-            }
-            else
-            {
-                byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
-                // 設置回應為文件下載
-                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n", FileName);
-            }
+            string reportPath = "/TMP/" + FileName;
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         #endregion

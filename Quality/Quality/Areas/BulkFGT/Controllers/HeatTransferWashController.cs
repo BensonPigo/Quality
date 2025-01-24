@@ -467,17 +467,8 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult Report(string ReportNo, bool IsToPDF)
         {
             BaseResult result = _Service.ToReport(ReportNo, IsToPDF, out string FileName);
-
-            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
-            if (IsToPDF)
-            {
-                // 設置回應為文件下載
-                return File(fileBytes, "application/pdf", FileName);
-            }
-            else
-            {
-                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", FileName);
-            }
+            string reportPath = "/TMP/" + FileName;
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
 

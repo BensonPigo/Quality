@@ -48,12 +48,12 @@ namespace Quality.Areas.BulkFGT.Controllers
             FabricCrkShrkTest_Result fabricCrkShrkTest_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTest_Result(POID);
             if (!fabricCrkShrkTest_Result.Result)
             {
-                fabricCrkShrkTest_Result = new FabricCrkShrkTest_Result() 
+                fabricCrkShrkTest_Result = new FabricCrkShrkTest_Result()
                 {
                     Main = new FabricCrkShrkTest_Main(),
                     Details = new List<FabricCrkShrkTest_Detail>(),
                     Result = false,
-                    ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(fabricCrkShrkTest_Result.ErrorMessage) ? string.Empty : fabricCrkShrkTest_Result.ErrorMessage.Replace("'", string.Empty)) }');",
+                    ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(fabricCrkShrkTest_Result.ErrorMessage) ? string.Empty : fabricCrkShrkTest_Result.ErrorMessage.Replace("'", string.Empty))}');",
                 };
             }
             UpdateModel(fabricCrkShrkTest_Result);
@@ -65,10 +65,10 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult SaveIndex(FabricCrkShrkTest_Main main, List<FabricCrkShrkTest_Detail> detail)
         {
             FabricCrkShrkTest_Result result = new FabricCrkShrkTest_Result()
-                                              {
-                                                  Main = main,
-                                                  Details = detail,
-                                              };
+            {
+                Main = main,
+                Details = detail,
+            };
 
             BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestMain(result);
             return Json(saveResult);
@@ -98,7 +98,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                     ScaleIDs = new List<string>(),
                     Crocking_Main = new FabricCrkShrkTestCrocking_Main(),
                     Crocking_Detail = new List<FabricCrkShrkTestCrocking_Detail>(),
-                    ErrorMessage = $@"msg.WithInfo('{ (string.IsNullOrEmpty(fabricCrkShrkTestCrocking_Result.ErrorMessage) ? string.Empty : fabricCrkShrkTestCrocking_Result.ErrorMessage.Replace("'", string.Empty)) }');",
+                    ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(fabricCrkShrkTestCrocking_Result.ErrorMessage) ? string.Empty : fabricCrkShrkTestCrocking_Result.ErrorMessage.Replace("'", string.Empty))}');",
                 };
             }
 
@@ -108,7 +108,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 fabricCrkShrkTestCrocking_Result.Crocking_Main.CrockingRemark = saveResult.Crocking_Main.CrockingRemark;
                 fabricCrkShrkTestCrocking_Result.Crocking_Detail = saveResult.Crocking_Detail;
                 fabricCrkShrkTestCrocking_Result.Result = saveResult.Result;
-                fabricCrkShrkTestCrocking_Result.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(saveResult.ErrorMessage) ? string.Empty : saveResult.ErrorMessage.Replace("'", string.Empty)) });EditMode = true;";
+                fabricCrkShrkTestCrocking_Result.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(saveResult.ErrorMessage) ? string.Empty : saveResult.ErrorMessage.Replace("'", string.Empty))});EditMode = true;";
             }
 
             ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
@@ -281,19 +281,8 @@ namespace Quality.Areas.BulkFGT.Controllers
             BaseResult result;
             string FileName;
             result = _FabricCrkShrkTest_Service.ToReport_Crocking(ID, IsToPDF, out FileName);
-
-            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
-
-            if (IsToPDF)
-            {
-                // 設置回應為文件下載
-                return File(fileBytes, "application/pdf", FileName);
-            }
-            else
-            {
-                // 設置回應為文件下載
-                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n", FileName);
-            }
+            string reportPath = "/TMP/" + FileName;
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         [HttpPost]
@@ -318,7 +307,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     Heat_Main = new FabricCrkShrkTestHeat_Main(),
                     Heat_Detail = new List<FabricCrkShrkTestHeat_Detail>(),
-                    ErrorMessage = $@"msg.WithInfo('{ (string.IsNullOrEmpty(fabricCrkShrkTestHeat_Result.ErrorMessage) ? string.Empty : fabricCrkShrkTestHeat_Result.ErrorMessage.Replace("'", string.Empty)) }');",
+                    ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(fabricCrkShrkTestHeat_Result.ErrorMessage) ? string.Empty : fabricCrkShrkTestHeat_Result.ErrorMessage.Replace("'", string.Empty))}');",
                 };
             }
 
@@ -328,7 +317,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 fabricCrkShrkTestHeat_Result.Heat_Main.HeatRemark = saveResult.Heat_Main.HeatRemark;
                 fabricCrkShrkTestHeat_Result.Heat_Detail = saveResult.Heat_Detail;
                 fabricCrkShrkTestHeat_Result.Result = saveResult.Result;
-                fabricCrkShrkTestHeat_Result.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(saveResult.ErrorMessage) ? string.Empty : saveResult.ErrorMessage.Replace("'", string.Empty))  }');EditMode = true;";
+                fabricCrkShrkTestHeat_Result.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(saveResult.ErrorMessage) ? string.Empty : saveResult.ErrorMessage.Replace("'", string.Empty))}');EditMode = true;";
             }
 
             ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
@@ -481,19 +470,8 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             BaseResult result;
             result = _FabricCrkShrkTest_Service.ToReport_Heat(ID, IsToPDF, out string FileName);
-
-            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
-
-            if (IsToPDF)
-            {
-                // 設置回應為文件下載
-                return File(fileBytes, "application/pdf", FileName);
-            }
-            else
-            {
-                // 設置回應為文件下載
-                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", FileName);
-            }
+            string reportPath = "/TMP/" + FileName;
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         [HttpPost]
@@ -687,19 +665,8 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             BaseResult result;
             result = _FabricCrkShrkTest_Service.ToReport_Iron(ID, IsToPDF, out string FileName);
-
-            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
-
-            if (IsToPDF)
-            {
-                // 設置回應為文件下載
-                return File(fileBytes, "application/pdf", FileName);
-            }
-            else
-            {
-                // 設置回應為文件下載
-                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n", FileName);
-            }
+            string reportPath = "/TMP/" + FileName;
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         [HttpPost]
@@ -723,7 +690,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 {
                     Wash_Main = new FabricCrkShrkTestWash_Main(),
                     Wash_Detail = new List<FabricCrkShrkTestWash_Detail>(),
-                    ErrorMessage = $@"msg.WithInfo('{ (string.IsNullOrEmpty(fabricCrkShrkTestWash_Result.ErrorMessage) ? string.Empty : fabricCrkShrkTestWash_Result.ErrorMessage.Replace("'", string.Empty))  }');",
+                    ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(fabricCrkShrkTestWash_Result.ErrorMessage) ? string.Empty : fabricCrkShrkTestWash_Result.ErrorMessage.Replace("'", string.Empty))}');",
                 };
             }
 
@@ -734,7 +701,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 fabricCrkShrkTestWash_Result.Wash_Main.WashRemark = saveResult.Wash_Main.WashRemark;
                 fabricCrkShrkTestWash_Result.Wash_Detail = saveResult.Wash_Detail;
                 fabricCrkShrkTestWash_Result.Result = saveResult.Result;
-                fabricCrkShrkTestWash_Result.ErrorMessage = $@"msg.WithInfo('{ (string.IsNullOrEmpty(saveResult.ErrorMessage) ? string.Empty : saveResult.ErrorMessage.Replace("'", string.Empty))  }');EditMode = true;";
+                fabricCrkShrkTestWash_Result.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(saveResult.ErrorMessage) ? string.Empty : saveResult.ErrorMessage.Replace("'", string.Empty))}');EditMode = true;";
             }
 
             List<SelectListItem> skewnessOptionList = new SetListItem().ItemListBinding(skewnessOption);
@@ -900,23 +867,12 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public ActionResult Report_Wash(long ID, bool IsToPDF)
+        public JsonResult Report_Wash(long ID, bool IsToPDF)
         {
             BaseResult result;
             result = _FabricCrkShrkTest_Service.ToReport_Wash(ID, IsToPDF, out string FileName);
-
-            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
-
-            if (IsToPDF)
-            {
-                // 設置回應為文件下載
-                return File(fileBytes, "application/pdf", FileName);
-            }
-            else
-            {
-                // 設置回應為文件下載
-                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n", FileName);
-            }
+            string reportPath = "/TMP/" + FileName;
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         [HttpPost]

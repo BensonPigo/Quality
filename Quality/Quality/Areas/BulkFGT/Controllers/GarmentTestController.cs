@@ -473,12 +473,8 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult Report(string ID, string No, GarmentTest_Service.ReportType type, bool IsToPDF)
         {
             GarmentTest_Detail_Result result = _GarmentTest_Service.ToReport(ID, No, type, IsToPDF);
-
-            string filename = result.reportPath;
-            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", result.reportPath));
-
-            // 設置回應為文件下載
-            return File(fileBytes, "application/pdf", filename);
+            result.reportPath = "/TMP/" + result.reportPath;
+            return Json(new { result.Result, result.ErrMsg, result.reportPath });
         }
 
         [HttpPost]

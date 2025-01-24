@@ -220,10 +220,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             HydrostaticPressureWaterproofTest_ViewModel result = _Service.GetReport(ReportNo, false);
 
             string FileName = result.TempFileName;
-            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
+            string reportPath = "/TMP/" + result.TempFileName;
 
-            // 設置回應為文件下載
-            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", FileName);
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         [HttpPost]
@@ -233,10 +232,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             HydrostaticPressureWaterproofTest_ViewModel result = _Service.GetReport(ReportNo, true);
 
             string FileName = result.TempFileName;
-            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
+            string reportPath = "/TMP/" + result.TempFileName;
 
-            // 設置回應為文件下載
-            return File(fileBytes, "application/pdf", FileName);
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         public JsonResult SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)

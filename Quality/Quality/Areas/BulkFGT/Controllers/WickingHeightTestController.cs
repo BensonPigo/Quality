@@ -195,11 +195,15 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult ToExcel(string ReportNo)
         {
             WickingHeightTest_ViewModel result = _Service.GetReport(ReportNo, false);
-            string filename = result.TempFileName;
-            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", result.TempFileName));
+            if (!result.Result)
+            {
+                result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+            }
 
-            // 設置回應為文件下載
-            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
+            string reportPath = "/TMP/" + result.TempFileName;
+
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         [HttpPost]
@@ -207,11 +211,15 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult ToPDF(string ReportNo)
         {
             WickingHeightTest_ViewModel result = _Service.GetReport(ReportNo, true);
-            string filename = result.TempFileName;
-            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", result.TempFileName));
+            if (!result.Result)
+            {
+                result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+            }
 
-            // 設置回應為文件下載
-            return File(fileBytes, "application/pdf", filename);
+            string reportPath = "/TMP/" + result.TempFileName;
+
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         public JsonResult SendMailToMR(string ReportNo)

@@ -329,12 +329,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             Report_Result report_Result = _MockupOvenService.GetPDF(model);
-
-            string filename = report_Result.TempFileName;
-            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filename));
-
-            // 設置回應為文件下載
-            return File(fileBytes, "application/pdf", filename);
+            string tempFilePath = report_Result.TempFileName;
+            tempFilePath = "/TMP/" + tempFilePath;
+            if (!report_Result.Result)
+            {
+                report_Result.ErrorMessage = report_Result.ErrorMessage.ToString();
+            }
+            
+            return Json(new { Result = report_Result.Result, ErrorMessage = report_Result.ErrorMessage, reportPath = tempFilePath, FileName = report_Result.TempFileName });
         }
 
         [SessionAuthorizeAttribute]

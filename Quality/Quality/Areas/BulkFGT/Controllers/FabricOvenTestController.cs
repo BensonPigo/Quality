@@ -283,20 +283,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 result = _FabricOvenTestService.ToPdfFabricOvenTestDetail(ID, No, out FileName, false);
 
-                byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
-
-                // 設置回應為文件下載
-                return File(fileBytes, "application/pdf", FileName);
             }
             else
             {
                 result = _FabricOvenTestService.ToExcelFabricOvenTestDetail(ID, No, out FileName, false);
 
-                byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
-
-                // 設置回應為文件下載
-                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", FileName);
             }
+            string reportPath = "/TMP/" + FileName;
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         [HttpPost]

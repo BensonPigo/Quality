@@ -983,30 +983,13 @@
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ ReportNo: $('#Main_ReportNo').val()}),
                 async: true,
-                processData: false,
-                xhrFields: {
-                    responseType: 'blob' // 告訴瀏覽器接收二進位數據
-                },
-                success: function (data, status, xhr) {
-                    // 從 Headers 中獲取檔案名稱
-                    var disposition = xhr.getResponseHeader('Content-Disposition');
-                    var filename = 'DefaultReport.xlsx'; // 預設檔名
-
-                    if (disposition && disposition.indexOf('attachment') !== -1) {
-                        var filenameRegex = /filename[^;=\n]*=(['"]?)([^'"\n]*)\1?/;
-                        var matches = filenameRegex.exec(disposition);
-                        if (matches != null && matches[2]) {
-                            filename = matches[2];
-                        }
+                success: function (data) {
+                    if (data.Result) {
+                        window.location.href = data.reportPath;
                     }
-
-                    // 使用 Blob 觸發下載
-                    var blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                    var link = document.createElement('a');
-                    link.href = window.URL.createObjectURL(blob);
-                    link.download = filename; // 使用後端指定的檔名
-                    link.click();
-                    window.URL.revokeObjectURL(link.href);
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
@@ -1025,30 +1008,13 @@
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify({ ReportNo: $('#Main_ReportNo').val()}),
                 async: true,
-                processData: false,
-                xhrFields: {
-                    responseType: 'blob' // 告訴瀏覽器接收二進位數據
-                },
-                success: function (data, status, xhr) {
-                    // 從 Headers 中獲取檔案名稱
-                    var disposition = xhr.getResponseHeader('Content-Disposition');
-                    var filename = 'DefaultReport.pdf'; // 預設檔名
-
-                    if (disposition && disposition.indexOf('attachment') !== -1) {
-                        var filenameRegex = /filename[^;=\n]*=(['"]?)([^'"\n]*)\1?/;
-                        var matches = filenameRegex.exec(disposition);
-                        if (matches != null && matches[2]) {
-                            filename = matches[2];
-                        }
+                success: function (data) {
+                    if (data.Result) {
+                        window.location.href = data.reportPath;
                     }
-
-                    // 使用 Blob 觸發下載
-                    var blob = new Blob([data], { type: 'application/pdf' });
-                    var link = document.createElement('a');
-                    link.href = window.URL.createObjectURL(blob);
-                    link.download = filename; // 使用後端指定的檔名
-                    link.click();
-                    window.URL.revokeObjectURL(link.href);
+                    else {
+                        msg.WithError(data.ErrorMessage);
+                    }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);

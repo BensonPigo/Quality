@@ -262,12 +262,13 @@ namespace Quality.Areas.BulkFGT.Controllers
             this.CheckSession();
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(mockupCrocking_Request);
             Report_Result report_Result = _MockupCrockingService.GetPDF(mockupCrocking_ViewModel);
-
-            string FileName = report_Result.TempFileName;
-            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
-
-            // 設置回應為文件下載
-            return File(fileBytes, "application/pdf", FileName);
+            string tempFilePath = report_Result.TempFileName;
+            tempFilePath = "/TMP/" + tempFilePath;
+            if (!report_Result.Result)
+            {
+                report_Result.ErrorMessage = report_Result.ErrorMessage.ToString();
+            }
+            return Json(new { Result = report_Result.Result, ErrorMessage = report_Result.ErrorMessage, reportPath = tempFilePath, FileName = report_Result.TempFileName });
         }
 
         [HttpPost]
