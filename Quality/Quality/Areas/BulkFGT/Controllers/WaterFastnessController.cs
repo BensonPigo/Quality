@@ -383,7 +383,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 result = _WaterFastnessService.ToReport(ID, out FileName, false, false);
             }
 
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            string reportPath = "/TMP/" + FileName;
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
