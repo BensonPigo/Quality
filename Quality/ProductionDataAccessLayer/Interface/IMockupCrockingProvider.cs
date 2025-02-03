@@ -8,6 +8,7 @@ namespace ProductionDataAccessLayer.Interface
 {
     public interface IMockupCrockingProvider
     {
+        string GetFactoryNameEN(string ReportNo, string FactotyID);
         IList<MockupCrocking_ViewModel> GetMockupCrockingReportNoList(MockupCrocking_Request Item);
 
         IList<MockupCrocking_ViewModel> GetMockupCrocking(MockupCrocking_Request Item, bool istop1 = false);

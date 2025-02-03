@@ -352,6 +352,52 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     AddImageToWorksheet(worksheet, Model.OvenTestBeforePicture, 20, 1, 400, 300);
                     AddImageToWorksheet(worksheet, Model.OvenTestAfterPicture, 20, 7, 400, 300);
 
+
+
+                    // Excel 合併 + 塞資料
+                    #region Title
+                    // 先移除邊框
+                    var lastRow = worksheet.CellsUsed().Max(cell => cell.Address.RowNumber);
+                    var range = worksheet.Range($"A1:L{lastRow}");
+                    range.Style.Border.OutsideBorder = XLBorderStyleValues.None;
+
+                    string FactoryNameEN = _AccessoryOvenWashProvider.GetFactoryNameEN(POID, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 複製第 10 列
+                    var rowToCopy1 = worksheet.Row(2);
+
+                    // 2. 插入一列，將第 8 和第 9 列之間騰出空間
+                    worksheet.Row(1).InsertRowsAbove(1);
+
+                    // 3. 複製格式到新插入的列
+                    var newRow1 = worksheet.Row(1);
+                    worksheet.Range("C1:J1").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("C1");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    // 設置活動儲存格（指標位置）
+                    worksheet.Cell("A1").SetActive();
+
+                    
+                    var usedRange = worksheet.RangeUsed();
+                    lastRow = worksheet.CellsUsed().Max(cell => cell.Address.RowNumber);
+
+                    // 將外框畫回來
+                    range = worksheet.Range($"A1:L{lastRow}");
+                    range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;  // 外框：細線
+
+                    if (usedRange != null)
+                    {
+                        worksheet.PageSetup.PrintAreas.Clear();
+
+                        worksheet.PageSetup.PrintAreas.Add($"A1:L{lastRow + 3}");
+                    }
+
+                    #endregion
                     workbook.SaveAs(outputFilePath);
                     FileName = $"{tmpName}.xlsx";
                 }
@@ -629,6 +675,52 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     // 插入圖片（使用共用方法）
                     AddImageToWorksheet(worksheet, Model.WashTestBeforePicture, 24, 1, 400, 300);
                     AddImageToWorksheet(worksheet, Model.WashTestAfterPicture, 24, 7, 400, 300);
+
+                    // Excel 合併 + 塞資料
+                    #region Title
+                    // 先移除邊框
+                    var lastRow = worksheet.CellsUsed().Max(cell => cell.Address.RowNumber);
+                    var range = worksheet.Range($"A1:L{lastRow}");
+                    range.Style.Border.OutsideBorder = XLBorderStyleValues.None;
+
+                    string FactoryNameEN = _AccessoryOvenWashProvider.GetFactoryNameEN(POID, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 複製第 10 列
+                    var rowToCopy1 = worksheet.Row(2);
+
+                    // 2. 插入一列，將第 8 和第 9 列之間騰出空間
+                    worksheet.Row(1).InsertRowsAbove(1);
+
+                    // 3. 複製格式到新插入的列
+                    var newRow1 = worksheet.Row(1);
+                    worksheet.Range("C1:J1").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("C1");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    // 設置活動儲存格（指標位置）
+                    worksheet.Cell("A1").SetActive();
+
+
+                    var usedRange = worksheet.RangeUsed();
+                    lastRow = worksheet.CellsUsed().Max(cell => cell.Address.RowNumber);
+
+                    // 將外框畫回來
+                    range = worksheet.Range($"A1:L{lastRow}");
+                    range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;  // 外框：細線
+
+                    if (usedRange != null)
+                    {
+                        worksheet.PageSetup.PrintAreas.Clear();
+
+                        worksheet.PageSetup.PrintAreas.Add($"A1:L{lastRow + 3}");
+                    }
+
+                    #endregion
+
 
                     workbook.SaveAs(outputFilePath);
                     FileName = $"{tmpName}.xlsx";
@@ -942,6 +1034,51 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     // 測試前後圖片
                     AddImageToWorksheet(worksheet, Model.WashingFastnessTestBeforePicture, 33, 1, 400, 300);
                     AddImageToWorksheet(worksheet, Model.WashingFastnessTestAfterPicture, 33, 5, 400, 300);
+
+                    // Excel 合併 + 塞資料
+                    #region Title
+                    // 先移除邊框
+                    var lastRow = worksheet.CellsUsed().Max(cell => cell.Address.RowNumber);
+                    var range = worksheet.Range($"A1:G{lastRow}");
+                    range.Style.Border.OutsideBorder = XLBorderStyleValues.None;
+
+                    string FactoryNameEN = _AccessoryOvenWashProvider.GetFactoryNameEN(POID, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 複製第 10 列
+                    var rowToCopy1 = worksheet.Row(2);
+
+                    // 2. 插入一列，將第 8 和第 9 列之間騰出空間
+                    worksheet.Row(1).InsertRowsAbove(1);
+
+                    // 3. 複製格式到新插入的列
+                    var newRow1 = worksheet.Row(1);
+                    worksheet.Range("B1:G1").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("B1");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    // 設置活動儲存格（指標位置）
+                    worksheet.Cell("A1").SetActive();
+
+
+                    var usedRange = worksheet.RangeUsed();
+                    lastRow = worksheet.CellsUsed().Max(cell => cell.Address.RowNumber);
+
+                    // 將外框畫回來
+                    range = worksheet.Range($"A1:G{lastRow}");
+                    range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;  // 外框：細線
+
+                    if (usedRange != null)
+                    {
+                        worksheet.PageSetup.PrintAreas.Clear();
+
+                        worksheet.PageSetup.PrintAreas.Add($"A1:G{lastRow + 3}");
+                    }
+
+                    #endregion
 
                     workbook.SaveAs(outputFilePath);
                     FileName = $"{tmpName}.xlsx";

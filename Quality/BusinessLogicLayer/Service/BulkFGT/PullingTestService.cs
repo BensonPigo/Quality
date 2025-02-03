@@ -1,5 +1,6 @@
 ﻿using ADOHelper.Utility;
 using ClosedXML.Excel;
+using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
@@ -344,8 +345,27 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
 
                     // TestBeforePicture 和 TestAfterPicture
-                    AddImageToWorksheet(worksheet, model.TestBeforePicture, 15, 1, 200, 300);
-                    AddImageToWorksheet(worksheet, model.TestAfterPicture, 15, 3, 200, 300);
+                    AddImageToWorksheet(worksheet, model.TestBeforePicture, 16, 1, 200, 300);
+                    AddImageToWorksheet(worksheet, model.TestAfterPicture, 16, 3, 200, 300);
+
+                    // Excel 合併 + 塞資料
+                    #region Title
+                    string FactoryNameEN = _PullingTestProvider.GetFactoryNameEN(model.ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 插入一列
+                    worksheet.Row(1).InsertRowsAbove(1);
+
+                    // 2. 合併欄位
+                    worksheet.Range("A1:D1").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("A1");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    mergedCell.Style.Font.Italic = false;
+                    #endregion
 
                     // 儲存 Excel
                     workbook.SaveAs(excelFilePath);

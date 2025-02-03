@@ -129,6 +129,7 @@ namespace DatabaseObject.ResultModel
     public class Crocking_Excel
     {
         public string ReportNo { get; set; }
+        public string FactoryID { get; set; }
         public DateTime? SubmitDate { get; set; }
         public string SeasonID { get; set; }
         public string BrandID { get; set; }
@@ -209,6 +210,7 @@ namespace DatabaseObject.ResultModel
     }
     public class FabricCrkShrkTestIron_Main
     {
+        public string FactoryID { get; set; }
         public string ReportNo { get; set; }
         public string POID { get; set; }
         public string SEQ { get; set; }
@@ -247,6 +249,7 @@ namespace DatabaseObject.ResultModel
     }
     public class FabricCrkShrkTestHeat_Main
     {
+        public string FactoryID { get; set; }
         public string ReportNo { get; set; }
         public string POID { get; set; }
         public string SEQ { get; set; }
@@ -345,6 +348,7 @@ namespace DatabaseObject.ResultModel
 
     public class FabricCrkShrkTestWash_Main
     {
+        public string FactoryID { get; set; }
         public string ReportNo { get; set; }
         public string POID { get; set; }
         public string SEQ { get; set; }

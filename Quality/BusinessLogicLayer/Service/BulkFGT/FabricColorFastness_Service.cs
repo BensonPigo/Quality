@@ -24,6 +24,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Management;
 using System.Web.UI.WebControls;
 using static MICS.DataAccessLayer.Provider.MSSQL.ColorFastnessDetailProvider;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -552,9 +553,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     foreach (ColorFastness_Excel item in dataList)
                     {
-                        var sourceRange = worksheet4.Range("A1:H42"); // 複製的範圍
+                        var sourceRange = worksheet4.Range("A1:H43"); // 複製的範圍
 
-                        worksheet.Row(nowRow).InsertRowsAbove(42);
+                        worksheet.Row(nowRow).InsertRowsAbove(43);
 
                         var destinationRange = worksheet.Range($"A{nowRow}:H{nowRow + 41}");
                         sourceRange.CopyTo(destinationRange);
@@ -568,9 +569,44 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             AddImageToWorksheet(worksheet, dataList[0].TestAfterPicture, nowRow + 23, 5, 500, 400);
                         }
 
-                        nowRow = nowRow + 42;
+                        nowRow = nowRow + 43;
                     }
 
+
+                    // Excel 合併 + 塞資料 + 重設列印範圍
+                    #region Title
+                    string FactoryNameEN = _IColorFastnessDetailProvider.GetFactoryNameEN(ID, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 插入一列
+                    worksheet.Row(1).InsertRowsAbove(1);
+                    // 2. 複製格式到新插入的列
+                    worksheet.Range("A1:H1").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("A1");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    // 設置活動儲存格（指標位置）
+                    worksheet.Cell("A1").SetActive();
+
+                    //// 自動檢測使用範圍
+                    var usedRange = worksheet.RangeUsed();
+
+                    //// 確認範圍不為空
+                    if (usedRange != null)
+                    {
+                        // 清除所有已有的列印範圍
+                        worksheet.PageSetup.PrintAreas.Clear();
+
+                        // 設定列印範圍為使用範圍
+                        worksheet.PageSetup.PrintAreas.Add($"A1:H{nowRow}");
+                    }
+                    worksheet2.Delete();
+                    worksheet3.Delete();
+                    worksheet4.Delete();
+                    #endregion
                     workbook.SaveAs(excelPath);
 
                     if (IsPDF)

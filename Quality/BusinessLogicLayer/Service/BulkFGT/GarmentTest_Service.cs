@@ -20,6 +20,7 @@ using System.Net.Mail;
 using System.Web;
 using ClosedXML.Excel;
 using ADOHelper.Template.MSSQL;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -1081,7 +1082,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             try
             {
+                string factory = orders.FactoryID.Empty() ? System.Web.HttpContext.Current.Session["FactoryID"].ToString() :orders.FactoryID;
 
+                string FactoryNameEN = _IGarmentTestProvider.GetFactoryNameEN(factory);
                 string typeName = $"Garment Test_{all_Data.Detail.OrderID}_" +
                     $"{all_Data.Main.StyleID}_" +
                     $"{all_Data.Main.Article}_" +
@@ -2789,7 +2792,24 @@ and t.GarmentTest=1
                                 }
                                 #endregion
 
+                                #region Title
+                                // 1. 複製第 1列
+                                var rowToCopy1 = worksheet.Row(2);
 
+                                // 2. 插入一列，將第 8 和第 9 列之間騰出空間
+                                worksheet.Row(1).InsertRowsAbove(1);
+
+                                // 3. 合併欄位
+                                worksheet.Range("B1:K1").Merge();
+                                // 設置字體樣式
+                                var mergedCell = worksheet.Cell("B1");
+                                mergedCell.Value = FactoryNameEN;
+                                mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                                mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                                mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                                mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                                mergedCell.Style.Font.Bold = true;
+                                #endregion
                                 #region Save & Show Excel
 
                                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
@@ -3001,6 +3021,36 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest = 1";
                                     worksheet_2020.Row(startRowIndex).Height = CalculateRowHeight(worksheet_2020.Row(startRowIndex).Cells());
                                     startRowIndex++;
                                 }
+
+                                // Excel 合併 + 塞資料
+                                #region Title
+                                // 1. 插入一列
+                                worksheet_2020.Row(1).InsertRowsAbove(1);
+
+                                // 2. 合併欄位
+                                worksheet_2020.Range("A1:I1").Merge();
+                                // 設置字體樣式
+                                var mergedCell = worksheet_2020.Cell("A1");
+                                mergedCell.Value = FactoryNameEN;
+                                mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                                mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                                mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                                mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                                mergedCell.Style.Font.Bold = true;
+
+                                //// 自動檢測使用範圍
+                                var usedRange = worksheet_2020.RangeUsed();
+                                var lastRow = worksheet_2020.CellsUsed().Max(cell => cell.Address.RowNumber);
+                                //// 確認範圍不為空
+                                if (usedRange != null)
+                                {
+                                    // 清除所有已有的列印範圍
+                                    worksheet_2020.PageSetup.PrintAreas.Clear();
+
+                                    // 設定列印範圍為使用範圍
+                                    worksheet_2020.PageSetup.PrintAreas.Add($"A1:I{lastRow + 3}");
+                                }
+                                #endregion
 
                                 // 儲存檔案
                                 string sanitizedTypeName = string.Join("", typeName.Split(Path.GetInvalidFileNameChars()));
@@ -3240,6 +3290,39 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest=1";
                                     worksheet_Physical.Row(startRowIndex_Pyhsical).Height = CalculateRowHeight(worksheet_Physical.Row(startRowIndex_Pyhsical).Cells());
                                     startRowIndex_Pyhsical++;
                                 }
+
+                                // Excel 合併 + 塞資料
+                                #region Title
+                                // 1. 複製第 1列
+                                var rowToCopy1 = worksheet_Physical.Row(2);
+
+                                // 2. 插入一列
+                                worksheet_Physical.Row(1).InsertRowsAbove(1);
+
+                                // 3. 合併欄位
+                                worksheet_Physical.Range("A1:I1").Merge();
+                                // 設置字體樣式
+                                var mergedCell = worksheet_Physical.Cell("A1");
+                                mergedCell.Value = FactoryNameEN;
+                                mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                                mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                                mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                                mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                                mergedCell.Style.Font.Bold = true;
+
+                                //// 自動檢測使用範圍
+                                var usedRange = worksheet_Physical.RangeUsed();
+                                var lastRow = worksheet_Physical.CellsUsed().Max(cell => cell.Address.RowNumber);
+                                //// 確認範圍不為空
+                                if (usedRange != null)
+                                {
+                                    // 清除所有已有的列印範圍
+                                    worksheet_Physical.PageSetup.PrintAreas.Clear();
+
+                                    // 設定列印範圍為使用範圍
+                                    worksheet_Physical.PageSetup.PrintAreas.Add($"A1:I{lastRow + 3}");
+                                }
+                                #endregion
 
                                 // 儲存檔案
                                 string sanitizedTypeName = string.Join("", typeName.Split(Path.GetInvalidFileNameChars()));

@@ -20,6 +20,31 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 {
     public class FabricOvenTestProvider : SQLDAL, IFabricOvenTestProvider
     {
+        public string GetFactoryNameEN(string POID, string FactoryID)
+        {
+            string factoryNameEN = string.Empty;
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@POID", DbType.String, POID } ,
+                { "@FactoryID",DbType.String, FactoryID } ,
+            };
+            string sql = $@"
+            SELECT
+            o.FactoryID
+			INTO #tmp
+            FROM  Orders O WITH(NOLOCK)
+            WHERE ID = @POID
+
+            SELECT
+            F.NameEN
+            FROM Factory F WITH(NOLOCK)
+            inner JOIN #TMP T WITH(NOLOCK) ON T.FactoryID = F.ID
+            WHERE F.ID = IIF((SELECT count(1) from #tmp) > 0 ,T.FactoryID,@FactoryID)";
+
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sql, objParameter);
+            factoryNameEN = dt.Rows[0]["NameEN"].ToString();
+            return factoryNameEN;
+        }
         #region 底層連線
         public FabricOvenTestProvider(string ConString) : base(ConString) { }
         public FabricOvenTestProvider(SQLDataTransaction tra) : base(tra) { }

@@ -570,6 +570,27 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         AddImageToWorksheet(currentSheet, currentData.TestAfterPicture, 52, 5, 380, 300);
                     }
 
+                    var worksheet = workbook.Worksheet(1);
+                    // Excel 合併 + 塞資料 + 重設列印範圍
+                    #region Title
+                    string FactoryNameEN = _PerspirationFastnessProvider.GetFactoryNameEN(ID, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 插入一列
+                    worksheet.Row(1).InsertRowsAbove(1);
+                    // 2. 複製格式到新插入的列
+                    worksheet.Range("A1:H1").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("A1");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    // 設置活動儲存格（指標位置）
+                    worksheet.Cell("A1").SetActive();
+                    #endregion
+
+
                     tmpName = RemoveInvalidFileNameChars(tmpName);
 
                     string filePath = Path.Combine(tmpPath, $"{tmpName}.xlsx");

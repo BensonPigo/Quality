@@ -20,6 +20,19 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 {
     public class FabricCrkShrkTestProvider : SQLDAL, IFabricCrkShrkTestProvider
     {
+        public string GetFactoryNameEN(string factory)
+        {
+            string factoryNameEN = string.Empty;
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@Factory", DbType.String, factory } ,
+            };
+            string sql = $"SELECT NameEN from Factory WHERE [ID] = @Factory";
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sql, objParameter);
+            factoryNameEN = dt.Rows[0]["NameEN"].ToString();
+            return factoryNameEN;
+        }
+
         #region 底層連線
         public FabricCrkShrkTestProvider(string ConString) : base(ConString) { }
         public FabricCrkShrkTestProvider(SQLDataTransaction tra) : base(tra) { }
@@ -387,8 +400,10 @@ where f.ID = @ID
             listPar.Add("@ID", ID);
 
             string sql = @"
-select fl.ReportNo
-	,f.POID
+select 
+    fl.ReportNo
+	,o.FactoryID
+    ,f.POID
 	,Article=Article.Val
 	,SubmitDate = fl.CrockingDate
 	,o.SeasonID
@@ -879,6 +894,7 @@ order by fd.InspDate,oc.article
             string sqlGetFabricCrkShrkTestHeat_Main = @"
 
 select	[POID] = f.POID,
+        [FactoryID] = o.FactoryID,
         [SEQ] = Concat(f.Seq1, ' ', f.Seq2),
         [ColorID] = pc.SpecValue,
         [ArriveQty] = f.ArriveQty,
@@ -1306,6 +1322,7 @@ where flc.ID = @ID
             string sqlGetFabricCrkShrkTestIron_Main = @"
 
 select	[POID] = f.POID,
+        [FactoryID] = o.FactoryID,
         [SEQ] = Concat(f.Seq1, ' ', f.Seq2),
         [ColorID] = pc.SpecValue,
         [ArriveQty] = f.ArriveQty,
@@ -1734,6 +1751,7 @@ where flc.ID = @ID
             string sqlGetFabricCrkShrkTestWash_Main = @"
 
 select	[POID] = f.POID,
+        [FactoryID] = o.FactoryID,
         [SEQ] = Concat(f.Seq1, ' ', f.Seq2),
         [ColorID] = pc.SpecValue,
         [ArriveQty] = f.ArriveQty,

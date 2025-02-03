@@ -11,6 +11,7 @@ namespace ProductionDataAccessLayer.Interface
 {
     public interface IFabricOvenTestProvider
     {
+        string GetFactoryNameEN(string POID, string FactoryID);
         FabricOvenTest_Result GetFabricOvenTest_Main(string POID);
 
         FabricOvenTest_Detail_Result GetFabricOvenTest_Detail(string poID, string TestNo, string BrandID ="");

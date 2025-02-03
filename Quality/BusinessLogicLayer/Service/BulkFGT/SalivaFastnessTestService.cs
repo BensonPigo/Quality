@@ -14,10 +14,12 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
+using static Sci.MyUtility;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -704,7 +706,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     worksheet.Cell(11, 2).Value = model.Main.TypeOfPrint;
                     worksheet.Cell(11, 6).Value = model.Main.PrintColor;
-
+                    
                     // BrandID
                     if (model.Main.BrandID.ToUpper() == "ADIDAS")
                     {
@@ -806,6 +808,36 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         startRow += 6; // 移動到下一組
                     }
 
+                    #region Title
+                    string FactoryNameEN = _Provider.GetFactoryNameEN(ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 插入一列
+                    worksheet.Row(2).InsertRowsAbove(1);
+
+                    // 2. 合併欄位
+                    worksheet.Range("A2:I2").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("A2");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    mergedCell.Style.Font.Italic = false;
+
+                    // 自動檢測使用範圍
+                    var usedRange = worksheet.RangeUsed();
+                    var lastRow = worksheet.CellsUsed().Max(cell => cell.Address.RowNumber);
+                    // 確認範圍不為空
+                    if (usedRange != null)
+                    {
+                        // 清除所有已有的列印範圍
+                        worksheet.PageSetup.PrintAreas.Clear();
+
+                        // 設定列印範圍為使用範圍
+                        worksheet.PageSetup.PrintAreas.Add($"A1:I{lastRow + 10}");
+                    }
+                    #endregion
                     // 儲存 Excel 檔案
                     workbook.SaveAs(fullExcelFileName);
                 }

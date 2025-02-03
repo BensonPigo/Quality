@@ -20,6 +20,33 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
 {
     public class PerspirationFastnessProvider : SQLDAL
     {
+        public string GetFactoryNameEN(string poid, string FactortID)
+        {
+            string factoryNameEN = string.Empty;
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@POID", DbType.String, poid } ,
+                { "@FactortID", DbType.String, FactortID },
+            };
+            string sql = $@"
+            SELECT
+            o.FactoryID
+            INTO #tmp
+            FROM  Orders O WITH(NOLOCK)
+            WHERE ID = @POID
+			
+            SELECT
+            F.NameEN,*
+            FROM Factory F WITH(NOLOCK)
+            LEFT JOIN #TMP T WITH(NOLOCK) ON T.FactoryID = F.ID
+            WHERE F.ID = IIF((SELECT count(1) from #tmp) > 0 ,T.FactoryID,@FactortID)
+
+            DROP TABLE #TMP";
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sql, objParameter);
+            factoryNameEN = dt.Rows[0]["NameEN"].ToString();
+            return factoryNameEN;
+        }
+
         #region 底層連線
         public PerspirationFastnessProvider(string ConString) : base(ConString) { }
         public PerspirationFastnessProvider(SQLDataTransaction tra) : base(tra) { }
