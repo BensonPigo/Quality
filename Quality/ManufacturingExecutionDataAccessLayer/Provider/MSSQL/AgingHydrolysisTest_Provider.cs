@@ -37,7 +37,7 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             o.FactoryID
             INTO #tmp
             FROM AgingHydrolysisTest P WITH(NOLOCK)
-            INNER JOIN Production.dbo.Orders O WITH(NOLOCK) ON O.ID = P.POID
+            INNER JOIN Production.dbo.Orders O WITH(NOLOCK) ON O.ID = P.OrderID
             WHERE P.ReportNo = @ReportNo
 			
             SELECT
