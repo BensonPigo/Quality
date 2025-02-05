@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Excel;
+using Sci;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using static Sci.MyUtility;
 
 namespace Library
 {
@@ -38,21 +41,9 @@ namespace Library
             }
             finally
             {
-                if (workBook != null)
-                {
-                    workBook.Close(true, missing, missing);
-                }
-
-                if (application != null)
-                {
-                    application.Quit();
-                }
-
-                Marshal.ReleaseComObject(workBook);
-                Marshal.ReleaseComObject(application);
-
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+                workBook.Close();
+                application.Quit();
+                MyUtility.Excel.KillExcelProcess(application);
             }
 
             return result;

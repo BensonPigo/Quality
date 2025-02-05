@@ -8,6 +8,7 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -368,21 +369,28 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult Report(string ID, bool IsToPDF)
+        public ActionResult Report(string ID, bool IsToPDF)
         {
             Fabric_ColorFastness_Detail_ViewModel result;
             if (IsToPDF)
             {
                 result = _FabricColorFastness_Service.ToReport(ID, true);
+                string filename = result.reportPath;
+                byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filename));
+
+                // 設置回應為文件下載
+                return File(fileBytes, "application/pdf", filename);
             }
             else
             {
                 result = _FabricColorFastness_Service.ToReport(ID, false);
+                string filename = result.reportPath;
+                byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filename));
+
+                // 設置回應為文件下載
+                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
             }
 
-            string FileName = result.reportPath;
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-            return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
         public JsonResult SendMail(string POID, string ID, string TestNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)

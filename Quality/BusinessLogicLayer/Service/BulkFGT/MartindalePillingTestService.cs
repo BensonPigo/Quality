@@ -575,8 +575,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     workbook.SaveAs(fullExcelFileName);
                     if (isPDF)
                     {
-                        LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                        officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                        //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                        //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                        ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
                         result.TempFileName = filePdfName;
                     }
                     else

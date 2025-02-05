@@ -972,8 +972,9 @@ namespace BusinessLogicLayer.Service
                 #endregion
 
                 // To PDF
-                LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
 
                 result.Result = true;
 

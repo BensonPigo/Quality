@@ -10,6 +10,7 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -274,13 +275,11 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             Report_Result report_Result = _MockupWashService.GetPDF(model);
-            string tempFilePath = report_Result.TempFileName;
-            tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
-            if (!report_Result.Result)
-            {
-                report_Result.ErrorMessage = report_Result.ErrorMessage.ToString();
-            }
-            return Json(new { Result = report_Result.Result, ErrorMessage = report_Result.ErrorMessage, reportPath = tempFilePath, FileName = report_Result.TempFileName });
+            string filename = report_Result.TempFileName;
+            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filename));
+
+            // 設置回應為文件下載
+            return File(fileBytes, "application/pdf", filename);
         }
 
         [HttpPost]

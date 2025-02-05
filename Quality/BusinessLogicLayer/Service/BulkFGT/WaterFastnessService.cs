@@ -357,7 +357,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         $"{dtResult.Rows[0]["Result"]}_" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-                BaseResult baseResult = ToReport(ID, out string PDFFileName, true, isTest, name);
+                BaseResult baseResult = ToReport(ID, out string PDFFileName, true, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", PDFFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
@@ -413,7 +413,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
             }
         }
-        public BaseResult ToReport(string ID, out string FileName, bool isPDF, bool isTest = false, string AssignedFineName = "")
+        public BaseResult ToReport(string ID, out string FileName, bool isPDF, string AssignedFineName = "")
         {
             BaseResult result = new BaseResult();
             _WaterFastnessProvider = new WaterFastnessProvider(Common.ProductionDataAccessLayer);
@@ -443,9 +443,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 if (!string.IsNullOrWhiteSpace(AssignedFineName)) tmpName = AssignedFineName;
 
                 string baseFileName = "WaterFastness_ToExcel";
-                string baseFilePath = isTest
-                    ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XLT", $"{baseFileName}.xltx")
-                    : Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "XLT", $"{baseFileName}.xltx");
+                string baseFilePath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "XLT", $"{baseFileName}.xltx");
 
                 string outputDirectory = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP");
                 string filePath = Path.Combine(outputDirectory, $"{tmpName}.xlsx");
@@ -537,8 +535,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // PDF 轉換
                 if (isPDF)
                 {
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    //officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    ConvertToPDF.ExcelToPDF(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", pdfPath));
                     FileName = Path.GetFileName(pdfPath);
                 }
                 else

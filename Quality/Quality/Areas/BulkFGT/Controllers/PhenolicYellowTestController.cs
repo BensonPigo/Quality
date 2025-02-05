@@ -7,6 +7,7 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -277,15 +278,11 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             PhenolicYellowTest_ViewModel result = _Service.GetReport(ReportNo, false);
 
-            if (!result.Result)
-            {
-                result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
-                return Json(new { result.Result, ErrMsg = result.ErrorMessage });
-            }
+            string filename = result.TempFileName;
+            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", result.TempFileName));
 
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
-
-            return Json(new { result.Result, result.ErrorMessage, reportPath });
+            // 設置回應為文件下載
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", filename);
         }
         [HttpPost]
         [SessionAuthorizeAttribute]
@@ -293,15 +290,11 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             PhenolicYellowTest_ViewModel result = _Service.GetReport(ReportNo, true);
 
-            if (!result.Result)
-            {
-                result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
-                return Json(new { result.Result, ErrMsg = result.ErrorMessage });
-            }
+            string filename = result.TempFileName;
+            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", result.TempFileName));
 
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
-
-            return Json(new { result.Result, result.ErrorMessage, reportPath });
+            // 設置回應為文件下載
+            return File(fileBytes, "application/pdf", filename);
         }
         //public JsonResult SendMail(string ReportNo)
         //{

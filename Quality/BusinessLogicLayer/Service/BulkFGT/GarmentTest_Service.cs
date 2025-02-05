@@ -21,6 +21,8 @@ using System.Web;
 using ClosedXML.Excel;
 using ADOHelper.Template.MSSQL;
 using DocumentFormat.OpenXml.Wordprocessing;
+using ClosedXML.Excel.Drawings;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -2032,7 +2034,7 @@ and t.GarmentTest=1
 
                                     if (all_Data.Detail.TestAfterPicture != null)
                                     {
-                                        this.AddImageToWorksheet(worksheet, all_Data.Detail.TestBeforePicture, 94, 7, 328, 247);
+                                        this.AddImageToWorksheet(worksheet, all_Data.Detail.TestAfterPicture, 94, 7, 328, 247);
                                     }
                                     #endregion
 
@@ -2794,7 +2796,7 @@ and t.GarmentTest=1
 
                                 #region Title
                                 // 1. 複製第 1列
-                                var rowToCopy1 = worksheet.Row(2);
+                                //var rowToCopy1 = worksheet.Row(2);
 
                                 // 2. 插入一列，將第 8 和第 9 列之間騰出空間
                                 worksheet.Row(1).InsertRowsAbove(1);
@@ -2836,11 +2838,9 @@ and t.GarmentTest=1
                                 workbook.SaveAs(filepath_2018);
                                 if (isToPDF)
                                 {
-                                    //ConvertToPDF.ExcelToPDF(filepath_2018, filepathpdf_2018);
-
-                                    LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                                    s.ConvertExcelToPdf(filepath_2018, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                                    //);
+                                    //LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                                    //s.ConvertExcelToPdf(filepath_2018, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                                    ConvertToPDF.ExcelToPDF(filepath_2018, filepathpdf_2018);
                                     dicRt["reportPath"] = fileNamePDF_2018;
                                     dicRt["reportFileFullPath"] = filepathpdf_2018;
                                 }
@@ -3060,9 +3060,9 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest = 1";
                                 workbook.SaveAs(excelPath);
                                 if (isToPDF)
                                 {
-                                    //ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
-                                    LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                                    s.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                                    //LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                                    //s.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                                    ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
                                     dicRt["reportPath"] = $"{sanitizedTypeName}.pdf";
                                     dicRt["reportFileFullPath"] = pdfPath;
                                 }
@@ -3333,8 +3333,9 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest=1";
 
                                 if (isToPDF)
                                 {
-                                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                                    officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                                    //officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                                    ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
 
                                     dicRt["reportPath"] = $"{sanitizedTypeName}.pdf";
                                     dicRt["reportFileFullPath"] = pdfPath;

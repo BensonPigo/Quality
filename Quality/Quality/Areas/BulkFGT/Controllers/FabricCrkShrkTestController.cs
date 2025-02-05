@@ -7,6 +7,7 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -275,13 +276,24 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult Report_Crocking(long ID, bool IsToPDF)
+        public ActionResult Report_Crocking(long ID, bool IsToPDF)
         {
             BaseResult result;
             string FileName;
             result = _FabricCrkShrkTest_Service.ToReport_Crocking(ID, IsToPDF, out FileName);
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-            return Json(new { result.Result, result.ErrorMessage, reportPath });
+
+            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
+
+            if (IsToPDF)
+            {
+                // 設置回應為文件下載
+                return File(fileBytes, "application/pdf", FileName);
+            }
+            else
+            {
+                // 設置回應為文件下載
+                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n", FileName);
+            }
         }
 
         [HttpPost]
@@ -465,12 +477,23 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult Report_Heat(long ID, bool IsToPDF)
+        public ActionResult Report_Heat(long ID, bool IsToPDF)
         {
             BaseResult result;
             result = _FabricCrkShrkTest_Service.ToReport_Heat(ID, IsToPDF, out string FileName);
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-            return Json(new { result.Result, result.ErrorMessage, reportPath });
+
+            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
+
+            if (IsToPDF)
+            {
+                // 設置回應為文件下載
+                return File(fileBytes, "application/pdf", FileName);
+            }
+            else
+            {
+                // 設置回應為文件下載
+                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", FileName);
+            }
         }
 
         [HttpPost]
@@ -660,12 +683,23 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult Report_Iron(long ID, bool IsToPDF)
+        public ActionResult Report_Iron(long ID, bool IsToPDF)
         {
             BaseResult result;
             result = _FabricCrkShrkTest_Service.ToReport_Iron(ID, IsToPDF, out string FileName);
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-            return Json(new { result.Result, result.ErrorMessage, reportPath });
+
+            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
+
+            if (IsToPDF)
+            {
+                // 設置回應為文件下載
+                return File(fileBytes, "application/pdf", FileName);
+            }
+            else
+            {
+                // 設置回應為文件下載
+                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n", FileName);
+            }
         }
 
         [HttpPost]
@@ -866,12 +900,23 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult Report_Wash(long ID, bool IsToPDF)
+        public ActionResult Report_Wash(long ID, bool IsToPDF)
         {
             BaseResult result;
             result = _FabricCrkShrkTest_Service.ToReport_Wash(ID, IsToPDF, out string FileName);
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
-            return Json(new { result.Result, result.ErrorMessage, reportPath });
+
+            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
+
+            if (IsToPDF)
+            {
+                // 設置回應為文件下載
+                return File(fileBytes, "application/pdf", FileName);
+            }
+            else
+            {
+                // 設置回應為文件下載
+                return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\r\n", FileName);
+            }
         }
 
         [HttpPost]

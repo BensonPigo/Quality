@@ -389,14 +389,11 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             Report_Result report_Result = Service.GetPDF(ReportNo);
-            string tempFilePath = report_Result.TempFileName;
-            tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
-            if (!report_Result.Result)
-            {
-                report_Result.ErrorMessage = report_Result.ErrorMessage.ToString();
-            }
+            string filename = report_Result.TempFileName;
+            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filename));
 
-            return Json(new { report_Result.Result, report_Result.ErrorMessage, reportPath = tempFilePath, FileName = report_Result.TempFileName });
+            // 設置回應為文件下載
+            return File(fileBytes, "application/pdf", filename);
         }
     }
 }

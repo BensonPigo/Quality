@@ -257,23 +257,17 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult ToPDF(MockupCrocking_Request mockupCrocking_Request)
+        public ActionResult ToPDF(MockupCrocking_Request mockupCrocking_Request)
         {
             this.CheckSession();
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(mockupCrocking_Request);
-            if (mockupCrocking_ViewModel == null)
-            {
-                return Json(new { Result = false, ErrorMessage = @"msg.WithInfo(""No Data Found"");" });
-            }
-
             Report_Result report_Result = _MockupCrockingService.GetPDF(mockupCrocking_ViewModel);
-            string tempFilePath = report_Result.TempFileName;
-            tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
-            if (!report_Result.Result)
-            {
-                report_Result.ErrorMessage = report_Result.ErrorMessage.ToString();
-            }
-            return Json(new { Result = report_Result.Result, ErrorMessage = report_Result.ErrorMessage, reportPath = tempFilePath, FileName = report_Result.TempFileName });
+
+            string FileName = report_Result.TempFileName;
+            byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
+
+            // 設置回應為文件下載
+            return File(fileBytes, "application/pdf", FileName);
         }
 
         [HttpPost]

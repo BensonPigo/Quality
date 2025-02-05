@@ -1057,8 +1057,9 @@ namespace BusinessLogicLayer.Service
 
             if (IsPDF)
             {
-                LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                ConvertToPDF.ExcelToPDF(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/TMP/"), fileNamePDF));
                 excelFileName = fileNamePDF;
             }
 
@@ -1106,22 +1107,6 @@ namespace BusinessLogicLayer.Service
         }
 
         // 儲存報表
-        private string SaveReport(XLWorkbook workbook, string tmpName, bool IsPDF, out string excelFileName)
-        {
-            string basePath = System.Web.HttpContext.Current.Server.MapPath("~/TMP/");
-            string filepath = Path.Combine(basePath, tmpName + ".xlsx");
-            workbook.SaveAs(filepath);
-            excelFileName = tmpName + ".xlsx";
-
-            if (IsPDF)
-            {
-                LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                officeService.ConvertExcelToPdf(filepath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                excelFileName = tmpName + ".pdf";
-            }
-            return filepath;
-        }
-
         public BaseResult ToReport_Heat(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "")
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
@@ -1299,8 +1284,9 @@ namespace BusinessLogicLayer.Service
                 // 如果需要轉換 PDF
                 if (IsPDF)
                 {
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    //officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    ConvertToPDF.ExcelToPDF(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
                     excelFileName = $"{tmpName}.pdf";
                 }
             }
@@ -1454,8 +1440,9 @@ namespace BusinessLogicLayer.Service
 
                 if (IsPDF)
                 {
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    //officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    ConvertToPDF.ExcelToPDF(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
                     excelFileName = $"{tmpName}.pdf";
                 }
                 result.Result = true;
@@ -1643,8 +1630,9 @@ namespace BusinessLogicLayer.Service
 
                 if (IsPDF)
                 {
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    //officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    ConvertToPDF.ExcelToPDF(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
 
                     excelFileName = $"{tmpName}.pdf";
                 }
