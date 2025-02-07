@@ -168,6 +168,15 @@ namespace BusinessLogicLayer.Service
 
             try
             {
+                _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
+                _InspectionTypeProvider = new InspectionTypeProvider(Common.ProductionDataAccessLayer);
+                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                var testCode = _QualityBrandTestCodeProvider.Get(mockupOven.BrandID, "Mockup Oven Test");
+                
+                List<InspectionType> InspectionTypes = _InspectionTypeProvider.Get_InspectionType("MockupOven", "Bulk", mockupOven.BrandID).ToList();
+                mockupOven.Requirements = InspectionTypes.Select(x => x.Comment).ToList();
+
                 string basePath = IsTest.ToLower() == "true" ? AppDomain.CurrentDomain.BaseDirectory : System.Web.HttpContext.Current.Server.MapPath("~/");
                 bool isHeatTransfer = mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER");
                 int haveHTrow = isHeatTransfer ? 6 : 0;
@@ -234,6 +243,7 @@ namespace BusinessLogicLayer.Service
                             rowToCopy.CopyTo(newRow);
                         }
 
+                        worksheet.Cell(startRow, 12).Value = mockupOven.Requirements.JoinToString(Environment.NewLine);
                         foreach (var item in mockupOven.MockupOven_Detail)
                         {
                             string fabric = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : item.FabricRefNo + " - " + item.FabricColorName;
