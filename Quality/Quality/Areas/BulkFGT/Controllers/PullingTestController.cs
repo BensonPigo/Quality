@@ -389,6 +389,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             Report_Result report_Result = Service.GetPDF(ReportNo);
+
             string filename = report_Result.TempFileName;
             byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filename));
 

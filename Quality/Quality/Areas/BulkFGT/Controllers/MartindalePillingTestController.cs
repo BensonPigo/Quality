@@ -349,22 +349,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             return File(fileBytes, "application/pdf", filename);
         }
 
-        //public JsonResult SendMailToMR(string ReportNo)
-        //{
-        //    this.CheckSession();
-        //    MartindalePillingTest_ViewModel result = _Service.GetReport(ReportNo, true);
-
-        //    if (!result.Result)
-        //    {
-        //        result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
-        //        return Json(new { result.Result, ErrMsg = result.ErrorMessage });
-        //    }
-
-        //    string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
-
-        //    return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, FileName = result.TempFileName });
-        //}
-
         [HttpPost]
         [SessionAuthorizeAttribute]
         public JsonResult SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)

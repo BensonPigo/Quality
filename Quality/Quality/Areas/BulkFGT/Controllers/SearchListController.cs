@@ -145,7 +145,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             if (result.Result)
             {
-                result.TempFileName = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
+                result.TempFileName = "/TMP/" + result.TempFileName;
                 return Json(new { result.Result, result.ErrorMessage, result.TempFileName });
             }
             else

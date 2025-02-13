@@ -167,6 +167,15 @@ namespace BusinessLogicLayer.Service
 
             try
             {
+                _MockupWashProvider = new MockupWashProvider(Common.ProductionDataAccessLayer);
+                _InspectionTypeProvider = new InspectionTypeProvider(Common.ProductionDataAccessLayer);
+                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                var testCode = _QualityBrandTestCodeProvider.Get(mockupWash.BrandID, "Mockup Wash Test");
+
+                List<InspectionType> InspectionTypes = _InspectionTypeProvider.Get_InspectionType("MockupWash", "Bulk", mockupWash.BrandID).ToList();
+                mockupWash.Requirements = InspectionTypes.Select(x => x.Comment).ToList();
+
                 string basePath = test ? AppDomain.CurrentDomain.BaseDirectory : System.Web.HttpContext.Current.Server.MapPath("~/");
 
                 string xltPath = Path.Combine(basePath, "XLT", mockupWash.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER") ? "MockupWash2.xltx" : "MockupWash.xltx");
@@ -233,6 +242,7 @@ namespace BusinessLogicLayer.Service
                             rowToCopy.CopyTo(newRow);
                         }
 
+                        worksheet.Cell(startRow, 8).Value = mockupWash.Requirements.JoinToString(Environment.NewLine);
                         foreach (var item in mockupWash.MockupWash_Detail)
                         {
                             string fabric = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : item.FabricRefNo + " - " + item.FabricColorName;

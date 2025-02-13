@@ -54,7 +54,7 @@ namespace Quality.Areas.StyleManagement.Controllers
                     // 2. 取得hotst name，串成下載URL ，傳到準備前端下載
                     // URL範例：https://misap:1880/TMP/CFT Comments20210826f7f4ad14-186f-451a-9bc1-6edbcaf6cd65.xlsx 
                     // (暫存檔檔名是CFT Comments20210826f7f4ad14-186f-451a-9bc1-6edbcaf6cd65.xlsx)
-                    string tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + fileMame;
+                    string tempFilePath = "/TMP/" + fileMame;
 
                     // 3. 前端下載方式：請參考Index.cshtml的 「window.location.href = '@download'」;
 

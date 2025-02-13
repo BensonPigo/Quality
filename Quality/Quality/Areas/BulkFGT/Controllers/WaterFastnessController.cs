@@ -388,7 +388,6 @@ namespace Quality.Areas.BulkFGT.Controllers
                 // 設置回應為文件下載
                 return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", FileName);
             }
-
         }
 
     }

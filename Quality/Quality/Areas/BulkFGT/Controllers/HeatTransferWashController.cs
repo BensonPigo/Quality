@@ -467,6 +467,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult Report(string ReportNo, bool IsToPDF)
         {
             BaseResult result = _Service.ToReport(ReportNo, IsToPDF, out string FileName);
+
             byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", FileName));
             if (IsToPDF)
             {

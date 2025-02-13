@@ -328,7 +328,6 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             SalivaFastnessTest_ViewModel result = _Service.GetReport(ReportNo, true);
 
-
             string filename = result.TempFileName;
             byte[] fileBytes = System.IO.File.ReadAllBytes(Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", result.TempFileName));
 
