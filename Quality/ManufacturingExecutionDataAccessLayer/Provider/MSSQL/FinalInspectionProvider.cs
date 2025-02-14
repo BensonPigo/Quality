@@ -2769,16 +2769,38 @@ where oc.ID in (select POID from Production.dbo.Orders with (nolock)
 				where id in (select OrderID 
 							 from FinalInspection_Order with (nolock) where ID = @ID))
 
-SELECT	oqd.Article,
-		oqd.SizeCode,
-		[ShipQty] = sum(oqd.Qty)
-		,SeqNumber = qb.LineItem
-from FinalInspection_Order_QtyShip foq　 with (nolock)
-inner join Production.dbo.Order_QtyShip_Detail oqd ON foq.OrderID = oqd.ID and foq.Seq = oqd.Seq
-inner join FinalInspection_Order_Breakdown qb on qb.FinalInspectionID = foq.Id and qb.Article = oqd.Article and qb.SizeCode = oqd.SizeCode
-where foq.ID = @ID and qb.Junk = 0
-group by oqd.Article ,oqd.SizeCode ,qb.LineItem
-order by qb.LineItem
+WITH cte AS (
+	select
+        RowID = ROW_NUMBER() OVER (ORDER BY oqd.Article,oqd.SizeCode) ,  -- 想依什麼欄位排序，就放在 ORDER BY 裡
+        oqd.Article,
+        oqd.SizeCode,
+		oqd.Qty,
+		 SeqNumber= qb.LineItem
+		from FinalInspection_Order fo
+		inner join FinalInspection_Order_QtyShip foq on foq.ID=fo.ID
+		inner join Production.dbo.Order_QtyShip_Detail oqd  ON fo.OrderID = oqd.ID  and foq.OrderID = oqd.Id and foq.Seq = oqd.Seq
+		left join FinalInspection_Order_Breakdown qb on qb.FinalInspectionID = foq.Id and qb.Article = oqd.Article and qb.SizeCode = oqd.SizeCode
+	where fo.ID = @ID
+),
+cteNulls AS (
+    -- 只挑出 SeqNumber = NULL 的部分，再用 ROW_NUMBER() 幫它做連續編號
+	select
+        c.RowID,
+        NewSeqNumber = ROW_NUMBER() OVER (ORDER BY c.RowID) * 10
+	from cte c
+    WHERE c.SeqNumber IS NULL
+)
+
+SELECT
+    c.Article,
+    c.SizeCode,
+	[ShipQty] = sum(c.Qty),
+    SeqNumber = COALESCE(c.SeqNumber, n.NewSeqNumber)
+FROM cte c
+LEFT JOIN cteNulls n
+    ON c.RowID = n.RowID
+group by c.Article ,c.SizeCode ,COALESCE(c.SeqNumber, n.NewSeqNumber)
+
 
 select	s.StyleName,
 		o.FactoryID,
