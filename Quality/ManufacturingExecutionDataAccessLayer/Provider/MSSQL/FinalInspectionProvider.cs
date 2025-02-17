@@ -2769,7 +2769,7 @@ where oc.ID in (select POID from Production.dbo.Orders with (nolock)
 				where id in (select OrderID 
 							 from FinalInspection_Order with (nolock) where ID = @ID))
 
-WITH cte AS (
+;WITH cte AS (
 	select
         RowID = ROW_NUMBER() OVER (ORDER BY oqd.Article,oqd.SizeCode) ,  -- 想依什麼欄位排序，就放在 ORDER BY 裡
         oqd.Article,
