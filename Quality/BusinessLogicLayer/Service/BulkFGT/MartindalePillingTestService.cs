@@ -463,7 +463,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     if (testCode.Any())
                     {
-                        worksheet.Cell(1, 1).Value = $"T-Peel Strength Test ({testCode.FirstOrDefault().TestCode})";
+                        worksheet.Cell(1, 1).Value = $"Martindale Pilling Test ({testCode.FirstOrDefault().TestCode})";
                     }
 
                     worksheet.Cell(3, 2).Value = model.Main.ReportNo;
@@ -545,12 +545,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     #region Title
                     string FactoryNameEN = _Provider.GetFactoryNameEN(ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
                     // 1. 插入一列
-                    worksheet.Row(2).InsertRowsAbove(1);
+                    worksheet.Row(1).InsertRowsAbove(1);
 
                     // 2. 合併欄位
-                    worksheet.Range("A2:I2").Merge();
+                    worksheet.Range("A1:I1").Merge();
                     // 設置字體樣式
-                    var mergedCell = worksheet.Cell("A2");
+                    var mergedCell = worksheet.Cell("A1");
                     mergedCell.Value = FactoryNameEN;
                     mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
                     mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25

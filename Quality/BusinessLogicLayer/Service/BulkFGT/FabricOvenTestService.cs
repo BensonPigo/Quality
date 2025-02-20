@@ -665,6 +665,25 @@ namespace BusinessLogicLayer.Service
                         }
                     }
 
+
+                    #region Title
+
+                    string FactoryNameEN = _FabricOvenTestProvider.GetFactoryNameEN(poID, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 插入一列
+                    worksheet.Row(1).InsertRowsAbove(1);
+                    // 2. 合併欄位 (A1:K1)
+                    worksheet.Range("A1:K1").Merge();
+
+                    // 3. 設置文字和樣式
+                    var mergedCell = worksheet.Cell("A1");
+                    mergedCell.Value = FactoryNameEN; // 替換為你的 FactoryNameEN 變數
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    #endregion
+
                     // 自動調整欄寬
                     worksheet.Columns().AdjustToContents();
 

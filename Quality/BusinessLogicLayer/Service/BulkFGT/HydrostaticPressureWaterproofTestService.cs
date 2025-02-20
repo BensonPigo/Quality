@@ -793,7 +793,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Row(1).InsertRowsAbove(1);
 
                     // 2. 合併欄位
-                    worksheet.Range("A1:I1").Merge();
+                    worksheet.Range("A1:F1").Merge();
                     // 設置字體樣式
                     var mergedCell = worksheet.Cell("A1");
                     mergedCell.Value = FactoryNameEN;

@@ -487,12 +487,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     #region Title
                     string FactoryNameEN = _Provider.GetFactoryNameEN(ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
                     // 1. 插入一列
-                    worksheet.Row(3).InsertRowsAbove(1);
+                    worksheet.Row(2).InsertRowsAbove(1);
 
                     // 2. 合併欄位
-                    worksheet.Range("A3:I3").Merge();
+                    worksheet.Range("A2:I2").Merge();
                     // 設置字體樣式
-                    var mergedCell = worksheet.Cell("A3");
+                    var mergedCell = worksheet.Cell("A2");
                     mergedCell.Value = FactoryNameEN;
                     mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
                     mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25

@@ -304,8 +304,12 @@ namespace BusinessLogicLayer.Service
                     worksheet.Row(2).InsertRowsAbove(1);
 
                     // 2. 合併欄位
-                    worksheet.Range("A1:H1").Merge();
-                    worksheet.Range("A2:H2").Merge();
+                    worksheet.Range("A1:N1").Merge();
+                    worksheet.Range("A2:N2").Merge();
+                    // 先移除邊框
+                    var lastRow = worksheet.CellsUsed().Max(cell => cell.Address.RowNumber);
+                    var range = worksheet.Range($"A1:N1");
+                    range.Style.Border.OutsideBorder = XLBorderStyleValues.None;
                     // 設置字體樣式
                     var mergedCell = worksheet.Cell("A2");
                     mergedCell.Value = FactoryNameEN;

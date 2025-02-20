@@ -501,8 +501,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     #region Title
                     string FactoryNameEN = _Provider.GetFactoryNameEN(ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                   
                     // 1. 插入一列
                     worksheet.Row(1).InsertRowsAbove(1);
+                    worksheet.Row(1).Height = 35;
 
                     // 2. 合併欄位
                     worksheet.Range("A1:I1").Merge();
