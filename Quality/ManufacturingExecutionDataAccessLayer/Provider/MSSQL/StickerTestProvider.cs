@@ -17,6 +17,11 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
     public class StickerTestProvider : SQLDAL
     {
+        #region 底層連線
+        public StickerTestProvider(string ConString) : base(ConString) { }
+        public StickerTestProvider(SQLDataTransaction tra) : base(tra) { }
+        #endregion
+
         public string GetFactoryNameEN(string ReportNo, string FactoryID)
         {
             string factoryNameEN = string.Empty;
@@ -43,12 +48,6 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             factoryNameEN = dt.Rows[0]["NameEN"].ToString();
             return factoryNameEN;
         }
-        #region 底層連線
-        public StickerTestProvider(string ConString) : base(ConString) { }
-        public StickerTestProvider(SQLDataTransaction tra) : base(tra) { }
-        #endregion
-
-
         public List<StickerTestItem> GetTestItems()
         {
             string sqlcmd = $@"select * from StickerTestItem";

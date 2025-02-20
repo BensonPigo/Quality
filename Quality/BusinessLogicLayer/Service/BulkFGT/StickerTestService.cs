@@ -497,6 +497,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // 取得報表資料
                 _Provider = new StickerTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 StickerTest_ViewModel model = this.GetData(new StickerTest_Request { ReportNo = ReportNo });
+                _Provider = new StickerTestProvider(Common.ManufacturingExecutionDataAccessLayer);
                 model.Item_Source = _Provider.GetTestItems();
                 DataTable reportTechnician = _Provider.GetReportTechnician(new StickerTest_Request { ReportNo = ReportNo });
 
@@ -593,36 +594,36 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         }
                         detailIdx += 3; // 每組資料間隔
                     }
-                    //#region Title
-                    //string FactoryNameEN = _Provider.GetFactoryNameEN(ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
-                    //// 1. 插入一列
-                    //worksheet.Row(2).InsertRowsAbove(1);
+                    #region Title
+                    string FactoryNameEN = _Provider.GetFactoryNameEN(ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 插入一列
+                    worksheet.Row(1).InsertRowsAbove(1);
 
-                    //// 2. 合併欄位
-                    //worksheet.Range("A2:J2").Merge();
-                    //// 設置字體樣式
-                    //var mergedCell = worksheet.Cell("A2");
-                    //mergedCell.Value = FactoryNameEN;
-                    //mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
-                    //mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
-                    //mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                    //mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-                    //mergedCell.Style.Font.Bold = true;
-                    //mergedCell.Style.Font.Italic = false;
+                    // 2. 合併欄位
+                    worksheet.Range("A1:J1").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("A1");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    mergedCell.Style.Font.Italic = false;
 
-                    //// 自動檢測使用範圍
-                    //var usedRange = worksheet.RangeUsed();
-                    //var lastRow = worksheet.CellsUsed().Max(cell => cell.Address.RowNumber);
-                    //// 確認範圍不為空
-                    //if (usedRange != null)
-                    //{
-                    //    // 清除所有已有的列印範圍
-                    //    worksheet.PageSetup.PrintAreas.Clear();
+                    // 自動檢測使用範圍
+                    var usedRange = worksheet.RangeUsed();
+                    var lastRow = worksheet.CellsUsed().Max(cell => cell.Address.RowNumber);
+                    // 確認範圍不為空
+                    if (usedRange != null)
+                    {
+                        // 清除所有已有的列印範圍
+                        worksheet.PageSetup.PrintAreas.Clear();
 
-                    //    // 設定列印範圍為使用範圍
-                    //    worksheet.PageSetup.PrintAreas.Add($"A1:J{lastRow + 10}");
-                    //}
-                    //#endregion
+                        // 設定列印範圍為使用範圍
+                        worksheet.PageSetup.PrintAreas.Add($"A1:J{lastRow + 10}");
+                    }
+                    #endregion
                     // 儲存 Excel 檔案
                     workbook.SaveAs(filePath);
                 }
