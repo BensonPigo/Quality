@@ -287,7 +287,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 result = _FabricOvenTestService.ToExcelFabricOvenTestDetail(ID, No, out FileName, false);
             }
 
-            string reportPath = "/TMP/" + FileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 

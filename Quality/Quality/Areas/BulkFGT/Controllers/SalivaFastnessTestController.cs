@@ -321,7 +321,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 return Json(new { result.Result, ErrMsg = result.ErrorMessage });
             }
 
-            string reportPath = "/TMP/" + result.TempFileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(result.TempFileName);
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
@@ -337,7 +337,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 return Json(new { result.Result, ErrMsg = result.ErrorMessage });
             }
 
-            string reportPath = "/TMP/" + result.TempFileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(result.TempFileName);
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
