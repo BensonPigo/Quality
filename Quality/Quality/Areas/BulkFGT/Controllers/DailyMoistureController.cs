@@ -467,7 +467,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 result = _Service.ToReport(ReportNo, IsToPDF, out FileName);
             }
 
-            string reportPath = "/TMP/" + FileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
