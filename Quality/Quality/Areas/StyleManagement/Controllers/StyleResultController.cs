@@ -239,7 +239,7 @@ namespace Quality.Areas.StyleManagement.Controllers
             {
                 using (WebClient wc = new WebClient())
                 {
-                    string reportPath = "/TMP/" + result.reportPath;
+                    string reportPath = "/TMP/" + Uri.EscapeDataString(result.reportPath);
                     byte[] b = wc.DownloadData(reportPath);
                     Response.Clear();
                     Response.AddHeader("Content-Disposition", "attachment;filename=" + result.reportPath);
