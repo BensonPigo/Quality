@@ -640,15 +640,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 result.TempFileName = $"{tmpName}.xlsx";
                 result.Result = true;
 
-                // PDF 轉換
-                if (isPDF)
-                {
-                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    //officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    ConvertToPDF.ExcelToPDF(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
+                //// PDF 轉換
+                //if (isPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
 
-                    result.TempFileName = $"{tmpName}.pdf";
-                }
+                //    result.TempFileName = $"{tmpName}.pdf";
+                //}
             }
             catch (Exception ex)
             {

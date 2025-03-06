@@ -1055,13 +1055,13 @@ namespace BusinessLogicLayer.Service
             workbook.SaveAs(outputPath);
             excelFileName = filexlsx;
 
-            if (IsPDF)
-            {
-                //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                //officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                ConvertToPDF.ExcelToPDF(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/TMP/"), fileNamePDF));
-                excelFileName = fileNamePDF;
-            }
+            //if (IsPDF)
+            //{
+            //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+            //    //officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+            //    ConvertToPDF.ExcelToPDF(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/TMP/"), fileNamePDF));
+            //    excelFileName = fileNamePDF;
+            //}
 
             result.Result = true;
             return result;
@@ -1281,14 +1281,14 @@ namespace BusinessLogicLayer.Service
 
                 result.Result = true;
 
-                // 如果需要轉換 PDF
-                if (IsPDF)
-                {
-                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    //officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    ConvertToPDF.ExcelToPDF(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
-                    excelFileName = $"{tmpName}.pdf";
-                }
+                //// 如果需要轉換 PDF
+                //if (IsPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
+                //    excelFileName = $"{tmpName}.pdf";
+                //}
             }
             catch (Exception ex)
             {
@@ -1438,13 +1438,13 @@ namespace BusinessLogicLayer.Service
                     excelFileName = $"{tmpName}.xlsx";
                 }
 
-                if (IsPDF)
-                {
-                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    //officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    ConvertToPDF.ExcelToPDF(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
-                    excelFileName = $"{tmpName}.pdf";
-                }
+                //if (IsPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
+                //    excelFileName = $"{tmpName}.pdf";
+                //}
                 result.Result = true;
             }
             catch (Exception ex)
@@ -1628,14 +1628,14 @@ namespace BusinessLogicLayer.Service
                     excelFileName = $"{tmpName}.xlsx";
                 }
 
-                if (IsPDF)
-                {
-                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    //officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    ConvertToPDF.ExcelToPDF(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/TMP/"), $"{tmpName}.pdf"));
+                //if (IsPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/TMP/"), $"{tmpName}.pdf"));
 
-                    excelFileName = $"{tmpName}.pdf";
-                }
+                //    excelFileName = $"{tmpName}.pdf";
+                //}
                 result.Result = true;              
             }
             catch (Exception ex)

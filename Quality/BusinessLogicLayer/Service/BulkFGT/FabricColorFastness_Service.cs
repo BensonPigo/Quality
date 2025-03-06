@@ -608,18 +608,19 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet4.Delete();
                     #endregion
                     workbook.SaveAs(excelPath);
+                    result.reportPath = excelFileName;
 
-                    if (IsPDF)
-                    {
-                        //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                        //officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                        ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
-                        result.reportPath = pdfFileName;
-                    }
-                    else
-                    {
-                        result.reportPath = excelFileName;
-                    }
+                    //if (IsPDF)
+                    //{
+                    //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    //    //officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    //    ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+                    //    result.reportPath = pdfFileName;
+                    //}
+                    //else
+                    //{
+                    //    result.reportPath = excelFileName;
+                    //}
 
                     result.Result = true;
                 }

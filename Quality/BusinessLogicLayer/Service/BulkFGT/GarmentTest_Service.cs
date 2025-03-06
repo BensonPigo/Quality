@@ -2836,20 +2836,17 @@ and t.GarmentTest=1
                                     + all_Data.Main.SeasonID.ToString() + "_" + all_Data.Main.StyleID.ToString() + "_" + all_Data.Main.Article.ToString();
                                 //Excel.Workbook workbook_2018 = objApp.ActiveWorkbook;
                                 workbook.SaveAs(filepath_2018);
-                                if (isToPDF)
-                                {
-                                    //LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                                    //s.ConvertExcelToPdf(filepath_2018, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                                    ConvertToPDF.ExcelToPDF(filepath_2018, filepathpdf_2018);
-                                    dicRt["reportPath"] = fileNamePDF_2018;
-                                    dicRt["reportFileFullPath"] = filepathpdf_2018;
-                                }
-                                else
-                                {
-                                    dicRt["reportPath"] = filexlsx_2018;
-                                    dicRt["reportFileFullPath"] = filepath_2018;
-                                }
+                                dicRt["reportPath"] = filexlsx_2018;
+                                dicRt["reportFileFullPath"] = filepath_2018;
 
+                                //if (isToPDF)
+                                //{
+                                //    //LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                                //    //s.ConvertExcelToPdf(filepath_2018, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                                //    ConvertToPDF.ExcelToPDF(filepath_2018, filepathpdf_2018);
+                                //    dicRt["reportPath"] = fileNamePDF_2018;
+                                //    dicRt["reportFileFullPath"] = filepathpdf_2018;
+                                //}
 
                                 dicRt["Result"] = "true";
 
@@ -3058,19 +3055,18 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest = 1";
                                 string pdfPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{sanitizedTypeName}.pdf");
 
                                 workbook.SaveAs(excelPath);
+                                dicRt["reportPath"] = $"{sanitizedTypeName}.xlsx";
+                                dicRt["reportFileFullPath"] = excelPath;
+
                                 if (isToPDF)
                                 {
                                     //LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
                                     //s.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                                    ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
-                                    dicRt["reportPath"] = $"{sanitizedTypeName}.pdf";
-                                    dicRt["reportFileFullPath"] = pdfPath;
+                                    //ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+                                    //dicRt["reportPath"] = $"{sanitizedTypeName}.pdf";
+                                    //dicRt["reportFileFullPath"] = pdfPath;
                                 }
-                                else
-                                {
-                                    dicRt["reportPath"] = $"{sanitizedTypeName}.xlsx";
-                                    dicRt["reportFileFullPath"] = excelPath;
-                                }
+
                                 dicRt["Result"] = "true";
                             }
                         }
@@ -3330,21 +3326,19 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest=1";
                                 string pdfPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{sanitizedTypeName}.pdf");
 
                                 workbook.SaveAs(excelPath);
+                                dicRt["reportPath"] = $"{sanitizedTypeName}.xlsx";
+                                dicRt["reportFileFullPath"] = excelPath;
 
-                                if (isToPDF)
-                                {
-                                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                                    //officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                                    ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+                                //if (isToPDF)
+                                //{
+                                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                                //    //officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                                //    ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
 
-                                    dicRt["reportPath"] = $"{sanitizedTypeName}.pdf";
-                                    dicRt["reportFileFullPath"] = pdfPath;
-                                }
-                                else
-                                {
-                                    dicRt["reportPath"] = $"{sanitizedTypeName}.xlsx";
-                                    dicRt["reportFileFullPath"] = excelPath;
-                                }
+                                //    dicRt["reportPath"] = $"{sanitizedTypeName}.pdf";
+                                //    dicRt["reportFileFullPath"] = pdfPath;
+                                //}
+
                                 dicRt["Result"] = "true";
                             }
                         }

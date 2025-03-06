@@ -374,8 +374,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // 轉 PDF
                 //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
                 //officeService.ConvertExcelToPdf(excelFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                ConvertToPDF.ExcelToPDF(excelFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
-                result.TempFileName = $"{tmpName}.pdf";
+                //ConvertToPDF.ExcelToPDF(excelFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
+                //result.TempFileName = $"{tmpName}.pdf";
+                result.TempFileName = $"{tmpName}.xlsx";
                 result.Result = true;
             }
             catch (Exception ex)

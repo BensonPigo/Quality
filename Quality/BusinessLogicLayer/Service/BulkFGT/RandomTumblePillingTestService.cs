@@ -583,19 +583,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     // 儲存 Excel 檔案
                     workbook.SaveAs(fullExcelFileName);
                 }
+                result.TempFileName = fileName;
 
-                // 轉換為 PDF（若需要）
-                if (isPDF)
-                {
-                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    ConvertToPDF.ExcelToPDF(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName));
-                    result.TempFileName = filePdfName;
-                }
-                else
-                {
-                    result.TempFileName = fileName;
-                }
+                //// 轉換為 PDF（若需要）
+                //if (isPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName));
+                //    result.TempFileName = filePdfName;
+                //}
 
                 result.Result = true;
             }

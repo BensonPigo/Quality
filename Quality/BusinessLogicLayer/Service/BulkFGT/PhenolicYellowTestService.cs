@@ -609,18 +609,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(workbook);
 
-                // 轉PDF再繼續進行以下
-                if (isPDF)
-                {
-                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
-                    result.TempFileName = filePdfName;
-                }
-                else
-                {
-                    result.TempFileName = fileName;
-                }
+                result.TempFileName = fileName;
+
+                //// 轉PDF再繼續進行以下
+                //if (isPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
+                //    result.TempFileName = filePdfName;
+                //}
+
                 result.Result = true;
             }
             catch (Exception ex)

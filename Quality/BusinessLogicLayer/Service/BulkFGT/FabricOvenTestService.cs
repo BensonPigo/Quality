@@ -980,6 +980,7 @@ namespace BusinessLogicLayer.Service
                 pdfFileName = $"{tmpName}.pdf";
                 string excelFileName = $"{tmpName}.xlsx";
 
+                pdfFileName = excelFileName; // 暫時只匯出excel
                 string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
                 string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
@@ -993,7 +994,7 @@ namespace BusinessLogicLayer.Service
                 // To PDF
                 //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
                 //officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+                //ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
 
                 result.Result = true;
 

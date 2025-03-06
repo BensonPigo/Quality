@@ -573,17 +573,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                     #endregion
                     workbook.SaveAs(fullExcelFileName);
-                    if (isPDF)
-                    {
-                        //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                        //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                        ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
-                        result.TempFileName = filePdfName;
-                    }
-                    else
-                    {
-                        result.TempFileName = fileName;
-                    }
+                    result.TempFileName = fileName;
+                    //if (isPDF)
+                    //{
+                    //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    //    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    //    ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
+                    //    result.TempFileName = filePdfName;
+                    //}
                 }
 
                 result.Result = true;

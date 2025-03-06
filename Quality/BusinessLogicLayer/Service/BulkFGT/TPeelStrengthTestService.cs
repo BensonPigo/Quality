@@ -568,19 +568,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     // 儲存 Excel 檔案
                     workbook.SaveAs(filePath);
                 }
+                result.TempFileName = $"{tmpName}.xlsx";
 
-                // 轉 PDF
-                if (isPDF)
-                {
-                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    //officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    ConvertToPDF.ExcelToPDF(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", pdfPath));
-                    result.TempFileName = $"{tmpName}.pdf";
-                }
-                else
-                {
-                    result.TempFileName = $"{tmpName}.xlsx";
-                }
+                //// 轉 PDF
+                //if (isPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", pdfPath));
+                //    result.TempFileName = $"{tmpName}.pdf";
+                //}
 
                 result.Result = true;
             }

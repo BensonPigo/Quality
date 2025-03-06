@@ -601,13 +601,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     FileName = $"{tmpName}.xlsx";
                     result.Result = true;
 
-                    if (isPDF)
-                    {
-                        //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                        //officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                        ConvertToPDF.ExcelToPDF(filePath, pdfPath);
-                        FileName = $"{tmpName}.pdf";
-                    }
+                    //if (isPDF)
+                    //{
+                    //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    //    //officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    //    ConvertToPDF.ExcelToPDF(filePath, pdfPath);
+                    //    FileName = $"{tmpName}.pdf";
+                    //}
                 }
             }
             catch (Exception ex)

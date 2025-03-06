@@ -665,19 +665,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 excel.Quit();
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(workbook);
+                result.TempFileName = fileName;
 
-                // 轉PDF再繼續進行以下
-                if (isPDF)
-                {
-                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
-                    result.TempFileName = filePdfName;
-                }
-                else
-                {
-                    result.TempFileName = fileName;
-                }
+                //// 轉PDF再繼續進行以下
+                //if (isPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
+                //    result.TempFileName = filePdfName;
+                //}
+
                 result.Result = true;
 
             }
@@ -818,17 +816,15 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
                     #endregion
                     workbook.SaveAs(fullExcelFileName);
-                    if (isPDF)
-                    {
-                        //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                        //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                        ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
-                        result.TempFileName = filePdfName;
-                    }
-                    else
-                    {
-                        result.TempFileName = fileName;
-                    }
+                    result.TempFileName = fileName;
+
+                    //if (isPDF)
+                    //{
+                    //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    //    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    //    ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
+                    //    result.TempFileName = filePdfName;
+                    //}
                 }
 
                 result.Result = true;

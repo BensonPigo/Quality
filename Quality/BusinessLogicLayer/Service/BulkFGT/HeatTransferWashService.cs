@@ -434,19 +434,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
                     workbook.SaveAs(fullExcelFileName);
+                    FinalFilenmae = fileName;
 
+                    //if (IsPDF)
+                    //{
+                    //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    //    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    //    ConvertToPDF.ExcelToPDF(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
+                    //    FinalFilenmae = $"{tmpName}.pdf";
+                    //}
 
-                    if (IsPDF)
-                    {
-                        //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                        //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                        ConvertToPDF.ExcelToPDF(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
-                        FinalFilenmae = $"{tmpName}.pdf";
-                    }
-                    else
-                    {
-                        FinalFilenmae = fileName;
-                    }
                     result.Result = true;
                 }
             }

@@ -314,8 +314,9 @@ namespace BusinessLogicLayer.Service
 
                     //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
                     //officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    ConvertToPDF.ExcelToPDF(filePath, pdfPath);
-                    result.TempFileName = $"{tmpName}.pdf";
+                    //ConvertToPDF.ExcelToPDF(filePath, pdfPath);
+                    //result.TempFileName = $"{tmpName}.pdf";
+                    result.TempFileName = tmpName + ".xlsx";
                     result.Result = true;
                 }
             }
