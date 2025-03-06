@@ -371,10 +371,10 @@ namespace Quality.Areas.BulkFGT.Controllers
         [SessionAuthorizeAttribute]
         public ActionResult Report(string ID, string No, bool IsToPDF)
         {
-            BaseResult result;
             string FileName;
-            result = _WaterFastnessService.ToReport(ID, out FileName, IsToPDF);
-            string reportPath = "/TMP/" + FileName;
+            BaseResult result  = _WaterFastnessService.ToReport(ID, out FileName, IsToPDF);
+
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 

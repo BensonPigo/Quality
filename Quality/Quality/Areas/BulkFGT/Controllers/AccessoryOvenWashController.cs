@@ -253,7 +253,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             result = _Service.OvenTestExcel(AIR_LaboratoryID, POID, Seq1, Seq2, IsToPDF, out FileName);
 
-            string reportPath = "/TMP/" + FileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
@@ -416,7 +416,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             result = _Service.WashTestExcel(AIR_LaboratoryID, POID, Seq1, Seq2, IsToPDF, out FileName);
 
-            string reportPath = "/TMP/" + FileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
@@ -579,7 +579,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             result = _Service.WashingFastnessExcel(AIR_LaboratoryID, POID, Seq1, Seq2, IsToPDF, out FileName);
 
-            string reportPath = "/TMP/" + FileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 

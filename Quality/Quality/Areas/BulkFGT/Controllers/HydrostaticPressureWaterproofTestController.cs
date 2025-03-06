@@ -219,8 +219,13 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             HydrostaticPressureWaterproofTest_ViewModel result = _Service.GetReport(ReportNo, false);
 
-            string FileName = result.TempFileName;
-            string reportPath = "/TMP/" + result.TempFileName;
+            if (!result.Result)
+            {
+                result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+            }
+
+            string reportPath = "/TMP/" + Uri.EscapeDataString(result.TempFileName);
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
@@ -231,8 +236,13 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             HydrostaticPressureWaterproofTest_ViewModel result = _Service.GetReport(ReportNo, true);
 
-            string FileName = result.TempFileName;
-            string reportPath = "/TMP/" + result.TempFileName;
+            if (!result.Result)
+            {
+                result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+            }
+
+            string reportPath = "/TMP/" + Uri.EscapeDataString(result.TempFileName);
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }

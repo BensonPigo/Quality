@@ -374,7 +374,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             Fabric_ColorFastness_Detail_ViewModel result;
             result = _FabricColorFastness_Service.ToReport(ID, IsToPDF);
             string FileName = result.reportPath;
-            string reportPath = "/TMP/" + FileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 

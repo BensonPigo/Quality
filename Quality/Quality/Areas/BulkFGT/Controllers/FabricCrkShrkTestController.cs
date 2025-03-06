@@ -281,7 +281,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             BaseResult result;
             string FileName;
             result = _FabricCrkShrkTest_Service.ToReport_Crocking(ID, IsToPDF, out FileName);
-            string reportPath = "/TMP/" + FileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
@@ -470,7 +470,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             BaseResult result;
             result = _FabricCrkShrkTest_Service.ToReport_Heat(ID, IsToPDF, out string FileName);
-            string reportPath = "/TMP/" + FileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
@@ -665,7 +665,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             BaseResult result;
             result = _FabricCrkShrkTest_Service.ToReport_Iron(ID, IsToPDF, out string FileName);
-            string reportPath = "/TMP/" + FileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
@@ -871,7 +871,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             BaseResult result;
             result = _FabricCrkShrkTest_Service.ToReport_Wash(ID, IsToPDF, out string FileName);
-            string reportPath = "/TMP/" + FileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 

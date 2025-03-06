@@ -200,7 +200,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 return Json(new { result.Result, ErrMsg = result.ErrorMessage });
             }
 
-            string reportPath = "/TMP/" + result.TempFileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(result.TempFileName);
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
@@ -211,7 +211,13 @@ namespace Quality.Areas.BulkFGT.Controllers
         {
             WaterAbsorbency_ViewModel result = _Service.GetReport(ReportNo, true);
 
-            string reportPath = "/TMP/" + result.TempFileName;
+            if (!result.Result)
+            {
+                result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
+                return Json(new { result.Result, ErrMsg = result.ErrorMessage });
+            }
+
+            string reportPath = "/TMP/" + Uri.EscapeDataString(result.TempFileName);
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
