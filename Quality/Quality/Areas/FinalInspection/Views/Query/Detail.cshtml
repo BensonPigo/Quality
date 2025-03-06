@@ -850,7 +850,7 @@
                 minHeight:480,
                 dialogClass: "add-contact-box",
                 open: function () {
-                    if ('@Model.SelectQtyBreakdownList.Where(o => o.LineItem != 0).Any()' == 'False') { // 全部為空，則給預設值
+                    if ('@Model.SelectQtyBreakdownList.Where(o => o.LineItem != 0 && o.LineItem != null).Any()' == 'False') { // 全部為空，則給預設值
                         QtyBreakDownDefault(); 
                     }
                     updateModleToDOM(initQtyBreakdownData);
@@ -956,6 +956,7 @@
         }
 
         function QtyBreakDownSave() {
+            let isLineItemChange = false;
             $('[id^=QtyBreakdown_LineItem_]').each(function () {
 
                 var sizeCode = $(this).attr("sizeCode");
@@ -966,13 +967,22 @@
                     lineItemVal = 0;
                 }
 
+                if (initQtyBreakdownData[idx].LineItem != lineItemVal) {
+                    isLineItemChange = true;
+                }
+
                 // 回寫Model
                 initQtyBreakdownData[idx].LineItem = lineItemVal;
                 updateDomToModle();
             });
 
+            if (!isLineItemChange) {
+                msg.WithError("There is no Line Item which is changed.");
+                return false;
+            }
+
             if (!validateInitQtyBreakdownData()) {
-                msg.WithError("Line Item cannot be repeated!!");
+                msg.WithError("Line Item cannot be repeated or empty!!");
                 return false;
             }
 
@@ -1193,9 +1203,13 @@
                     groupMap.set(groupKey, []);
                 }
 
-                // 檢查 LineItem 是否重複
+                // 檢查 LineItem
                 if (item.LineItem !== 0 && groupMap.get(groupKey).includes(item.LineItem)) {
-                    return false; // 返回 false 表示有重複
+                    return false; // 表示有重複
+                }
+
+                if (item.Junk === false && (item.LineItem === "" || item.LineItem === null)) {
+                    return false; // 非Junk，不可以空白
                 }
 
                 // 將當前的 LineItem 加入對應的群組鍵值中
