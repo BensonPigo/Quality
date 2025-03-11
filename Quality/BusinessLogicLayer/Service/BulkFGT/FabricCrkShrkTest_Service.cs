@@ -1021,6 +1021,33 @@ namespace BusinessLogicLayer.Service
                 worksheet.Cell(14 + rowIdx, 7).Value = item.ResultWet_Weft;
             }
 
+            // Excel 合併 + 塞資料
+            #region Title
+            string factory = headData.FactoryID.Empty() ? System.Web.HttpContext.Current.Session["FactoryID"].ToString() : headData.FactoryID;
+
+            string FactoryNameEN = _FabricCrkShrkTestProvider.GetFactoryNameEN(factory);
+            // 1. 複製第 10 列
+            var rowToCopy1 = worksheet.Row(2);
+
+            // 2. 插入一列，將第 8 和第 9 列之間騰出空間
+            worksheet.Row(1).InsertRowsAbove(1);
+
+            // 3. 複製格式到新插入的列
+            var newRow1 = worksheet.Row(1);
+            worksheet.Range("A1:H1").Merge();
+            // 設置字體樣式
+            var mergedCell = worksheet.Cell("A1");
+            mergedCell.Value = FactoryNameEN;
+            mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+            mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+            mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            mergedCell.Style.Font.Bold = true;
+            // 設置活動儲存格（指標位置）
+            worksheet.Cell("A1").SetActive();
+            #endregion
+
+
             // 儲存報表
             string filexlsx = $"{tmpName}.xlsx";
             string fileNamePDF = $"{tmpName}.pdf";
@@ -1028,12 +1055,13 @@ namespace BusinessLogicLayer.Service
             workbook.SaveAs(outputPath);
             excelFileName = filexlsx;
 
-            if (IsPDF)
-            {
-                LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                excelFileName = fileNamePDF;
-            }
+            //if (IsPDF)
+            //{
+            //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+            //    //officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+            //    ConvertToPDF.ExcelToPDF(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/TMP/"), fileNamePDF));
+            //    excelFileName = fileNamePDF;
+            //}
 
             result.Result = true;
             return result;
@@ -1079,22 +1107,6 @@ namespace BusinessLogicLayer.Service
         }
 
         // 儲存報表
-        private string SaveReport(XLWorkbook workbook, string tmpName, bool IsPDF, out string excelFileName)
-        {
-            string basePath = System.Web.HttpContext.Current.Server.MapPath("~/TMP/");
-            string filepath = Path.Combine(basePath, tmpName + ".xlsx");
-            workbook.SaveAs(filepath);
-            excelFileName = tmpName + ".xlsx";
-
-            if (IsPDF)
-            {
-                LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                officeService.ConvertExcelToPdf(filepath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                excelFileName = tmpName + ".pdf";
-            }
-            return filepath;
-        }
-
         public BaseResult ToReport_Heat(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "")
         {
             _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
@@ -1234,6 +1246,32 @@ namespace BusinessLogicLayer.Service
                     }
                 }
 
+                // Excel 合併 + 塞資料
+                #region Title
+                string factory = fabricCrkShrkTestHeat_Main.FactoryID.Empty() ? System.Web.HttpContext.Current.Session["FactoryID"].ToString() : fabricCrkShrkTestHeat_Main.FactoryID;
+
+                string FactoryNameEN = _FabricCrkShrkTestProvider.GetFactoryNameEN(factory);
+                // 1. 複製第 10 列
+                var rowToCopy1 = worksheet.Row(2);
+
+                // 2. 插入一列，將第 8 和第 9 列之間騰出空間
+                worksheet.Row(1).InsertRowsAbove(1);
+
+                // 3. 複製格式到新插入的列
+                var newRow1 = worksheet.Row(1);
+                worksheet.Range("A1:J1").Merge();
+                // 設置字體樣式
+                var mergedCell = worksheet.Cell("A1");
+                mergedCell.Value = FactoryNameEN;
+                mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                mergedCell.Style.Font.Bold = true;
+                // 設置活動儲存格（指標位置）
+                worksheet.Cell("A1").SetActive();
+                #endregion
+
                 // 儲存 Excel 檔案
                 string filexlsx = $"{tmpName}.xlsx";
                 string outputDir = Path.Combine(baseFilePath, "TMP");
@@ -1243,13 +1281,14 @@ namespace BusinessLogicLayer.Service
 
                 result.Result = true;
 
-                // 如果需要轉換 PDF
-                if (IsPDF)
-                {
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    excelFileName = $"{tmpName}.pdf";
-                }
+                //// 如果需要轉換 PDF
+                //if (IsPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(outputPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
+                //    excelFileName = $"{tmpName}.pdf";
+                //}
             }
             catch (Exception ex)
             {
@@ -1273,7 +1312,7 @@ namespace BusinessLogicLayer.Service
                 DataTable dtIronDetail = _FabricCrkShrkTestProvider.GetIronDetailForReport(ID);
                 FabricCrkShrkTestIron_Main fabricCrkShrkTestIron_Main = _FabricCrkShrkTestProvider.GetFabricIronTest_Main(ID);
 
-                string templatePath = Path.Combine(baseFilePath, "XLT", "FabricIronTest.xltx");
+                 string templatePath = Path.Combine(baseFilePath, "XLT", "FabricIronTest.xltx");
 
                 if (dtIronDetail.Rows.Count == 0)
                 {
@@ -1368,16 +1407,44 @@ namespace BusinessLogicLayer.Service
                     AddImageToWorksheet(worksheet, fabricCrkShrkTestIron_Main.InspectorSignature, 32 + dtIronDetail.Rows.Count, 4, 100, 24);
                     AddImageToWorksheet(worksheet, fabricCrkShrkTestIron_Main.ApproverSignature, 32 + dtIronDetail.Rows.Count, 9, 100, 24);
 
+                    // Excel 合併 + 塞資料
+                    #region Title
+                    string factory = fabricCrkShrkTestIron_Main.FactoryID.Empty() ? System.Web.HttpContext.Current.Session["FactoryID"].ToString() : fabricCrkShrkTestIron_Main.FactoryID;
+
+                    string FactoryNameEN = _FabricCrkShrkTestProvider.GetFactoryNameEN(factory);
+                    // 1. 複製第 10 列
+                    var rowToCopy1 = worksheet.Row(2);
+
+                    // 2. 插入一列，將第 8 和第 9 列之間騰出空間
+                    worksheet.Row(1).InsertRowsAbove(1);
+
+                    // 3. 複製格式到新插入的列
+                    var newRow1 = worksheet.Row(1);
+                    worksheet.Range("A1:J1").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("A1");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    // 設置活動儲存格（指標位置）
+                    worksheet.Cell("A1").SetActive();
+                    #endregion
+
+
                     workbook.SaveAs(outputFilePath);
                     excelFileName = $"{tmpName}.xlsx";
                 }
 
-                if (IsPDF)
-                {
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    excelFileName = $"{tmpName}.pdf";
-                }
+                //if (IsPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{tmpName}.pdf"));
+                //    excelFileName = $"{tmpName}.pdf";
+                //}
                 result.Result = true;
             }
             catch (Exception ex)
@@ -1532,17 +1599,43 @@ namespace BusinessLogicLayer.Service
                     AddImageToWorksheet(worksheet, fabricCrkShrkTestWash_Main.InspectorSignature, 32 + dtWashDetail.Rows.Count, 4, 100, 24);
                     AddImageToWorksheet(worksheet, fabricCrkShrkTestWash_Main.ApproverSignature, 32 + dtWashDetail.Rows.Count, 9, 100, 24);
 
+                    // Excel 合併 + 塞資料
+                    #region Title
+                    string factory = fabricCrkShrkTestWash_Main.FactoryID.Empty() ? System.Web.HttpContext.Current.Session["FactoryID"].ToString() : fabricCrkShrkTestWash_Main.FactoryID;
+
+                    string FactoryNameEN = _FabricCrkShrkTestProvider.GetFactoryNameEN(factory);
+                    // 1. 複製第 10 列
+                    var rowToCopy1 = worksheet.Row(2);
+
+                    // 2. 插入一列，將第 8 和第 9 列之間騰出空間
+                    worksheet.Row(1).InsertRowsAbove(1);
+
+                    // 3. 複製格式到新插入的列
+                    var newRow1 = worksheet.Row(1);
+                    worksheet.Range("A1:J1").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("A1");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    // 設置活動儲存格（指標位置）
+                    worksheet.Cell("A1").SetActive();
+                    #endregion
                     workbook.SaveAs(outputFilePath);
                     excelFileName = $"{tmpName}.xlsx";
                 }
 
-                if (IsPDF)
-                {
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //if (IsPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/TMP/"), $"{tmpName}.pdf"));
 
-                    excelFileName = $"{tmpName}.pdf";
-                }
+                //    excelFileName = $"{tmpName}.pdf";
+                //}
                 result.Result = true;              
             }
             catch (Exception ex)

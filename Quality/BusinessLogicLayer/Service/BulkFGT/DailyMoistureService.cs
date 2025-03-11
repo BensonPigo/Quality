@@ -498,18 +498,50 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             worksheet.Cell(row, 9).Value = body[i].Result;
                         }
                     }
-                    workbook.SaveAs(excelPath);
-                    if (IsPDF)
-                    {
-                        LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                        officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
 
-                        FinalFilenmae = pdfFileName;
-                    }
-                    else
+                    #region Title
+                    string FactoryNameEN = _Provider.GetFactoryNameEN(ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                   
+                    // 1. 插入一列
+                    worksheet.Row(1).InsertRowsAbove(1);
+                    worksheet.Row(1).Height = 35;
+
+                    // 2. 合併欄位
+                    worksheet.Range("A1:I1").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("A1");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    mergedCell.Style.Font.Italic = false;
+
+                    // 自動檢測使用範圍
+                    var usedRange = worksheet.RangeUsed();
+                    var lastRow = worksheet.CellsUsed().Max(cell => cell.Address.RowNumber);
+                    // 確認範圍不為空
+                    if (usedRange != null)
                     {
-                        FinalFilenmae = excelFileName;
+                        // 清除所有已有的列印範圍
+                        worksheet.PageSetup.PrintAreas.Clear();
+
+                        // 設定列印範圍為使用範圍
+                        worksheet.PageSetup.PrintAreas.Add($"A1:I{lastRow + 10}");
                     }
+                    #endregion
+
+                    workbook.SaveAs(excelPath);
+                    FinalFilenmae = excelFileName;
+                    //if (IsPDF)
+                    //{
+                    //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    //    //officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    //    ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
+
+                    //    FinalFilenmae = pdfFileName;
+                    //}
                 }
 
                 result.Result = true;

@@ -27,6 +27,7 @@ using System.Web;
 using Org.BouncyCastle.Asn1.Ocsp;
 using static Sci.MyUtility;
 using Microsoft.Office.Core;
+using ClosedXML.Excel;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -1077,6 +1078,79 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     tmpName = tmpName.Replace(invalidChar.ToString(), "");
                 }
 
+                #region Title
+                worksheet = excel.ActiveWorkbook.Worksheets[1];
+
+                string FactoryNameEN = _Provider.GetFactoryNameEN(ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+
+                // 1. 插入一列
+                worksheet.Rows["1"].Insert();
+                // 2. 合併欄位 (B1:K1)
+                Microsoft.Office.Interop.Excel.Range mergedRange = worksheet.Range["A1", "AH1"];
+                mergedRange.Merge();
+
+                // 設置字體樣式
+
+                // 3. 設置文字和樣式
+                mergedRange.Value = FactoryNameEN; // 替換為你的 FactoryNameEN 變數
+                mergedRange.Font.Name = "Arial";      // 設置字體類型
+                mergedRange.Font.Size = 25;          // 設置字體大小
+                mergedRange.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter; // 水平置中
+                mergedRange.VerticalAlignment = Microsoft.Office.Interop.Excel.XlVAlign.xlVAlignCenter;   // 垂直置中
+                mergedRange.Font.Bold = true;        // 設置字體加粗
+
+                // 自動檢測使用範圍
+
+                Microsoft.Office.Interop.Excel.Range usedRange = worksheet.UsedRange;
+                if (usedRange != null)
+                {
+                    // 獲取最後一行
+                    int lastRow = usedRange.Row + usedRange.Rows.Count - 1;
+
+                    // 清除已有的列印範圍
+                    worksheet.PageSetup.PrintArea = string.Empty;
+
+                    // 設定新的列印範圍
+                    string printArea = $"A1:AH{lastRow + 10}";
+                    worksheet.PageSetup.PrintArea = printArea;
+                }
+                #endregion
+
+                #region Title
+                worksheet = excel.ActiveWorkbook.Worksheets[2];
+                // 1. 插入一列
+                worksheet.Rows["1"].Insert();
+                // 2. 合併欄位 (B1:K1)
+                Microsoft.Office.Interop.Excel.Range mergedRange1 = worksheet.Range["A1", "AH1"];
+                mergedRange1.Merge();
+
+                // 設置字體樣式
+
+                // 3. 設置文字和樣式
+                mergedRange1.Value = FactoryNameEN; // 替換為你的 FactoryNameEN 變數
+                mergedRange1.Font.Name = "Arial";      // 設置字體類型
+                mergedRange1.Font.Size = 25;          // 設置字體大小
+                mergedRange1.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter; // 水平置中
+                mergedRange1.VerticalAlignment = Microsoft.Office.Interop.Excel.XlVAlign.xlVAlignCenter;   // 垂直置中
+                mergedRange1.Font.Bold = true;        // 設置字體加粗
+
+                // 自動檢測使用範圍
+
+                Microsoft.Office.Interop.Excel.Range usedRange1 = worksheet.UsedRange;
+                if (usedRange1 != null)
+                {
+                    // 獲取最後一行
+                    int lastRow = usedRange1.Row + usedRange1.Rows.Count - 1;
+
+                    // 清除已有的列印範圍
+                    worksheet.PageSetup.PrintArea = string.Empty;
+
+                    // 設定新的列印範圍
+                    string printArea = $"A1:AH{lastRow + 10}";
+                    worksheet.PageSetup.PrintArea = printArea;
+                }
+                #endregion
+
                 string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
 
@@ -1091,18 +1165,20 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(workbook);
 
-                // 轉PDF再繼續進行以下
-                if (isPDF)
-                {
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                result.TempFileName = fileName;
+                //// 轉PDF再繼續進行以下
+                //if (isPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
 
-                    result.TempFileName = filePdfName;
-                }
-                else
-                {
-                    result.TempFileName = fileName;
-                }
+                //    result.TempFileName = filePdfName;
+                //}
+                //else
+                //{
+                //    result.TempFileName = fileName;
+                //}
                 result.Result = true;
             }
             catch (Exception ex)

@@ -204,14 +204,14 @@
                                                     </tr>
                                                     <tr>
                                                         <td style="text-align: center;">
-                                                            <input id="ReportPDF" type="button" value="PDF">
+                                                            <input id="ReportPDF" type="button" value="PDF(Excel)">
                                                             <input id="ReportExcel" type="button" value="Excel" style="margin: 0 1em;">
                                                             <input id="ReportExit" type="button" value="Exit">
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td style="text-align: center;">
-                                                            <input id="ReportAllPDF" type="button" value="All PDF">
+                                                            <input id="ReportAllPDF" type="button" value="All PDF(Excel)">
                                                             <input id="ReportAllExcel" type="button" value="All Excel" style="margin: 0 1em;">
                                                         </td>
                                                     </tr>
@@ -1501,19 +1501,19 @@
 
     function ReportEventBind() {
         $('#ReportPDF').on('click', function () {
-            ToReport(1);
+            ToReport(true);
         });
 
         $('#ReportExcel').on('click', function () {
-            ToReport(0);
+            ToReport(false);
         });
 
         $('#ReportAllPDF').on('click', function () {
-            ToAllReport(1);
+            ToAllReport(true);
         });
 
         $('#ReportAllExcel').on('click', function () {
-            ToAllReport(0);
+            ToAllReport(false);
         });
 
 
@@ -1543,6 +1543,7 @@
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
+                msg.WithError("Error generating report.");
             }
         });
     }

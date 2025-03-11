@@ -190,12 +190,35 @@ namespace BusinessLogicLayer.Service
                     string xlsxPath = Path.Combine(tmpPath, tmpName + ".xlsx");
                     string pdfPath = Path.Combine(tmpPath, tmpName + ".pdf");
 
+
+                    // Excel 合併 + 塞資料
+                    #region Title
+                    string FactoryNameEN = _MockupCrockingProvider.GetFactoryNameEN(mockupCrocking.ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 插入一列
+                    worksheet.Row(2).InsertRowsAbove(1);
+
+                    // 2. 合併欄位
+                    worksheet.Range("A1:H1").Merge();
+                    worksheet.Range("A2:H2").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("A2");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    mergedCell.Style.Font.Italic = false;
+                    #endregion
+
                     workbook.SaveAs(xlsxPath);
 
 
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(xlsxPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    result.TempFileName = tmpName + ".pdf";
+                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    //officeService.ConvertExcelToPdf(xlsxPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    //ConvertToPDF.ExcelToPDF(xlsxPath, pdfPath);
+                    //result.TempFileName = tmpName + ".pdf";
+                    result.TempFileName = tmpName + ".xlsx";
                     result.Result = true;
                 }
             }

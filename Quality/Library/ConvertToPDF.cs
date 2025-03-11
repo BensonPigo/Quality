@@ -1,9 +1,13 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Excel;
+using Sci;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using static Sci.MyUtility;
 
 namespace Library
 {
@@ -17,6 +21,7 @@ namespace Library
         /// <returns>bool</returns>
         public static bool ExcelToPDF(string excelPath, string pdfPath)
         {
+            Thread.Sleep(2000);
             bool result = false;
             Microsoft.Office.Interop.Excel.XlFixedFormatType targetType = Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF;
             object missing = Type.Missing;
@@ -27,14 +32,15 @@ namespace Library
                 application = new Microsoft.Office.Interop.Excel.Application
                 {
                     Visible = false,
+                    DisplayAlerts = false,
                 };
                 workBook = application.Workbooks.Open(excelPath);
                 workBook.ExportAsFixedFormat(targetType, pdfPath);
                 result = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                result = false;
+                throw ex;
             }
             finally
             {

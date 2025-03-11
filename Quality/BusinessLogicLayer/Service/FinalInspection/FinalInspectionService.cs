@@ -24,6 +24,7 @@ using ADOHelper.Utility;
 using System.Reflection.Emit;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Policy;
+using DocumentFormat.OpenXml.EMMA;
 
 namespace BusinessLogicLayer.Service
 {
@@ -1518,6 +1519,12 @@ from
 
             return result;
 
+        }
+
+        public string GetFactoryNameEN(string Poid, string FactoryID)
+        {
+            string FactoryNameEN = _FinalInspectionProvider.GetFactoryNameEN(Poid, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+            return FactoryNameEN;
         }
     }
 }

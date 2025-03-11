@@ -24,6 +24,34 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
     public class AgingHydrolysisTest_Provider : SQLDAL
     {
+        public string GetFactoryNameEN(string ReportNo, string FactoryID)
+        {
+            string factoryNameEN = string.Empty;
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ReportNo", DbType.String, ReportNo } ,
+                { "@FactoryID",DbType.String, FactoryID } ,
+            };
+            string sql = $@"
+            SELECT
+            o.FactoryID
+            INTO #tmp
+            FROM AgingHydrolysisTest_Detail AHD WITH(NOLOCK)
+            INNER JOIN AgingHydrolysisTest AH WITH(NOLOCK) on AHD.AgingHydrolysisTestID = AH.ID
+            INNER JOIN SciProduction_Orders O on AH.OrderID = O.ID
+            WHERE AHD.ReportNo = @ReportNo
+			
+            SELECT
+            F.NameEN,*
+            FROM Production.dbo.Factory F WITH(NOLOCK)
+            LEFT JOIN #TMP T WITH(NOLOCK) ON T.FactoryID = F.ID
+            WHERE F.ID = IIF((SELECT count(1) from #tmp) > 0 ,T.FactoryID,@FactoryID)";
+
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sql, objParameter);
+            factoryNameEN = dt.Rows[0]["NameEN"].ToString();
+            return factoryNameEN;
+        }
+
         #region 底層連線
         public AgingHydrolysisTest_Provider(string ConString) : base(ConString) { }
         public AgingHydrolysisTest_Provider(SQLDataTransaction tra) : base(tra) { }

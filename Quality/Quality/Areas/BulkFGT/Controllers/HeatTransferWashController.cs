@@ -12,6 +12,7 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -463,7 +464,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult Report(string ReportNo, bool IsToPDF)
+        public ActionResult Report(string ReportNo, bool IsToPDF)
         {
             BaseResult result = _Service.ToReport(ReportNo, IsToPDF, out string FileName);
             string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);

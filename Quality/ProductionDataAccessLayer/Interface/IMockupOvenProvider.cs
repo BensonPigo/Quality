@@ -8,6 +8,7 @@ namespace ProductionDataAccessLayer.Interface
 {
     public interface IMockupOvenProvider
     {
+        string GetFactoryNameEN(string ReportNo,string FactoryID);
         IList<MockupOven_ViewModel> GetMockupOvenReportNoList(MockupOven_Request Item);
 
         IList<MockupOven_ViewModel> GetMockupOven(MockupOven_Request Item, bool istop1 = false);

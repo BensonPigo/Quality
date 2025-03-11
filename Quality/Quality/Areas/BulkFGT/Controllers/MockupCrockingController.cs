@@ -257,15 +257,10 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult ToPDF(MockupCrocking_Request mockupCrocking_Request)
+        public ActionResult ToPDF(MockupCrocking_Request mockupCrocking_Request)
         {
             this.CheckSession();
             MockupCrocking_ViewModel mockupCrocking_ViewModel = _MockupCrockingService.GetMockupCrocking(mockupCrocking_Request);
-            if (mockupCrocking_ViewModel == null)
-            {
-                return Json(new { Result = false, ErrorMessage = @"msg.WithInfo(""No Data Found"");" });
-            }
-
             Report_Result report_Result = _MockupCrockingService.GetPDF(mockupCrocking_ViewModel);
             string tempFilePath = report_Result.TempFileName;
             tempFilePath = "/TMP/" + tempFilePath;

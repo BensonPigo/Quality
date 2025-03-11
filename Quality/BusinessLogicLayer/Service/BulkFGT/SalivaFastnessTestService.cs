@@ -14,10 +14,12 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
+using static Sci.MyUtility;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -631,17 +633,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(workbook);
 
-                // 轉PDF再繼續進行以下
-                if (isPDF)
-                {
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    result.TempFileName = filePdfName;
-                }
-                else
-                {
-                    result.TempFileName = fileName;
-                }
+                result.TempFileName = fileName;
+
+                //// 轉PDF再繼續進行以下
+                //if (isPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName));
+                //    result.TempFileName = filePdfName;
+                //}
+
                 result.Result = true;
             }
             catch (Exception ex)
@@ -704,7 +706,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     worksheet.Cell(11, 2).Value = model.Main.TypeOfPrint;
                     worksheet.Cell(11, 6).Value = model.Main.PrintColor;
-
+                    
                     // BrandID
                     if (model.Main.BrandID.ToUpper() == "ADIDAS")
                     {
@@ -806,21 +808,49 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         startRow += 6; // 移動到下一組
                     }
 
+                    #region Title
+                    string FactoryNameEN = _Provider.GetFactoryNameEN(ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 插入一列
+                    worksheet.Row(1).InsertRowsAbove(1);
+
+                    // 2. 合併欄位
+                    worksheet.Range("A1:I1").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("A1");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    mergedCell.Style.Font.Italic = false;
+
+                    // 自動檢測使用範圍
+                    var usedRange = worksheet.RangeUsed();
+                    var lastRow = worksheet.CellsUsed().Max(cell => cell.Address.RowNumber);
+                    // 確認範圍不為空
+                    if (usedRange != null)
+                    {
+                        // 清除所有已有的列印範圍
+                        worksheet.PageSetup.PrintAreas.Clear();
+
+                        // 設定列印範圍為使用範圍
+                        worksheet.PageSetup.PrintAreas.Add($"A1:I{lastRow + 10}");
+                    }
+                    #endregion
                     // 儲存 Excel 檔案
                     workbook.SaveAs(fullExcelFileName);
                 }
+                result.TempFileName = fileName;
 
-                // 若需要轉 PDF
-                if (isPDF)
-                {
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    result.TempFileName = filePdfName;
-                }
-                else
-                {
-                    result.TempFileName = fileName;
-                }
+                //// 若需要轉 PDF
+                //if (isPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName));
+                //    result.TempFileName = filePdfName;
+                //}
 
                 result.Result = true;
             }

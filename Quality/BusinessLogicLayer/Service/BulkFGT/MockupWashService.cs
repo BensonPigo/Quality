@@ -6,6 +6,7 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
+using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
@@ -284,17 +285,38 @@ namespace BusinessLogicLayer.Service
                         worksheet.Cell(aRow + 4, 8).Value = mockupWash.HTCoolingTime;
                     }
 
+                    // Excel 合併 + 塞資料
+                    #region Title
+                    string FactoryNameEN = _MockupWashProvider.GetFactoryNameEN(mockupWash.ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 插入一列
+                    worksheet.Row(2).InsertRowsAbove(1);
+
+                    // 2. 合併欄位
+                    worksheet.Range("A1:H1").Merge();
+                    worksheet.Range("A2:H2").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("A2");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    mergedCell.Style.Font.Italic = false;
+                    #endregion
+
                     workbook.Worksheet(2).Delete();
                     tmpName = RemoveInvalidFileNameChars(tmpName);
 
                     string filePath = Path.Combine(tmpPath, $"{tmpName}.xlsx");
                     string pdfPath = Path.Combine(tmpPath, $"{tmpName}.pdf");
-
                     workbook.SaveAs(filePath);
 
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    result.TempFileName = $"{tmpName}.pdf";
+                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    //officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    //ConvertToPDF.ExcelToPDF(filePath, pdfPath);
+                    //result.TempFileName = $"{tmpName}.pdf";
+                    result.TempFileName = tmpName + ".xlsx";
                     result.Result = true;
                 }
             }
