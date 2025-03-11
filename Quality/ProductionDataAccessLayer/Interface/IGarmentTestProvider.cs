@@ -12,6 +12,7 @@ namespace ProductionDataAccessLayer.Interface
         IList<Brand> GetBrandID();
 
         IList<Season> GetSeasonID();
+        string GetFactoryNameEN(string factory);
 
         IList<GarmentTest> GetArticle(GarmentTest_ViewModel filter);
 

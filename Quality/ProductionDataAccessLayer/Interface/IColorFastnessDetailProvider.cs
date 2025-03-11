@@ -8,6 +8,7 @@ namespace MICS.DataAccessLayer.Interface
 {  
     public interface IColorFastnessDetailProvider
     {
+        string GetFactoryNameEN(string POID,string factory);
         Fabric_ColorFastness_Detail_ViewModel Get_DetailBody(string ID);
 
         IList<PO_Supp_Detail> Get_Seq(string POID, string Seq1, string Seq2);

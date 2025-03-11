@@ -20,6 +20,9 @@ using System.Net.Mail;
 using System.Web;
 using ClosedXML.Excel;
 using ADOHelper.Template.MSSQL;
+using DocumentFormat.OpenXml.Wordprocessing;
+using ClosedXML.Excel.Drawings;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -1081,7 +1084,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             try
             {
+                string factory = orders.FactoryID.Empty() ? System.Web.HttpContext.Current.Session["FactoryID"].ToString() :orders.FactoryID;
 
+                string FactoryNameEN = _IGarmentTestProvider.GetFactoryNameEN(factory);
                 string typeName = $"Garment Test_{all_Data.Detail.OrderID}_" +
                     $"{all_Data.Main.StyleID}_" +
                     $"{all_Data.Main.Article}_" +
@@ -2029,7 +2034,7 @@ and t.GarmentTest=1
 
                                     if (all_Data.Detail.TestAfterPicture != null)
                                     {
-                                        this.AddImageToWorksheet(worksheet, all_Data.Detail.TestBeforePicture, 94, 7, 328, 247);
+                                        this.AddImageToWorksheet(worksheet, all_Data.Detail.TestAfterPicture, 94, 7, 328, 247);
                                     }
                                     #endregion
 
@@ -2789,7 +2794,24 @@ and t.GarmentTest=1
                                 }
                                 #endregion
 
+                                #region Title
+                                // 1. 複製第 1列
+                                //var rowToCopy1 = worksheet.Row(2);
 
+                                // 2. 插入一列，將第 8 和第 9 列之間騰出空間
+                                worksheet.Row(1).InsertRowsAbove(1);
+
+                                // 3. 合併欄位
+                                worksheet.Range("B1:K1").Merge();
+                                // 設置字體樣式
+                                var mergedCell = worksheet.Cell("B1");
+                                mergedCell.Value = FactoryNameEN;
+                                mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                                mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                                mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                                mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                                mergedCell.Style.Font.Bold = true;
+                                #endregion
                                 #region Save & Show Excel
 
                                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
@@ -2814,22 +2836,17 @@ and t.GarmentTest=1
                                     + all_Data.Main.SeasonID.ToString() + "_" + all_Data.Main.StyleID.ToString() + "_" + all_Data.Main.Article.ToString();
                                 //Excel.Workbook workbook_2018 = objApp.ActiveWorkbook;
                                 workbook.SaveAs(filepath_2018);
-                                if (isToPDF)
-                                {
-                                    //ConvertToPDF.ExcelToPDF(filepath_2018, filepathpdf_2018);
+                                dicRt["reportPath"] = filexlsx_2018;
+                                dicRt["reportFileFullPath"] = filepath_2018;
 
-                                    LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                                    s.ConvertExcelToPdf(filepath_2018, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                                    //);
-                                    dicRt["reportPath"] = fileNamePDF_2018;
-                                    dicRt["reportFileFullPath"] = filepathpdf_2018;
-                                }
-                                else
-                                {
-                                    dicRt["reportPath"] = filexlsx_2018;
-                                    dicRt["reportFileFullPath"] = filepath_2018;
-                                }
-
+                                //if (isToPDF)
+                                //{
+                                //    //LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                                //    //s.ConvertExcelToPdf(filepath_2018, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                                //    ConvertToPDF.ExcelToPDF(filepath_2018, filepathpdf_2018);
+                                //    dicRt["reportPath"] = fileNamePDF_2018;
+                                //    dicRt["reportFileFullPath"] = filepathpdf_2018;
+                                //}
 
                                 dicRt["Result"] = "true";
 
@@ -3002,25 +3019,54 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest = 1";
                                     startRowIndex++;
                                 }
 
+                                // Excel 合併 + 塞資料
+                                #region Title
+                                // 1. 插入一列
+                                worksheet_2020.Row(1).InsertRowsAbove(1);
+
+                                // 2. 合併欄位
+                                worksheet_2020.Range("A1:I1").Merge();
+                                // 設置字體樣式
+                                var mergedCell = worksheet_2020.Cell("A1");
+                                mergedCell.Value = FactoryNameEN;
+                                mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                                mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                                mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                                mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                                mergedCell.Style.Font.Bold = true;
+
+                                //// 自動檢測使用範圍
+                                var usedRange = worksheet_2020.RangeUsed();
+                                var lastRow = worksheet_2020.CellsUsed().Max(cell => cell.Address.RowNumber);
+                                //// 確認範圍不為空
+                                if (usedRange != null)
+                                {
+                                    // 清除所有已有的列印範圍
+                                    worksheet_2020.PageSetup.PrintAreas.Clear();
+
+                                    // 設定列印範圍為使用範圍
+                                    worksheet_2020.PageSetup.PrintAreas.Add($"A1:I{lastRow + 3}");
+                                }
+                                #endregion
+
                                 // 儲存檔案
                                 string sanitizedTypeName = string.Join("", typeName.Split(Path.GetInvalidFileNameChars()));
                                 string excelPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{sanitizedTypeName}.xlsx");
                                 string pdfPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{sanitizedTypeName}.pdf");
 
                                 workbook.SaveAs(excelPath);
+                                dicRt["reportPath"] = $"{sanitizedTypeName}.xlsx";
+                                dicRt["reportFileFullPath"] = excelPath;
+
                                 if (isToPDF)
                                 {
+                                    //LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                                    //s.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
                                     //ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
-                                    LibreOfficeService s = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                                    s.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                                    dicRt["reportPath"] = $"{sanitizedTypeName}.pdf";
-                                    dicRt["reportFileFullPath"] = pdfPath;
+                                    //dicRt["reportPath"] = $"{sanitizedTypeName}.pdf";
+                                    //dicRt["reportFileFullPath"] = pdfPath;
                                 }
-                                else
-                                {
-                                    dicRt["reportPath"] = $"{sanitizedTypeName}.xlsx";
-                                    dicRt["reportFileFullPath"] = excelPath;
-                                }
+
                                 dicRt["Result"] = "true";
                             }
                         }
@@ -3241,26 +3287,58 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest=1";
                                     startRowIndex_Pyhsical++;
                                 }
 
+                                // Excel 合併 + 塞資料
+                                #region Title
+                                // 1. 複製第 1列
+                                var rowToCopy1 = worksheet_Physical.Row(2);
+
+                                // 2. 插入一列
+                                worksheet_Physical.Row(1).InsertRowsAbove(1);
+
+                                // 3. 合併欄位
+                                worksheet_Physical.Range("A1:I1").Merge();
+                                // 設置字體樣式
+                                var mergedCell = worksheet_Physical.Cell("A1");
+                                mergedCell.Value = FactoryNameEN;
+                                mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                                mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                                mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                                mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                                mergedCell.Style.Font.Bold = true;
+
+                                //// 自動檢測使用範圍
+                                var usedRange = worksheet_Physical.RangeUsed();
+                                var lastRow = worksheet_Physical.CellsUsed().Max(cell => cell.Address.RowNumber);
+                                //// 確認範圍不為空
+                                if (usedRange != null)
+                                {
+                                    // 清除所有已有的列印範圍
+                                    worksheet_Physical.PageSetup.PrintAreas.Clear();
+
+                                    // 設定列印範圍為使用範圍
+                                    worksheet_Physical.PageSetup.PrintAreas.Add($"A1:I{lastRow + 3}");
+                                }
+                                #endregion
+
                                 // 儲存檔案
                                 string sanitizedTypeName = string.Join("", typeName.Split(Path.GetInvalidFileNameChars()));
                                 string excelPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{sanitizedTypeName}.xlsx");
                                 string pdfPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{sanitizedTypeName}.pdf");
 
                                 workbook.SaveAs(excelPath);
+                                dicRt["reportPath"] = $"{sanitizedTypeName}.xlsx";
+                                dicRt["reportFileFullPath"] = excelPath;
 
-                                if (isToPDF)
-                                {
-                                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                                    officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                                //if (isToPDF)
+                                //{
+                                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                                //    //officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                                //    ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
 
-                                    dicRt["reportPath"] = $"{sanitizedTypeName}.pdf";
-                                    dicRt["reportFileFullPath"] = pdfPath;
-                                }
-                                else
-                                {
-                                    dicRt["reportPath"] = $"{sanitizedTypeName}.xlsx";
-                                    dicRt["reportFileFullPath"] = excelPath;
-                                }
+                                //    dicRt["reportPath"] = $"{sanitizedTypeName}.pdf";
+                                //    dicRt["reportFileFullPath"] = pdfPath;
+                                //}
+
                                 dicRt["Result"] = "true";
                             }
                         }

@@ -1,4 +1,5 @@
 ﻿using ADOHelper.Utility;
+using ClosedXML.Excel;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
@@ -13,6 +14,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Web;
 using System.Web.Mvc;
+using static Sci.MyUtility;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -579,6 +581,25 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 string filePdfName = $"{tmpName}.pdf";
                 string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
 
+                #region Title
+                string FactoryNameEN = _Provider.GetFactoryNameEN(ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+
+                // 1. 插入一列
+                worksheet.Rows["1"].Insert();
+                // 2. 合併欄位 (B1:K1)
+                Microsoft.Office.Interop.Excel.Range mergedRange = worksheet.Range["A1", "F1"];
+                mergedRange.Merge();
+
+                // 設置字體樣式
+
+                // 3. 設置文字和樣式
+                mergedRange.Value = FactoryNameEN; // 替換為你的 FactoryNameEN 變數
+                mergedRange.Font.Name = "Arial";      // 設置字體類型
+                mergedRange.Font.Size = 25;          // 設置字體大小
+                mergedRange.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter; // 水平置中
+                mergedRange.VerticalAlignment = Microsoft.Office.Interop.Excel.XlVAlign.xlVAlignCenter;   // 垂直置中
+                mergedRange.Font.Bold = true;        // 設置字體加粗
+                #endregion
 
                 Microsoft.Office.Interop.Excel.Workbook workbook = excel.ActiveWorkbook;
                 workbook.SaveAs(fullExcelFileName);
@@ -588,17 +609,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(workbook);
 
-                // 轉PDF再繼續進行以下
-                if (isPDF)
-                {
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    result.TempFileName = filePdfName;
-                }
-                else
-                {
-                    result.TempFileName = fileName;
-                }
+                result.TempFileName = fileName;
+
+                //// 轉PDF再繼續進行以下
+                //if (isPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
+                //    result.TempFileName = filePdfName;
+                //}
+
                 result.Result = true;
             }
             catch (Exception ex)

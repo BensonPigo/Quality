@@ -7,6 +7,7 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -279,7 +280,6 @@ namespace Quality.Areas.BulkFGT.Controllers
         [SessionAuthorizeAttribute]
         public ActionResult ToExcel(string ReportNo)
         {
-
             EvaporationRateTest_ViewModel result = _Service.GetReport(ReportNo, false);
 
             if (!result.Result)

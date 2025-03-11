@@ -8,6 +8,7 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -368,20 +369,10 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult Report(string ID, string No, bool IsToPDF)
+        public ActionResult Report(string ID, string No, bool IsToPDF)
         {
-            BaseResult result;
             string FileName;
-            if (IsToPDF)
-            {
-                //result = _WaterFastnessService.ToPdfWaterFastnessDetail(ID, No, out FileName, false);
-                result = _WaterFastnessService.ToReport(ID, out FileName, true, false);
-            }
-            else
-            {
-                //result = _WaterFastnessService.ToExcelWaterFastnessDetail(ID, No, out FileName, false);
-                result = _WaterFastnessService.ToReport(ID, out FileName, false, false);
-            }
+            BaseResult result  = _WaterFastnessService.ToReport(ID, out FileName, IsToPDF);
 
             string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });

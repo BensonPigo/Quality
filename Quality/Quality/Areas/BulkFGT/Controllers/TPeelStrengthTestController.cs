@@ -7,6 +7,7 @@ using Quality.Helper;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -353,6 +354,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
+
         public JsonResult SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             SendMail_Result result = _Service.SendMail(ReportNo, TO, CC, Subject, Body, Files);

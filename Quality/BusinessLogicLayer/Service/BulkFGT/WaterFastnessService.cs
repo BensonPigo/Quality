@@ -357,7 +357,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         $"{dtResult.Rows[0]["Result"]}_" +
                         $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
 
-                BaseResult baseResult = ToReport(ID, out string PDFFileName, true, isTest, name);
+                BaseResult baseResult = ToReport(ID, out string PDFFileName, true, name);
                 string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", PDFFileName) : string.Empty;
                 SendMail_Request sendMail_Request = new SendMail_Request()
                 {
@@ -413,7 +413,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
             }
         }
-        public BaseResult ToReport(string ID, out string FileName, bool isPDF, bool isTest = false, string AssignedFineName = "")
+        public BaseResult ToReport(string ID, out string FileName, bool isPDF, string AssignedFineName = "")
         {
             BaseResult result = new BaseResult();
             _WaterFastnessProvider = new WaterFastnessProvider(Common.ProductionDataAccessLayer);
@@ -443,9 +443,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 if (!string.IsNullOrWhiteSpace(AssignedFineName)) tmpName = AssignedFineName;
 
                 string baseFileName = "WaterFastness_ToExcel";
-                string baseFilePath = isTest
-                    ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "XLT", $"{baseFileName}.xltx")
-                    : Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "XLT", $"{baseFileName}.xltx");
+                string baseFilePath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "XLT", $"{baseFileName}.xltx");
 
                 string outputDirectory = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP");
                 string filePath = Path.Combine(outputDirectory, $"{tmpName}.xlsx");
@@ -510,21 +508,39 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         AddImageToWorksheet(currentSheet, data.TestAfterPicture, 46, 5, 380, 300);
                     }
 
+                    var worksheet = workbook.Worksheet(1);
+                    // Excel 合併 + 塞資料 + 重設列印範圍
+                    #region Title
+                    string FactoryNameEN = _WaterFastnessProvider.GetFactoryNameEN(ID, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 插入一列
+                    worksheet.Row(1).InsertRowsAbove(1);
+                    // 2. 複製格式到新插入的列
+                    worksheet.Range("A1:H1").Merge();
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("A1");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    // 設置活動儲存格（指標位置）
+                    worksheet.Cell("A1").SetActive();
+                    #endregion
+
                     // 儲存 Excel 檔案
                     workbook.SaveAs(filePath);
                 }
+                FileName = Path.GetFileName(filePath);
 
-                // PDF 轉換
-                if (isPDF)
-                {
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    FileName = Path.GetFileName(pdfPath);
-                }
-                else
-                {
-                    FileName = Path.GetFileName(filePath);
-                }
+                //// PDF 轉換
+                //if (isPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", pdfPath));
+                //    FileName = Path.GetFileName(pdfPath);
+                //}
 
                 result.Result = true;
             }

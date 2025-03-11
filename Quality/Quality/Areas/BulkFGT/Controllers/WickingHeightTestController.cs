@@ -6,6 +6,7 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -194,7 +195,6 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult ToExcel(string ReportNo)
         {
             WickingHeightTest_ViewModel result = _Service.GetReport(ReportNo, false);
-
             if (!result.Result)
             {
                 result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
@@ -211,7 +211,6 @@ namespace Quality.Areas.BulkFGT.Controllers
         public ActionResult ToPDF(string ReportNo)
         {
             WickingHeightTest_ViewModel result = _Service.GetReport(ReportNo, true);
-
             if (!result.Result)
             {
                 result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";

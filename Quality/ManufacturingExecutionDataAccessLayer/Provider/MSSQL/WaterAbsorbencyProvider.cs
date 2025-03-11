@@ -14,6 +14,32 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
     public class WaterAbsorbencyProvider : SQLDAL
     {
+        public string GetFactoryNameEN(string ReportNo, string FactoryID)
+        {
+            string factoryNameEN = string.Empty;
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ReportNo", DbType.String, ReportNo } ,
+                { "@FactoryID",DbType.String, FactoryID } ,
+            };
+            string sql = $@"
+            SELECT
+            o.FactoryID
+            INTO #tmp
+            FROM WaterAbsorbencyTest P WITH(NOLOCK)
+            INNER JOIN Production.dbo.Orders O WITH(NOLOCK) ON O.ID = P.OrderID
+            WHERE P.ReportNo = @ReportNo
+			
+            SELECT
+            F.NameEN,*
+            FROM Production.dbo.Factory F WITH(NOLOCK)
+            LEFT JOIN #TMP T WITH(NOLOCK) ON T.FactoryID = F.ID
+            WHERE F.ID = IIF((SELECT count(1) from #tmp) > 0 ,T.FactoryID,@FactoryID)";
+
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sql, objParameter);
+            factoryNameEN = dt.Rows[0]["NameEN"].ToString();
+            return factoryNameEN;
+        }
         #region 底層連線
         public WaterAbsorbencyProvider(string ConString) : base(ConString) { }
         public WaterAbsorbencyProvider(SQLDataTransaction tra) : base(tra) { }

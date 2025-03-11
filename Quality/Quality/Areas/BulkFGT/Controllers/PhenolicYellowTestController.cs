@@ -7,6 +7,7 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -303,21 +304,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
-        //public JsonResult SendMail(string ReportNo)
-        //{
-        //    this.CheckSession();
-        //    PhenolicYellowTest_ViewModel result = _Service.GetReport(ReportNo, false);
 
-        //    if (!result.Result)
-        //    {
-        //        result.ErrorMessage = $@"msg.WithInfo(""{result.ErrorMessage.Replace("'", string.Empty)}"");";
-        //        return Json(new { result.Result, ErrMsg = result.ErrorMessage });
-        //    }
-
-        //    string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
-
-        //    return Json(new { Result = result.Result, ErrorMessage = result.ErrorMessage, FileName = result.TempFileName });
-        //}
         [HttpPost]
         [SessionAuthorizeAttribute]
         public JsonResult SendMail(string ReportNo, string TO, string CC, string Subject, string Body, List<HttpPostedFileBase> Files)
