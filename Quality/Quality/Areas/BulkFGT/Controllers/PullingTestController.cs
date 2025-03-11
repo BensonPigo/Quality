@@ -396,7 +396,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             {
                 report_Result.ErrorMessage = report_Result.ErrorMessage.ToString();
             }
-            return Json(new { report_Result.Result, report_Result.ErrorMessage, tempFilePath });
+            return Json(new { report_Result.Result, report_Result.ErrorMessage, reportPath = tempFilePath });
         }
     }
 }
