@@ -307,7 +307,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     worksheet.Cell(2, 7).Value = head.ReportDate?.ToString("yyyy-MM-dd") ?? string.Empty;
 
                     worksheet.Cell(3, 2).Value = head.ReceivedDate?.ToString("yyyy-MM-dd") ?? string.Empty;
-                    worksheet.Cell(3, 7).Value = head.AddDate?.ToString("yyyy-MM-dd") ?? string.Empty;
+                    worksheet.Cell(3, 7).Value = head.TestDate?.ToString("yyyy-MM-dd") ?? string.Empty;
 
                     worksheet.Cell(4, 2).Value = head.SeasonID;
                     worksheet.Cell(4, 7).Value = head.Teamwear ? "V" : string.Empty;
@@ -342,11 +342,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     }
 
                     worksheet.Cell(14, 1).Value = head.Remark;
+                    worksheet.Cell(29, 3).Value = head.InspectorName;
+                    worksheet.Cell(29, 8).Value = head.ApproverName;
 
                     // 插入圖片
                     AddImageToWorksheet(worksheet, head.TestBeforePicture, 17, 1, 220, 130);
                     AddImageToWorksheet(worksheet, head.TestAfterPicture, 17, 6, 220, 130);
-                    AddImageToWorksheet(worksheet, head.Signature, 30, 7, 40, 20);
+                    AddImageToWorksheet(worksheet, head.InspectorSignature, 31, 3, 150, 30);
+                    AddImageToWorksheet(worksheet, head.ApproverSignature, 31, 8, 150, 30);
 
                     // 表身筆數處理，複製儲存格
                     if (!body.Any())
