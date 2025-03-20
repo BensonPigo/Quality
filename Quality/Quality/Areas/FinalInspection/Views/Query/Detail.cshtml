@@ -644,9 +644,10 @@
         var msg = new MessagerAlert();
         let UserListTable = $("#UserListTable");
         let uniqueKey = 0;
+        let jsonQtyBreakdown = '@Html.Raw(Json.Encode(Model.SelectQtyBreakdownList))';
 
         const initQtyBreakdownData = new Proxy(
-            @Html.Raw(Json.Encode(Model.SelectQtyBreakdownList)),
+            JSON.parse(jsonQtyBreakdown),
             {
                 set(target, property, value) {
                     target[property] = value;
@@ -662,7 +663,7 @@
             }
         );
 
-        // 把 Model 更新到 DOM 
+        // 把 Model 更新到 DOM
         function updateModleToDOM(data) {
             data.forEach((item, index) => {
                 for (const key in item) {
@@ -851,7 +852,7 @@
                 dialogClass: "add-contact-box",
                 open: function () {
                     if ('@Model.SelectQtyBreakdownList.Where(o => o.LineItem != 0 && o.LineItem != null).Any()' == 'False') { // 全部為空，則給預設值
-                        QtyBreakDownDefault(); 
+                        QtyBreakDownDefault();
                     }
                     updateModleToDOM(initQtyBreakdownData);
                 },
@@ -943,7 +944,7 @@
 
                 var idx = $(this).attr("idx");
                 var junk = document.getElementById(`QtyBreakdown_Junk_${idx}`).checked;// initQtyBreakdownData[idx].Junk;
-                
+
                 var defaultval = initQtyBreakdownData[idx].DefaultLineItem;
                 if (junk === false) {
                     $(this).val(defaultval);
@@ -967,14 +968,22 @@
                     lineItemVal = 0;
                 }
 
+                // Junk 比對
+                if (initQtyBreakdownData[idx].Junk != $('#QtyBreakdown_Junk_' + idx).prop('checked')) {
+                    isLineItemChange = true;
+                }
+
+                // LineItem比對
                 if (initQtyBreakdownData[idx].LineItem != lineItemVal) {
                     isLineItemChange = true;
                 }
 
                 // 回寫Model
                 initQtyBreakdownData[idx].LineItem = lineItemVal;
-                updateDomToModle();
             });
+
+            // 更新Model
+            updateDomToModle();
 
             if (!isLineItemChange) {
                 msg.WithError("There is no Line Item which is changed.");
@@ -997,6 +1006,12 @@
 
                     if (data.Result) {
                         $("#UniqueKey").val(data.P88UniqueKey);
+
+                        // 新數據替換整個陣列
+                        initQtyBreakdownData.splice(0, initQtyBreakdownData.length, ...data.SelectQtyBreakdownList);
+
+                        // 確保 DOM 更新
+                        updateModleToDOM(initQtyBreakdownData);
                         msg.WithSuccess('Sucess!');
                     }
                     else {
@@ -1120,7 +1135,7 @@
                 group.forEach(item => {
                     // Junk要根據DOM
                     let isJunk = document.querySelector(`input[Type=checkbox][finalinspectionid='${item.FinalInspectionID}'][orderid='${item.OrderID}'][article='${item.Article}'][sizecode='${item.SizeCode}']`).checked;
-                    if (!isJunk) {
+                    if (!isJunk && !item.HasDbDefault) {
                         item.DefaultLineItem = defaultValue;
                         defaultValue += 10;
                     }

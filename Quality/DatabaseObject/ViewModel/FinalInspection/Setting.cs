@@ -335,7 +335,12 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string Article { get; set; }
         public string SizeCode { get; set; }
         public int? LineItem { get; set; }
-        public int DefaultLineItem { get; set; }
+        public int? DefaultLineItem { get; set; }
+
+        /// <summary>
+        /// 用於判斷DB是否有值，若有則當作預設值，若沒有則前端運算得出預設值
+        /// </summary>
+        public bool HasDbDefault { get; set; }
         public bool Junk { get; set; }
     }
 }

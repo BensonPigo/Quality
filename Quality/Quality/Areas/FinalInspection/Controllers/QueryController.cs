@@ -677,7 +677,7 @@ namespace Quality.Areas.FinalInspection.Controllers
         {
             var result = Service.UpdateOrder_Breakdown(Req, p88UniqueKey);
             QueryReport model = Service.GetFinalInspectionReport(Req.FirstOrDefault().FinalInspectionID);
-            return Json(new { result.Result, result.ErrorMessage, model.FinalInspection.P88UniqueKey });
+            return Json(new { result.Result, result.ErrorMessage, model.FinalInspection.P88UniqueKey , model.SelectQtyBreakdownList });
         }
 
         [HttpPatch]

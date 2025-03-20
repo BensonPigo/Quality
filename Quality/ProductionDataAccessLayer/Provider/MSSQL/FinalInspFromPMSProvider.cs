@@ -179,6 +179,8 @@ select DISTINCT OrderID = oq.ID
         , oq.Article
         , oq.SizeCode
         , fb.LineItem
+        , DefaultLineItem = fb.LineItem
+        , HasDbDefault = cast( IIF(fb.LineItem IS NULL ,0 , 1 ) as bit)
         , fb.Junk
         ,  FinalInspectionID = f.ID
 from Production.dbo.Order_QtyShip_Detail oq
