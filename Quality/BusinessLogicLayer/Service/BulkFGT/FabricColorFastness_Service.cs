@@ -411,9 +411,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 $"Washing Fastness Test_{dataList[0].POID}_{dataList[0].StyleID}_{dataList[0].Article}_{dataList[0].ColorFastnessResult}_{DateTime.Now:yyyyMMddHHmmss}" :
                 AssignedFineName;
 
-            tmpName = Path.GetInvalidFileNameChars()
-                .Concat(new[] { '-', '+' })
-                .Aggregate(tmpName, (current, c) => current.Replace(c.ToString(), ""));
+            // 去除非法字元
+            tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
             string baseFileName = "FabricColorFastness_ToExcel";
             string templatePath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "XLT", $"{baseFileName}.xltx");

@@ -957,9 +957,9 @@ namespace BusinessLogicLayer.Service
             // 生成檔案名稱
             var headData = dataList_Head.First();
             string tmpName = $"Fabric Crocking Test_{headData.POID}_{headData.StyleID}_{headData.Refno}_{headData.Color}_{headData.Crocking}_{DateTime.Now:yyyyMMddHHmmss}";
-            foreach (var invalidChar in Path.GetInvalidFileNameChars())
+            if(!string.IsNullOrEmpty(AssignedFineName))
             {
-                tmpName = tmpName.Replace(invalidChar.ToString(), "");
+                tmpName = AssignedFineName;
             }
 
             string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
@@ -1047,6 +1047,8 @@ namespace BusinessLogicLayer.Service
             worksheet.Cell("A1").SetActive();
             #endregion
 
+            // 去除非法字元
+            tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
             // 儲存報表
             string filexlsx = $"{tmpName}.xlsx";
@@ -1140,6 +1142,10 @@ namespace BusinessLogicLayer.Service
                           $"{fabricCrkShrkTestHeat_Main.ColorID}_" +
                           $"{fabricCrkShrkTestHeat_Main.Heat}_" +
                           $"{DateTime.Now:yyyyMMddHHmmss}";
+                if (AssignedFineName != string.Empty)
+                {
+                    tmpName = AssignedFineName;
+                }
 
                 string seasonID = _OrdersProvider.Get(new Orders() { ID = fabricCrkShrkTestHeat_Main.POID })
                                                  .FirstOrDefault()?.SeasonID ?? string.Empty;
@@ -1273,6 +1279,8 @@ namespace BusinessLogicLayer.Service
                 #endregion
 
                 // 儲存 Excel 檔案
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
                 string filexlsx = $"{tmpName}.xlsx";
                 string outputDir = Path.Combine(baseFilePath, "TMP");
                 string outputPath = Path.Combine(outputDir, filexlsx);
@@ -1327,6 +1335,12 @@ namespace BusinessLogicLayer.Service
                           $"{fabricCrkShrkTestIron_Main.ColorID}_" +
                           $"{fabricCrkShrkTestIron_Main.Iron}_" +
                           $"{DateTime.Now:yyyyMMddHHmmss}";
+                if (!string.IsNullOrEmpty(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 string seasonID = _OrdersProvider.Get(new Orders { ID = fabricCrkShrkTestIron_Main.POID })
                                     .FirstOrDefault()?.SeasonID ?? string.Empty;
@@ -1487,6 +1501,12 @@ namespace BusinessLogicLayer.Service
                           $"{fabricCrkShrkTestWash_Main.ColorID}_" +
                           $"{fabricCrkShrkTestWash_Main.Wash}_" +
                           $"{DateTime.Now:yyyyMMddHHmmss}";
+                if (AssignedFineName != "")
+                {
+                    tmpName = AssignedFineName;
+                }
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 string seasonID = _OrdersProvider.Get(new Orders { ID = fabricCrkShrkTestWash_Main.POID })
                                     .FirstOrDefault()?.SeasonID ?? string.Empty;

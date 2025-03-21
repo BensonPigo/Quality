@@ -438,7 +438,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 throw new FileNotFoundException("Excel template not found", openfilepath);
             }
-
             string tmpName = string.Empty;
 
             try
@@ -456,6 +455,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                           $"{model.Main.FabricColor}_" +
                           $"{model.Main.Result}_" +
                           $"{DateTime.Now:yyyyMMddHHmmss}";
+                if (string.IsNullOrEmpty(AssignedFineName))
+                {
+                    AssignedFineName = basefileName;
+                }
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 using (var workbook = new XLWorkbook(openfilepath))
                 {

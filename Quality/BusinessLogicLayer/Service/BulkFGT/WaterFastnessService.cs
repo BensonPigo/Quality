@@ -439,8 +439,11 @@ namespace BusinessLogicLayer.Service.BulkFGT
                           $"{dataList.FirstOrDefault()?.Article}_" +
                           $"{dataList.FirstOrDefault()?.AllResult}_" +
                           $"{DateTime.Now:yyyyMMddHHmmss}";
-                tmpName = Regex.Replace(tmpName, @"[/:?""<>|*%]", string.Empty);
+
                 if (!string.IsNullOrWhiteSpace(AssignedFineName)) tmpName = AssignedFineName;
+
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 string baseFileName = "WaterFastness_ToExcel";
                 string baseFilePath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "XLT", $"{baseFileName}.xltx");

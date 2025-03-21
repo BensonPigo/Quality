@@ -296,7 +296,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 tmpName = $"Pulling Test_{model.POID}_{model.StyleID}_{model.Article}_{model.Result}_{DateTime.Now:yyyyMMddHHmmss}";
-                tmpName = Regex.Replace(tmpName, @"[\/:*?""<>|]", ""); // 移除非法字元
+                if (!string.IsNullOrEmpty(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 string excelFilePath = Path.Combine(tmpDir, $"{tmpName}.xlsx");
                 string pdfFilePath = Path.Combine(tmpDir, $"{tmpName}.pdf");

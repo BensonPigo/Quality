@@ -184,6 +184,9 @@ namespace BusinessLogicLayer.Service
                 if (!Directory.Exists(tmpPath)) Directory.CreateDirectory(tmpPath);
 
                 tmpName = $"Mockup Wash _{mockupWash.POID}_{mockupWash.StyleID}_{mockupWash.Article}_{mockupWash.Result}_{DateTime.Now:yyyyMMddHHmmss}";
+                if (!string.IsNullOrEmpty(AssignedFineName)) tmpName = AssignedFineName;
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 if (!File.Exists(xltPath)) throw new FileNotFoundException("Template not found", xltPath);
 

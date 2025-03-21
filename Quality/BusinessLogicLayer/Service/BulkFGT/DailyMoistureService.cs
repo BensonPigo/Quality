@@ -280,144 +280,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
         }
 
-
-        public BaseResult ToReport2(string ReportNo, bool IsPDF, out string FinalFilenmae, string AssignedFineName = "")
-        {
-
-            BaseResult result = new BaseResult();
-            _Provider = new DailyMoistureProvider(Common.ManufacturingExecutionDataAccessLayer);
-            FinalFilenmae = string.Empty;
-            string tmpName = string.Empty;
-            try
-            {
-                DailyMoisture_Result head = _Provider.GetMainData(new DailyMoisture_Request() { ReportNo = ReportNo });
-                List<DailyMoisture_Detail_Result> body = _Provider.GetDetailData(ReportNo).ToList();
-
-
-                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
-                string strXltName = baseFilePath + "\\XLT\\DailyMoisture.xltx";
-                Excel.Application excel = MyUtility.Excel.ConnectExcel(strXltName);
-                if (excel == null)
-                {
-                    result.ErrorMessage = "Excel template not found!";
-                    result.Result = false;
-                    return result;
-                }
-
-                tmpName = $"Daily Moisture Test_{head.OrderID}_" +
-                   $"{head.StyleID}_" +
-                   $"{head.Line}_" +
-                   $"{head.Result}_" +
-                   $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
-
-
-
-                excel.Visible = false;
-                excel.DisplayAlerts = false;
-
-                Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1];
-
-
-                // 表頭填入
-
-                worksheet.Cells[1, 2] = head.ReportDate.HasValue ? head.ReportDate.Value.ToString("yyyy-MM-dd") : string.Empty;
-                worksheet.Cells[1, 4] = head.BrandID;
-                worksheet.Cells[1, 6] = head.OrderID;
-                worksheet.Cells[1, 8] = head.SeasonID;
-
-                worksheet.Cells[2, 2] = head.StyleID;
-                worksheet.Cells[2, 4] = head.Instrument;
-                worksheet.Cells[2, 6] = head.Fabrication;
-                worksheet.Cells[2, 8] = (head.Standard * (decimal)0.01);
-
-                worksheet.Cells[3, 2] = head.Line;
-                // 表身筆數處理
-                if (!body.Any())
-                {
-                    worksheet.get_Range("A6").EntireRow.Delete();
-                }
-                else
-                {
-                    int copyCount = body.Count - 1;
-
-                    for (int i = 0; i < copyCount; i++)
-                    {
-                        Excel.Range paste1 = worksheet.get_Range($"A{i + 6}", Type.Missing);
-                        Excel.Range copyRow = worksheet.get_Range("A6").EntireRow;
-                        paste1.Insert(Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
-                    }
-                }
-
-
-                // 表身填入
-                int bodyStart = 6;
-                foreach (var item in body)
-                {
-                    worksheet.Cells[bodyStart, 1] = item.Area;
-                    worksheet.Cells[bodyStart, 2] = item.Fabric;
-                    worksheet.Cells[bodyStart, 3] = item.Point1;
-                    worksheet.Cells[bodyStart, 4] = item.Point2;
-                    worksheet.Cells[bodyStart, 5] = item.Point3;
-                    worksheet.Cells[bodyStart, 6] = item.Point4;
-                    worksheet.Cells[bodyStart, 7] = item.Point5;
-                    worksheet.Cells[bodyStart, 8] = item.Point6;
-                    worksheet.Cells[bodyStart, 9] = item.Result;
-                    bodyStart++;
-                }
-
-                //string tmpName = $"Daily Bulk Moisture Test_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-
-                string excelFileName = $"{tmpName}.xlsx";
-                string pdfFileName = $"{tmpName}.pdf";
-
-                string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
-                string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
-
-                Excel.Workbook workBook = excel.ActiveWorkbook;
-                if (IsPDF)
-                {
-                    Microsoft.Office.Interop.Excel.XlFixedFormatType targetType = Microsoft.Office.Interop.Excel.XlFixedFormatType.xlTypePDF;
-                    
-                    workBook.ExportAsFixedFormat(targetType, pdfPath);
-                    Marshal.ReleaseComObject(workBook);
-                    FinalFilenmae = pdfFileName;
-                }
-                else
-                {
-                    workBook.SaveAs(excelPath);
-                    //excel.ActiveWorkbook.SaveAs(excelPath);
-                    FinalFilenmae = excelFileName;
-                }
-
-                workBook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workBook);
-                Marshal.ReleaseComObject(excel);
-
-                result.Result = true;
-            }
-            catch (Exception ex)
-            {
-                result.Result = false;
-                result.ErrorMessage = ex.ToString();
-            }
-
-            return result;
-        }
         public BaseResult ToReport(string ReportNo, bool IsPDF, out string FinalFilenmae, string AssignedFineName = "")
         {
             BaseResult result = new BaseResult();
@@ -445,9 +307,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     $"Daily Moisture Test_{head.OrderID}_{head.StyleID}_{head.Line}_{head.Result}_{DateTime.Now:yyyyMMddHHmmss}" :
                     AssignedFineName;
 
-                tmpName = Path.GetInvalidFileNameChars()
-                    .Concat(new[] { '-', '+' })
-                    .Aggregate(tmpName, (current, c) => current.Replace(c.ToString(), ""));
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 string excelFileName = $"{tmpName}.xlsx";
                 string excelPath = Path.Combine(outputDirectory, excelFileName);

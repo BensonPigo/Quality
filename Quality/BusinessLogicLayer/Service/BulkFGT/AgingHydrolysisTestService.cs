@@ -534,8 +534,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 // 生成檔案名稱
                 tmpName = $"Accelerated Aging by Hydrolysis Test_{detailTable.Rows[0]["OrderID"]}_{detailTable.Rows[0]["StyleID"]}_{detailTable.Rows[0]["FabricRefNo"]}_{detailTable.Rows[0]["FabricColor"]}_{detailTable.Rows[0]["Result"]}_{DateTime.Now:yyyyMMddHHmmss}";
-                tmpName = Regex.Replace(tmpName, @"[/:?""<>|*%\t]", string.Empty);
-                if (!string.IsNullOrWhiteSpace(AssignedFineName)) tmpName = AssignedFineName;
+
+                if (!string.IsNullOrWhiteSpace(AssignedFineName)) tmpName = AssignedFineName;                
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 string outputPath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.xlsx");
 
