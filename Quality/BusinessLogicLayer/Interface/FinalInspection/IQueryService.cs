@@ -19,5 +19,6 @@ namespace BusinessLogicLayer.Interface
         List<FinalInspectionSignature> GetSignatureUserList(string UserIDs);
         BaseResult InsertFinalInspectionSignatureUser(string FinalInspectionID, string JobTitle, List<FinalInspectionSignature> allData);
         QueryReport GetFinalInspectionSignature(FinalInspectionSignature Req);
+        BaseResult UpdateOrder_Breakdown(List<FinalInspection_Order_Breakdown> Req, string p88UniqueKey);
     }
 }

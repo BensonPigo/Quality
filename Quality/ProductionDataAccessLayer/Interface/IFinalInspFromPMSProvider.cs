@@ -23,6 +23,8 @@ namespace ProductionDataAccessLayer.Interface
         IList<SelectSewingTeam> GetSelectedSewingTeam();
         IList<SelectOrderShipSeq> GetSelectOrderShipSeqForSetting(List<string> listOrderID);
         IList<SelectOrderShipSeq> GetSelectOrderShipSeqForSetting(string finalInspectionID);
+        IList<SelectQtyBreakdown> GetSelectedQtyBreakdownForSetting(string finalInspectionID);
+        IList<SelectQtyBreakdown> GetSelectedQtyBreakdownForSetting(List<string> listOrderID);
         List<string> GetArticleList(string finalInspectionID);
         IList<ArticleSize> GetArticleSizeList(string finalInspectionID);
         List<string> GetProductTypeList(string finalInspectionID);

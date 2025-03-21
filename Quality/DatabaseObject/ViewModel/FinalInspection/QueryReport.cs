@@ -39,6 +39,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
 
         public List<SelectOrderShipSeq> ListShipModeSeq { get; set; }
         public List<FinalInspectionSignature> ListFinalInspectionSignature{ get; set; }
+        public List<SelectQtyBreakdown> SelectQtyBreakdownList { get; set; }
 
         public string GetUserIDByJobTitle(string JobTitle)
         {
