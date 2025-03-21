@@ -131,6 +131,12 @@ namespace BusinessLogicLayer.Service
 
 
                 tmpName = $"Mockup Crocking _{mockupCrocking.POID}_{mockupCrocking.StyleID}_{mockupCrocking.Article}_{mockupCrocking.Result}_{DateTime.Now:yyyyMMddHHmmss}";
+                if (!string.IsNullOrEmpty(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 if (!File.Exists(templatePath)) throw new FileNotFoundException("Template not found", templatePath);
 

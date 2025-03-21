@@ -2818,12 +2818,8 @@ and t.GarmentTest=1
                                 {
                                     typeName = AssignedFineName;
                                 }
-
-
-                                foreach (char invalidChar in invalidChars)
-                                {
-                                    typeName = typeName.Replace(invalidChar.ToString(), "");
-                                }
+                                // 去除非法字元
+                                typeName = FileNameHelper.SanitizeFileName(typeName);
                                 string filexlsx_2018 = typeName + ".xlsx";
                                 string fileNamePDF_2018 = typeName + ".pdf";
 
@@ -3050,12 +3046,13 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest = 1";
                                 #endregion
 
                                 // 儲存檔案
-                                string sanitizedTypeName = string.Join("", typeName.Split(Path.GetInvalidFileNameChars()));
-                                string excelPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{sanitizedTypeName}.xlsx");
-                                string pdfPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{sanitizedTypeName}.pdf");
+                                // 去除非法字元
+                                typeName = FileNameHelper.SanitizeFileName(typeName);
+                                string excelPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{typeName}.xlsx");
+                                string pdfPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{typeName}.pdf");
 
                                 workbook.SaveAs(excelPath);
-                                dicRt["reportPath"] = $"{sanitizedTypeName}.xlsx";
+                                dicRt["reportPath"] = $"{typeName}.xlsx";
                                 dicRt["reportFileFullPath"] = excelPath;
 
                                 if (isToPDF)
@@ -3321,12 +3318,14 @@ where t.ID = '{all_Data.Detail.Approver}' and t.GarmentTest=1";
                                 #endregion
 
                                 // 儲存檔案
-                                string sanitizedTypeName = string.Join("", typeName.Split(Path.GetInvalidFileNameChars()));
-                                string excelPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{sanitizedTypeName}.xlsx");
-                                string pdfPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{sanitizedTypeName}.pdf");
+
+                                // 去除非法字元
+                                typeName = FileNameHelper.SanitizeFileName(typeName);
+                                string excelPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{typeName}.xlsx");
+                                string pdfPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", $"{typeName}.pdf");
 
                                 workbook.SaveAs(excelPath);
-                                dicRt["reportPath"] = $"{sanitizedTypeName}.xlsx";
+                                dicRt["reportPath"] = $"{typeName}.xlsx";
                                 dicRt["reportFileFullPath"] = excelPath;
 
                                 //if (isToPDF)

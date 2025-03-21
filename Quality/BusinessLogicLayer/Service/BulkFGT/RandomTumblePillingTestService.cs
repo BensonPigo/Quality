@@ -442,7 +442,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 tmpName = $"Random Tumble Pilling Test_{model.Main.OrderID}_{model.Main.StyleID}_" +
                           $"{model.Main.FabricRefNo}_{model.Main.FabricColor}_{model.Main.Result}_" +
                           $"{DateTime.Now:yyyyMMddHHmmss}";
-                tmpName = Regex.Replace(tmpName, @"[\/:*?""<>|]", ""); // 移除非法字元
+                if (!string.IsNullOrEmpty(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
                 string templateFilePath = Path.Combine(baseFilePath, "XLT", "RandomTumblePillingTest.xltx");

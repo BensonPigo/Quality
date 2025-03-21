@@ -188,6 +188,9 @@ namespace BusinessLogicLayer.Service
                 if (!Directory.Exists(tmpPath)) Directory.CreateDirectory(tmpPath);
 
                 tmpName = $"Mockup Oven _{mockupOven.POID}_{mockupOven.StyleID}_{mockupOven.Article}_{mockupOven.Result}_{DateTime.Now:yyyyMMddHHmmss}";
+                if (!string.IsNullOrEmpty(AssignedFineName)) tmpName = AssignedFineName;
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 if (!File.Exists(xltPath)) throw new FileNotFoundException("Template not found", xltPath);
 

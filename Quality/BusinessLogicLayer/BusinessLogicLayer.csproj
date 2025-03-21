@@ -181,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.cs" />
+    <Compile Include="Helper\FileNameHelper.cs" />
     <Compile Include="Helper\SetListItem.cs" />
     <Compile Include="Helper\StringEncryptHelper.cs" />
     <Compile Include="Interface\Authority\IAuthorityService.cs" />

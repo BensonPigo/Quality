@@ -431,7 +431,8 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         tmpName = AssignedFineName;
                     }
 
-                    tmpName = RemoveInvalidFileNameChars(tmpName);
+                    // 去除非法字元
+                    tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                     string fileName = $"{tmpName}.xlsx";
                     string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
@@ -459,15 +460,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
             return result;
         }
 
-        private string RemoveInvalidFileNameChars(string input)
-        {
-            char[] invalidChars = Path.GetInvalidFileNameChars();
-            foreach (char c in invalidChars)
-            {
-                input = input.Replace(c.ToString(), "");
-            }
-            return input;
-        }
 
         private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
         {
