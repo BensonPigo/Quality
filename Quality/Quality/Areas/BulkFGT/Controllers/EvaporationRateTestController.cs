@@ -7,6 +7,7 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -35,10 +36,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             else if (TempData["EditSaveEvaporationRateTestModel"] != null)
             {
                 model = (EvaporationRateTest_ViewModel)TempData["EditSaveEvaporationRateTestModel"];
-            }
-            else if (TempData["DeleteEvaporationRateTestModel"] != null)
-            {
-                model = (EvaporationRateTest_ViewModel)TempData["DeleteEvaporationRateTestModel"];
             }
 
             return View(model);
@@ -135,7 +132,6 @@ namespace Quality.Areas.BulkFGT.Controllers
                 model.ErrorMessage = $@"msg.WithInfo(""{model.ErrorMessage.Replace("'", string.Empty)}"");";
                 return View("Index", model);
             }
-            TempData["DeleteEvaporationRateTestModel"] = model;
             return RedirectToAction("Index");
         }
 
@@ -152,11 +148,11 @@ namespace Quality.Areas.BulkFGT.Controllers
     <input class="""" id=""TimeList_{TimeListIdx}__SpecimenUkey"" name = ""TimeList[{TimeListIdx}].SpecimenUkey"" style = ""width:100% "" type = ""hidden"" value = ""0"" >
     <input class="""" id=""TimeList_{TimeListIdx}__SpecimenID"" name=""TimeList[{TimeListIdx}].SpecimenID"" style=""width:100%"" type=""hidden"" value=""{specimenID}"">
     <input class="""" id=""TimeList_{TimeListIdx}__DetailType"" name=""TimeList[{TimeListIdx}].DetailType"" style=""width:100%"" type=""hidden"" value=""{detailType}"">
-    <input class="""" id=""TimeList_{TimeListIdx}__Time"" name=""TimeList[{TimeListIdx}].Time"" style=""width:100%"" type=""hidden"" value=""{lastTime}"">
+    
     <input class="""" id=""TimeList_{TimeListIdx}__InitialTime"" name=""TimeList[{TimeListIdx}].InitialTime"" style=""width:100%"" type=""hidden"" value=""0"">
     <input class="""" id=""TimeList_{TimeListIdx}__InitialTimeUkey"" name=""TimeList[{TimeListIdx}].InitialTimeUkey"" style=""width:100%"" type=""hidden"" value=""0"">
     <input class="""" id=""TimeList_{TimeListIdx}__IsInitialMass"" name=""TimeList[{TimeListIdx}].IsInitialMass"" style=""width:100%"" type=""hidden"" value=""False"">
-    <input class="""" id=""TimeList_{TimeListIdx}__Time"" name=""TimeList[{TimeListIdx}].Time"" style=""width:100%"" type=""text"" value=""{lastTime}"" readonly>
+    <input class=""Time"" id=""TimeList_{TimeListIdx}__Time"" name=""TimeList[{TimeListIdx}].Time"" detailtype=""{detailType}"" specimenid=""{specimenID}""  style=""width:100%"" type=""text"" value=""{lastTime}"" readonly>
 </div>
 <div class=""divTime10"">        
     <input detailtype=""{detailType}"" isinitialmass=""False"" specimenid=""{specimenID}"" time=""{lastTime}"" class=""CanEdit Mass"" id=""TimeList_{TimeListIdx}__Mass"" name=""TimeList[{TimeListIdx}].Mass"" onchange=""value=MassCheck(value);AutoUpdateTime(this)"" style=""width:100%"" type=""text"" value=""0"">
@@ -284,7 +280,6 @@ namespace Quality.Areas.BulkFGT.Controllers
         [SessionAuthorizeAttribute]
         public ActionResult ToExcel(string ReportNo)
         {
-
             EvaporationRateTest_ViewModel result = _Service.GetReport(ReportNo, false);
 
             if (!result.Result)
@@ -293,7 +288,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 return Json(new { result.Result, ErrMsg = result.ErrorMessage });
             }
 
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(result.TempFileName);
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
@@ -309,7 +304,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 return Json(new { result.Result, ErrMsg = result.ErrorMessage });
             }
 
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(result.TempFileName);
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }

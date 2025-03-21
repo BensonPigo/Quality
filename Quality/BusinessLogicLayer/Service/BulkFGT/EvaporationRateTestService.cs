@@ -25,6 +25,9 @@ using DatabaseObject.ResultModel;
 using System.Web.UI.WebControls;
 using System.Web;
 using Org.BouncyCastle.Asn1.Ocsp;
+using static Sci.MyUtility;
+using Microsoft.Office.Core;
+using ClosedXML.Excel;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -47,7 +50,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 DetailList = new List<EvaporationRateTest_Detail>(),
                 SpecimenList = new List<EvaporationRateTest_Specimen>(),
                 TimeList = new List<EvaporationRateTest_Specimen_Time>(),
-                RateList = new List<EvaporationRateTest_Specimen_Rate>(),
+                //RateList = new List<EvaporationRateTest_Specimen_Rate>(),
                 Article_Source = new List<SelectListItem>(),
             };
 
@@ -86,6 +89,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             DetailType = type,
                             SpecimenID = "Specimen 3"
                         });
+                        model.SpecimenList.Add(new EvaporationRateTest_Specimen()
+                        {
+                            DetailType = type,
+                            SpecimenID = "Specimen 4"
+                        });
+                        model.SpecimenList.Add(new EvaporationRateTest_Specimen()
+                        {
+                            DetailType = type,
+                            SpecimenID = "Specimen 5"
+                        });
                     }
 
                     // EvaporationRateTest_Specimen_Time
@@ -98,70 +111,17 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             Time = 0,
                             IsInitialMass = true,
                         });
-                        model.TimeList.Add(new EvaporationRateTest_Specimen_Time()
-                        {
-                            DetailType = specimen.DetailType,
-                            SpecimenID = specimen.SpecimenID,
-                            Time = 10,
-                            IsInitialMass = false,
-                            InitialTime = 0
-                        });
-                        model.TimeList.Add(new EvaporationRateTest_Specimen_Time()
-                        {
-                            DetailType = specimen.DetailType,
-                            SpecimenID = specimen.SpecimenID,
-                            Time = 20,
-                            IsInitialMass = false,
-                            InitialTime = 0
-                        });
-                        model.TimeList.Add(new EvaporationRateTest_Specimen_Time()
-                        {
-                            DetailType = specimen.DetailType,
-                            SpecimenID = specimen.SpecimenID,
-                            Time = 30,
-                            IsInitialMass = false,
-                            InitialTime = 0
-                        });
-                        model.TimeList.Add(new EvaporationRateTest_Specimen_Time()
-                        {
-                            DetailType = specimen.DetailType,
-                            SpecimenID = specimen.SpecimenID,
-                            Time = 40,
-                            IsInitialMass = false,
-                            InitialTime = 0
-                        });
-                    }
 
-                    // EvaporationRateTest_Specimen_Rate
-                    foreach (var specimen in model.SpecimenList)
-                    {
-                        model.RateList.Add(new EvaporationRateTest_Specimen_Rate()
-                        {
-                            DetailType = specimen.DetailType,
-                            SpecimenID = specimen.SpecimenID,
-                            RateName = "R1",
-                            Subtrahend_Time = 0,
-                            Minuend_Time = 10,
-                            Ratio = 6,
-                        });
-                        model.RateList.Add(new EvaporationRateTest_Specimen_Rate()
-                        {
-                            DetailType = specimen.DetailType,
-                            SpecimenID = specimen.SpecimenID,
-                            RateName = "R2",
-                            Subtrahend_Time = 10,
-                            Minuend_Time = 20,
-                            Ratio = 6,
-                        });
-                        model.RateList.Add(new EvaporationRateTest_Specimen_Rate()
-                        {
-                            DetailType = specimen.DetailType,
-                            SpecimenID = specimen.SpecimenID,
-                            RateName = "R3",
-                            Subtrahend_Time = 20,
-                            Minuend_Time = 30,
-                            Ratio = 6,
-                        });
+                        //for (int time = 0; time <= 15; time += 3)
+                        //{
+                        //    model.TimeList.Add(new EvaporationRateTest_Specimen_Time()
+                        //    {
+                        //        DetailType = specimen.DetailType,
+                        //        SpecimenID = specimen.SpecimenID,
+                        //        Time = time,
+                        //        IsInitialMass = time == 0,
+                        //    });
+                        //}
                     }
                 }
                 model.Result = true;
@@ -302,10 +262,10 @@ namespace BusinessLogicLayer.Service.BulkFGT
                         ReportNo = model.Main.ReportNo
                     });
 
-                    model.RateList = _Provider.GetRateList(new EvaporationRateTest_Request()
-                    {
-                        ReportNo = model.Main.ReportNo
-                    });
+                    //model.RateList = _Provider.GetRateList(new EvaporationRateTest_Request()
+                    //{
+                    //    ReportNo = model.Main.ReportNo
+                    //});
 
 
 
@@ -408,30 +368,30 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _Provider = new EvaporationRateTestProvider(_ISQLDataTransaction);
 
-                if (!Req.DetailList.Any())
+                if (Req.DetailList == null || !Req.DetailList.Any())
                 {
                     model.Result = false;
                     model.ErrorMessage = "Detail can not be empty.";
                     return model;
                 }
-                if (!Req.SpecimenList.Any())
+                if (Req.SpecimenList == null || !Req.SpecimenList.Any())
                 {
                     model.Result = false;
                     model.ErrorMessage = "Specimen List can not be empty.";
                     return model;
                 }
-                if (!Req.TimeList.Any())
+                if (Req.TimeList == null || !Req.TimeList.Any())
                 {
                     model.Result = false;
                     model.ErrorMessage = "Time List can not be empty.";
                     return model;
                 }
-                if (!Req.RateList.Any())
-                {
-                    model.Result = false;
-                    model.ErrorMessage = "Rate List can not be empty.";
-                    return model;
-                }
+                //if (Req.RateList == null || !Req.RateList.Any())
+                //{
+                //    model.Result = false;
+                //    model.ErrorMessage = "Rate List can not be empty.";
+                //    return model;
+                //}
 
                 // 新增，並取得ReportNo
                 _Provider.Insert_EvaporationRateTest(Req, MDivision, UserID, out newReportNo);
@@ -463,32 +423,32 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             time.SpecimenUkey = newSpecimenin.Ukey;
                         }
 
-                        foreach (var rate in Req.RateList.Where(o => o.DetailType == newSpecimenin.DetailType && o.SpecimenID == newSpecimenin.SpecimenID))
-                        {
-                            rate.SpecimenUkey = newSpecimenin.Ukey;
-                        }
+                        //foreach (var rate in Req.RateList.Where(o => o.DetailType == newSpecimenin.DetailType && o.SpecimenID == newSpecimenin.SpecimenID))
+                        //{
+                        //    rate.SpecimenUkey = newSpecimenin.Ukey;
+                        //}
 
                     }
                 }
 
                 _Provider.Processe_EvaporationRateTest_Specimen_Time(Req, UserID, out List<EvaporationRateTest_Specimen_Time> NewTimeList);
-                if (NewTimeList.Any())
-                {
+                //if (NewTimeList.Any())
+                //{
 
-                    int idx = 0;
-                    foreach (var rate in Req.RateList)
-                    {
-                        // R1 = Time 0 - Time 10
-                        // R2 = Time 10 - Time 20...以此類推
-                        // 但最後兩個不相減
-                        var Subtrahend = NewTimeList.Where(o => o.DetailType == rate.DetailType && o.SpecimenID == rate.SpecimenID && o.Time == rate.Subtrahend_Time).FirstOrDefault();
-                        var Minuend = NewTimeList.Where(o => o.DetailType == rate.DetailType && o.SpecimenID == rate.SpecimenID && o.Time == rate.Minuend_Time).FirstOrDefault();
+                //    int idx = 0;
+                //    foreach (var rate in Req.RateList)
+                //    {
+                //        // R1 = Time 0 - Time 10
+                //        // R2 = Time 10 - Time 20...以此類推
+                //        // 但最後兩個不相減
+                //        var Subtrahend = NewTimeList.Where(o => o.DetailType == rate.DetailType && o.SpecimenID == rate.SpecimenID && o.Time == rate.Subtrahend_Time).FirstOrDefault();
+                //        var Minuend = NewTimeList.Where(o => o.DetailType == rate.DetailType && o.SpecimenID == rate.SpecimenID && o.Time == rate.Minuend_Time).FirstOrDefault();
 
-                        rate.Subtrahend_TimeUkey = Subtrahend.Ukey;
-                        rate.Minuend_TimeUkey = Minuend.Ukey;
-                    }
-                }
-                _Provider.Processe_EvaporationRateTest_Specimen_Rate(Req, UserID);
+                //        rate.Subtrahend_TimeUkey = Subtrahend.Ukey;
+                //        rate.Minuend_TimeUkey = Minuend.Ukey;
+                //    }
+                //}
+                //_Provider.Processe_EvaporationRateTest_Specimen_Rate(Req, UserID);
 
                 _ISQLDataTransaction.Commit();
 
@@ -528,30 +488,30 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _Provider = new EvaporationRateTestProvider(_ISQLDataTransaction);
 
-                if (!Req.DetailList.Any())
+                if (Req.DetailList == null || !Req.DetailList.Any())
                 {
                     model.Result = false;
                     model.ErrorMessage = "Detail can not be empty.";
                     return model;
                 }
-                if (!Req.SpecimenList.Any())
+                if (Req.SpecimenList == null || !Req.SpecimenList.Any())
                 {
                     model.Result = false;
                     model.ErrorMessage = "Specimen List can not be empty.";
                     return model;
                 }
-                if (!Req.TimeList.Any())
+                if (Req.TimeList == null || !Req.TimeList.Any())
                 {
                     model.Result = false;
                     model.ErrorMessage = "Time List can not be empty.";
                     return model;
                 }
-                if (!Req.RateList.Any())
-                {
-                    model.Result = false;
-                    model.ErrorMessage = "Rate List can not be empty.";
-                    return model;
-                }
+                //if (Req.RateList == null || !Req.RateList.Any())
+                //{
+                //    model.Result = false;
+                //    model.ErrorMessage = "Rate List can not be empty.";
+                //    return model;
+                //}
 
                 // 更新表頭，並取得ReportNo
                 _Provider.Update_EvaporationRateTest(Req, UserID);
@@ -571,32 +531,32 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             time.SpecimenUkey = newSpecimenin.Ukey;
                         }
 
-                        foreach (var rate in Req.RateList.Where(o => o.DetailType == newSpecimenin.DetailType && o.SpecimenID == newSpecimenin.SpecimenID))
-                        {
-                            rate.SpecimenUkey = newSpecimenin.Ukey;
-                        }
+                        //foreach (var rate in Req.RateList.Where(o => o.DetailType == newSpecimenin.DetailType && o.SpecimenID == newSpecimenin.SpecimenID))
+                        //{
+                        //    rate.SpecimenUkey = newSpecimenin.Ukey;
+                        //}
 
                     }
                 }
                 _Provider.Processe_EvaporationRateTest_Specimen_Time(Req, UserID, out List<EvaporationRateTest_Specimen_Time> NewTimeList);
 
-                if (NewTimeList.Any())
-                {
+                //if (NewTimeList.Any())
+                //{
 
-                    int idx = 0;
-                    foreach (var rate in Req.RateList)
-                    {
-                        // R1 = Time 0 - Time 10
-                        // R2 = Time 10 - Time 20...以此類推
-                        // 但最後兩個不相減
-                        var Subtrahend = NewTimeList.Where(o => o.DetailType == rate.DetailType && o.SpecimenID == rate.SpecimenID && o.Time == rate.Subtrahend_Time).FirstOrDefault();
-                        var Minuend = NewTimeList.Where(o => o.DetailType == rate.DetailType && o.SpecimenID == rate.SpecimenID && o.Time == rate.Minuend_Time).FirstOrDefault();
+                //    int idx = 0;
+                //    foreach (var rate in Req.RateList)
+                //    {
+                //        // R1 = Time 0 - Time 10
+                //        // R2 = Time 10 - Time 20...以此類推
+                //        // 但最後兩個不相減
+                //        var Subtrahend = NewTimeList.Where(o => o.DetailType == rate.DetailType && o.SpecimenID == rate.SpecimenID && o.Time == rate.Subtrahend_Time).FirstOrDefault();
+                //        var Minuend = NewTimeList.Where(o => o.DetailType == rate.DetailType && o.SpecimenID == rate.SpecimenID && o.Time == rate.Minuend_Time).FirstOrDefault();
 
-                        rate.Subtrahend_TimeUkey = Subtrahend.Ukey;
-                        rate.Minuend_TimeUkey = Minuend.Ukey;
-                    }
-                }
-                _Provider.Processe_EvaporationRateTest_Specimen_Rate(Req, UserID);
+                //        rate.Subtrahend_TimeUkey = Subtrahend.Ukey;
+                //        rate.Minuend_TimeUkey = Minuend.Ukey;
+                //    }
+                //}
+                //_Provider.Processe_EvaporationRateTest_Specimen_Rate(Req, UserID);
 
                 //_Provider.UpdateAverage(Req.Main);
 
@@ -735,6 +695,16 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
                 Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
 
+                // 取得工作表上所有圖形物件
+                Microsoft.Office.Interop.Excel.Shapes shapes = worksheet.Shapes;
+
+                // 根據名稱，搜尋文字方塊物件
+                Microsoft.Office.Interop.Excel.Shape beforeChart1 = shapes.Item("BeforeChart1");
+                Microsoft.Office.Interop.Excel.Shape beforeChart2 = shapes.Item("BeforeChart2");
+                Microsoft.Office.Interop.Excel.Shape beforeChart3 = shapes.Item("BeforeChart3");
+                Microsoft.Office.Interop.Excel.Shape beforeChart4 = shapes.Item("BeforeChart4");
+                Microsoft.Office.Interop.Excel.Shape beforeChart5 = shapes.Item("BeforeChart5");
+
                 tmpName = $"Evaporation Rate Test_{model.Main.OrderID}_" +
                    $"{model.Main.StyleID}_" +
                    $"{model.Main.FabricRefNo}_" +
@@ -744,372 +714,356 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                 #region Before Sheet
 
-                worksheet.Cells[2, 2] = model.Main.ReportNo;
-                worksheet.Cells[2, 7] = model.Main.ReportDateText;
+                worksheet.Cells[3, 10] = model.Main.ReportNo;
+                worksheet.Cells[3, 17] = model.Main.ReportDateText;
+                worksheet.Cells[3, 24] = model.Main.SubmitDateText;
 
-                worksheet.Cells[3, 2] = model.Main.OrderID;
-                worksheet.Cells[3, 7] = model.Main.FactoryID;
+                worksheet.Cells[4, 10] = model.Main.OrderID;
+                worksheet.Cells[4, 17] = model.Main.BrandID;
+                worksheet.Cells[4, 24] = model.Main.SeasonID;
 
-                worksheet.Cells[4, 2] = model.Main.BrandID;
-                worksheet.Cells[4, 7] = model.Main.Article;
+                worksheet.Cells[5, 10] = model.Main.StyleID;
+                worksheet.Cells[5, 17] = model.Main.Article;
+                worksheet.Cells[5, 24] = model.Main.Seq;
 
-                worksheet.Cells[5, 2] = model.Main.StyleID;
-                worksheet.Cells[5, 7] = model.Main.FabricColor;
+                worksheet.Cells[6, 10] = model.Main.FabricRefNo;
+                worksheet.Cells[6, 17] = model.Main.FabricColor;
+                worksheet.Cells[6, 24] = model.Main.FabricDescription;
 
-                worksheet.Cells[6, 2] = model.Main.SeasonID;
-                worksheet.Cells[6, 7] = model.Main.FabricRefNo;
-
-                worksheet.Cells[7, 1] = $"Before Wash AVERAGE RATE :  {model.Main.BeforeAverageRate} g/h    ";
-                worksheet.Cells[7, 2] = $"After Wash AVERAGE RATE :  {model.Main.AfterAverageRate} g/h    ";
-                worksheet.Cells[7, 7] = model.Main.Result;
-
-                worksheet.Cells[8, 2] = model.Main.Remark;
-
-
-                var specimenList = model.SpecimenList.Where(o => o.DetailType == "Before").OrderBy(o => o.SpecimenID).ToList();
-
-                int bonusRow = 0;
-                foreach (var specimen in specimenList)
+                // Technician 、 Approver 欄位
+                if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
                 {
-                    // BeforeSpecimen 1 => BeforeSpecimen1
-                    string ChartObjectsName = $@"Before{specimen.SpecimenID.Replace(" ", string.Empty)}";
+                    string TechnicianName = ReportTechnician.Rows[0]["TechnicianName"].ToString();
+
+                    // 姓名
+                    worksheet.Cells[63, 9] = TechnicianName;
+
+                    // Signture 圖片
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[65, 9];
+                    if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
+                    {
+
+                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
+
+                        MemoryStream ms = new MemoryStream(TestBeforePicture);
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                        string imageName = $"{Guid.NewGuid()}.jpg";
+                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                        img.Save(imgPath);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
+                    }
+
+                    string ApproverName = ReportTechnician.Rows[0]["ApproverName"].ToString();
+
+                    // 姓名
+                    worksheet.Cells[63, 23] = ApproverName;
+
+                    // Signture 圖片
+                    cell = worksheet.Cells[65, 23];
+                    if (ReportTechnician.Rows[0]["ApproverSignture"] != DBNull.Value)
+                    {
+
+                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["ApproverSignture"]; // 圖片的 byte[]
+
+                        MemoryStream ms = new MemoryStream(TestBeforePicture);
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                        string imageName = $"{Guid.NewGuid()}.jpg";
+                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                        img.Save(imgPath);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
+                    }
+                }
+
+                var specimenBeforeList = model.SpecimenList.Where(o => o.DetailType == "Before").OrderBy(o => o.SpecimenID).ToList();
+
+                Dictionary<string, int> dicSpecimenColIndex = new Dictionary<string, int>()
+                {
+                    ["Specimen 1"] = 2,
+                    ["Specimen 2"] = 9,
+                    ["Specimen 3"] = 16,
+                    ["Specimen 4"] = 23,
+                    ["Specimen 5"] = 30,
+                };
+
+                int specimenStartColIdx = 2;
+                int specimenAvgIdx = 53;
+
+                // specimen逐一開始填入Mass
+                foreach (var specimen in specimenBeforeList)
+                {
+                    // B15
+                    int massInputRowIndex = 15;
+                    int massInputColIdx = dicSpecimenColIndex[specimen.SpecimenID];
+                    int ctnTimeRow = 0;
+
                     var timeListt = model.TimeList.Where(o => o.DetailType == "Before" && o.SpecimenID == specimen.SpecimenID).OrderBy(o => o.Time).ToList();
-                    var rateList = model.RateList.Where(o => o.DetailType == "Before" && o.SpecimenID == specimen.SpecimenID).OrderBy(o => o.RateName).ToList();
 
-                    #region Rate 列表處理
-
-                    // 計算每個Rate List的第一Row、最後一Row
-                    int startTimeRowBySpecimen = 0;
-                    int startRateRowBySpecimen = 0;
-                    int lastRateRowBySpecimen = 0;
-                    int AverageRateRowBySpecimen = 0;
-                    int SpecimenAverageRateRowBySpecimen = 0;
-
-                    switch (specimen.SpecimenID)
+                    var specimenAvg = specimen.RateAverage;
+                    worksheet.Cells[specimenAvgIdx, 12] = specimenAvg; // L53
+                    if (specimenAvg == 0)
                     {
-                        case "Specimen 1":
-                            startTimeRowBySpecimen = 25;
-                            startRateRowBySpecimen = 31;
-                            lastRateRowBySpecimen = 33;
-                            AverageRateRowBySpecimen = 37;
-                            if (rateList.Count() > 3)
-                            {
-                                bonusRow += rateList.Count() - 3;
-                            }
-                            break;
-                        case "Specimen 2":
-                            startTimeRowBySpecimen = 56 + bonusRow;
-                            startRateRowBySpecimen = 62 + bonusRow;
-                            lastRateRowBySpecimen = 64 + bonusRow;
-                            AverageRateRowBySpecimen = 68 + bonusRow;
+                        worksheet.Cells[specimenAvgIdx, 12] = null;
+                        worksheet.Cells[specimenAvgIdx, 13] = null;
+                    }
+                    specimenAvgIdx++;
 
-                            if (rateList.Count() > 3)
-                            {
-                                bonusRow += rateList.Count() - 3;
-                            }
-                            break;
-                        case "Specimen 3":
-                            startTimeRowBySpecimen = 87 + bonusRow;
-                            startRateRowBySpecimen = 93 + bonusRow;
-                            lastRateRowBySpecimen = 95 + bonusRow;
-                            AverageRateRowBySpecimen = 99 + bonusRow;
-
-                            if (rateList.Count() > 3)
-                            {
-                                bonusRow += rateList.Count() - 3;
-                            }
-
-                            // Specimen Average Rate 一個Specimen只會有一個，所以最後再做就好
-                            SpecimenAverageRateRowBySpecimen = 103 + bonusRow;
-                            break;
-                        default:
-                            break;
+                    // 若整個Mass都為空，把不需要的公式清空，跳過Specimen
+                    if (!timeListt.Any(o => o.Mass > 0))
+                    {
+                        continue;
                     }
 
-                    // Rate List 複製Row：若有第4筆，則複製一次；有第5筆，則複製2次
-                    for (int i = 0; i < rateList.Count() - 3; i++)
+                    // Mss填入
+                    foreach (var t in timeListt)
                     {
-                        Microsoft.Office.Interop.Excel.Range paste = worksheet.get_Range($"A{lastRateRowBySpecimen + i}", Type.Missing);
-                        Microsoft.Office.Interop.Excel.Range copyRow = worksheet.get_Range($"A{lastRateRowBySpecimen}").EntireRow;
-                        paste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
-                    }
-
-                    // 塞入Rate List的值：前3筆已經有了Rate Name 所以塞值就好，從第4筆開始要額外塞Rate Nmae
-                    int addCtn = 0;
-                    for (int i = 0; i < rateList.Count(); i++)
-                    {
-                        string rateName = rateList[i].RateName;
-                        int Subtrahend_Time = rateList[i].Subtrahend_Time;
-                        int Minuend_Time = rateList[i].Minuend_Time;
-
-                        // R1 ~ R3
-                        if (i <= 2)
+                        if (t.IsInitialMass)
                         {
-                            // Rate Value
-                            worksheet.Cells[startRateRowBySpecimen + i, 2] = rateList[i].Value;
+                            //worksheet.Cells[13, massInputColIdx] = t.Mass; // B13
+                            worksheet.Cells[13, massInputColIdx + 2] = t.Mass; // D13
                         }
-                        else // R4 ~ 
-                        {
-                            addCtn++;
-                            // Rate Name
-                            // 範例：R3(Rate of 20~30min)
-                            worksheet.Cells[lastRateRowBySpecimen + addCtn, 1] = $"{rateName}(Rate of {Subtrahend_Time}~{Minuend_Time}min)";
-
-                            // Rate Value
-                            worksheet.Cells[lastRateRowBySpecimen + addCtn, 2] = rateList[i].Value;
-                        }
+                        worksheet.Cells[massInputRowIndex, massInputColIdx] = t.Mass;
+                        massInputRowIndex++;
+                        ctnTimeRow++;
                     }
-                    worksheet.Cells[lastRateRowBySpecimen + addCtn + 4, 2] = specimen.RateAverage;
 
-                    #endregion
-
-                    #region Time 列表處理
-                    // Time預設到F欄，超過F欄則動態生成
-
-                    // Time 若有 > 40，則進行複製
-                    string lastTimeColumnName = "F";
-                    if (timeListt.Count() + 1 > 6) // A欄也要算進去
+                    // 清空剩下的公式，等於20代表剛好填滿60分鐘
+                    if (ctnTimeRow < 20)
                     {
-                        int baseCtn = 5;
-                        int bounsCol = timeListt.Count() - 5;
-
-                        for (int i = 1; i <= bounsCol; i++)
-                        {
-
-                            Microsoft.Office.Interop.Excel.Range copyRow = worksheet.get_Range($"{lastTimeColumnName}{startTimeRowBySpecimen}", $"{lastTimeColumnName}{startTimeRowBySpecimen + 2}");
-                            string newColName = ConvertNumberToLetter(baseCtn + 1 + i);
-                            Microsoft.Office.Interop.Excel.Range paste = worksheet.get_Range($"{newColName}{startTimeRowBySpecimen}", Type.Missing);
-                            paste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
-                        }
+                        // B21:F35
+                        Range range = worksheet.Range[$"{MyUtility.Excel.ConvertNumericToExcelColumn(specimenStartColIdx)}{massInputRowIndex}:{MyUtility.Excel.ConvertNumericToExcelColumn(specimenStartColIdx + 4)}35"];
+                        // 清空範圍的值
+                        range.ClearContents();
                     }
 
-                    // 填值
-                    for (int i = 0; i < timeListt.Count(); i++)
+                    // 設定圖表的資料範圍，由於前面欄位是多抓一格，所以這邊扣掉1才是正確的範圍
+                    massInputRowIndex--;
+                    if (specimen.SpecimenID == "Specimen 1")
                     {
-                        int time = timeListt[i].Time;
-                        string mass = timeListt[i].Mass.ToString();
-                        string evaporation = timeListt[i].Evaporation.ToString();
+                        Chart chart = beforeChart1.Chart;
 
-                        // Time
-                        worksheet.Cells[startTimeRowBySpecimen, 2 + i] = time;
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='BEFORE WASH'!$A$15:$A${massInputRowIndex},'BEFORE WASH'!$C$15:$C${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
 
-                        // Mass
-                        worksheet.Cells[startTimeRowBySpecimen + 1, 2 + i] = mass;
-
-                        // Evaporation
-                        worksheet.Cells[startTimeRowBySpecimen + 2, 2 + i] = evaporation;
                     }
-                    #endregion
-
-                    if (specimen.SpecimenID == "Specimen 3")
+                    else if (specimen.SpecimenID == "Specimen 2")
                     {
-                        // Specimen Rate Average
-                        worksheet.Cells[SpecimenAverageRateRowBySpecimen, 2] = model.Main.BeforeAverageRate;
+                        Chart chart = beforeChart2.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='BEFORE WASH'!$H$15:$H${massInputRowIndex},'BEFORE WASH'!$J$15:$J${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+                    }
+                    else if (specimen.SpecimenID == "Specimen 3")
+                    {
+                        Chart chart = beforeChart3.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='BEFORE WASH'!$O$15:$O${massInputRowIndex},'BEFORE WASH'!$Q$15:$Q${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+                    }
+                    else if (specimen.SpecimenID == "Specimen 4")
+                    {
+                        Chart chart = beforeChart4.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='BEFORE WASH'!$V$15:$V${massInputRowIndex},'BEFORE WASH'!$X$15:$X${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+                    }
+                    else if (specimen.SpecimenID == "Specimen 5")
+                    {
+                        Chart chart = beforeChart5.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='BEFORE WASH'!$AC$15:$AC${massInputRowIndex},'BEFORE WASH'!$AE$15:$AE${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
                     }
 
-                    // 折線圖
-                    // 取得範本上的圖表集合
-                    Microsoft.Office.Interop.Excel.ChartObjects ChartObjects = worksheet.ChartObjects();
 
-                    // 根據Name從集合找出圖表物件
-                    Microsoft.Office.Interop.Excel.ChartObject chaartBeforeSpecimen = ChartObjects.Item(ChartObjectsName);
-                    Microsoft.Office.Interop.Excel.Chart chart = chaartBeforeSpecimen.Chart;
-
-                    // 找到設定的數列，有幾條線則有幾個數列
-                    Microsoft.Office.Interop.Excel.Series series = chaartBeforeSpecimen.Chart.SeriesCollection(1);
-
-                    // 設定X軸Y軸的資料範圍
-                    series.XValues = $"='Before wash retest'!$B${startTimeRowBySpecimen}:${lastTimeColumnName}${startTimeRowBySpecimen}";
-                    series.Values = $"='Before wash retest'!$B${startTimeRowBySpecimen + 2}:${lastTimeColumnName}${startTimeRowBySpecimen + 2}";
-
+                    // 下一個Specimen間隔6 column
+                    specimenStartColIdx += 7;
                 }
 
                 #endregion
-                
+
+                specimenStartColIdx = 2;
                 #region After Sheet
                 worksheet = excel.ActiveWorkbook.Worksheets[2];
+                shapes = worksheet.Shapes;
+                Microsoft.Office.Interop.Excel.Shape afterChart1 = shapes.Item("AfterChart1");
+                Microsoft.Office.Interop.Excel.Shape afterChart2 = shapes.Item("AfterChart2");
+                Microsoft.Office.Interop.Excel.Shape afterChart3 = shapes.Item("AfterChart3");
+                Microsoft.Office.Interop.Excel.Shape afterChart4 = shapes.Item("AfterChart4");
+                Microsoft.Office.Interop.Excel.Shape afterChart5 = shapes.Item("AfterChart5");
 
-                worksheet.Cells[2, 2] = model.Main.ReportNo;
-                worksheet.Cells[2, 7] = model.Main.ReportDateText;
+                worksheet.Cells[3, 10] = model.Main.ReportNo;
+                worksheet.Cells[3, 17] = model.Main.ReportDateText;
+                worksheet.Cells[3, 24] = model.Main.SubmitDateText;
 
-                worksheet.Cells[3, 2] = model.Main.OrderID;
-                worksheet.Cells[3, 7] = model.Main.FactoryID;
+                worksheet.Cells[4, 10] = model.Main.OrderID;
+                worksheet.Cells[4, 17] = model.Main.BrandID;
+                worksheet.Cells[4, 24] = model.Main.SeasonID;
 
-                worksheet.Cells[4, 2] = model.Main.BrandID;
-                worksheet.Cells[4, 7] = model.Main.Article;
+                worksheet.Cells[5, 10] = model.Main.StyleID;
+                worksheet.Cells[5, 17] = model.Main.Article;
+                worksheet.Cells[5, 24] = model.Main.Seq;
 
-                worksheet.Cells[5, 2] = model.Main.StyleID;
-                worksheet.Cells[5, 7] = model.Main.FabricColor;
+                worksheet.Cells[6, 10] = model.Main.FabricRefNo;
+                worksheet.Cells[6, 17] = model.Main.FabricColor;
+                worksheet.Cells[6, 24] = model.Main.FabricDescription;
 
-                worksheet.Cells[6, 2] = model.Main.SeasonID;
-                worksheet.Cells[6, 7] = model.Main.FabricRefNo;
-
-                worksheet.Cells[7, 1] = $"Before Wash AVERAGE RATE :  {model.Main.BeforeAverageRate} g/h    ";
-                worksheet.Cells[7, 2] = $"After Wash AVERAGE RATE :  {model.Main.AfterAverageRate} g/h    ";
-                worksheet.Cells[7, 7] = model.Main.Result;
-
-                worksheet.Cells[8, 2] = model.Main.Remark;
-
-                var specimenList2 = model.SpecimenList.Where(o => o.DetailType == "After").OrderBy(o => o.SpecimenID).ToList();
-
-                bonusRow = 0;
-                foreach (var specimen in specimenList2)
+                // Technician 、 Approver 欄位
+                if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
                 {
-                    // AfterSpecimen 1 => AfterSpecimen1
-                    string ChartObjectsName = $@"After{specimen.SpecimenID.Replace(" ", string.Empty)}";
-                    var timeListt = model.TimeList.Where(o => o.DetailType == "After" && o.SpecimenID == specimen.SpecimenID).OrderBy(o => o.Time).ToList();
-                    var rateList = model.RateList.Where(o => o.DetailType == "After" && o.SpecimenID == specimen.SpecimenID).OrderBy(o => o.RateName).ToList();
+                    string TechnicianName = ReportTechnician.Rows[0]["TechnicianName"].ToString();
 
+                    // 姓名
+                    worksheet.Cells[63, 9] = TechnicianName;
 
-                    #region Rate 列表處理
-
-                    // 計算每個Rate List的第一Row、最後一Row
-                    int startTimeRowBySpecimen = 0;
-                    int startRateRowBySpecimen = 0;
-                    int lastRateRowBySpecimen = 0;
-                    int AverageRateRowBySpecimen = 0;
-                    int SpecimenAverageRateRowBySpecimen = 0;
-
-                    switch (specimen.SpecimenID)
+                    // Signture 圖片
+                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[65, 9];
+                    if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
                     {
-                        case "Specimen 1":
-                            startTimeRowBySpecimen = 25;
-                            startRateRowBySpecimen = 31;
-                            lastRateRowBySpecimen = 33;
-                            AverageRateRowBySpecimen = 37;
-                            if (rateList.Count() > 3)
-                            {
-                                bonusRow += rateList.Count() - 3;
-                            }
-                            break;
-                        case "Specimen 2":
-                            startTimeRowBySpecimen = 56 + bonusRow;
-                            startRateRowBySpecimen = 62 + bonusRow;
-                            lastRateRowBySpecimen = 64 + bonusRow;
-                            AverageRateRowBySpecimen = 68 + bonusRow;
 
-                            if (rateList.Count() > 3)
-                            {
-                                bonusRow += rateList.Count() - 3;
-                            }
-                            break;
-                        case "Specimen 3":
-                            startTimeRowBySpecimen = 87 + bonusRow;
-                            startRateRowBySpecimen = 93 + bonusRow;
-                            lastRateRowBySpecimen = 95 + bonusRow;
-                            AverageRateRowBySpecimen = 99 + bonusRow;
+                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
 
-                            if (rateList.Count() > 3)
-                            {
-                                bonusRow += rateList.Count() - 3;
-                            }
+                        MemoryStream ms = new MemoryStream(TestBeforePicture);
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                        string imageName = $"{Guid.NewGuid()}.jpg";
+                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
 
-                            // Specimen Average Rate 一個Specimen只會有一個，所以最後再做就好
-                            SpecimenAverageRateRowBySpecimen = 103 + bonusRow;
-                            break;
-                        default:
-                            break;
+                        img.Save(imgPath);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
                     }
 
-                    // Rate List 複製Row：若有第4筆，則複製一次；有第5筆，則複製2次
-                    for (int i = 0; i < rateList.Count() - 3; i++)
+                    string ApproverName = ReportTechnician.Rows[0]["ApproverName"].ToString();
+
+                    // 姓名
+                    worksheet.Cells[63, 23] = ApproverName;
+
+                    // Signture 圖片
+                    cell = worksheet.Cells[65, 23];
+                    if (ReportTechnician.Rows[0]["ApproverSignture"] != DBNull.Value)
                     {
-                        Microsoft.Office.Interop.Excel.Range paste = worksheet.get_Range($"A{lastRateRowBySpecimen + i}", Type.Missing);
-                        Microsoft.Office.Interop.Excel.Range copyRow = worksheet.get_Range($"A{lastRateRowBySpecimen}").EntireRow;
-                        paste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
+
+                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["ApproverSignture"]; // 圖片的 byte[]
+
+                        MemoryStream ms = new MemoryStream(TestBeforePicture);
+                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
+                        string imageName = $"{Guid.NewGuid()}.jpg";
+                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
+
+                        img.Save(imgPath);
+                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
+
                     }
-
-                    // 塞入Rate List的值：前3筆已經有了Rate Name 所以塞值就好，從第4筆開始要額外塞Rate Nmae
-                    int addCtn = 0;
-                    for (int i = 0; i < rateList.Count(); i++)
-                    {
-                        string rateName = rateList[i].RateName;
-                        int Subtrahend_Time = rateList[i].Subtrahend_Time;
-                        int Minuend_Time = rateList[i].Minuend_Time;
-
-                        // R1 ~ R3
-                        if (i <= 2)
-                        {
-                            // Rate Value
-                            worksheet.Cells[startRateRowBySpecimen + i, 2] = rateList[i].Value;
-                        }
-                        else // R4 ~ 
-                        {
-                            addCtn++;
-                            // Rate Name
-                            // 範例：R3(Rate of 20~30min)
-                            worksheet.Cells[lastRateRowBySpecimen + addCtn, 1] = $"{rateName}(Rate of {Subtrahend_Time}~{Minuend_Time}min)";
-
-                            // Rate Value
-                            worksheet.Cells[lastRateRowBySpecimen + addCtn, 2] = rateList[i].Value;
-                        }
-                    }
-                    worksheet.Cells[lastRateRowBySpecimen + addCtn + 4, 2] = specimen.RateAverage;
-
-                    #endregion
-
-                    #region Time 列表處理
-                    // Time預設到F欄，超過F欄則動態生成
-
-                    // Time 若有 > 40，則進行複製
-                    string lastTimeColumnName = "F";
-                    if (timeListt.Count() + 1 > 6) // A欄也要算進去
-                    {
-                        int baseCtn = 5;
-                        int bounsCol = timeListt.Count() - 5;
-
-                        for (int i = 1; i <= bounsCol; i++)
-                        {
-
-                            Microsoft.Office.Interop.Excel.Range copyRow = worksheet.get_Range($"{lastTimeColumnName}{startTimeRowBySpecimen}", $"{lastTimeColumnName}{startTimeRowBySpecimen + 2}");
-                            string newColName = ConvertNumberToLetter(baseCtn + 1 + i);
-                            Microsoft.Office.Interop.Excel.Range paste = worksheet.get_Range($"{newColName}{startTimeRowBySpecimen}", Type.Missing);
-                            paste.Insert(Microsoft.Office.Interop.Excel.XlInsertShiftDirection.xlShiftDown, copyRow.Copy(Type.Missing));
-                        }
-                    }
-
-                    // 填值
-                    for (int i = 0; i < timeListt.Count(); i++)
-                    {
-                        int time = timeListt[i].Time;
-                        string mass = timeListt[i].Mass.ToString();
-                        string evaporation = timeListt[i].Evaporation.ToString();
-
-                        // Time
-                        worksheet.Cells[startTimeRowBySpecimen, 2 + i] = time;
-
-                        // Mass
-                        worksheet.Cells[startTimeRowBySpecimen + 1, 2 + i] = mass;
-
-                        // Evaporation
-                        worksheet.Cells[startTimeRowBySpecimen + 2, 2 + i] = evaporation;
-                    }
-                    #endregion
-
-                    if (specimen.SpecimenID == "Specimen 3")
-                    {
-                        // Specimen Rate Average
-                        worksheet.Cells[SpecimenAverageRateRowBySpecimen, 2] = model.Main.AfterAverageRate;
-                    }
-
-                    // 折線圖
-                    // 取得範本上的圖表集合
-                    Microsoft.Office.Interop.Excel.ChartObjects ChartObjects = worksheet.ChartObjects();
-
-                    // 根據Name從集合找出圖表物件
-                    Microsoft.Office.Interop.Excel.ChartObject chaartBeforeSpecimen = ChartObjects.Item(ChartObjectsName);
-                    Microsoft.Office.Interop.Excel.Chart chart = chaartBeforeSpecimen.Chart;
-
-                    // 找到設定的數列，有幾條線則有幾個數列
-                    Microsoft.Office.Interop.Excel.Series series = chaartBeforeSpecimen.Chart.SeriesCollection(1);
-
-                    // 設定X軸Y軸的資料範圍
-                    series.XValues = $"='After wash retest'!$B${startTimeRowBySpecimen}:${lastTimeColumnName}${startTimeRowBySpecimen}";
-                    series.Values = $"='After wash retest'!$B${startTimeRowBySpecimen + 2}:${lastTimeColumnName}${startTimeRowBySpecimen + 2}";
                 }
-                #endregion
 
-                //string tmpName = $"EvaporationRateTest_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}";
+                var specimenAfterList = model.SpecimenList.Where(o => o.DetailType == "After").OrderBy(o => o.SpecimenID).ToList();
+
+                specimenStartColIdx = 2;
+                specimenAvgIdx = 53;
+                // 開始填入Mass
+                foreach (var specimen in specimenAfterList)
+                {
+                    // B15
+                    int massInputRowIndex = 15;
+                    int massInputColIdx = dicSpecimenColIndex[specimen.SpecimenID];
+                    int ctnTimeRow = 0;
+
+                    var timeListt = model.TimeList.Where(o => o.DetailType == "After" && o.SpecimenID == specimen.SpecimenID).OrderBy(o => o.Time).ToList();
+
+                    var specimenAvg = specimen.RateAverage;
+                    worksheet.Cells[specimenAvgIdx, 12] = specimenAvg; // L53
+                    if (specimenAvg == 0)
+                    {
+                        worksheet.Cells[specimenAvgIdx, 12] = null;
+                        worksheet.Cells[specimenAvgIdx, 13] = null;
+                    }
+                    specimenAvgIdx++;
+
+                    // 若整個Mass都為空，把不需要的公式清空，跳過Specimen
+                    if (!timeListt.Any(o => o.Mass > 0))
+                    {
+                        continue;
+                    }
+
+                    // Mss填入
+                    foreach (var t in timeListt)
+                    {
+                        if (t.IsInitialMass)
+                        {
+                            //worksheet.Cells[13, massInputColIdx] = t.Mass; // B13
+                            worksheet.Cells[13, massInputColIdx + 2] = t.Mass; // D13
+                        }
+                        worksheet.Cells[massInputRowIndex, massInputColIdx] = t.Mass;
+                        massInputRowIndex++;
+                        ctnTimeRow++;
+                    }
+
+                    // 清空剩下的公式，等於20代表剛好填滿60分鐘
+                    if (ctnTimeRow < 20)
+                    {
+                        // B21:F35
+                        Range range = worksheet.Range[$"{MyUtility.Excel.ConvertNumericToExcelColumn(specimenStartColIdx)}{massInputRowIndex}:{MyUtility.Excel.ConvertNumericToExcelColumn(specimenStartColIdx + 4)}35"];
+                        // 清空範圍的值
+                        range.ClearContents();
+                    }
+
+                    // 設定圖表的資料範圍，由於前面欄位是多抓一格，所以這邊扣掉1才是正確的範圍
+                    massInputRowIndex--;
+                    if (specimen.SpecimenID == "Specimen 1")
+                    {
+                        Chart chart = afterChart1.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='AFTER 5TH WASH'!$A$15:$A${massInputRowIndex},'AFTER 5TH WASH'!$C$15:$C${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+
+                    }
+                    else if (specimen.SpecimenID == "Specimen 2")
+                    {
+                        Chart chart = afterChart2.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='AFTER 5TH WASH'!$H$15:$H${massInputRowIndex},'AFTER 5TH WASH'!$J$15:$J${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+                    }
+                    else if (specimen.SpecimenID == "Specimen 3")
+                    {
+                        Chart chart = afterChart3.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='AFTER 5TH WASH'!$O$15:$O${massInputRowIndex},'AFTER 5TH WASH'!$Q$15:$Q${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+                    }
+                    else if (specimen.SpecimenID == "Specimen 4")
+                    {
+                        Chart chart = afterChart4.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='AFTER 5TH WASH'!$V$15:$V${massInputRowIndex},'AFTER 5TH WASH'!$X$15:$X${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+                    }
+                    else if (specimen.SpecimenID == "Specimen 5")
+                    {
+                        Chart chart = afterChart5.Chart;
+
+                        // 設定新的資料範圍，還沒完成
+                        Range newDataRange = worksheet.Range[$@"='AFTER 5TH WASH'!$AC$15:$AC${massInputRowIndex},'AFTER 5TH WASH'!$AE$15:$AE${massInputRowIndex}"]; // 替換為你的資料範圍
+                        chart.SetSourceData(newDataRange);
+                    }
+
+                    // 下一個Specimen間隔6 column
+                    specimenStartColIdx += 7;
+                }
+
+                #endregion
 
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
                 {
@@ -1123,6 +1077,79 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 {
                     tmpName = tmpName.Replace(invalidChar.ToString(), "");
                 }
+
+                #region Title
+                worksheet = excel.ActiveWorkbook.Worksheets[1];
+
+                string FactoryNameEN = _Provider.GetFactoryNameEN(ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+
+                // 1. 插入一列
+                worksheet.Rows["1"].Insert();
+                // 2. 合併欄位 (B1:K1)
+                Microsoft.Office.Interop.Excel.Range mergedRange = worksheet.Range["A1", "AH1"];
+                mergedRange.Merge();
+
+                // 設置字體樣式
+
+                // 3. 設置文字和樣式
+                mergedRange.Value = FactoryNameEN; // 替換為你的 FactoryNameEN 變數
+                mergedRange.Font.Name = "Arial";      // 設置字體類型
+                mergedRange.Font.Size = 25;          // 設置字體大小
+                mergedRange.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter; // 水平置中
+                mergedRange.VerticalAlignment = Microsoft.Office.Interop.Excel.XlVAlign.xlVAlignCenter;   // 垂直置中
+                mergedRange.Font.Bold = true;        // 設置字體加粗
+
+                // 自動檢測使用範圍
+
+                Microsoft.Office.Interop.Excel.Range usedRange = worksheet.UsedRange;
+                if (usedRange != null)
+                {
+                    // 獲取最後一行
+                    int lastRow = usedRange.Row + usedRange.Rows.Count - 1;
+
+                    // 清除已有的列印範圍
+                    worksheet.PageSetup.PrintArea = string.Empty;
+
+                    // 設定新的列印範圍
+                    string printArea = $"A1:AH{lastRow + 10}";
+                    worksheet.PageSetup.PrintArea = printArea;
+                }
+                #endregion
+
+                #region Title
+                worksheet = excel.ActiveWorkbook.Worksheets[2];
+                // 1. 插入一列
+                worksheet.Rows["1"].Insert();
+                // 2. 合併欄位 (B1:K1)
+                Microsoft.Office.Interop.Excel.Range mergedRange1 = worksheet.Range["A1", "AH1"];
+                mergedRange1.Merge();
+
+                // 設置字體樣式
+
+                // 3. 設置文字和樣式
+                mergedRange1.Value = FactoryNameEN; // 替換為你的 FactoryNameEN 變數
+                mergedRange1.Font.Name = "Arial";      // 設置字體類型
+                mergedRange1.Font.Size = 25;          // 設置字體大小
+                mergedRange1.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter; // 水平置中
+                mergedRange1.VerticalAlignment = Microsoft.Office.Interop.Excel.XlVAlign.xlVAlignCenter;   // 垂直置中
+                mergedRange1.Font.Bold = true;        // 設置字體加粗
+
+                // 自動檢測使用範圍
+
+                Microsoft.Office.Interop.Excel.Range usedRange1 = worksheet.UsedRange;
+                if (usedRange1 != null)
+                {
+                    // 獲取最後一行
+                    int lastRow = usedRange1.Row + usedRange1.Rows.Count - 1;
+
+                    // 清除已有的列印範圍
+                    worksheet.PageSetup.PrintArea = string.Empty;
+
+                    // 設定新的列印範圍
+                    string printArea = $"A1:AH{lastRow + 10}";
+                    worksheet.PageSetup.PrintArea = printArea;
+                }
+                #endregion
 
                 string fileName = $"{tmpName}.xlsx";
                 string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
@@ -1138,18 +1165,20 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 Marshal.ReleaseComObject(worksheet);
                 Marshal.ReleaseComObject(workbook);
 
-                // 轉PDF再繼續進行以下
-                if (isPDF)
-                {
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                result.TempFileName = fileName;
+                //// 轉PDF再繼續進行以下
+                //if (isPDF)
+                //{
+                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //    ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
 
-                    result.TempFileName = filePdfName;
-                }
-                else
-                {
-                    result.TempFileName = fileName;
-                }
+                //    result.TempFileName = filePdfName;
+                //}
+                //else
+                //{
+                //    result.TempFileName = fileName;
+                //}
                 result.Result = true;
             }
             catch (Exception ex)

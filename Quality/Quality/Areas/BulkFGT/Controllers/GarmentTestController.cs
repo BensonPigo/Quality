@@ -10,6 +10,7 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -469,10 +470,10 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult Report(string ID, string No, GarmentTest_Service.ReportType type, bool IsToPDF)
+        public ActionResult Report(string ID, string No, GarmentTest_Service.ReportType type, bool IsToPDF)
         {
             GarmentTest_Detail_Result result = _GarmentTest_Service.ToReport(ID, No, type, IsToPDF);
-            result.reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.reportPath;
+            result.reportPath = "/TMP/" + result.reportPath;
             return Json(new { result.Result, result.ErrMsg, result.reportPath });
         }
 
@@ -481,7 +482,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         public JsonResult DownloadAllReport(string ID, string No, bool IsToPDF)
         {
             GarmentTest_Detail_Result result = _GarmentTest_Service.DownloadAllReport(ID, No, IsToPDF);
-            result.reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.reportPath;
+            result.reportPath = "/TMP/" + result.reportPath;
             return Json(new { result.Result, result.ErrMsg, result.reportPath });
         }
     }

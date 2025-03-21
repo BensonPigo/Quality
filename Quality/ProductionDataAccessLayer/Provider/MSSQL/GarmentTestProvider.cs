@@ -24,6 +24,19 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
         public GarmentTestProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
 
+        public string GetFactoryNameEN(string factory)
+        {
+            string factoryNameEN = string.Empty;
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@Factory", DbType.String, factory } ,
+            };
+            string sql = $"SELECT NameEN from Factory WHERE [ID] = @Factory";
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sql, objParameter);
+            factoryNameEN = dt.Rows[0]["NameEN"].ToString();
+            return factoryNameEN;
+        }
+
         public IList<Style> GetStyleID()
         {
             string sqlcmd = @"select distinct ID from Style WITH(NOLOCK) where Junk = 0";

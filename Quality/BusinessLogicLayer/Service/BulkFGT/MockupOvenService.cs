@@ -6,6 +6,7 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
+using Library;
 using ManufacturingExecutionDataAccessLayer.Provider.MSSQL;
 using ProductionDataAccessLayer.Interface;
 using ProductionDataAccessLayer.Provider.MSSQL;
@@ -168,6 +169,15 @@ namespace BusinessLogicLayer.Service
 
             try
             {
+                _MockupOvenProvider = new MockupOvenProvider(Common.ProductionDataAccessLayer);
+                _InspectionTypeProvider = new InspectionTypeProvider(Common.ProductionDataAccessLayer);
+                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+
+                var testCode = _QualityBrandTestCodeProvider.Get(mockupOven.BrandID, "Mockup Oven Test");
+                
+                List<InspectionType> InspectionTypes = _InspectionTypeProvider.Get_InspectionType("MockupOven", "Bulk", mockupOven.BrandID).ToList();
+                mockupOven.Requirements = InspectionTypes.Select(x => x.Comment).ToList();
+
                 string basePath = IsTest.ToLower() == "true" ? AppDomain.CurrentDomain.BaseDirectory : System.Web.HttpContext.Current.Server.MapPath("~/");
                 bool isHeatTransfer = mockupOven.ArtworkTypeID.ToUpper().EqualString("HEAT TRANSFER");
                 int haveHTrow = isHeatTransfer ? 6 : 0;
@@ -234,6 +244,7 @@ namespace BusinessLogicLayer.Service
                             rowToCopy.CopyTo(newRow);
                         }
 
+                        worksheet.Cell(startRow, 12).Value = mockupOven.Requirements.JoinToString(Environment.NewLine);
                         foreach (var item in mockupOven.MockupOven_Detail)
                         {
                             string fabric = string.IsNullOrEmpty(item.FabricColorName) ? item.FabricRefNo : item.FabricRefNo + " - " + item.FabricColorName;
@@ -286,11 +297,38 @@ namespace BusinessLogicLayer.Service
                     string filePath = Path.Combine(tmpPath, $"{tmpName}.xlsx");
                     string pdfPath = Path.Combine(tmpPath, $"{tmpName}.pdf");
 
+                    // Excel 合併 + 塞資料
+                    #region Title
+                    string FactoryNameEN = _MockupOvenProvider.GetFactoryNameEN(mockupOven.ReportNo, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 插入一列
+                    worksheet.Row(2).InsertRowsAbove(1);
+
+                    // 2. 合併欄位
+                    worksheet.Range("A1:N1").Merge();
+                    worksheet.Range("A2:N2").Merge();
+                    // 先移除邊框
+                    var lastRow = worksheet.CellsUsed().Max(cell => cell.Address.RowNumber);
+                    var range = worksheet.Range($"A1:N1");
+                    range.Style.Border.OutsideBorder = XLBorderStyleValues.None;
+                    // 設置字體樣式
+                    var mergedCell = worksheet.Cell("A2");
+                    mergedCell.Value = FactoryNameEN;
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    mergedCell.Style.Font.Italic = false;
+                    #endregion
+
+
                     workbook.SaveAs(filePath);
 
-                    LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                    officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                    result.TempFileName = $"{tmpName}.pdf";
+                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    //officeService.ConvertExcelToPdf(filePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    //ConvertToPDF.ExcelToPDF(filePath, pdfPath);
+                    //result.TempFileName = $"{tmpName}.pdf";
+                    result.TempFileName = tmpName + ".xlsx";
                     result.Result = true;
                 }
             }

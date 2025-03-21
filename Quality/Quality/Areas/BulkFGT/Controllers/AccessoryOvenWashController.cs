@@ -9,6 +9,7 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -245,14 +246,14 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult OvenReport(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool IsToPDF)
+        public ActionResult OvenReport(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool IsToPDF)
         {
             BaseResult result = null;
             string FileName = string.Empty;
 
             result = _Service.OvenTestExcel(AIR_LaboratoryID, POID, Seq1, Seq2, IsToPDF, out FileName);
 
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
@@ -408,14 +409,14 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult WashReport(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool IsToPDF)
+        public ActionResult WashReport(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool IsToPDF)
         {
             BaseResult result = null;
             string FileName = string.Empty;
 
             result = _Service.WashTestExcel(AIR_LaboratoryID, POID, Seq1, Seq2, IsToPDF, out FileName);
 
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 
@@ -571,14 +572,14 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult WashingFastnessReport(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool IsToPDF)
+        public ActionResult WashingFastnessReport(string AIR_LaboratoryID, string POID, string Seq1, string Seq2, bool IsToPDF)
         {
             BaseResult result = null;
             string FileName = string.Empty;
 
             result = _Service.WashingFastnessExcel(AIR_LaboratoryID, POID, Seq1, Seq2, IsToPDF, out FileName);
 
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 

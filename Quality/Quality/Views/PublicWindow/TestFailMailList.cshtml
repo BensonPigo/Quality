@@ -119,7 +119,12 @@
         });
 
         $("#btnExit").click(function () {
-            @Html.Raw(ViewBag.ExitReload);
+            if (window.opener.ExistsTestFailMailList == undefined) {
+                @Html.Raw(ViewBag.ExitReload);
+            }
+            else {
+                window.opener.ExistsTestFailMailList();
+            }
             window.close();
         });
 

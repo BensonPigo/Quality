@@ -400,7 +400,7 @@
                         <div class="buttonAreaItem">
                             <h4 id="PDF" class="toolBarItem" style=" margin-right: 1em;">
                                 <img src="~/Image/Icon/PDF.png" width="30" />
-                                PDF
+                                PDF(Excel)
                             </h4>
                         </div>
                         <div class="buttonAreaItem">
@@ -964,6 +964,7 @@
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
+                    msg.WithError("Error generating report.");
                 }
             });
         });
@@ -988,6 +989,7 @@
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     console.log(xhr.responseText);
+                    msg.WithError("Error generating report.");
                 }
             });
         });

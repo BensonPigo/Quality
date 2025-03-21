@@ -389,14 +389,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             Report_Result report_Result = Service.GetPDF(ReportNo);
+
             string tempFilePath = report_Result.TempFileName;
-            tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
+            tempFilePath = "/TMP/" + tempFilePath;
             if (!report_Result.Result)
             {
                 report_Result.ErrorMessage = report_Result.ErrorMessage.ToString();
             }
-
-            return Json(new { report_Result.Result, report_Result.ErrorMessage, reportPath = tempFilePath, FileName = report_Result.TempFileName });
+            return Json(new { report_Result.Result, report_Result.ErrorMessage, reportPath = tempFilePath });
         }
     }
 }

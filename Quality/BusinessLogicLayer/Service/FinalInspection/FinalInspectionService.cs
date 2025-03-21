@@ -21,11 +21,7 @@ using ToolKit;
 using static PmsWebApiUtility20.WebApiTool;
 using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
-using System.Reflection.Emit;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Policy;
-using System.Windows.Ink;
-using com.itextpdf.text.pdf;
 
 namespace BusinessLogicLayer.Service
 {
@@ -1525,6 +1521,12 @@ from
 
             return result;
 
+        }
+
+        public string GetFactoryNameEN(string Poid, string FactoryID)
+        {
+            string FactoryNameEN = _FinalInspectionProvider.GetFactoryNameEN(Poid, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+            return FactoryNameEN;
         }
     }
 }

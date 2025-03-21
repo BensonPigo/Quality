@@ -12,6 +12,7 @@ namespace ProductionDataAccessLayer.Interface
 {
     public interface IFabricCrkShrkTestProvider
     {
+        string GetFactoryNameEN(string factory);
         FabricCrkShrkTest_Result GetFabricCrkShrkTest_Main(string POID);
         void SaveFabricCrkShrkTest_Main(FabricCrkShrkTest_Result fabricCrkShrkTest_Result);
 

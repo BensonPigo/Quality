@@ -44,6 +44,7 @@ namespace Quality.Areas.FinalInspection.Controllers
     {
         private QueryService Service = new QueryService();
         private IOrdersProvider _IOrdersProvider;
+        public IFinalInspectionProvider _FinalInspectionProvider { get; set; }
         public IFinalInspection_MeasurementProvider _FinalInspection_MeasurementProvider { get; set; }
         private string IsTest = ConfigurationManager.AppSettings["IsTest"];
         private string p88_BaseUri = ConfigurationManager.AppSettings["P88_BaseUri"];
@@ -622,6 +623,38 @@ namespace Quality.Areas.FinalInspection.Controllers
             }
             #endregion
 
+            #region Title
+            string FactoryNameEN = fService.GetFactoryNameEN(model.SP, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+            worksheet.Rows["1"].Insert();
+            // 1. 合併欄位 (B1:K1)
+            Microsoft.Office.Interop.Excel.Range cellA1 = worksheet.Range["A1", "I1"];
+            cellA1.Merge();
+            // 設置字體樣式
+
+            // 2. 設置文字和樣式
+            cellA1.Value = FactoryNameEN; // 替換為你的 FactoryNameEN 變數
+            cellA1.Font.Name = "Calibri";      // 設置字體類型
+            cellA1.Font.Size = 18;          // 設置字體大小
+            cellA1.HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter; // 水平置中
+            cellA1.VerticalAlignment = Microsoft.Office.Interop.Excel.XlVAlign.xlVAlignCenter;   // 垂直置中
+            cellA1.Font.Bold = true;        // 設置字體加粗
+
+            Microsoft.Office.Interop.Excel.Range usedRange = worksheet.UsedRange;
+            if (usedRange != null)
+            {
+                // 獲取最後一行
+                int lastRow = usedRange.Row + usedRange.Rows.Count - 1;
+
+                // 清除已有的列印範圍
+                worksheet.PageSetup.PrintArea = string.Empty;
+
+                // 設定新的列印範圍
+                string printArea = $"A1:I{lastRow}";
+                worksheet.PageSetup.PrintArea = printArea;
+            }
+            #endregion
+
+
             #region 存檔 > 讀取MemoryStream > 下載 > 刪除
             string fileName = $"FinalInspectionReport_{DateTime.Now.ToString("yyyyMMdd")}{Guid.NewGuid()}.xlsx";
             string filepath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TMP", fileName);
@@ -652,7 +685,7 @@ namespace Quality.Areas.FinalInspection.Controllers
             this.CheckSession();
             Report_Result report_Result = Service.QueryReport(model);
             string tempFilePath = report_Result.TempFileName;
-            tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + tempFilePath;
+            tempFilePath = "/TMP/" + tempFilePath;
             if (!report_Result.Result)
             {
                 report_Result.ErrorMessage = report_Result.ErrorMessage.ToString();

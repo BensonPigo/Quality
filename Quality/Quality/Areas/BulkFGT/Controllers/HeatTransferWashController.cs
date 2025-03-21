@@ -12,6 +12,7 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -420,7 +421,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             html += $"<td><input id='Details_{lastNO}__Temperature' name='Details[{lastNO}].Temperature' type='number' style='width:100%;' class='OnlyEdit'></td>";
             html += $"<td><input id='Details_{lastNO}__Time' name='Details[{lastNO}].Time' type='number' style='width:100%;' class='OnlyEdit'></td>";
             html += $"<td><input id='Details_{lastNO}__SecondTime' name='Details[{lastNO}].SecondTime' type='number' style='width:100%;' class='OnlyEdit'></td>";
-            html += $"<td><input id='Details_{lastNO}__Pressure' name='Details[{lastNO}].Pressure' type='number' step='0.1' max='100' onchange = 'value=PressureCheck(value)' style='width:100%;' class='OnlyEdit'></td>";
+            html += $"<td><input id='Details_{lastNO}__Pressure' name='Details[{lastNO}].Pressure' type='number' step='0.01' max='100' onchange = 'value=PressureCheck(value)' style='width:100%;' class='OnlyEdit'></td>";
             html += $"<td><input id='Details_{lastNO}__PeelOff' name='Details[{lastNO}].PeelOff' type='text' maxlength='5' style='width:100%;' class='OnlyEdit'></td>";
 
             html += $"<td><select id='Details_{lastNO}__Cycles' name='Details[{lastNO}].Cycles'  class='OnlyEdit' >";
@@ -463,10 +464,10 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [HttpPost]
         [SessionAuthorizeAttribute]
-        public JsonResult Report(string ReportNo, bool IsToPDF)
+        public ActionResult Report(string ReportNo, bool IsToPDF)
         {
             BaseResult result = _Service.ToReport(ReportNo, IsToPDF, out string FileName);
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + FileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
 

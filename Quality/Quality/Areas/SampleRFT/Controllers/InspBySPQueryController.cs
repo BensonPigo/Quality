@@ -473,7 +473,7 @@ namespace Quality.Areas.SampleRFT.Controllers
                 zip.Save(zipPath);
 
 
-                reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + zipName;
+                reportPath = "/TMP/" + zipName;
                 result.Result = true;
                 result.ErrorMessage = string.Empty;
             }

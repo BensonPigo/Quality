@@ -267,7 +267,7 @@ namespace Quality.Areas.BulkFGT.Controllers
             string zipFullName = model.DownloadFileFullName;
             string zipName = model.DownloadFileName;
 
-            string tempFilePath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + zipName;
+            string tempFilePath = "/TMP/" + zipName;
 
             return Json(new { Result = model.Result, ErrMsg = string.Empty, FilaName = tempFilePath });
         }

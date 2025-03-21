@@ -9,6 +9,7 @@ using Quality.Controllers;
 using Quality.Helper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -276,7 +277,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 return Json(new { result.Result, ErrMsg = result.ErrorMessage });
             }
 
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(result.TempFileName);
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }
@@ -294,7 +295,7 @@ namespace Quality.Areas.BulkFGT.Controllers
                 return Json(new { result.Result, ErrMsg = result.ErrorMessage });
             }
 
-            string reportPath = Request.Url.Scheme + @"://" + Request.Url.Authority + "/TMP/" + result.TempFileName;
+            string reportPath = "/TMP/" + Uri.EscapeDataString(result.TempFileName);
 
             return Json(new { result.Result, result.ErrorMessage, reportPath });
         }

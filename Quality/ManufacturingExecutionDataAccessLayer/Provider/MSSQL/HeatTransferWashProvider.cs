@@ -16,6 +16,33 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
 {
     public class HeatTransferWashProvider : SQLDAL
     {
+        public string GetFactoryNameEN(string ReportNo, string FactoryID)
+        {
+            string factoryNameEN = string.Empty;
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ReportNo", DbType.String, ReportNo } ,
+                { "@FactoryID",DbType.String, FactoryID } ,
+            };
+            string sql = $@"
+            SELECT
+            o.FactoryID
+            INTO #tmp
+            FROM HeatTransferWash P WITH(NOLOCK)
+            INNER JOIN Production.dbo.Orders O WITH(NOLOCK) ON O.ID = P.OrderID
+            WHERE P.ReportNo = @ReportNo
+			
+            SELECT
+            F.NameEN,*
+            FROM Production.dbo.Factory F WITH(NOLOCK)
+            LEFT JOIN #TMP T WITH(NOLOCK) ON T.FactoryID = F.ID
+            WHERE F.ID = IIF((SELECT count(1) from #tmp) > 0 ,T.FactoryID,@FactoryID)";
+
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sql, objParameter);
+            factoryNameEN = dt.Rows[0]["NameEN"].ToString();
+            return factoryNameEN;
+        }
+
         #region 底層連線
         public HeatTransferWashProvider(string ConString) : base(ConString) { }
         public HeatTransferWashProvider(SQLDataTransaction tra) : base(tra) { }
@@ -86,6 +113,13 @@ select h.ReportNo
       ,Signature = Technician.Signature
       ,ArtworkTypeID_FullName = SubProcessInfo.ID
       ,h.ReceivedDate
+      ,h.Approver
+      ,[ApproverName] = pass1Approver.Name
+      ,ApproverSignature = ApproverSignature.Signature
+      ,h.Inspector
+      ,[InspectorName] = pass1Inspector.Name
+      ,InspectorSignature = InspectorSignature.Signature
+      ,h.TestDate
 from HeatTransferWash h
 inner join SciProduction_Orders o on h.OrderID = o.ID
 left join SciProduction_Style s on o.StyleUkey = s.Ukey
@@ -93,11 +127,23 @@ left join SciProduction_Pass1 p on h.EditName = p.ID
 left join Pass1 p2 on h.EditName = p2.ID
 left join SciProduction_Pass1 LastEdit1 on LastEdit1.ID = h.EditName
 left join Pass1 LastEdit2 on  LastEdit2.ID = h.EditName
+left join SciProduction_Pass1 pass1Approver WITH(NOLOCK) on h.Approver = pass1Approver.ID
+left join SciProduction_Pass1 pass1Inspector WITH(NOLOCK) on h.Inspector = pass1Inspector.ID
 outer apply (
     select top 1 Signature 
     from MainServer.Production.dbo.Technician t
     where Junk = 0 and ISNULL(p.ID, p2.ID) = t.ID
 )Technician
+outer apply (
+    select top 1 Signature 
+    from MainServer.Production.dbo.Technician t
+    where Junk = 0 and h.Inspector = t.ID
+)InspectorSignature
+outer apply (
+    select top 1 Signature 
+    from MainServer.Production.dbo.Technician t
+    where Junk = 0 and h.Approver = t.ID
+)ApproverSignature
 outer apply (
     select top 1 ID 
     from MainServer.Production.dbo.SubProcess t
@@ -188,6 +234,9 @@ order by EditDate desc
                 { "@Machine", DbType.String,  Req.Machine ?? "" } ,
                 { "@Remark", DbType.String, Req.Remark ?? "" } ,
                 { "@ArtworkTypeID", DbType.String, Req.ArtworkTypeID ?? "" } ,
+                { "@Inspector", DbType.String, Req.Inspector ?? "" } ,
+                { "@Approver", DbType.String, Req.Approver ?? "" } ,
+                { "@TestDate", DbType.DateTime, Req.TestDate } ,
                 { "@ReceivedDate", DbType.DateTime, Req.ReceivedDate } ,
                 //{ "@Temperature", DbType.Int32, Req.Temperature } ,
                 //{ "@Time", DbType.Int32, Req.Time } ,
@@ -233,6 +282,9 @@ INSERT INTO HeatTransferWash
            ,ArtworkTypeID
            ,Status
            ,Result
+           ,Inspector
+           ,Approver
+           ,TestDate
            ,AddName
            ,AddDate)
 VALUES  (     
@@ -249,6 +301,9 @@ VALUES  (
            ,@ArtworkTypeID
            ,'New'
            ,@Result
+           ,@Inspector
+           ,@Approver
+           ,@TestDate
            ,@AddName
            ,GETDATE() )
 
@@ -338,6 +393,9 @@ VALUES      (@ReportNo
             //objParameter.Add("@TemperatureUnit", DbType.Int32, Req.Main.TemperatureUnit);
             objParameter.Add("@Editname", DbType.String, Req.Main.EditName ?? string.Empty);
             objParameter.Add("@ReportNo", DbType.String, Req.Main.ReportNo ?? string.Empty);
+            objParameter.Add("@Inspector", DbType.String, Req.Main.Inspector ?? string.Empty);
+            objParameter.Add("@Approver", DbType.String, Req.Main.Approver ?? string.Empty);
+            objParameter.Add("@TestDate", DbType.Date, Req.Main.TestDate);
 
 
             if (Req.Main.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Req.Main.TestBeforePicture); }
@@ -357,6 +415,9 @@ Set Line = @Line
     ,EditDate = GETDATE()
     ,Editname = @Editname
     ,ReceivedDate = @ReceivedDate
+    ,Inspector = @Inspector
+    ,Approver = @Approver
+    ,TestDate = @TestDate
 where ReportNo = @ReportNo
 
 

@@ -665,6 +665,25 @@ namespace BusinessLogicLayer.Service
                         }
                     }
 
+
+                    #region Title
+
+                    string FactoryNameEN = _FabricOvenTestProvider.GetFactoryNameEN(poID, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                    // 1. 插入一列
+                    worksheet.Row(1).InsertRowsAbove(1);
+                    // 2. 合併欄位 (A1:K1)
+                    worksheet.Range("A1:K1").Merge();
+
+                    // 3. 設置文字和樣式
+                    var mergedCell = worksheet.Cell("A1");
+                    mergedCell.Value = FactoryNameEN; // 替換為你的 FactoryNameEN 變數
+                    mergedCell.Style.Font.FontName = "Arial";   // 設置字體類型為 Arial
+                    mergedCell.Style.Font.FontSize = 25;       // 設置字體大小為 25
+                    mergedCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    mergedCell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    mergedCell.Style.Font.Bold = true;
+                    #endregion
+
                     // 自動調整欄寬
                     worksheet.Columns().AdjustToContents();
 
@@ -914,15 +933,36 @@ namespace BusinessLogicLayer.Service
                     worksheet.Shapes.AddPicture(imgPath_AfterPicture, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 420, 280);
                 }
 
+
                 Excel.Range paste3 = worksheet.get_Range($"A{afterSignatureRow + 3 + 20 + 1}", Type.Missing);
                 Excel.Range r3 = worksheetFrame.get_Range("A4:A42").EntireRow;
                 paste3.Insert(Excel.XlInsertShiftDirection.xlShiftDown, r3.Copy(Type.Missing));
+
+                #region Title
+
+                string FactoryNameEN = _FabricOvenTestProvider.GetFactoryNameEN(poID, System.Web.HttpContext.Current.Session["FactoryID"].ToString());
+                // 1. 插入一列
+                worksheet.Rows["1"].Insert();
+                // 2. 合併欄位 (B1:K1)
+                Excel.Range mergedRange = worksheet.Range["B1", "O1"];
+                mergedRange.Merge();
+
+                // 3. 設置文字和樣式
+                mergedRange.Value = FactoryNameEN; // 替換為你的 FactoryNameEN 變數
+                mergedRange.Font.Name = "Arial";      // 設置字體類型
+                mergedRange.Font.Size = 25;          // 設置字體大小
+                mergedRange.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter; // 水平置中
+                mergedRange.VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;   // 垂直置中
+                mergedRange.Font.Bold = true;        // 設置字體加粗
+                #endregion
 
                 for (int i = 0; i < 4; i++)
                 {
                     worksheet = excel.ActiveWorkbook.Worksheets[1];
                     worksheet.Delete();
                 }
+
+                
 
                 #region Save & Show Excel
                 if (!string.IsNullOrWhiteSpace(AssignedFineName))
@@ -940,6 +980,7 @@ namespace BusinessLogicLayer.Service
                 pdfFileName = $"{tmpName}.pdf";
                 string excelFileName = $"{tmpName}.xlsx";
 
+                pdfFileName = excelFileName; // 暫時只匯出excel
                 string pdfPath = Path.Combine(baseFilePath, "TMP", pdfFileName);
                 string excelPath = Path.Combine(baseFilePath, "TMP", excelFileName);
 
@@ -951,8 +992,9 @@ namespace BusinessLogicLayer.Service
                 #endregion
 
                 // To PDF
-                LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                //officeService.ConvertExcelToPdf(excelPath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                //ConvertToPDF.ExcelToPDF(excelPath, pdfPath);
 
                 result.Result = true;
 

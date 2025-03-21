@@ -199,7 +199,7 @@
                                         <td>
                                             <h4 id="PDF" style="margin-right: 1em;">
                                                 <img src="~/Image/Icon/PDF.png" width="30" />
-                                                PDF
+                                                PDF(Excel)
                                             </h4>
                                         </td>
                                         <td>
@@ -671,11 +671,11 @@
         });
 
         $('#Excel').unbind('click').on('click', function () {
-            ToReport(0);
+            ToReport(false);
         });
 
         $('#PDF').unbind('click').on('click', function () {
-            ToReport(1);
+            ToReport(true);
         });
 
 
@@ -777,6 +777,7 @@
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);
+                msg.WithError("Error generating report.");
             }
         });
     }

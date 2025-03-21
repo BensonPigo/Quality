@@ -10,6 +10,8 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 {
     public interface IFinalInspectionProvider
     {
+        string GetFactoryNameEN(string POID, string FactoryID);
+
         FinalInspection GetFinalInspection(string FinalInspectionID);
 
         /// <summary>

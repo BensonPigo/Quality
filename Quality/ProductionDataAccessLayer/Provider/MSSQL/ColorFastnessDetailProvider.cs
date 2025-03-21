@@ -20,7 +20,32 @@ namespace MICS.DataAccessLayer.Provider.MSSQL
         public ColorFastnessDetailProvider(string ConString) : base(ConString) { }
         public ColorFastnessDetailProvider(SQLDataTransaction tra) : base(tra) { }
         #endregion
+        public string GetFactoryNameEN(string poid,string FactortID)
+        {
+            string factoryNameEN = string.Empty;
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@POID", DbType.String, poid } ,
+                { "@FactortID", DbType.String, FactortID },
+            };
+            string sql = $@"
+            SELECT
+            o.FactoryID
+            INTO #tmp
+            FROM  Orders O WITH(NOLOCK)
+            WHERE ID = @POID
+			
+            SELECT
+            F.NameEN,*
+            FROM Factory F WITH(NOLOCK)
+            LEFT JOIN #TMP T WITH(NOLOCK) ON T.FactoryID = F.ID
+            WHERE F.ID = IIF((SELECT count(1) from #tmp) > 0 ,T.FactoryID,@FactortID)
 
+            DROP TABLE #TMP";
+            DataTable dt = ExecuteDataTableByServiceConn(CommandType.Text, sql, objParameter);
+            factoryNameEN = dt.Rows[0]["NameEN"].ToString();
+            return factoryNameEN;
+        }
         #region CRUD Base
         public Fabric_ColorFastness_Detail_ViewModel Get_DetailBody(string ID)
         {
