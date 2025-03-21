@@ -426,7 +426,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // 生成檔案名稱
                 string tmpName = $"Wicking Height Test_{model.Main.OrderID}_{model.Main.StyleID}_{model.Main.FabricRefNo}_" +
                                  $"{model.Main.FabricColor}_{model.Main.Result}_{DateTime.Now:yyyyMMddHHmmss}";
-                tmpName = Regex.Replace(tmpName, @"[/:?""<>|*%]", string.Empty);
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
+
                 if (!string.IsNullOrWhiteSpace(AssignedFineName)) tmpName = AssignedFineName;
 
                 string outputPath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.xlsx");

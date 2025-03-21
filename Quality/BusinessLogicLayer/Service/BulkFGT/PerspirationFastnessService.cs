@@ -485,6 +485,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 }
 
                 tmpName = $"Perspiration Fastness Test_{dataList.FirstOrDefault().POID}_{dataList.FirstOrDefault().StyleID}_{dataList.FirstOrDefault().Article}_{dataList.FirstOrDefault().AllResult}_{DateTime.Now:yyyyMMddHHmmss}";
+                if (!string.IsNullOrEmpty(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 string basePath = isTest ? AppDomain.CurrentDomain.BaseDirectory : System.Web.HttpContext.Current.Server.MapPath("~/");
                 string xltPath = Path.Combine(basePath, "XLT", "PerspirationFastness_ToExcel.xltx");

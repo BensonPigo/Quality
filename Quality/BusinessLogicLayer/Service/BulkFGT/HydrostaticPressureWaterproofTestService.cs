@@ -443,253 +443,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
             return model;
         }
-        public HydrostaticPressureWaterproofTest_ViewModel GetReport2(string ReportNo, bool isPDF, string AssignedFineName = "")
-        {
-            HydrostaticPressureWaterproofTest_ViewModel result = new HydrostaticPressureWaterproofTest_ViewModel();
-
-            string basefileName = "HydrostaticPressureWaterproofTest";
-            string openfilepath = System.Web.HttpContext.Current.Server.MapPath("~/") + $"XLT\\{basefileName}.xltx";
-
-            Microsoft.Office.Interop.Excel.Application excel = MyUtility.Excel.ConnectExcel(openfilepath);
-
-            string tmpName = string.Empty;
-
-            try
-            {
-
-                // 取得報表資料
-
-                HydrostaticPressureWaterproofTest_ViewModel model = this.GetData(new HydrostaticPressureWaterproofTest_Request() { ReportNo = ReportNo });
-
-                _Provider = new HydrostaticPressureWaterproofTestProvider(Common.ManufacturingExecutionDataAccessLayer);
-                _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
-
-                var testCode = _QualityBrandTestCodeProvider.Get(model.Main.BrandID, "Hydrostatic Pressure Waterproof Test");
-                DataTable ReportTechnician = _Provider.GetReportTechnician(new HydrostaticPressureWaterproofTest_Request() { ReportNo = ReportNo });
-
-                excel.DisplayAlerts = false; // 設定Excel的警告視窗是否彈出
-                Microsoft.Office.Interop.Excel.Worksheet worksheet = excel.ActiveWorkbook.Worksheets[1]; // 取得工作表
-                tmpName = $"Hydrostatic Pressure Waterproof Test_{model.Main.OrderID}_" +
-                $"{model.Main.StyleID}_" +
-                $"{model.Main.FabricRefNo}_" +
-                $"{model.Main.FabricColor}_" +
-                $"{model.Main.Result}_" +
-                $"{DateTime.Now.ToString("yyyyMMddHHmmss")}";
-
-                if (testCode.Any())
-                {
-                    worksheet.Cells[1, 1] = $@"Hydrostatic pressure waterproof test({testCode.FirstOrDefault().TestCode})";
-                }
-
-                string reportNo = model.Main.ReportNo;
-                //string machineReport = string.IsNullOrEmpty(model.Main.MachineReport) ? string.Empty : model.Main.MachineReport;
-
-                worksheet.Cells[3, 2] = model.Main.ReportNo;
-
-                worksheet.Cells[4, 2] = model.Main.SubmitDateText;
-                worksheet.Cells[4, 5] = model.Main.ReportDateText;
-
-                worksheet.Cells[5, 2] = model.Main.OrderID;
-                worksheet.Cells[5, 5] = model.Main.BrandID;
-
-                worksheet.Cells[6, 2] = model.Main.StyleID;
-                worksheet.Cells[6, 5] = model.Main.SeasonID;
-
-                worksheet.Cells[7, 2] = model.Main.Article;
-                worksheet.Cells[7, 5] = model.Main.FabricColor;
-
-                worksheet.Cells[9, 2] = model.Main.Temperature;
-                worksheet.Cells[9, 4] = model.Main.DryingCondition;
-                worksheet.Cells[9, 6] = model.Main.WashCycles;
-
-                worksheet.Cells[65, 2] = model.Main.Remark;
-
-                // Technician 欄位
-                if (ReportTechnician.Rows != null && ReportTechnician.Rows.Count > 0)
-                {
-                    string TechnicianName = ReportTechnician.Rows[0]["Technician"].ToString();
-
-                    // 姓名
-                    worksheet.Cells[80, 5] = TechnicianName;
-
-                    // Signture 圖片
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[79, 5];
-                    if (ReportTechnician.Rows[0]["TechnicianSignture"] != DBNull.Value)
-                    {
-
-                        byte[] TestBeforePicture = (byte[])ReportTechnician.Rows[0]["TechnicianSignture"]; // 圖片的 byte[]
-
-                        MemoryStream ms = new MemoryStream(TestBeforePicture);
-                        System.Drawing.Image img = System.Drawing.Image.FromStream(ms);
-                        string imageName = $"{Guid.NewGuid()}.jpg";
-                        string imgPath = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", imageName);
-
-                        img.Save(imgPath);
-                        worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left, cell.Top, 100, 24);
-
-                    }
-                }
-
-                // TestBeforePicture 圖片
-                if (model.Main.TestBeforePicture != null && model.Main.TestBeforePicture.Length > 1)
-                {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[67, 1];
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestBeforePicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
-                }
-
-                // TestAfterPicture 圖片
-                if (model.Main.TestAfterPicture != null && model.Main.TestAfterPicture.Length > 1)
-                {
-                    Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[67, 4];
-                    string imgPath = ToolKit.PublicClass.AddImageSignWord(model.Main.TestAfterPicture, reportNo, ToolKit.PublicClass.SingLocation.MiddleItalic, test: false);
-                    worksheet.Shapes.AddPicture(imgPath, Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, cell.Left + 5, cell.Top + 5, 200, 300);
-                }
-
-                // 表身處理
-                if (model.DetailList.Any() && model.DetailList.Count > 1)
-                {
-                    foreach (var evaluationType in model.EvaluationTypeList)
-                    {
-                        var sameEvaluationType = model.DetailList.Where(o => o.EvaluationType == evaluationType).OrderBy(o => o.EvaluationItemSeq);
-
-                        if (evaluationType == "Seam procedure(mm)")
-                        {
-                            int idx = 0;
-                            foreach (var item in sameEvaluationType)
-                            {
-                                // As received
-                                worksheet.Cells[12 + idx, 1] = item.EvaluationItem;
-                                worksheet.Cells[12 + idx, 3] = model.GetStandard(evaluationType, item.EvaluationItem, "As received").Standard;
-                                worksheet.Cells[12 + idx, 4] = item.AsReceivedValue;
-                                worksheet.Cells[12 + idx, 6] = item.AsReceivedResult;
-
-                                // Aftr wash
-                                worksheet.Cells[23 + idx, 1] = item.EvaluationItem;
-                                worksheet.Cells[23 + idx, 3] = model.GetStandard(evaluationType, item.EvaluationItem, "After wash").Standard;
-                                worksheet.Cells[23 + idx, 4] = item.AfterWashValue;
-                                worksheet.Cells[23 + idx, 6] = item.AfterWashResult;
-                                idx++;
-                            }
-                        }
-                        else if (evaluationType == "Fabric procedure")
-                        {
-                            int idx = 0;
-                            foreach (var item in sameEvaluationType)
-                            {
-                                // As received
-                                worksheet.Cells[33 + idx, 1] = item.EvaluationItem;
-                                worksheet.Cells[33 + idx, 3] = model.GetStandard(evaluationType, item.EvaluationItem, "As received").Standard;
-                                worksheet.Cells[33 + idx, 4] = item.AsReceivedValue;
-                                worksheet.Cells[33 + idx, 6] = item.AsReceivedResult;
-
-                                // Aftr wash
-                                worksheet.Cells[36 + idx, 1] = item.EvaluationItem;
-                                worksheet.Cells[36 + idx, 3] = model.GetStandard(evaluationType, item.EvaluationItem, "After wash").Standard;
-                                worksheet.Cells[36 + idx, 4] = item.AfterWashValue;
-                                worksheet.Cells[36 + idx, 6] = item.AfterWashResult;
-                                idx++;
-                                // 因為只有一列資料，寫完就跳出
-                                break;
-                            }
-                        }
-                        else if (evaluationType == "Heat transfer/ logo procedure")
-                        {
-                            int idx = 0;
-                            foreach (var item in sameEvaluationType)
-                            {
-                                // As received
-                                worksheet.Cells[39 + idx, 1] = item.EvaluationItem;
-                                worksheet.Cells[39 + idx, 3] = model.GetStandard(evaluationType, item.EvaluationItem, "As received").Standard;
-                                worksheet.Cells[39 + idx, 4] = item.AsReceivedValue;
-                                worksheet.Cells[39 + idx, 6] = item.AsReceivedResult;
-
-                                // Aftr wash
-                                worksheet.Cells[43 + idx, 1] = item.EvaluationItem;
-                                worksheet.Cells[43 + idx, 3] = model.GetStandard(evaluationType, item.EvaluationItem, "After wash").Standard;
-                                worksheet.Cells[43 + idx, 4] = item.AfterWashValue;
-                                worksheet.Cells[43 + idx, 6] = item.AfterWashResult;
-                                idx++;
-                                // 因為只有一列資料，寫完就跳出
-                                break;
-                            }
-                        }
-                        else if (evaluationType == "Seam procedure(min)")
-                        {
-                            int idx = 0;
-                            foreach (var item in sameEvaluationType)
-                            {
-                                // As received
-                                worksheet.Cells[46 + idx, 1] = item.EvaluationItem;
-                                worksheet.Cells[46 + idx, 3] = model.GetStandard(evaluationType, item.EvaluationItem, "As received").Standard;
-                                worksheet.Cells[46 + idx, 4] = item.AsReceivedValue;
-                                worksheet.Cells[46 + idx, 6] = item.AsReceivedResult;
-
-                                // Aftr wash
-                                worksheet.Cells[57 + idx, 1] = item.EvaluationItem;
-                                worksheet.Cells[57 + idx, 3] = model.GetStandard(evaluationType, item.EvaluationItem, "After wash").Standard;
-                                worksheet.Cells[57 + idx, 4] = item.AfterWashValue;
-                                worksheet.Cells[57 + idx, 6] = item.AfterWashResult;
-                                idx++;
-                            }
-                        }
-                    }
-
-
-                }
-
-                if (!string.IsNullOrWhiteSpace(AssignedFineName))
-                {
-                    tmpName = AssignedFineName;
-                }
-
-                char[] invalidChars = Path.GetInvalidFileNameChars();
-                char[] additionalChars = { '-', '+' }; // 您想要新增的字元
-                char[] updatedInvalidChars = invalidChars.Concat(additionalChars).ToArray();
-
-                foreach (char invalidChar in updatedInvalidChars)
-                {
-                    tmpName = tmpName.Replace(invalidChar.ToString(), "");
-                }
-                string fileName = $"{tmpName}.xlsx";
-                string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
-
-                string filePdfName = $"{tmpName}.pdf";
-                string fullPdfFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", filePdfName);
-
-
-                Microsoft.Office.Interop.Excel.Workbook workbook = excel.ActiveWorkbook;
-                workbook.SaveAs(fullExcelFileName);
-
-                workbook.Close();
-                excel.Quit();
-                Marshal.ReleaseComObject(worksheet);
-                Marshal.ReleaseComObject(workbook);
-                result.TempFileName = fileName;
-
-                //// 轉PDF再繼續進行以下
-                //if (isPDF)
-                //{
-                //    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
-                //    //officeService.ConvertExcelToPdf(fullExcelFileName, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
-                //    ConvertToPDF.ExcelToPDF(fullExcelFileName, fullPdfFileName);
-                //    result.TempFileName = filePdfName;
-                //}
-
-                result.Result = true;
-
-            }
-            catch (Exception ex)
-            {
-                result.ErrorMessage = ex.Message;
-                result.Result = false;
-            }
-            finally
-            {
-                Marshal.ReleaseComObject(excel);
-            }
-            return result;
-        }
         public HydrostaticPressureWaterproofTest_ViewModel GetReport(string ReportNo, bool isPDF, string AssignedFineName = "")
         {
             HydrostaticPressureWaterproofTest_ViewModel result = new HydrostaticPressureWaterproofTest_ViewModel();
@@ -720,6 +473,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                           $"{model.Main.FabricColor}_" +
                           $"{model.Main.Result}_" +
                           $"{DateTime.Now:yyyyMMddHHmmss}";
+                if (!string.IsNullOrWhiteSpace(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 using (var workbook = new XLWorkbook(openfilepath))
                 {
@@ -777,8 +536,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                             rowOffset++;
                         }
                     }
-
-                    tmpName = RemoveInvalidFileNameChars(tmpName);
 
                     string fileName = $"{tmpName}.xlsx";
                     string fullExcelFileName = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", fileName);
@@ -848,15 +605,6 @@ namespace BusinessLogicLayer.Service.BulkFGT
                              .WithSize(width, height);
                 }
             }
-        }
-        private string RemoveInvalidFileNameChars(string input)
-        {
-            char[] invalidChars = Path.GetInvalidFileNameChars();
-            foreach (char c in invalidChars)
-            {
-                input = input.Replace(c.ToString(), "");
-            }
-            return input;
         }
 
         private int GetRowOffsetForEvaluationType(string evaluationType)

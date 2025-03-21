@@ -308,6 +308,14 @@ namespace BusinessLogicLayer.Service.BulkFGT
                     return result;
                 }
 
+                if(!string.IsNullOrEmpty(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
+
                 string outputFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.xlsx");
 
                 using (var workbook = new XLWorkbook(templatePath))
@@ -619,6 +627,13 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 var testCode = _QualityBrandTestCodeProvider.Get(Model.BrandID, "Accessory Oven & Wash Test-701Wash");
 
                 tmpName = $"Accessory Wash Test_{POID}_{Model.StyleID}_{Model.Refno}_{Model.Color}_{Model.WashResult}_{DateTime.Now:yyyyMMddHHmmss}";
+
+                if (!string.IsNullOrEmpty(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 string templatePath = Path.Combine(baseFilePath, "XLT", "AccessoryWashTest.xltx");
 
@@ -960,6 +975,12 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 var testCode = _QualityBrandTestCodeProvider.Get(Model.BrandID, "Accessory Oven & Wash Test-501Wash");
 
                 tmpName = $"Accessory Washing Fastness Test_{POID}_{Model.StyleID}_{Model.Refno}_{Model.Color}_{Model.WashingFastnessResult}_{DateTime.Now:yyyyMMddHHmmss}";
+                if (!string.IsNullOrEmpty(AssignedFineName))
+                {
+                    tmpName = AssignedFineName;
+                }
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 string templatePath = Path.Combine(baseFilePath, "XLT", "AccessoryWashingFastness.xltx");
 

@@ -463,8 +463,9 @@ namespace BusinessLogicLayer.Service.BulkFGT
                 // 處理檔案名稱
                 tmpName = $"T-Peel Strength Test_{model.Main.OrderID}_{model.Main.StyleID}_" +
                           $"{model.Main.FabricRefNo}_{model.Main.FabricColor}_{model.Main.Result}_{DateTime.Now:yyyyMMddHHmmss}";
-                tmpName = Regex.Replace(tmpName, @"[/:?""<>|*%]", string.Empty);
                 if (!string.IsNullOrWhiteSpace(AssignedFineName)) tmpName = AssignedFineName;
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
 
                 string outputDirectory = Path.Combine(baseFilePath, "TMP");
                 string filePath = Path.Combine(outputDirectory, $"{tmpName}.xlsx");
