@@ -937,7 +937,7 @@
 
         function QtyBreakDownDefault() {
             let sp = $('.QtyBreakdownTableOrderID:first').text().trim();
-            updateDomToModle();
+
             processSelectQtyBreakdown(initQtyBreakdownData);
 
             $('[id^=QtyBreakdown_LineItem_]').each(function () {
@@ -1407,7 +1407,6 @@
             if (icChecked) {
                 $(`input[Type=number][finalinspectionid='${finalinspectionid}'][orderid='${OrderID}'][article='${article}'][sizecode='${sizeCode}']`).val(0);
             }
-            //updateDomToModle();
         }
 
         function OpenSignatureDialog() {

@@ -2775,7 +2775,8 @@ where oc.ID in (select POID from Production.dbo.Orders with (nolock)
         oqd.Article,
         oqd.SizeCode,
 		oqd.Qty,
-		 SeqNumber= qb.LineItem
+		 SeqNumber= qb.LineItem,
+		 qb.Junk
 		from FinalInspection_Order fo
 		inner join FinalInspection_Order_QtyShip foq on foq.ID=fo.ID
 		inner join Production.dbo.Order_QtyShip_Detail oqd  ON fo.OrderID = oqd.ID  and foq.OrderID = oqd.Id and foq.Seq = oqd.Seq
@@ -2799,6 +2800,7 @@ SELECT
 FROM cte c
 LEFT JOIN cteNulls n
     ON c.RowID = n.RowID
+where ISNULL(c.Junk ,0) = 0 --- 若為NULL 代表沒有FinalInspection_Order_Breakdown，視作無Junk
 group by c.Article ,c.SizeCode ,COALESCE(c.SeqNumber, n.NewSeqNumber)
 
 
