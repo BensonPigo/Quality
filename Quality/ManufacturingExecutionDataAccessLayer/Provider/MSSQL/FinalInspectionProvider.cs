@@ -112,6 +112,8 @@ select  ID                             ,
         EditName                       ,
         EditDate                       ,
         ReInspection                       ,
+        P88UniqueKey                       ,
+        IsExportToP88  ,
         IsFollowAQL,
         HasOtherImage = Cast(IIF(exists(select 1 from SciPMSFile_FinalInspection_OtherImage b WITH(NOLOCK) where a.id= b.id),1,0) as bit),
         CheckFGPT                      ,
@@ -590,7 +592,8 @@ insert into FinalInspection(id                            ,
                             MeasurementAQLUkey,
                             MeasurementSampleSize,
                             MeasurementAcceptQty,
-                            IsFollowAQL                   
+                            IsFollowAQL             ,
+                            P88UniqueKey               
                         )
                 values(@FinalInspectionID                            ,
                        @CustPONO                          ,
@@ -646,6 +649,7 @@ insert into FinalInspection(id                            ,
 	                    )
                     ),0),
                     @IsFollowAQL          
+                    ,'sintex' + @FinalInspectionID  
                 )
 ;
 INSERT INTO FinalInspectionGeneral
@@ -719,6 +723,7 @@ where   ID = @FinalInspectionID
 delete  FinalInspection_Order where ID = @FinalInspectionID
 delete  FinalInspection_Order_QtyShip where ID = @FinalInspectionID
 delete  FinalInspection_OrderCarton where ID = @FinalInspectionID
+delete  FinalInspection_Order_Breakdown where FinalInspectionID = @FinalInspectionID
 ";
             }
 
@@ -773,6 +778,15 @@ insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo, Seq)
             values(@FinalInspectionID, '{selectCartonItem.OrderID}', '{selectCartonItem.PackingListID}', '{selectCartonItem.CTNNo}', '{selectCartonItem.Seq}')
 ";
             }
+
+            foreach (SelectQtyBreakdown selectQtyBreakdown in setting.SelectQtyBreakdownList)
+            {
+                sqlUpdCmd += $@"
+insert into FinalInspection_Order_Breakdown (FinalInspectionID, OrderID, Article,SizeCode, LineItem, Junk)
+            values(@FinalInspectionID, '{selectQtyBreakdown.OrderID}', '{selectQtyBreakdown.Article}', '{selectQtyBreakdown.SizeCode}', '{selectQtyBreakdown.LineItem ??  0}', {(selectQtyBreakdown.Junk ? "1":"0")} ) 
+";
+            }
+
             using (TransactionScope transaction = new TransactionScope())
             {
                 ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
@@ -783,6 +797,34 @@ insert into FinalInspection_OrderCarton(ID, OrderID, PackingListID, CTNNo, Seq)
         }
 
 
+        public void ModifyFinalInspection_Order_Breakdown(List<FinalInspection_Order_Breakdown> qtyBreakdownList, string p88UniqueKey)
+        {
+            string sqlUpdCmd = $@"DELETE FROM FinalInspection_Order_Breakdown WHERE FinalInspectionID = '{qtyBreakdownList.FirstOrDefault().FinalInspectionID}' AND OrderID  = '{qtyBreakdownList.FirstOrDefault().OrderID}';";
+            foreach (var item in qtyBreakdownList)
+            {
+                sqlUpdCmd += $@"
+INSERT INTO FinalInspection_Order_Breakdown (FinalInspectionID, OrderID, Article, SizeCode, LineItem, Junk)
+            VALUES('{item.FinalInspectionID}', '{item.OrderID}', '{item.Article}', '{item.SizeCode}', '{item.LineItem}', {(item.Junk ? "1" : "0")} ) 
+;
+";
+            }
+            sqlUpdCmd += $@"UPDATE FinalInspection SET P88UniqueKey = dbo.GetNextP88UniqueKey(P88UniqueKey)  WHERE ID = '{qtyBreakdownList.FirstOrDefault().FinalInspectionID}'; ";
+            ExecuteNonQuery(CommandType.Text, sqlUpdCmd, new SQLParameterCollection());
+        }
+
+
+        public void UpdateAuditDate(FinalInspection f)
+        {
+            SQLParameterCollection objParameter = new SQLParameterCollection();
+            objParameter.Add("@AuditDate", f.AuditDate);
+            objParameter.Add("@FinalInspectionID", f.ID);
+            string sqlUpdCmd = $@"
+UPDATE FinalInspection
+SET AuditDate = @AuditDate ,EditDate = GETDATE()
+WHERE ID = @FinalInspectionID";
+
+            ExecuteNonQuery(CommandType.Text, sqlUpdCmd, objParameter);
+        }
         public int GetAvailableQty(string FinalInspectionID)
         {
             string sql = $@"
@@ -2620,7 +2662,7 @@ where img.{inspectionReportTable}ID = @ID
 
             string sqlGetData = @"
 declare @ID varchar(13) = @InspectionID
-
+declare @RandomHours FLOAT = (RAND() * (2.2 - 1.2)) + 1.2; -- 生成隨機小時數，範圍 1.2~2.2
 
 Select	
     [AuditDate] = format(f.AuditDate, 'yyyy-MM-ddTHH:mm:ss'),
@@ -2638,7 +2680,7 @@ Select
     [InspectionResultID] = iif(f.InspectionResult = 'Pass', 1, 2),
     [InspectionStatusID] = iif(f.InspectionResult = 'Pass', 3, 7),
     f.SubmitDate,
-    [InspectionMinutes] = Round(DATEDIFF(SECOND, f.AddDate, f.EditDate) / 60.0, 0),
+    [InspectionMinutes] = Round( @RandomHours * 3600 / 60.0, 0),  -- 時間差
     [CFA] = isnull((select Pivot88UserName from quality_pass1 with (nolock) where ID = f.CFA), ''),
     OrderInfo.POQty,
     [ETD_ETA] = format(OrderInfo.ETD_ETA, 'yyyy-MM-ddTHH:mm:ss'),
@@ -2652,8 +2694,17 @@ Select
             when f.AcceptableQualityLevelsUkey = -1 then 'APP - AQL Outbound - 100% Inspection'
             else 'APP - AQL Outbound - Regular orders' 
         end,
-    [DateStarted] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.AddDate), 'yyyy-MM-ddTHH:mm:ss'),
-    [InspectionCompletedDate] = format(dateadd(hour, -system.UTCOffsetTimeZone, f.EditDate), 'yyyy-MM-ddTHH:mm:ss'),
+    [DateStarted] = format(dateadd(hour, -system.UTCOffsetTimeZone, 
+                                DATEADD(SECOND, 
+								   DATEDIFF(SECOND, 0, CAST(f.AddDate AS TIME)), 
+								   CAST(f.AuditDate AS DATETIME))-- 用 AuditDate 的日期覆蓋 AddDate，但保留 AddDate 的時間部分
+                            ), 'yyyy-MM-ddTHH:mm:ss'),
+    [InspectionCompletedDate] = format(dateadd(hour, -system.UTCOffsetTimeZone,                                 
+                                DATEADD(SECOND, @RandomHours * 3600, DATEADD(SECOND, 
+								   DATEDIFF(SECOND, 0, CAST(f.AddDate AS TIME)), 
+								   CAST(f.AuditDate AS DATETIME))
+								) --  對新的 AddDate 加上隨機 1.2 ~ 2.2 小時，並覆蓋到 EditDate
+                            ), 'yyyy-MM-ddTHH:mm:ss'),
     f.OthersRemark,
     f.BAQty,
     [MeasurementResult] = cast(iif(exists(select 1 from FinalInspection_Measurement fm with (nolock) where f.ID = fm.ID), 1, 0) as bit),
@@ -2743,56 +2794,40 @@ where oc.ID in (select POID from Production.dbo.Orders with (nolock)
 				where id in (select OrderID 
 							 from FinalInspection_Order with (nolock) where ID = @ID))
 
-;WITH 
-CTE_Numbers AS (
-    SELECT 
-         oq.Article, 
-         oq.SizeCode,
-        ((ROW_NUMBER() OVER (ORDER BY 
-            CAST(SizeCode AS INT)
-        ) ) * 10) AS SeqNumber
-    FROM FinalInspection_Order_QtyShip fo with (nolock)
-	inner join Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID
-    WHERE 
-       fo.ID = @ID
-        AND PATINDEX('%[^0-9]%', SizeCode) = 0 -- 純數字的SizeCode	
-	group by oq.SizeCode,
-			 oq.Article
+;WITH cte AS (
+	select
+        RowID = ROW_NUMBER() OVER (ORDER BY oqd.Article,oqd.SizeCode) ,  -- 想依什麼欄位排序，就放在 ORDER BY 裡
+        oqd.Article,
+        oqd.SizeCode,
+		oqd.Qty,
+		 SeqNumber= qb.LineItem,
+		 qb.Junk
+		from FinalInspection_Order fo
+		inner join FinalInspection_Order_QtyShip foq on foq.ID=fo.ID
+		inner join Production.dbo.Order_QtyShip_Detail oqd  ON fo.OrderID = oqd.ID  and foq.OrderID = oqd.Id and foq.Seq = oqd.Seq
+		left join FinalInspection_Order_Breakdown qb on qb.FinalInspectionID = foq.Id and qb.Article = oqd.Article and qb.SizeCode = oqd.SizeCode
+	where fo.ID = @ID
 ),
-CTE_Letters AS (
-    SELECT 
-         oq.Article, 
-         oq.SizeCode,
-        ((ROW_NUMBER() OVER (ORDER BY 
-            PATINDEX('%[^0-9][0-9]%', SizeCode ),
-            iif(PATINDEX('%[^0-9][0-9]%', SizeCode ) > 0,  SUBSTRING(oq.SizeCode, PATINDEX('%[^0-9][0-9]%', SizeCode ), LEN(SizeCode)), ''),
-            CAST(SUBSTRING( oq.SizeCode, 1, PATINDEX('%[^0-9]%', SizeCode + 'Z') - 1) AS INT), 
-            SUBSTRING( oq.SizeCode, PATINDEX('%[^0-9]%', SizeCode + 'Z'), LEN(SizeCode))
-        ) + (SELECT COUNT(*) FROM CTE_Numbers))* 10) AS SeqNumber
-    FROM FinalInspection_Order_QtyShip fo with (nolock)
-	inner join Production.dbo.Order_QtyShip_Detail oq with (nolock) on fo.OrderID = oq.ID
-    WHERE 
-       fo.ID = @ID
-        AND PATINDEX('%[^0-9]%', SizeCode) > 0 -- 包含字母的SizeCode		
-	group by oq.SizeCode,
-			 oq.Article
+cteNulls AS (
+    -- 只挑出 SeqNumber = NULL 的部分，再用 ROW_NUMBER() 幫它做連續編號
+	select
+        c.RowID,
+        NewSeqNumber = ROW_NUMBER() OVER (ORDER BY c.RowID) * 10
+	from cte c
+    WHERE c.SeqNumber IS NULL
 )
-SELECT * into #tmpSku_number FROM CTE_Numbers
-UNION ALL
-SELECT * FROM CTE_Letters
-ORDER BY SeqNumber;
 
-SELECT	oqd.Article,
-		oqd.SizeCode,
-		[ShipQty] = sum(oqd.Qty),
-		t.SeqNumber
-from Production.dbo.Order_QtyShip_Detail oqd with (nolock)
-inner join #tmpSku_number t on t.Article = oqd.Article and t.SizeCode = oqd.SizeCode
-where exists(select 1 from FinalInspection_Order_QtyShip foq with (nolock) where foq.OrderID = oqd.ID and foq.Seq = oqd.Seq and foq.ID = @ID)
-group by	oqd.Article,
-			oqd.SizeCode,
-			t.SeqNumber
-order by t.SeqNumber
+SELECT
+    c.Article,
+    c.SizeCode,
+	[ShipQty] = sum(c.Qty),
+    SeqNumber = COALESCE(c.SeqNumber, n.NewSeqNumber)
+FROM cte c
+LEFT JOIN cteNulls n
+    ON c.RowID = n.RowID
+where ISNULL(c.Junk ,0) = 0 --- 若為NULL 代表沒有FinalInspection_Order_Breakdown，視作無Junk
+group by c.Article ,c.SizeCode ,COALESCE(c.SeqNumber, n.NewSeqNumber)
+
 
 select	s.StyleName,
 		o.FactoryID,
@@ -2851,7 +2886,7 @@ drop table #tmpStyleInfo
             return ExecuteDataSet(CommandType.Text, sqlGetData, parameter);
         }
 
-        public List<string> GetPivot88FinalInspectionID(string finalInspectionID)
+        public List<string> GetPivot88FinalInspectionID(string finalInspectionID, bool isAutoSend = true)
         {
             SQLParameterCollection parameter = new SQLParameterCollection();
             string sqlGetData = @"
@@ -2860,8 +2895,7 @@ select @FinalInspFromDateTransferToP88 = FinalInspFromDateTransferToP88 from sys
 
 select  ID
 from Finalinspection with (nolock)
-where   IsExportToP88 = 0 and
-        InspectionResult in ('Pass', 'Fail') and
+where   InspectionResult in ('Pass', 'Fail') and
         submitdate >= @FinalInspFromDateTransferToP88 and
         InspectionStage = 'Final' and
         exists (select 1 from Production.dbo.Orders o with (nolock) 
@@ -2875,6 +2909,9 @@ where   IsExportToP88 = 0 and
                 sqlGetData += " and ID = @ID";
                 parameter.Add("@ID", finalInspectionID);
             }
+
+            // 0:自動發送 1:手動發送，手動發送代表之前已經自動發送過，現在是手動重送
+            sqlGetData += $" and IsExportToP88 = {(isAutoSend ? 0 : 1)}";
 
             DataTable dtResult = ExecuteDataTableByServiceConn(CommandType.Text, sqlGetData, parameter);
 

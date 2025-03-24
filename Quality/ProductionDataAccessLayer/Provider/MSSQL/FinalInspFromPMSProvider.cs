@@ -151,6 +151,48 @@ drop table #FinalInspection_Order
             return ExecuteList<SelectedPO>(CommandType.Text, sqlGetData, listPar);
         }
 
+        public IList<SelectQtyBreakdown> GetSelectedQtyBreakdownForSetting(List<string> listOrderID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            string whereOrderID = listOrderID.Select(s => $"'{s}'").JoinToString(",");
+
+            string sqlGetData = $@"
+select DISTINCT OrderID = oq.ID
+        , oq.Article
+        , oq.SizeCode
+        , LineItem = NULL
+        , Junk = CAST( 0 as bit)
+		, FinalInspectionID = ''
+from Production.dbo.Order_QtyShip_Detail oq
+where oq.ID in ({whereOrderID})  
+
+";
+            return ExecuteList<SelectQtyBreakdown>(CommandType.Text, sqlGetData, listPar);
+        }
+        public IList<SelectQtyBreakdown> GetSelectedQtyBreakdownForSetting(string finalInspectionID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@finalInspectionID", finalInspectionID);
+
+            string sqlGetData = $@"
+select DISTINCT OrderID = oq.ID
+        , oq.Article
+        , oq.SizeCode
+        , fb.LineItem
+        , DefaultLineItem = fb.LineItem
+        , HasDbDefault = cast( IIF(fb.LineItem IS NULL ,0 , 1 ) as bit)
+        , fb.Junk
+        ,  FinalInspectionID = f.ID
+from Production.dbo.Order_QtyShip_Detail oq
+LEFT JOIN FinalInspection_Order_QtyShip fo on fo.OrderID = oq.Id
+LEFT JOIN FinalInspection f on f.ID = fo.ID
+LEFT JOIN FinalInspection_Order_Breakdown fb on fb.FinalInspectionID =f.ID and fb.Article = oq.Article and fb.SizeCode = oq.SizeCode
+where f.ID = @finalInspectionID
+
+";
+            return ExecuteList<SelectQtyBreakdown>(CommandType.Text, sqlGetData, listPar);
+        }
+
         public IList<SelectCarton> GetSelectedCartonForSetting(List<string> listOrderID)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();

@@ -231,6 +231,7 @@
     <Compile Include="Areas\StyleManagement\StyleManagementAreaRegistration.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\KeepAliveController.cs" />
     <Compile Include="Controllers\PublicWindowController.cs" />
     <Compile Include="Controllers\SendMailAttachfilesController.cs" />
     <Compile Include="Controllers\TransferFinalInspectionController.cs" />
@@ -1069,6 +1070,7 @@
     <Folder Include="TMP\" />
     <Folder Include="Views\Authority\" />
     <Folder Include="Views\Base\" />
+    <Folder Include="Views\KeepAlive\" />
     <Folder Include="Views\SampleRFT\" />
   </ItemGroup>
   <ItemGroup>
