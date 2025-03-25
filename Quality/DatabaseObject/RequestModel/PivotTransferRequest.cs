@@ -18,7 +18,5 @@ namespace DatabaseObject.RequestModel
         public string RequestUri { get; set; }
 
         public Dictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
-        public string P88UniqueKey { get; set; }
-        public bool IsAutoSend { get; set; } = true;
     }
 }

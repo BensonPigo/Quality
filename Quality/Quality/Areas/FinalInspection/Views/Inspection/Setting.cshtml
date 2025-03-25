@@ -426,62 +426,12 @@
             </div>
         </div>
 
-        <!--Qty Breakdown 彈出視窗-->
-
-        @*<input type="hidden" id="originalQtyBreakdown" name="QtyBreakdown" />*@
-
-        <div class="detail-dialog qtyBreakdown" title="Select Qty Breakdown">
-            <div class="detail-dialog-content dialog-content-w-icon" style="height:40vh">
-                <table cellspacing="100" id="QtyBreakdownTable" class="table table-striped display">
-                    <thead>
-                        <tr class="row-name">
-                            <th>Article</th>
-                            <th>Size</th>
-                            <th>Line Item</th>
-                            <th>Junk</th>
-                        </tr>
-                    </thead>
-                    <tbody id="qtyBreakdownBody">
-                        @for (int i = 0; i < Model.SelectQtyBreakdownList.Count; i++)
-                        {
-                            <tr class="row-content" style="vertical-align: middle; text-align: center;">
-                                <td>
-                                    @Html.DisplayFor(o => Model.SelectQtyBreakdownList[i].Article)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(o => Model.SelectQtyBreakdownList[i].SizeCode)
-                                </td>
-                                <td>
-                                    <input type="number" ID="QtyBreakdown_LineItem_[@i]" OrderID="@Model.SelectQtyBreakdownList[i].OrderID" value="@Model.SelectQtyBreakdownList[i].LineItem" defaultVal="@Model.SelectQtyBreakdownList[i].DefaultLineItem" Idx="@i" min="0" />
-                                </td>
-                                <td>
-                                    @{ string isChecked = Model.SelectQtyBreakdownList[i].Junk ? "checked" : string.Empty;}
-                                    <input type="checkbox" ID="QtyBreakdown_Junk_[@i]"
-                                           class="messageCheckbox"
-                                           Idx="@i"
-                                           OrderID="@Model.SelectQtyBreakdownList[i].OrderID"
-                                           SizeCode="@Model.SelectQtyBreakdownList[i].SizeCode"
-                                           @Html.Raw(isChecked)
-                                           onclick="JunkQtyBreakdownChange(this)" style="width: 1.4em;" />
-                                </td>
-                                <td>
-                                    @Model.SelectQtyBreakdownList[i].OrderID-
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                <br />
-
-            </div>
-        </div>
-
         <button class="button" style="right:0">Next</button>
 
         //Model.SelectCarton的標籤藏在這邊
         for (int i = 0; i < Model.SelectCarton.Count; i++)
         {
-            @Html.Hidden($"SelectCarton[{i}].Selected", Model.SelectCarton[i].Selected, new { @class = "CartonSelect" })
+            @Html.Hidden($"SelectCarton[{i}].Selected", Model.SelectCarton[i].Selected,new {@class= "CartonSelect" })
             @Html.Hidden($"SelectCarton[{i}].PackingListID", Model.SelectCarton[i].PackingListID)
             @Html.Hidden($"SelectCarton[{i}].CTNNo", Model.SelectCarton[i].CTNNo)
             @Html.Hidden($"SelectCarton[{i}].OrderID", Model.SelectCarton[i].OrderID)
@@ -497,17 +447,6 @@
             @Html.Hidden($"SelectOrderShipSeq[{i}].ShipmodeID", Model.SelectOrderShipSeq[i].ShipmodeID)
             @Html.Hidden($"SelectOrderShipSeq[{i}].Article", Model.SelectOrderShipSeq[i].Article)
             @Html.Hidden($"SelectOrderShipSeq[{i}].Qty", Model.SelectOrderShipSeq[i].Qty)
-        }
-        //Model.SelectQtyBreakdownList
-        for (int i = 0; i < Model.SelectQtyBreakdownList.Count; i++)
-        {
-                            // 用於POST 的參數
-            @Html.Hidden($"SelectQtyBreakdownList[{i}].Junk", Model.SelectQtyBreakdownList[i].Junk)
-            @Html.Hidden($"SelectQtyBreakdownList[{i}].OrderID", Model.SelectQtyBreakdownList[i].OrderID)
-            @Html.Hidden($"SelectQtyBreakdownList[{i}].Article", Model.SelectQtyBreakdownList[i].Article)
-            @Html.Hidden($"SelectQtyBreakdownList[{i}].SizeCode", Model.SelectQtyBreakdownList[i].SizeCode)
-            @Html.Hidden($"SelectQtyBreakdownList[{i}].LineItem", Model.SelectQtyBreakdownList[i].LineItem)
-            @Html.Hidden($"SelectQtyBreakdownList[{i}].DefaultLineItem", Model.SelectQtyBreakdownList[i].DefaultLineItem)
         }
     }
 
@@ -526,10 +465,8 @@
         var index = 0;
         var index2 = 0;
         var index3 = 0;
-        var index4 = 0;
         var currentStage = '';
         var Order_AvailableQty = {};
-
         var table;
         @foreach (var item in Model.SelectedPO)
         {
@@ -547,45 +484,9 @@
             @:shipModeSeqData.push(['@item.OrderID', '@item.Seq', @item.Qty]);
             @:index3 = index3 + 1;
         }
-
-        const initQtyBreakdownData = new Proxy(
-            @Html.Raw(Json.Encode(Model.SelectQtyBreakdownList)),
-            {
-                set(target, property, value) {
-                    target[property] = value;
-
-                    // 每次數據更新時，自動更新對應的 DOM
-                    updateDOM(target);
-                    return true;
-                }
-            }
-        );
-
-        // 更新 DOM 的函數
-        function updateDOM(data) {
-            data.forEach((item, index) => {
-                for (const key in item) {
-                    const inputId = `SelectQtyBreakdownList_${index}__${key}`;
-                    const input = document.getElementById(inputId);
-                    if (input) {
-                        if (typeof (item[key]) == 'boolean') {
-                            input.value = item[key]; // 更新值
-                        }
-                        else {
-                            input.value = item[key] || ""; // 更新值
-                        }
-                    }
-                }
-            });
-        }
-
-
         $(function () {
 
             @Html.Raw(Model.ErrorMessage);
-
-            // 初始化時先更新一次 DOM
-            updateDOM(initQtyBreakdownData);
 
             for (var i = 0; i < poData.length; i++) {
                 var obj = {
@@ -678,6 +579,7 @@
                 });
             });
 
+
             // 把開窗點到的資料，寫入DataTable的Datasource
             $("#SelectedPOTable tbody").on("blur", "td.OpenDetail", function () {
 
@@ -766,25 +668,6 @@
                     { targets: 3 },
                     { targets: 4 },
                     { targets: 5, visible: false },
-                ]
-            });
-
-            $("#QtyBreakdownTable").DataTable({
-                "pageLength": 10,
-                "autoWidth": false,
-                "info": false,
-                destroy: true, // 設定這個才能重新初始化Datatables
-                "filter": false,
-                "paging": false,
-                "info": false,
-                "scrollY": "30vh",
-                "scrollCollapse": true,
-                columnDefs: [
-                    { targets: 0 },
-                    { targets: 1 },
-                    { targets: 2 },
-                    { targets: 3 },
-                    { targets: 4, visible: false },
                 ]
             });
 
@@ -940,6 +823,7 @@
                         click: function () {
 
                             var checkedList = [];
+                            var checkedOrderIDList = [];
                             var totalQty = 0;
                             $('[id^=ShipmodeSeq_Select_]').each(function () {
 
@@ -951,6 +835,7 @@
 
                                     totalQty = totalQty + parseInt(qty);
                                     checkedList.push(seq);
+                                    checkedOrderIDList.push(orderID);
 
                                     Order_AvailableQty[orderID + '-' + seq] = parseInt(qty);
                                 }
@@ -1000,56 +885,6 @@
                             //把勾選的代進textobx
                             $("#SewingLineID").val(checkedList.join(','));
                             //document.getElementById("SelectedPO[" + index + "].Seq").value = checkedList.join(',');
-                            $(this).dialog("close");
-                        }
-                        , "class": "button"
-                        , "style": "bottom:0;background-color:#E00000;border-radius: 21px;"
-                    },
-                },
-            });
-
-            //Select ShipmodeSeq 視窗
-            $(".qtyBreakdown").dialog({
-                //width: "50%",
-                dialogClass: "add-contact-box",
-                buttons: {
-                    "1": {
-                        text: 'Default',
-                        click: function () {
-                            processSelectQtyBreakdown(initQtyBreakdownData);
-                            $('[id^=QtyBreakdown_LineItem_]').each(function () {
-
-                                var idx = $(this).attr("idx");
-                                var junk = initQtyBreakdownData[idx].Junk;
-                                var defaultval = initQtyBreakdownData[idx].DefaultLineItem;
-                                if (junk === false) {
-                                    $(this).val(defaultval);
-                                }
-                                else {
-                                    $(this).val('');
-                                }
-                            });
-                        }
-                        , "class": "button"
-                        , "style": "bottom:0;background-color:#E00000;border-radius: 21px;"
-                    },
-                    "2": {
-                        text: 'Next',
-                        click: function () {
-
-                            var checkedList = [];
-                            $('[id^=QtyBreakdown_LineItem_]').each(function () {
-
-                                var sizeCode = $(this).attr("sizeCode");
-                                var orderID = $(this).attr("OrderID");
-                                var idx = $(this).attr("idx");
-                                var lineItemVal = $(this).val();
-
-                                // 回寫Model
-                                initQtyBreakdownData[idx].LineItem = lineItemVal;
-                                updateDOM(initQtyBreakdownData);
-                            });
-
                             $(this).dialog("close");
                         }
                         , "class": "button"
@@ -1163,78 +998,6 @@
 
             sampleQtyEnableChange();
         });
-
-        function processSelectQtyBreakdown(list) {
-            if (!list || list.length === 0) {
-                return list;
-            }
-
-            // 排序函數
-            function getSortKey(sizeCode) {
-                if (!sizeCode) {
-                    return 'Z'; // 空值排在最後
-                }
-
-                // 檢查是否為純數字
-                if (/^\d+$/.test(sizeCode)) {
-                    return `A${sizeCode.padStart(5, '0')}`; // 純數字排在最前面
-                }
-
-                // 解析 size code 的各個部分
-                const parts = sizeCode.match(/^(\d+)([A-Za-z]+)(\d*)$/);
-                if (!parts) {
-                    return `Z${sizeCode}`; // 無法解析的格式排在最後
-                }
-
-                const [, numberPart, letterPart, lastNumberPart] = parts;
-                const baseNumber = numberPart.padStart(5, '0');
-                const suffixNumber = lastNumberPart.padStart(2, '0');
-
-                return `B${baseNumber}${letterPart}${suffixNumber}`;
-            }
-
-            // 先排序
-            const sortedList = [...list].sort((a, b) => {
-                // 先比較 OrderID
-                if (a.OrderID !== b.OrderID) {
-                    return a.OrderID.localeCompare(b.OrderID);
-                }
-                // OrderID 相同時，比較 Article
-                if (a.Article !== b.Article) {
-                    return a.Article.localeCompare(b.Article);
-                }
-                // OrderID 和 Article 相同時，比較 SizeCode
-                return getSortKey(a.SizeCode).localeCompare(getSortKey(b.SizeCode));
-            });
-
-
-            // 將清單依 OrderID 、Article 分組
-            const groupedData = sortedList.reduce((groups, item) => {
-                if (item.Junk) {
-                    return groups;
-                }
-                const groupKey = `${item.OrderID}_${item.Article}`;
-                if (!groups[groupKey]) {
-                    groups[groupKey] = [];
-                }
-                groups[groupKey].push(item);
-                return groups;
-            }, {});
-
-
-            // 為每個群組設定預設值
-            Object.values(groupedData).forEach(group => {
-                let defaultValue = 10;
-                group.forEach(item => {
-                    if (!item.Junk) {
-                        item.DefaultLineItem = defaultValue;
-                        defaultValue += 10;
-                    }
-                });
-            });
-
-            return sortedList;
-        }
 
         // Selected PO異動Available Qty時。自動加總到下方的「Total Available Qty」、右方的「AQL Plan」
         function Cacu_AvailableQty() {
@@ -1519,44 +1282,6 @@
             NonLoading();
         }
 
-        //開啟ShipmodeSeq 彈跳視窗
-        function open_QtyBreakdown(orderId) {
-
-            $(".qtyBreakdown").dialog("open");
-            ShowLoading();
-
-            $("#QtyBreakdownTable").DataTable({
-                "pageLength": 10,
-                "autoWidth": false,
-                "info": false,
-                destroy: true, // 設定這個才能重新初始化Datatables
-                //"filter": false,
-                "paging": false,
-                "info": false,
-                "scrollY": "30vh",
-                "scrollCollapse": true,
-                "search": {
-                    "search": orderId + '-'
-                },
-                columnDefs: [
-                    { targets: 0 },
-                    { targets: 1 },
-                    { targets: 2 },
-                    { targets: 3 },
-                    { targets: 4, visible: false },
-                ]
-            })/*.columns.adjust()*/;
-
-            $("#QtyBreakdownTable_filter").hide();
-
-            // 先把所有勾選清掉
-            $('[id^=SelectQtyBreakdownLis]').each(function () {
-                $(this).prop('checked', false);
-            });
-
-            NonLoading();
-        }
-
         function open_SewingLine(pkey) {
             var findValue = pkey.split(',');
             var line = findValue[0];
@@ -1633,10 +1358,9 @@
 
             var metalContaminateQty = d[13];
             var customize4 = d[14];
-            var orderId = d[1];
             return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">' +
                 '<tr><td style="width:70%">PO#:</td><td style=" text-align: right;" style="width:30%">' +
-                '<input type="hidden" name="SelectedPO[' + d[2] + '].ORDERID" id="SelectedPO[' + d[2] + '].ORDERID" value="' + orderId + '" \/>' +
+                '<input type="hidden" name="SelectedPO[' + d[2] + '].ORDERID" id="SelectedPO[' + d[2] + '].ORDERID" value="' + d[1] + '" \/>' +
                 '<input type="hidden" name="SelectedPO[' + d[2] + '].CustPONO" id="SelectedPO[' + d[2] + '].CustPONO" value="' + d[3] + '" \/>' +
                 d[3] +
                 '</td></tr>' +
@@ -1646,13 +1370,13 @@
                 '<tr><td>Brand:</td><td style=" text-align: right;">' + d[6] + '</td></tr>' +
 
                 '<tr><td>Shipmode Seq:</td><td style=" text-align: right;" class="OpenDetail" >' +
-                '<input type="text" style="width:100%" readonly="readonly" onclick="open_ShipmodeSeq(\'' + orderId + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Seq" id="SelectedPO[' + d[2] + '].Seq" value="' + d[11] + '" OrderID="' + orderID + '" Col="ShipmodeSeq"/>' +
+                '<input type="text" style="width:100%" readonly="readonly" onclick="open_ShipmodeSeq(\'' + d[1] + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Seq" id="SelectedPO[' + d[2] + '].Seq" value="' + d[11] + '" OrderID="' + orderID + '" Col="ShipmodeSeq"/>' +
                 '</td></tr>' +
 
                 '<tr><td>Article:</td><td style=" text-align: right;">' + d[12] + '</td></tr>' +
                 '<tr><td>SP# Qty By Seq:</td><td style=" text-align: right;">' + d[7] + '</td></tr>' +
                 '<tr><td>Cartons:</td><td style=" text-align: right;" class="OpenDetail" >' +
-                '<input type="text" style="width:100%" readonly="readonly" onclick="open_cartonsDetail(\'' + orderId + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8] + '" OrderID="' + orderID +'" Col="Cartons"/>' +
+                '<input type="text" style="width:100%" readonly="readonly" onclick="open_cartonsDetail(\'' + d[1] + ',' + d[3] + '\');" name="SelectedPO[' + d[2] + '].Cartons" id="SelectedPO[' + d[2] + '].Cartons" value="' + d[8] + '" OrderID="' + orderID +'" Col="Cartons"/>' +
                 '</td></tr>'+
                 '<tr><td>Available Qty:</td><td style=" text-align: right;" class="OpenDetail" >' +
                 '<input type="number" style="width:100%" name="SelectedPO[' + d[2] + '].AvailableQty" id="SelectedPO[' + d[2] + '].AvailableQty" orderQty="' + d[7]+'" value="' +
@@ -1661,8 +1385,7 @@
 
                 + '" OrderID="' + orderID + '" oninput="value=AvailableQtyChk(' + d[7] + ',value)" max="' + d[7] + '" min="0" Col="AvailableQty"/>' +
                 '</td></tr>' +
-                '<tr><td>Metal Contaminate:</td><td style=" text-align: right;">' + metalContaminateQty + '</td></tr>' +
-                '<tr><td>Qty Breakdown:</td><td style=" text-align: right;"><input type="button" value="..." onclick="open_QtyBreakdown(\'' + orderId + '\');"></td></tr>' +
+                '<tr><td>Metal Contaminate:</td><td style=" text-align: right;">' + metalContaminateQty + '</td></tr>'+
                 '</table>';
         }
 
@@ -1888,18 +1611,6 @@
             var Seq = $(self).attr("Seq");
             var icChecked = $(self).prop("checked");
             $("input[Type=hidden][ID=SelectOrderShipSeq_" + Idx + "__Selected]").val(icChecked);
-        }
-
-        function JunkQtyBreakdownChange(self) {
-
-            var Idx = $(self).attr("Idx");
-            var OrderID = $(self).attr("orderID");
-            var sizeCode = $(self).attr("SizeCode");
-            var icChecked = $(self).prop("checked");
-            //$("input[Type=hidden][ID=SelectQtyBreakdownList_" + Idx + "__Junk]").val(icChecked);
-
-            // Model 更新
-            initQtyBreakdownData[Idx].Junk = icChecked;            
         }
 
         function onSampleSizeChange(value) {

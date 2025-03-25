@@ -108,8 +108,6 @@ namespace BusinessLogicLayer.Service.FinalInspection
 
                 queryReport.ListCartonInfo = _FinalInspectionProvider.GetListCartonInfo(finalInspectionID).ToList();
 
-                queryReport.SelectQtyBreakdownList = _FinalInspFromPMSProvider.GetSelectedQtyBreakdownForSetting(finalInspectionID).ToList();
-
                 queryReport.ListShipModeSeq = _FinalInspectionProvider.GetListShipModeSeq(finalInspectionID).ToList();
 
                 queryReport.ListViewMoistureResult = _FinalInspectionProvider.GetViewMoistureResult(finalInspectionID).ToList();
@@ -313,48 +311,6 @@ namespace BusinessLogicLayer.Service.FinalInspection
             }
 
             return ActionName;
-        }
-
-        public BaseResult UpdateOrder_Breakdown(List<FinalInspection_Order_Breakdown> Req, string p88UniqueKey)
-        {
-            BaseResult result = new BaseResult()
-            {
-                Result = true
-            };
-            try
-            {
-                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-                _FinalInspectionProvider.ModifyFinalInspection_Order_Breakdown(Req, p88UniqueKey);
-
-            }
-            catch (Exception ex)
-            {
-                result.Result = false;
-                result.ErrorMessage = ex.ToString();
-            }
-            return result;
-        }
-        public BaseResult UpdateAudit(string FinalInspectionID, DateTime auditDate)
-        {
-            BaseResult result = new BaseResult()
-            {
-                Result = true
-            };
-            try
-            {
-                _FinalInspectionProvider = new FinalInspectionProvider(Common.ManufacturingExecutionDataAccessLayer);
-                _FinalInspectionProvider.UpdateAuditDate(new DatabaseObject.ManufacturingExecutionDB.FinalInspection()
-                {
-                    ID = FinalInspectionID,
-                    AuditDate = auditDate
-                });
-            }
-            catch (Exception ex)
-            {
-                result.Result = false;
-                result.ErrorMessage = ex.ToString();
-            }
-            return result;
         }
 
 

@@ -80,7 +80,6 @@
     <Compile Include="ManufacturingExecutionDB\FinalInspection_NonBACriteriaImage.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_Order.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_OrderCarton.cs" />
-    <Compile Include="ManufacturingExecutionDB\FinalInspection_Order_Breakdown.cs" />
     <Compile Include="ManufacturingExecutionDB\FinalInspection_OtherImage.cs" />
     <Compile Include="ManufacturingExecutionDB\MailTo.cs" />
     <Compile Include="ManufacturingExecutionDB\Measurement.cs" />
