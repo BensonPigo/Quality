@@ -1235,7 +1235,7 @@ from
                 bool isSuccess = true;
                 string errorMsg = string.Empty;
                 string postBody = string.Empty;
-                string uniqueKey = "sintex" + inspectionID + "Trans4mR"; // 新版本 + Trans4m
+                string uniqueKey = "sintex" + inspectionID + "Trans4m"; // 新版本 + Trans4m
                 string requestUri = pivotTransferRequest.RequestUri + uniqueKey;
 
                 try
