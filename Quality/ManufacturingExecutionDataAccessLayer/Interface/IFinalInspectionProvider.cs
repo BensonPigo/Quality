@@ -129,7 +129,7 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
 
         DataSet GetEndInlinePivot88(string ID, string inspectionType);
 
-        List<string> GetPivot88FinalInspectionID(string finalInspectionID, bool isAutoSend = true);
+        List<string> GetPivot88FinalInspectionID(string finalInspectionID);
         
         List<string> Get_FinalInspectionID_BrandID(string finalInspectionID);
 
@@ -165,7 +165,5 @@ namespace ManufacturingExecutionDataAccessLayer.Interface
         List<FinalInspectionSignature> GetFinalInspectionSignatureUser();
         bool InsertFinalInspectionSignatureUser(string FinalInspectionID, string JobTitle, List<FinalInspectionSignature> allData);
         bool InsertFinalInspectionSignature(FinalInspectionSignature Req);
-        void ModifyFinalInspection_Order_Breakdown(List<FinalInspection_Order_Breakdown> qtyBreakdownList, string p88UniqueKey);
-        void UpdateAuditDate(FinalInspection f);
     }
 }
