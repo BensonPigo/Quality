@@ -34,10 +34,6 @@
             color: wheat;
         }
 
-        #QtyBreakdownTable_wrapper tr.row-name {
-            color: wheat;
-        }
-
         #tab-Change {
             width: 100%;
         }
@@ -375,17 +371,7 @@
             <div style="width: 15%; "></div>
             <div style="width: 10%; ">
             </div>
-            <div style="width: 10%;">
-
-                @if (Model.FinalInspection.BrandID == "ADIDAS"
-                && Model.FinalInspection.InspectionStage == "Final"
-                && Model.FinalInspection.SubmitDate != null
-                && (Model.FinalInspection.InspectionResult == "Pass" || Model.FinalInspection.InspectionResult == "Fail")
-                && Model.FinalInspection.IsExportToP88)
-                {
-                    <button type="button" id="ReSentP88" class="site-btn btn-blue">Re-Send to P88</button>
-                }
-            </div>
+            <div style="width: 10%;"></div>
 
         </div>
     </div>
@@ -462,144 +448,13 @@
 
 <dialog id="diaUserList" style="height:70vh;width:30vw;">
 
-    <button class="site-btn btn-blue" onclick="CloseSignatureUserDialog()">Close</button>
     <button class="site-btn btn-red" id="btnDialogSave" onclick="SaveSignatureUserDialog()" jobTitle="">Save</button>
+    <button class="site-btn btn-blue" onclick="CloseSignatureUserDialog()">Close</button>
 
     <table id="UserListTable" data-maintain-meta-data="true"></table>
 
 </dialog>
 
-<!-- 主 Dialog -->
-<div id="ReSendP88Dialog" title="Re-send P88">
-
-    <div class="dialog-header" style="width:100%;">
-        <div style="display: flex; flex-direction: row; flex-wrap:wrap; width: 100%;">
-
-            @*ROW 1*@
-            <div style="width: 50%; height: 5vh; color: white; color: white;">
-                <button class="btn" style="background-color: #E00000; color: white; font-size: 15px;  border-radius: 21px;" onclick="ReSendP88()">Send</button>
-            </div>
-            <div style="width: 50%; height: 5vh; color: white; color: white;">
-                <h3>SUCCESS!</h3>
-            </div>
-
-            @*ROW 2*@
-            <div style="width: 50%; height: 5vh; color: white;">
-                <label class="Font">Unique Key</label>
-            </div>
-            <div style="width: 50%; height: 5vh;">
-                <input id="UniqueKey" style="width:70%;" readonly type="text" value="@Model.FinalInspection.P88UniqueKey" />
-            </div>
-
-            @*ROW 3*@
-            <div style="width: 50%; height: 5vh; color: white;">
-                <label class="Font">Audit Date</label>
-            </div>
-            <div style="width: 50%; height: 5vh;">
-                @Html.TextBoxFor(o => o.FinalInspection.AuditDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
-                <button class="btn" style="background-color: #E00000; color: white; font-size: 15px;  border-radius: 21px;" onclick="UpdateAuditDate()">Update</button>
-            </div>
-
-            @*ROW 4*@
-            @{ var spList = Model.SelectQtyBreakdownList.Select(o => o.OrderID).Distinct(); }
-            @foreach (var sp in spList)
-            {
-                <div style="width: 50%; height: 5vh; color: white;">
-                    <label class="Font">@sp</label>
-                </div>
-                <div style="width: 50%; height: 5vh;">
-                    <input type="button" style="font-size: 20px;" onclick="open_QtyBreakdown('@sp');" value="..." />
-                </div>
-            }
-            @*ROW 5*@
-            <div style="width: 100%; height: 5vh; color: white;">
-                <label class="Font">JSON File</label>
-            </div>
-
-            @*ROW 6*@
-            <div style="width: 100%; height: 30vh;">
-                <textarea id="jsonP88" style="width:100%;height:100%;" readonly></textarea>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="qtyBreakdown" title="Select Qty Breakdown">
-    <div class="" style="width:40vw;">
-        <table cellspacing="100" id="QtyBreakdownTable" class="table table-striped display" style="width: 40vw;">
-            <thead>
-                <tr class="row-name">
-                    <th>OrderID</th>
-                    <th>Article</th>
-                    <th>Size</th>
-                    <th>Line Item</th>
-                    <th>Junk</th>
-                </tr>
-            </thead>
-            <tbody id="qtyBreakdownBody">
-                @for (int i = 0; i < Model.SelectQtyBreakdownList.Count; i++)
-                {
-                    <tr class="row-content" style="vertical-align: middle; text-align: center;">
-                        <td class="QtyBreakdownTableOrderID">
-                            @Html.DisplayFor(o => Model.SelectQtyBreakdownList[i].OrderID)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(o => Model.SelectQtyBreakdownList[i].Article)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(o => Model.SelectQtyBreakdownList[i].SizeCode)
-                        </td>
-                        <td>
-                            @{
-                                string isChecked = Model.SelectQtyBreakdownList[i].Junk ? "checked" : string.Empty;
-                                string ro = !string.IsNullOrEmpty(isChecked) ? "readonly" : string.Empty;
-                            }
-                            <input type="number" ID="QtyBreakdown_LineItem_[@i]"
-                                   FinalInspectionID="@Model.SelectQtyBreakdownList[i].FinalInspectionID"
-                                   OrderID="@Model.SelectQtyBreakdownList[i].OrderID"
-                                   Article="@Model.SelectQtyBreakdownList[i].Article"
-                                   SizeCode="@Model.SelectQtyBreakdownList[i].SizeCode"
-                                   value="@Model.SelectQtyBreakdownList[i].LineItem"
-                                   defaultVal="@Model.SelectQtyBreakdownList[i].DefaultLineItem"
-                                   Idx="@i"
-                                   min="0" />
-                        </td>
-                        <td>
-                            <input type="checkbox" ID="QtyBreakdown_Junk_@i"
-                                   class="messageCheckbox"
-                                   Idx="@i"
-                                   FinalInspectionID="@Model.SelectQtyBreakdownList[i].FinalInspectionID" 
-                                   OrderID="@Model.SelectQtyBreakdownList[i].OrderID" 
-                                   Article="@Model.SelectQtyBreakdownList[i].Article"
-                                   SizeCode="@Model.SelectQtyBreakdownList[i].SizeCode"
-                                   @Html.Raw(isChecked)
-                                   onclick="JunkQtyBreakdownChange(this)" style="width: 1.4em;" />
-                        </td>
-                        @*<td>
-                                @Model.SelectQtyBreakdownList[i].OrderID-
-                            </td>*@
-                    </tr>
-                }
-            </tbody>
-        </table>
-        <br />
-        <button class="btn" style="background-color: #E00000; color: white; font-size: 15px; height: 40px; border-radius: 21px; float: right;" onclick="QtyBreakDownSave()">Save</button>
-        <button class="btn" style="background-color: #E00000; color: white; font-size: 15px; height:40px; border-radius: 21px;float:right;" onclick="QtyBreakDownDefault()">Default</button>
-    </div>
-</div>
-
-
-@*@for (int i = 0; i < Model.SelectQtyBreakdownList.Count; i++)
-{
-    // 用於POST 的參數
-    @Html.Hidden($"SelectQtyBreakdownList[{i}].Junk", Model.SelectQtyBreakdownList[i].Junk)
-    @Html.Hidden($"SelectQtyBreakdownList[{i}].OrderID", Model.SelectQtyBreakdownList[i].OrderID)
-    @Html.Hidden($"SelectQtyBreakdownList[{i}].Article", Model.SelectQtyBreakdownList[i].Article)
-    @Html.Hidden($"SelectQtyBreakdownList[{i}].SizeCode", Model.SelectQtyBreakdownList[i].SizeCode)
-    @Html.Hidden($"SelectQtyBreakdownList[{i}].LineItem", Model.SelectQtyBreakdownList[i].LineItem)
-    @Html.Hidden($"SelectQtyBreakdownList[{i}].DefaultLineItem", Model.SelectQtyBreakdownList[i].DefaultLineItem)
-}*@
 
 <dialog id="diaSignature" style="height:70vh;width:70vw;">
     <div style="width:100%;display:flex;flex-direction:row;">
@@ -643,92 +498,10 @@
     <script>
         var msg = new MessagerAlert();
         let UserListTable = $("#UserListTable");
-        let uniqueKey = 0;
-        let jsonQtyBreakdown = '@Html.Raw(Json.Encode(Model.SelectQtyBreakdownList))';
 
-        const initQtyBreakdownData = new Proxy(
-            JSON.parse(jsonQtyBreakdown),
-            {
-                set(target, property, value) {
-                    target[property] = value;
-
-                    // 每次數據更新時，自動更新對應的 DOM
-                    updateModleToDOM(target);
-                    return true;
-                },
-                  get: (target, prop, receiver) => {
-                    return Reflect.get(target, prop);
-                  },
-
-            }
-        );
-
-        // 把 Model 更新到 DOM
-        function updateModleToDOM(data) {
-            data.forEach((item, index) => {
-                for (const key in item) {
-                    if (key.toLocaleLowerCase() == 'lineitem') {
-                        const inputId = `QtyBreakdown_LineItem_[${index}]`;
-                        const input = document.getElementById(inputId);
-                        input.value = item[key];
-
-                    }
-                    else if (key.toLocaleLowerCase() == 'junk') {
-                        const inputId = `QtyBreakdown_Junk_${index}`;
-                        const input = document.getElementById(inputId);
-                        input.checked = item[key];
-                    }
-                }
-            });
-        }
-
-        // 把 DOM 更新到 Model
-        function updateDomToModle() {
-            // 找到所有符合條件的 DOM 元素
-            const elements = document.querySelectorAll('[id^=QtyBreakdown_LineItem_]');
-
-            // 遍歷所有找到的 DOM 元素
-            elements.forEach(element => {
-                // 從 DOM 元素中獲取屬性值
-                const finalInspectionID = element.getAttribute('finalinspectionid');
-                const orderID = element.getAttribute('orderid');
-                const article = element.getAttribute('article');
-                const sizeCode = element.getAttribute('sizecode');
-                const idx = element.getAttribute('idx');
-
-                // 獲取 DOM 元素的 Value 值
-                const lineItemValue = element.value;
-                const junk = document.getElementById(`QtyBreakdown_Junk_${idx}`).checked;
-
-                // 在 initQtyBreakdownData 中查找對應的物件
-                const targetItem = initQtyBreakdownData.find(item =>
-                    item.FinalInspectionID === finalInspectionID &&
-                    item.OrderID === orderID &&
-                    item.Article === article &&
-                    item.SizeCode === sizeCode
-                );
-
-                // 如果找到對應的物件，更新其 LineItem 屬性
-                if (targetItem) {
-                    //targetItem.LineItem = lineItemValue;
-                    targetItem.Junk = junk;
-                }
-            });
-        }
 
         $(function () {
             tabChange();
-
-            setInterval(function () {
-                fetch('/api/keepalive') // 或者 '/KeepAlive.aspx'，根據伺服器端的實現修改路徑
-                    .then(response => response.text())
-                    .then(data => console.log(data))
-                    .catch(error => console.error('Keep-Alive failed:', error));
-            }, 5 * 60 * 1000); // 每 5 分鐘發送一次
-
-
-            // 初始化時先更新一次 DOM
-            updateModleToDOM(initQtyBreakdownData);
 
             $('#Detail_Cartons').DataTable({
                 "autoWidth": false,
@@ -757,25 +530,6 @@
                     { targets: 0, width: "30%" },
                     { targets: 1, width: "30%" },
                     { targets: 2, width: "30%" },
-                ]
-            });
-
-            $("#QtyBreakdownTable").DataTable({
-                "pageLength": 10,
-                "autoWidth": false,
-                "info": false,
-                destroy: true, // 設定這個才能重新初始化Datatables
-                "filter": false,
-                "paging": false,
-                "info": false,
-                "scrollY": "30vh",
-                "scrollCollapse": true,
-                columnDefs: [
-                    { targets: 0 },
-                    { targets: 1 },
-                    { targets: 2 },
-                    { targets: 3 },
-                    { targets: 4 },
                 ]
             });
 
@@ -837,33 +591,6 @@
                 dialogClass: "add-contact-box",
             });
 
-            $('#ReSendP88Dialog').dialog({
-                autoOpen: false,
-                modal: true,     // 使用遮罩背景
-                width: 800,      // 設定寬度
-                height: 650,     // 設定高度
-            });
-
-            //Select ShipmodeSeq 視窗
-            $(".qtyBreakdown").dialog({
-                autoOpen: false,
-                width: "42%",
-                minHeight:480,
-                dialogClass: "add-contact-box",
-                open: function () {
-                    if ('@Model.SelectQtyBreakdownList.Where(o => o.LineItem != 0 && o.LineItem != null).Any()' == 'False') { // 全部為空，則給預設值
-                        QtyBreakDownDefault();
-                    }
-                    updateModleToDOM(initQtyBreakdownData);
-                },
-                close: function () {
-                    //alert(1);
-                },
-            });
-
-            document.getElementById('ReSentP88').addEventListener('click', function () {
-                OpenReSendP88Dialog();
-            });
 
             $("#SignatureBy_QC").click(function () {
                 GeneratorUserList($(this).val());
@@ -935,216 +662,6 @@
 
         });
 
-        function QtyBreakDownDefault() {
-            let sp = $('.QtyBreakdownTableOrderID:first').text().trim();
-
-            processSelectQtyBreakdown(initQtyBreakdownData);
-
-            $('[id^=QtyBreakdown_LineItem_]').each(function () {
-
-                var idx = $(this).attr("idx");
-                var junk = document.getElementById(`QtyBreakdown_Junk_${idx}`).checked;// initQtyBreakdownData[idx].Junk;
-
-                var defaultval = initQtyBreakdownData[idx].DefaultLineItem;
-                if (junk === false) {
-                    $(this).val(defaultval);
-                    initQtyBreakdownData[idx].LineItem = defaultval;
-                }
-                else {
-                    $(this).val(0);
-                }
-            });
-        }
-
-        function QtyBreakDownSave() {
-            let isLineItemChange = false;
-            $('[id^=QtyBreakdown_LineItem_]').each(function () {
-
-                var sizeCode = $(this).attr("sizeCode");
-                var orderID = $(this).attr("OrderID");
-                var idx = $(this).attr("idx");
-                var lineItemVal = $(this).val();
-                if ($('#QtyBreakdown_Junk_' + idx).prop('checked')) {
-                    lineItemVal = 0;
-                }
-
-                // Junk 比對
-                if (initQtyBreakdownData[idx].Junk != $('#QtyBreakdown_Junk_' + idx).prop('checked')) {
-                    isLineItemChange = true;
-                }
-
-                // LineItem比對
-                if (initQtyBreakdownData[idx].LineItem != lineItemVal) {
-                    isLineItemChange = true;
-                }
-
-                // 回寫Model
-                initQtyBreakdownData[idx].LineItem = lineItemVal;
-            });
-
-            // 更新Model
-            updateDomToModle();
-
-            if (!isLineItemChange) {
-                msg.WithError("There is no Line Item which is changed.");
-                return false;
-            }
-
-            if (!validateInitQtyBreakdownData()) {
-                msg.WithError("Line Item cannot be repeated or empty!!");
-                return false;
-            }
-
-            $.ajax({
-                url: "@Url.Action("UpdateQtyBreakdown")",
-                type: 'POST',
-                dataType: "json",
-                contentType: 'application/json; charset=utf-8',
-                data: JSON.stringify({ Req: initQtyBreakdownData, p88UniqueKey:''}),
-                async: false,
-                success: function (data) {
-
-                    if (data.Result) {
-                        $("#UniqueKey").val(data.P88UniqueKey);
-
-                        // 新數據替換整個陣列
-                        initQtyBreakdownData.splice(0, initQtyBreakdownData.length, ...data.SelectQtyBreakdownList);
-
-                        // 確保 DOM 更新
-                        updateModleToDOM(initQtyBreakdownData);
-                        msg.WithSuccess('Sucess!');
-                    }
-                    else {
-                        msg.WithError(data.ErrorMessage);
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    msg.WithError(xhr.responseText);
-                }
-            });
-        }
-
-        function UpdateAuditDate() {
-
-            $.ajax({
-                url: "@Url.Action("UpdateAudit")",
-                type: 'PATCH',
-                dataType: "json",
-                contentType: 'application/json; charset=utf-8',
-                data: JSON.stringify({ FinalInspectionID: '@Model.FinalInspection.ID', auditDate: $('#FinalInspection_AuditDate').val()}),
-                async: false,
-                success: function (data) {
-
-                    if (data.Result) {
-                        msg.WithSuccess('Sucess!');
-                    }
-                    else {
-                        msg.WithError(data.ErrorMessage);
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    msg.WithError(xhr.responseText);
-                }
-            });
-        }
-
-        function ReSendP88() {
-            $.ajax({
-                url: "@Url.Action("ReSendP88")",
-                type: 'POST',
-                dataType: "json",
-                contentType: 'application/json; charset=utf-8',
-                data: JSON.stringify({ FinalInspectionID: '@Model.FinalInspection.ID', p88UniqueKey: $("#UniqueKey").val()}),
-                async: false,
-                success: function (data) {
-
-                    if (data.Result) {
-                        $("#jsonP88").val(data.p88Json);
-                        msg.WithSuccess('Sucess!');
-                    }
-                    else {
-                        msg.WithError(data.ErrorMessage);
-                    }
-                },
-                error: function (xhr, ajaxOptions, thrownError) {
-                    msg.WithError(xhr.responseText);
-                }
-            });
-        }
-        function processSelectQtyBreakdown(list) {
-            if (!list || list.length === 0) {
-                return list;
-            }
-
-            // 排序函數
-            function getSortKey(sizeCode) {
-                if (!sizeCode) {
-                    return 'Z'; // 空值排在最後
-                }
-
-                // 檢查是否為純數字
-                if (/^\d+$/.test(sizeCode)) {
-                    return `A${sizeCode.padStart(5, '0')}`; // 純數字排在最前面
-                }
-
-                // 解析 size code 的各個部分
-                const parts = sizeCode.match(/^(\d+)([A-Za-z]+)(\d*)$/);
-                if (!parts) {
-                    return `Z${sizeCode}`; // 無法解析的格式排在最後
-                }
-
-                const [, numberPart, letterPart, lastNumberPart] = parts;
-                const baseNumber = numberPart.padStart(5, '0');
-                const suffixNumber = lastNumberPart.padStart(2, '0');
-
-                return `B${baseNumber}${letterPart}${suffixNumber}`;
-            }
-
-            // 先排序
-            const sortedList = [...list].sort((a, b) => {
-                // 先比較 OrderID
-                if (a.OrderID !== b.OrderID) {
-                    return a.OrderID.localeCompare(b.OrderID);
-                }
-                // OrderID 相同時，比較 Article
-                if (a.Article !== b.Article) {
-                    return a.Article.localeCompare(b.Article);
-                }
-                // OrderID 和 Article 相同時，比較 SizeCode
-                return getSortKey(a.SizeCode).localeCompare(getSortKey(b.SizeCode));
-            });
-
-
-            // 將清單依 OrderID 、Article 分組
-            const groupedData = sortedList.reduce((groups, item) => {
-                if (item.Junk) {
-                    return groups;
-                }
-                const groupKey = `${item.OrderID}_${item.Article}`;
-                if (!groups[groupKey]) {
-                    groups[groupKey] = [];
-                }
-                groups[groupKey].push(item);
-                return groups;
-            }, {});
-
-
-            // 為每個群組設定預設值
-            Object.values(groupedData).forEach(group => {
-                let defaultValue = 10;
-                group.forEach(item => {
-                    // Junk要根據DOM
-                    let isJunk = document.querySelector(`input[Type=checkbox][finalinspectionid='${item.FinalInspectionID}'][orderid='${item.OrderID}'][article='${item.Article}'][sizecode='${item.SizeCode}']`).checked;
-                    if (!isJunk && !item.HasDbDefault) {
-                        item.DefaultLineItem = defaultValue;
-                        defaultValue += 10;
-                    }
-                });
-            });
-
-            return sortedList;
-        }
-
         function tabChange() {
             var $li = $('#tab-Change > ul.tab-title li');
             $($li.eq(0).attr('link')).show();
@@ -1164,77 +681,6 @@
         function open_ShipmodeSeqDetail() {
             $(".to-edit-detail-ShipmodeSeq").dialog("open");
             $("#Detail_ShipmodeSeq").DataTable().columns.adjust();
-        }
-
-        function open_QtyBreakdown(orderId) {
-
-            $(".qtyBreakdown").dialog("open");
-            ShowLoading();
-
-            $("#QtyBreakdownTable").DataTable({
-                "pageLength": 10,
-                "autoWidth": false,
-                "info": false,
-                destroy: true, // 設定這個才能重新初始化Datatables
-                "filter": false,
-                "paging": false,
-                "info": false,
-                "scrollY": "30vh",
-                "scrollCollapse": true,
-
-                "search": {
-                    "search": orderId
-                },
-                columnDefs: [
-                    { targets: 0 },
-                    { targets: 1 },
-                    { targets: 2 },
-                    { targets: 3 },
-                    { targets: 4 },
-                ]
-            })/*.columns.adjust()*/;
-
-            //$("#QtyBreakdownTable_filter").hide();
-
-            //// 先把所有勾選清掉
-            //$('[id^=SelectQtyBreakdownLis]').each(function () {
-            //    $(this).prop('checked', false);
-            //});
-
-            NonLoading();
-        }
-
-        function validateInitQtyBreakdownData() {
-            // 建立一個 Map 用於檢查重複的 LineItem
-            const groupMap = new Map();
-
-            // 遍歷 initQtyBreakdownData
-            for (const item of initQtyBreakdownData) {
-                // 根據群組條件生成唯一鍵值
-                const groupKey = `${item.FinalInspectionID}-${item.OrderID}-${item.Junk}`;
-
-                // 如果群組鍵值不存在於 Map，初始化為空陣列
-                if (!groupMap.has(groupKey)) {
-                    groupMap.set(groupKey, []);
-                }
-
-                // 檢查 LineItem
-                if (item.LineItem !== 0 && groupMap.get(groupKey).includes(item.LineItem)) {
-                    return false; // 表示有重複
-                }
-
-                if (item.Junk === false && (item.LineItem === "" || item.LineItem === null)) {
-                    return false; // 非Junk，不可以空白
-                }
-
-                // 將當前的 LineItem 加入對應的群組鍵值中
-                if (item.LineItem !== 0) {
-                    groupMap.get(groupKey).push(item.LineItem);
-                }
-            }
-
-            // 如果檢查結束沒有重複，返回 true
-            return true;
         }
 
         function OpenDefectPicture(DetailUkey, RowIndex) {
@@ -1311,16 +757,6 @@
             infoModal.close();
         }
 
-        function OpenReSendP88Dialog() {
-            //$('#ReSendP88Dialog').dialog({
-            //    modal: true,     // 使用遮罩背景
-            //    width: 800,      // 設定寬度
-            //    height: 650,     // 設定高度
-            //});
-            $("#ReSendP88Dialog").dialog("open");
-        }
-
-
         function GeneratorUserList(userIDs) {
             var url = '@Url.Action("GetSignatureUserList")' + '?userIDs=' + userIDs;
 
@@ -1393,21 +829,7 @@
             });
         }
 
-        function JunkQtyBreakdownChange(self) {
 
-            var Idx = $(self).attr("Idx");
-            var finalinspectionid = $(self).attr("finalinspectionid");
-            var OrderID = $(self).attr("orderID");
-            var article = $(self).attr("article");
-            var sizeCode = $(self).attr("SizeCode");
-            var icChecked = $(self).prop("checked");
-
-            // Model 更新
-            //initQtyBreakdownData[Idx].Junk = icChecked;
-            if (icChecked) {
-                $(`input[Type=number][finalinspectionid='${finalinspectionid}'][orderid='${OrderID}'][article='${article}'][sizecode='${sizeCode}']`).val(0);
-            }
-        }
 
         function OpenSignatureDialog() {
             let infoModal = document.querySelector(`#diaSignature`);
@@ -1535,7 +957,6 @@
 
             InsertSignature(img);
         }
-
 
         // 使用FileReader讀取檔案，並且回傳Base64編碼後的source
         function convertFile(file) {

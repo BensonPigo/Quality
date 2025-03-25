@@ -22,8 +22,7 @@ namespace Quality.Controllers
             try
             {
                 FinalInspectionService finalInspectionService = new FinalInspectionService();
-                string p88Json = string.Empty;
-                List<SentPivot88Result> sentPivot88Results = finalInspectionService.SentPivot88(pivotTransferRequest, ref p88Json);
+                List<SentPivot88Result> sentPivot88Results = finalInspectionService.SentPivot88(pivotTransferRequest);
                 return Request.CreateResponse(HttpStatusCode.OK, sentPivot88Results);
             }
             catch (Exception ex)
