@@ -756,8 +756,7 @@
                                 @if (Model.DetailList != null && Model.DetailList.Count > 0)
                                 {
                                     int DetailListIdx = 0;
-                                    int TimeListIdx = 0;
-                                    //int RateListIdx = 0;
+                                    int TimeListIdx = 0; // 用於辨識畫面TimeList每一筆資料的Key值，起始和DB的TimeList idx一樣，可以跳號(例如1、2、3、5)
                                     int SpecimenListIdx = 0;
                                     foreach (var detail in Model.DetailList)
                                     {
@@ -898,7 +897,8 @@
                                                             </div>
                                                             @foreach (var time in timeList)
                                                             {
-                                                                <div class="divTime10">
+                                                                <div class="divTime10 TimeListRow" DomTimeListIdx="@TimeListIdx">
+                                                                    @*TimeList[0]、TimeList[1]，這邊的索引是需要和後端Model Binding的TimeList 索引，不可跳號*@
                                                                     @Html.Hidden($"TimeList[{TimeListIdx}].Ukey", time.Ukey, new { @class = "", @style = "width:100%" })
                                                                     @Html.Hidden($"TimeList[{TimeListIdx}].SpecimenUkey", time.SpecimenUkey, new { @class = "", @style = "width:100%" })
                                                                     @*@Html.Hidden($"TimeList[{TimeListIdx}].Time", time.Time, new { @class = "", @style = "width:100%" })*@
@@ -908,12 +908,15 @@
                                                                     @Html.Hidden($"TimeList[{TimeListIdx}].DetailType", time.DetailType, new { @class = "", @style = "width:100%" })
                                                                     @Html.Hidden($"TimeList[{TimeListIdx}].SpecimenID", time.SpecimenID, new { @class = "", @style = "width:100%" })
 
-                                                                    @Html.TextBox($"TimeList[{TimeListIdx}].Time", time.Time, new { @class = "Time",
+                                                                    @Html.TextBox($"TimeList[{TimeListIdx}].Time", time.Time, new
+                                                                    {
+                                                                        @class = "Time",
                                                                    @DetailType = detail.Type,
                                                                    @SpecimenID = specimen.SpecimenID,
-                                                                   @style = "width:100%" })
+                                                                   @style = "width:100%"
+                                                                    })
                                                                 </div>
-                                                                <div class="divTime10">
+                                                                <div class="divTime10 TimeListRow" DomTimeListIdx="@TimeListIdx">
                                                                     @*@time.Mass*@
                                                                     @Html.TextBox($"TimeList[{TimeListIdx}].Mass", time.Mass, new
                                                                {
@@ -923,30 +926,29 @@
                                                                    @DetailType = detail.Type,
                                                                    @SpecimenID = specimen.SpecimenID,
                                                                    @IsInitialMass = time.IsInitialMass,
-                                                                   @onchange = $@"value=MassCheck(value);AutoUpdateTime(this);"
+                                                                   @onchange = $@"value=MassCheck(value);AutoUpdateEvaporation (this);"
 
                                                                })
                                                                 </div>
-                                                                <div class="divTime30">
+                                                                <div class="divTime30 TimeListRow" DomTimeListIdx="@TimeListIdx">
                                                                     @Html.TextBox($"TimeList[{TimeListIdx}].Evaporation", time.Evaporation, new
-                                                                    {
-                                                                        @class = "Evaporation",
-                                                                        @style = "width:100%",
-                                                                        @DetailType = detail.Type,
-                                                                        @SpecimenID = specimen.SpecimenID,
-                                                                        @InitialTime = time.InitialTime,
-                                                                        @Time = time.Time,
-                                                                        @TimeListIdx = MaxTimeListIdx,
-                                                                        @parentTabID = divID
-                                                                    })
+                                                               {
+                                                                   @class = "Evaporation",
+                                                                   @style = "width:100%",
+                                                                   @DetailType = detail.Type,
+                                                                   @SpecimenID = specimen.SpecimenID,
+                                                                   @InitialTime = time.InitialTime,
+                                                                   @Time = time.Time,
+                                                                   @parentTabID = divID
+                                                               })
 
                                                                 </div>
-                                                                <div class="divTime40">
+                                                                <div class="divTime40 TimeListRow" DomTimeListIdx="@TimeListIdx">
                                                                     @Html.TextBox($"TimeList[{TimeListIdx}].LastUpadate", time.LastUpadate, new { @class = "", @style = "width:100%" })
                                                                 </div>
-                                                                <div class="divTime10">
+                                                                <div class="divTime10 TimeListRow" DomTimeListIdx="@TimeListIdx">
                                                                     <input type="hidden" class="detailTimeListIdx" name="name" value="@TimeListIdx" />
-                                                                    @if (time.Time > 40)
+                                                                    @if (time.Time > 0)
                                                                     {
                                                                         <img class="detailDelete" src="~/Image/Icon/Delete.png" width="30" style="min-width: 30px" />
                                                                     }
@@ -991,7 +993,7 @@
         BeforeSpecimenID: 'Specimen 1',
         AfterSpecimenID: 'Specimen 1'
     };
-    let MaxTimeListIdx = @MaxTimeListIdx;
+    let MaxTimeListModelIdx = @MaxTimeListIdx;
     let ttlSpecimenCount = 0;
 
 
@@ -1945,26 +1947,6 @@
                 return false;
             }
 
-            //$('.detailRowIdx').each(function (index, data) {
-            //    var idx = $(this).val();
-            //    if (idx != index) {
-
-            //        let className = `Row${idx}`;
-
-
-            //        $.each($(`.Row${idx} .DetailInput`), function () {
-            //            let colName = $(this).attr("Name").split('.')[1];
-            //            let newName = `DetailList[${index}].${colName}`;
-            //            let newID = `DetailList_${index}__${colName}`;
-            //            $(this).removeClass(`Row${idx}`);
-            //            $(this).addClass(`Row${index}`);
-            //            $(this).attr("ID", newID);
-            //            $(this).attr("Name", newName);
-            //        });
-            //    }
-            //});
-
-
             $("#SaveSubmit").click();
 
         });
@@ -2129,160 +2111,36 @@
         }
 
         $('.detailDelete').on('click', function () {
-            if (EditMode == false) {
-                return;
-            }
-            var t = $(this);
+            if (!EditMode) return;
 
-            msg.WithConfirm('Do you want to delete the data ?',
-                function () {
+            const $btn = $(this);
+            msg.WithConfirm('Do you want to delete the data ?', () => {
+                // 取得刪除圖示所在的 DOM 索引
+                const deleteIdx = parseInt($btn.parent().find('.detailTimeListIdx').val(), 10);
 
-                    let divTime = $(t).parent().parent();
-                    //let divRate = $(t).parent().parent().parent().parent().find('.divTabInnerLeft').find('.divRate');
+                // 取得要刪除的那一行中，.Time 元素的相關資訊
+                const $timeElem = $(`.TimeListRow[domtimelistidx=${deleteIdx}]:first > .Time`);
+                const detailType = $timeElem.attr('detailtype');
+                const specimenId = $timeElem.attr('specimenid');
+                const timeValue = $timeElem.val();
 
-                    // 找出刪除的detailtype、specimenid
-                    let detailtype = $($(divTime).find('div')[6]).find(".Mass").attr("detailtype");
-                    let specimenid = $($(divTime).find('div')[6]).find(".Mass").attr("specimenid");
+                // 刪除該 DOM 索引的所有 TimeListRow
+                $(`.TimeListRow[domtimelistidx=${deleteIdx}]`).remove();
 
-                    let divTimeLength = $(divTime).find('div').length;
-                    let ctnPerRow = 5;
-                    var deleteTimeIdx = 0;
-                    for (var i = divTimeLength - 1; 0 <= i; i--) {
-                        if ((i + 1) % 5 == 0) {
-                            // 找出被刪除的index
-                            deleteTimeIdx = parseInt($($(divTime).find('div')[i]).find('.detailTimeListIdx').val());
-                        }
+                // 更新後續元素的 DOM 索引
+                AdjustElementsDomIndex('TimeList', deleteIdx);
 
-                        $($(divTime).find('div')[i]).remove();
-                        if (ctnPerRow == 1) {
-                            break;
-                        }
-                        ctnPerRow--;
-                    }
-                    // 把大於這個idx的都往前推一
-                    AdjustElements('TimeList', deleteTimeIdx);
-                    /*
-                    let divRateLength = $(divRate).find('div').length;
-                    ctnPerRow = 2;
-                    var deleteRateIdx = 0;
+                // 更新大於被刪除索引的時間數值
+                AutoUpdateTime(detailType, specimenId, timeValue);
 
-                    for (var i = divRateLength - 1; 0 <= i; i--) {
-                        if ((i + 1) % 2 == 0) {
-                            // 找出被刪除的index
-                            deleteRateIdx = parseInt($($(divRate).find('div')[i]).find('.detailRateListIdx').val());
-                        }
-
-                        $($(divRate).find('div')[i]).remove();
-                        if (ctnPerRow == 1) {
-                            break;
-                        }
-                        ctnPerRow--;
-                    }
-
-                    // 把大於這個idx的都往前推一
-                    AdjustElements('RateList', deleteRateIdx);
-                    */
-
-                    MaxRateListIdx -= 1;
-                    MaxTimeListIdx -= 1;
-                    AutoUpdateTime(detailtype, specimenid);
-
-                }, null);
+                // 減少全域計數器
+                MaxTimeListModelIdx -= 1;
+            });
         });
 
         $('#NewItem').on('click', function () {
             AddDetailRow();
         });
-    }
-
-    function AdjustElements(listName,indexToDelete) {
-
-        // 取得所有 name 屬性以 "TimeList[" 開頭的元素
-        const elementsToAdjust = $('[name^="' + listName +'["]');
-
-        for (const obj of elementsToAdjust) {
-            // 取得元素的目前 name 屬性
-            const currentName = obj.getAttribute('name');
-
-            // 從 name 屬性中提取索引
-            const match = currentName.match(/\[(\d+)\]/);
-            if (match) {
-                const currentIndex = parseInt(match[1]);
-
-                // 如果索引大於刪除的索引，則遞減索引
-                if (currentIndex > indexToDelete) {
-                    const newIndex = currentIndex - 1;
-
-                    // 更新 name 屬性，將舊索引替換為新索引
-                    const newName = currentName.replace('[' + currentIndex + ']', '[' + newIndex + ']');
-
-                    // 更新 ID 属性
-                    obj.setAttribute('name', newName);
-                    obj.setAttribute('id', obj.getAttribute('id').replace('_' + currentIndex + '_', '_' + newIndex + '_'));
-                }
-            }
-
-        }
-    }
-    // 若表身有資料被刪除，則重新編號索引
-    function reBuildIndex(listName) {
-
-        //listName = RateList or TimeList
-
-        // 取剩下的Row
-        var rows = $(`.detail${listName}Idx`);
-
-        // 新的索引，一律從0開始
-        var newIndex = 0;
-
-        // 剩下的Row逐一處理，可能會有連號造成Index不連貫，例如原本有三筆資料，索引0、1、2，但1刪掉了，剩下的兩筆索引要重新編成0、1
-        rows.each(function () {
-
-            // 取得舊索引
-            var oldIndex = $(this).val();
-
-            // 取得Name或ID用到舊索引的控制項，一律換成新索引
-            $(`input[name^="${listName}[${oldIndex}]"]`).each(function () {
-                var oldName = $(this).attr('name');
-                var newName = oldName.replace(oldIndex, newIndex);
-                $(this).attr('name', newName);
-            })
-
-            $(`input[id^="${listName}_${oldIndex}_"]`).each(function () {
-                var oldID = $(this).attr('id');
-                var newID = oldID.replace(oldIndex, newIndex);
-                $(this).attr('id', newID);
-            })
-
-            //$(`select[name^="DetailList[${oldIndex}]"]`).each(function () {
-            //    var oldName = $(this).attr('name');
-            //    var newName = oldName.replace(oldIndex, newIndex);
-            //    $(this).attr('name', newName);
-
-            //    // 跟RowIndex有關的事件也要更新
-            //    if (newName.endsWith('Scale')) {
-            //        $(this).attr('onchange', `ScaleChange(${newIndex}, this, 'Result', '4-5')`);
-            //    }
-            //})
-
-            $(this).attr('value', newIndex);
-            newIndex++;
-        });
-
-    }
-
-    function extractIndex(inputString) {
-        // 使用正則表達式匹配 [ ] 中的數字
-        const match = inputString.match(/\[(\d+)\]/);
-
-        if (match) {
-            // 如果找到匹配，將匹配的數字轉換為整數並返回
-            const index = parseInt(match[1], 10);
-            return index;
-        } else {
-            // 如果未找到匹配，返回 -1 或任何您希望的預設值
-            return -1;
-        }
     }
 
     function BlurEventBind() {
@@ -2396,7 +2254,7 @@
     function AddDetailRow() {
 
         //MaxRateListIdx += 1;
-        MaxTimeListIdx += 1;
+        MaxTimeListModelIdx += 1;
         //  必要參數
 
         var detailType = focusObj.DetailType;
@@ -2418,14 +2276,15 @@
         if (lastTime > 60) {
             return;
         }
-        let TimeListIdx = MaxTimeListIdx;
+        let TimeListModelIdx = MaxTimeListModelIdx;
+        let TimeListDomIdx = $('.TimeListRow').length / 5;
         parentTabID = $(lastEvaporation).attr("parentTabID");
 
         $.ajax({
             url: "@Url.Action("AddTimeRow")",
             type: 'POST',
             contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({ parentTabID: parentTabID, detailType: detailType, specimenID: specimenID, TimeListIdx: TimeListIdx, lastTime: lastTime }),
+            data: JSON.stringify({ parentTabID: parentTabID, detailType: detailType, specimenID: specimenID, TimeListModelIdx: TimeListModelIdx, TimeListDomIdx: TimeListDomIdx , lastTime: lastTime }),
             async: false,
             success: function (data) {
                 $(`#${parentTabID} > .divTabInnerRight > .divTime`).append(data);
@@ -2434,23 +2293,7 @@
                 console.log(xhr.responseText);
             },
         });
-        @*
-        $.ajax({
-            url: "@Url.Action("AddRateRow")",
-            type: 'POST',
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify({
-                parentTabID: parentTabID,
-                detailType: detailType, specimenID: specimenID, RateListIdx: RateListIdx, SpecimenListIdx: SpecimenListIdx , lastRateName: lastRateName, subtrahendTime: subtrahendTime, minuendTime: minuendTime}),
-            async: false,
-            success: function (data) {
-                $(`#${parentTabID} > .divTabInnerLeft > .divRate`).append(data);
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                console.log(xhr.responseText);
-            }
-        });
-        *@
+
         msg.WithSuccess("Add Success");
 
         ClickEventBind();
@@ -2521,97 +2364,115 @@
         focusObj.DetailType = type;
     }
 
-    function AutoUpdateTime(updatedObj) {
-        let isInitialMass =$(updatedObj).attr("IsInitialMass");
-        let specimenID = $(updatedObj).attr("SpecimenID");
-        let detailType = $(updatedObj).attr("DetailType");
-        let newVal = $(updatedObj).val();
+    // 更新DOM身上的Index
+    function AdjustElementsDomIndex(listName, indexToDelete) {
 
-        if (isInitialMass == "True") {
-            let evaporationList = $(`.Evaporation[detailType="${detailType}"][specimenID="${specimenID}"]`);
-            $.each(evaporationList, function myfunction() {
-                let evaporation = this;
-                let time = $(evaporation).attr("Time");
-                let massObj = $(`.Mass[detailType="${detailType}"][specimenID="${specimenID}"][Time="${time}"]`)[0];
-                let mass = $(massObj).val();
-                let initialMass = newVal;
+        // 取得所有 name 屬性以 "TimeList[" 開頭的元素
+        const elementsToAdjust = $('[name^="' + listName + '["]');
 
-                let val = initialMass - mass;
+        for (const obj of elementsToAdjust) {
+            // 取得元素的目前 name 屬性
+            const currentName = obj.getAttribute('name');
 
-                if (parseFloat(val) >= 99.999) {
-                    val = 99.999;
+            // 從 name 屬性中提取索引
+            const match = currentName.match(/\[(\d+)\]/);
+            if (match) {
+                const currentIndex = parseInt(match[1]);
+
+                // 如果索引大於刪除的索引，則遞減索引
+                if (currentIndex > indexToDelete) {
+                    const newIndex = currentIndex - 1;
+
+                    // 更新 name 屬性，將舊索引替換為新索引
+                    const newName = currentName.replace('[' + currentIndex + ']', '[' + newIndex + ']');
+
+                    // 更新 ID 属性
+                    obj.setAttribute('name', newName);
+                    obj.setAttribute('id', obj.getAttribute('id').replace('_' + currentIndex + '_', '_' + newIndex + '_'));
                 }
-                else if (parseFloat(val) < 0) {
-                    val = 0;
-                }
-                else {
-                    val = Number.parseFloat(val).toFixed(4);
-                }
+            }
 
-                $(evaporation).val(val);
+        }
+    }
 
+    // 更新指定元素 (Time、Evaporation 與 Mass) 的數值，若其當前值大於 updateFrom，則減少 3
+    function AutoUpdateTime(detailType, specimenid, updateFrom) {
+        const updateAttribute = (className, attrName) => {
+            $(`.${className}[detailtype="${detailType}"][specimenid="${specimenid}"]`)
+                .filter((_, elem) => parseFloat($(elem).attr(attrName)) > updateFrom)
+                .each((_, elem) => {
+                    const current = parseFloat($(elem).attr(attrName));
+                    $(elem).attr(attrName, current - 3);
+                });
+        };
+
+        updateAttribute("Time", "value");
+        updateAttribute("Evaporation", "time");
+        updateAttribute("Mass", "time");
+    }
+
+    // 更新蒸發值，依據是否為初始質量來決定計算方式，並呼叫更新平均值的函式
+    function AutoUpdateEvaporation(updatedObj) {
+        const $updated = $(updatedObj);
+        const isInitialMass = $updated.attr("IsInitialMass");
+        const specimenID = $updated.attr("SpecimenID");
+        const detailType = $updated.attr("DetailType");
+        const newVal = parseFloat($updated.val());
+
+        // 計算差值並限制在 0 ~ 99.999 之間，並格式化為四位小數
+        const computeEvap = (initial, current) => {
+            const diff = initial - current;
+            if (diff >= 99.999) return 99.999;
+            if (diff < 0) return 0;
+            return parseFloat(diff).toFixed(4);
+        };
+
+        if (isInitialMass === "True") {
+            $(`.Evaporation[detailtype="${detailType}"][specimenID="${specimenID}"]`).each((_, elem) => {
+                const time = $(elem).attr("Time");
+                // 取得對應 Mass 元素 (取第一筆符合條件的)
+                const $massObj = $(`.Mass[detailtype="${detailType}"][specimenID="${specimenID}"][Time="${time}"]`).first();
+                const mass = parseFloat($massObj.val());
+                const val = computeEvap(newVal, mass);
+                $(elem).val(val);
+            });
+        } else {
+            const time = $updated.attr("Time");
+            $(`.Evaporation[detailtype="${detailType}"][specimenID="${specimenID}"][Time="${time}"]`).each((_, elem) => {
+                const initialTime = $(elem).attr("InitialTime");
+                const $initialMassObj = $(`.Mass[detailtype="${detailType}"][specimenID="${specimenID}"][Time="${initialTime}"]`).first();
+                const initialMass = parseFloat($initialMassObj.val());
+                const val = computeEvap(initialMass, newVal);
+                $(elem).val(val);
             });
         }
-        else {
-            let time = $(updatedObj).attr("Time");
-            let evaporationList = $(`.Evaporation[detailType="${detailType}"][specimenID="${specimenID}"][Time="${time}"]`);
 
-            $.each(evaporationList, function myfunction() {
-                let evaporation = this;
-                let initialTime = $(evaporation).attr("InitialTime");
-                let initialMassObj = $(`.Mass[detailType="${detailType}"][specimenID="${specimenID}"][Time="${initialTime}"]`)[0];
-                let initialMass = $(initialMassObj).val();
-
-                let val = initialMass - newVal;
-
-                if (parseFloat(val) >= 99.999) {
-                    val = 99.999;
-                }
-                else if (parseFloat(val) < 0) {
-                    val = 0;
-                }
-                else {
-                    val = Number.parseFloat(val).toFixed(4);
-                }
-
-                $(evaporation).val(val);
-            });
-        }
-
-        //AutoUpdateRate(detailType, specimenID);
         AutoUpdateAverageRate(detailType, specimenID);
     }
 
-    function AutoUpdateAverageRate(detailType, specimenID) {
+    // 依據所有 Time 與 Evaporation 的數值計算出斜率，並更新 RateAverage，再進一步更新最終平均
+    function AutoUpdateAverageRate(detailType, specimenid) {
+        const timeValueArray = $(`.Time[detailtype="${detailType}"][specimenid="${specimenid}"]`)
+            .map((_, elem) => parseFloat($(elem).val()))
+            .get();
+        const evaporationValueArray = $(`.Evaporation[detailtype="${detailType}"][specimenid="${specimenid}"]`)
+            .map((_, elem) => parseFloat($(elem).val()))
+            .get();
 
-        let timeValueList = $(`.Time[detailType="${detailType}"][specimenID="${specimenID}"]`);
-        let evaporationValueList = $(`.Evaporation[detailType="${detailType}"][specimenID="${specimenID}"]`);
-
-        let timeValueArray = timeValueList.map(function () {
-            return parseFloat($(this).val()); // 使用 jQuery 提取 value 並轉為數字
-        }).get(); // 使用 .get() 轉換為純 JavaScript 陣列
-
-        let evaporationValueArray = evaporationValueList.map(function () {
-            return parseFloat($(this).val()); // 使用 jQuery 提取 value 並轉為數字
-        }).get(); // 使用 .get() 轉換為純 JavaScript 陣列
-
-
-        let slope = calculateSlope(timeValueArray, evaporationValueArray);
-        $(`.RateAverage[detailType="${detailType}"][specimenID="${specimenID}"]`).val(slope);
+        const slope = calculateSlope(timeValueArray, evaporationValueArray);
+        $(`.RateAverage[detailtype="${detailType}"][specimenid="${specimenid}"]`).val(slope);
         AutoUpdateFinalAverage(detailType);
     }
 
+    // 計算所有 RateAverage 的總和 (乘上 60) 再求平均，並更新 Main 區域的對應輸入框
     function AutoUpdateFinalAverage(detailType) {
-        let allRate = 0.0;
+        let sum = 0;
         let count = 0;
-        let rateValueList = $(`.RateAverage[detailType="${detailType}"]`);
-        $.each(rateValueList, function () {
-            let rateValue = this;
-            allRate += Number.parseFloat($(rateValue).val()) * 60;
-            count += 1;
+        $(`.RateAverage[detailtype="${detailType}"]`).each((_, elem) => {
+            sum += parseFloat($(elem).val()) * 60;
+            count++;
         });
-
-        let avg = Number.parseFloat(allRate / count).toFixed(4);
+        const avg = (sum / count).toFixed(4);
         $(`input[detailtype="Main${detailType}"]`).val(avg);
     }
 
@@ -2645,28 +2506,6 @@
         // 計算斜率
         const slope = numeratorSum / denominatorSum;
         return Number.parseFloat(slope).toFixed(4);
-    }
-
-
-    function CalculateAvgResult(arr) {
-        if (arr.length == 0) {
-            return 0;
-        }
-        if (arr.length == 1) {
-            return arr[1];
-        }
-
-        let sum = 0;
-
-        // 計算所有相鄰元素的差值並累加
-        for (let i = 0; i < arr.length - 1; i++) {
-            sum += (arr[i] - arr[i + 1]) * 6;
-        }
-
-        // 計算平均值
-        const rAvg = sum / (arr.length - 1);
-
-        return rAvg;
     }
 
     function FailMail() {
