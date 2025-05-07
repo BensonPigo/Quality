@@ -30,7 +30,7 @@ namespace BusinessLogicLayer.Interface
         object GetPivot88Json(string ID, bool isNewType = false);
         object GetEndInlinePivot88Json(string ID, string inspectionType, bool isNewType = false);
 
-        List<SentPivot88Result> SentPivot88(PivotTransferRequest pivotTransferRequest, ref string p88Json);
+        List<SentPivot88Result> SentPivot88(PivotTransferRequest pivotTransferRequest);
 
         void ExecImp_EOLInlineInspectionReport();
         List<FinalInspection_Step> GetAllStep(string FinalInspectionID, string CustPONO);

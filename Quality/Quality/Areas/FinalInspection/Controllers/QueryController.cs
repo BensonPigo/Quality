@@ -9,7 +9,6 @@ using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ResultModel.EtoEFlowChart;
-using DatabaseObject.ResultModel.FinalInspection;
 using DatabaseObject.ViewModel;
 using DatabaseObject.ViewModel.FinalInspection;
 using FactoryDashBoardWeb.Helper;
@@ -47,9 +46,6 @@ namespace Quality.Areas.FinalInspection.Controllers
         public IFinalInspectionProvider _FinalInspectionProvider { get; set; }
         public IFinalInspection_MeasurementProvider _FinalInspection_MeasurementProvider { get; set; }
         private string IsTest = ConfigurationManager.AppSettings["IsTest"];
-        private string p88_BaseUri = ConfigurationManager.AppSettings["P88_BaseUri"];
-        private string p88_RequestUri = ConfigurationManager.AppSettings["P88_RequestUri"];
-        private string p88_ApiKey = ConfigurationManager.AppSettings["P88_ApiKey"];
 
         public QueryController()
         {
@@ -341,7 +337,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                     {
                         continue;
                     }
-                    worksheet.Cells[RowIdx, ColIdx] = "Production： " + signatureData.UserID + " - " + signatureData.UserName;
+                    worksheet.Cells[RowIdx, ColIdx] = "Production： " + signatureData.UserID + " - " +signatureData.UserName;
                     Microsoft.Office.Interop.Excel.Range cell = worksheet.Cells[RowIdx + 1, ColIdx];
 
                     byte[] tmp = (byte[])signatureData.Signature; // 圖片的 byte[]
@@ -704,72 +700,6 @@ namespace Quality.Areas.FinalInspection.Controllers
             var result = Service.SendMail(FinalInspectionID, WebHost, test);
 
             return Json(result);
-        }
-
-        public JsonResult UpdateQtyBreakdown(List<FinalInspection_Order_Breakdown> Req, string p88UniqueKey)
-        {
-            var result = Service.UpdateOrder_Breakdown(Req, p88UniqueKey);
-            QueryReport model = Service.GetFinalInspectionReport(Req.FirstOrDefault().FinalInspectionID);
-            return Json(new { result.Result, result.ErrorMessage, model.FinalInspection.P88UniqueKey , model.SelectQtyBreakdownList });
-        }
-
-        [HttpPatch]
-        public JsonResult UpdateAudit(string FinalInspectionID, DateTime auditDate)
-        {
-            var result = Service.UpdateAudit(FinalInspectionID, auditDate);
-
-            return Json(new { result.Result, result.ErrorMessage });
-        }
-
-        public JsonResult ReSendP88(string FinalInspectionID, string p88UniqueKey)
-        {
-            string p88Json = string.Empty;
-            FinalInspectionService finalInspectionService = new FinalInspectionService();
-
-            List<SentPivot88Result> sentPivot88Results = finalInspectionService.SentPivot88(new PivotTransferRequest()
-            {
-                InspectionID = FinalInspectionID,
-                InspectionType = "FinalInspection",
-                BaseUri = p88_BaseUri,
-                RequestUri = p88_RequestUri,
-                Headers = new Dictionary<string, string>() { { "api-key", p88_ApiKey } },
-                P88UniqueKey = p88UniqueKey,
-                IsAutoSend = false
-            }, ref p88Json);
-
-            if (sentPivot88Results == null || !sentPivot88Results.Any())
-            {
-                return Json(
-                    new
-                    {
-                        Result = false
-                    ,
-                        ErrorMessage = "The "
-                    ,
-                        p88Json
-                    });
-            }
-
-
-
-            //return Json(
-            //    new
-            //    {
-            //        Result = true
-            //    ,
-            //        ErrorMessage =string.Empty
-            //    ,
-            //        p88Json
-            //    });
-            return Json(
-                new
-                {
-                    Result = sentPivot88Results.FirstOrDefault().isSuccess
-                ,
-                    ErrorMessage = sentPivot88Results.FirstOrDefault().errorMsg
-                ,
-                    p88Json
-                });
         }
 
         [HttpPost]
