@@ -321,6 +321,13 @@ UNION
 
 select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
 from AcceptableQualityLevels
+where  Junk = 0 and  AQLType in (1.5) and InspectionLevels IN ('1','2') and AcceptedQty is not null 
+AND BrandID='ALO' AND Category = ''
+
+UNION
+
+select BrandID,AQLType,InspectionLevels ,LotSize_Start,LotSize_End,SampleSize,AcceptedQty,Ukey
+from AcceptableQualityLevels
 where  Junk = 0 and  AQLType in (1.5,2.5,4.0) and InspectionLevels IN ('1') and AcceptedQty is not null 
 AND BrandID='U.ARMOUR' AND Category = ''
 
