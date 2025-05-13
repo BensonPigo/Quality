@@ -125,6 +125,7 @@ namespace DatabaseObject.ManufacturingExecutionDB
         public bool IsUPCStickierHantage { get; set; }
         public bool IsGS1128Label { get; set; }
         public bool IsSecuritytag { get; set; }
+        public bool IsPadPrintSizeLabel { get; set; }
     }
 
     public class FinalInspectionMoistureStandard
