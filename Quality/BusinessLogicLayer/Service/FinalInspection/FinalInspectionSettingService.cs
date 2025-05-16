@@ -189,14 +189,13 @@ namespace BusinessLogicLayer.Service
                         }
                     }
 
-                    var tmpAcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand" || o.BrandID == BrandID);
-
+                    var tmpAcceptableQualityLevels = _FinalInspFromPMSProvider.GetAcceptableQualityLevelsForSetting().Where(o => o.BrandID == string.Empty || o.BrandID == "AllBrand" || string.Equals(o.BrandID, BrandID, StringComparison.OrdinalIgnoreCase));
 
                     // 判斷該品牌有沒有特別設定，有的話就用特別設定；沒有的話用預設
                     if (tmpAcceptableQualityLevels.Where(o => o.BrandID != string.Empty && o.BrandID != "AllBrand").Any())
                     {
                         // 有的話就用特別設定
-                        result.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => o.BrandID == BrandID || o.BrandID == "AllBrand").OrderBy(o => o.AQLType).ToList();
+                        result.AcceptableQualityLevels = tmpAcceptableQualityLevels.Where(o => string.Equals(o.BrandID, BrandID, StringComparison.OrdinalIgnoreCase) || o.BrandID == "AllBrand").OrderBy(o => o.AQLType).ToList();
                     }
                     else
                     {
@@ -312,7 +311,7 @@ namespace BusinessLogicLayer.Service
                                             Ukey = 0
                                         }
                                     };
-                                }                        
+                                }
                                 break;
                             case "1.0 Level I":
                                 maxStart = setting.AcceptableQualityLevels.Where(o => o.AQLType == 1 && o.InspectionLevels == "1").Max(o => o.LotSize_Start);
