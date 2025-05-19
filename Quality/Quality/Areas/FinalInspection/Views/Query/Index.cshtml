@@ -144,6 +144,7 @@
                                 <th>SP#</th>
                                 <th>PO#</th>
                                 <th>Original PO#</th>
+                                <th>Line</th>
                                 <th>Audit Date</th>
                                 <th>SP# Qty</th>
                                 <th>Sample lot Qty</th>
@@ -200,6 +201,9 @@
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Customize4)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SewingLineID)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.AuditDate)
