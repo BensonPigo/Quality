@@ -24,6 +24,7 @@ namespace DatabaseObject.ViewModel.FinalInspection
         public string SP { get; set; }
         public string CustPONO { get; set; }
         public string AuditDate { get; set; }
+        public string SewingLineID { get; set; }
         public string SPQty { get; set; }
         public string StyleID { get; set; }
         public string Season { get; set; }

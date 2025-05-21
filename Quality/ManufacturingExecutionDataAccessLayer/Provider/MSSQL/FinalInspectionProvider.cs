@@ -2285,6 +2285,7 @@ select top 200 [FinalInspectionID] = f.ID,
         [SampleSize] = cast(f.SampleSize as varchar),
         [SubmitDate] = format(f.SubmitDate, 'yyyy/MM/dd')  
         ,f.ReInspection
+        ,f.SewingLineID
 from FinalInspection f with (nolock)
 inner join #default fo with (nolock) on fo.ID = f.ID
 inner join Production.dbo.Orders o with(nolock) on o.ID = fo.OrderID
