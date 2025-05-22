@@ -27,6 +27,9 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string CreateBy { get; set; }
         public string EditBy { get; set; }
 
+        public string Approver { get; set; }
+        public string ApproverName { get; set; }
+
         public List<ColorFastness_Result> ColorFastness_MainList { get; set; }
 
         // 下拉式選單 List

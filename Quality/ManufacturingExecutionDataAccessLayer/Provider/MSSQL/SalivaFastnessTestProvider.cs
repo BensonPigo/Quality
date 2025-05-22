@@ -107,6 +107,8 @@ where o.Category ='B'  --只抓大貨單
 select a.*
         ,d.TestAfterPicture
         ,d.TestBeforePicture
+,[ApproverName] = (select Name from pass1 where id = a.Approver)
+,[PreparerName] = (select Name from pass1 where id = a.Preparer)
 from SalivaFastnessTest a
 left join SciPMSFile_SalivaFastnessTest d WITH(NOLOCK) on a.ReportNo = d.ReportNo
 where 1=1
@@ -191,6 +193,8 @@ where 1=1
                 { "@Temperature", Req.Main.Temperature } ,
                 { "@Time", Req.Main.Time } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
+                { "@Approver", DbType.String,Req.Main.Approver ?? "" } ,
+                { "@Preparer", DbType.String,Req.Main.Preparer ?? ""} ,
             };
 
             if (Req.Main.TestBeforePicture != null)
@@ -236,7 +240,9 @@ INSERT INTO dbo.SalivaFastnessTest
            ,Status
            ,Result
            ,AddDate
-           ,AddName)
+           ,AddName
+,Approver
+,Preparer)
 VALUES
            (@ReportNo
            ,@BrandID
@@ -260,6 +266,8 @@ VALUES
            ,@Result
            ,GETDATE()
            ,@AddName
+           ,@Approver
+           ,@Preparer
 )
 ;
 
@@ -289,6 +297,9 @@ VALUES
                 { "@Temperature", Req.Main.Temperature } ,
                 { "@Time", Req.Main.Time } ,
                 { "@EditName", DbType.String, UserID ?? "" } ,
+                { "@ReportDate", DbType.Date,Req.Main.ReportDate } ,
+                { "@Approver", DbType.String,Req.Main.Approver ?? ""} ,
+                { "@Preparer", DbType.String,Req.Main.Preparer ?? "" } ,
             };
 
             if (Req.Main.TestBeforePicture != null)
@@ -327,6 +338,9 @@ UPDATE SalivaFastnessTest
       ,PrintColor = @PrintColor
       ,Temperature = @Temperature
       ,Time = @Time
+      ,ReportDate =@ReportDate
+,Approver = @Approver
+,Preparer = @Preparer
 WHERE ReportNo = @ReportNo
 ;
 if exists(select 1 from PMSFile.dbo.SalivaFastnessTest WHERE ReportNo = @ReportNo)
@@ -503,7 +517,6 @@ DELETE FROM SalivaFastnessTest_Detail where ReportNo = @ReportNo AND Ukey = @Uke
 UPDATE SalivaFastnessTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = @Status
-    , ReportDate = GETDATE()
 WHERE ReportNo = @ReportNo
 ";
             }
@@ -513,7 +526,6 @@ WHERE ReportNo = @ReportNo
 UPDATE SalivaFastnessTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New'
-    , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ";
             }

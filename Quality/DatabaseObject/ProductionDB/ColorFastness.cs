@@ -211,6 +211,16 @@ namespace DatabaseObject.ProductionDB
         public Byte[] TestBeforePicture { get; set; }
 
         public Byte[] TestAfterPicture { get; set; }
+        public string _Approver;
+
+
+        public string Approver
+        { 
+            get => _Approver??string.Empty; 
+            set => _Approver = value; 
+        }
+        public string ApproverName { get; set; }
+
     }
 
 }

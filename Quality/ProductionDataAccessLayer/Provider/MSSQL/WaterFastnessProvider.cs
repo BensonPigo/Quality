@@ -87,6 +87,8 @@ select	[TestNo] = cast(o.TestNo as varchar),
         Time =   o.Time ,
         [TestBeforePicture] = (select top 1 TestBeforePicture from SciPMSFile_WaterFastness oi WITH(NOLOCK) where o.ID = oi.ID ),
         [TestAfterPicture] = (select top 1 TestAfterPicture from SciPMSFile_WaterFastness oi WITH(NOLOCK) where o.ID = oi.ID )
+        ,[WaterFastnessApprover] = o.Approver
+        ,[WaterFastnessApproverName] = (select Name from Pass1 where id = o.Approver)
 from WaterFastness o with (nolock)
 inner join Orders od with (nolock) on od.ID = o.POID
 left join pass1 pass1Inspector WITH(NOLOCK) on o.Inspector = pass1Inspector.ID
@@ -224,6 +226,7 @@ where o.POID = @POID
             listPar.Add("@TestAfterPicture", WaterFastness_Detail_Result.Main.TestAfterPicture);
             listPar.Add("@Temperature", DbType.Int32, WaterFastness_Detail_Result.Main.Temperature);
             listPar.Add("@Time", DbType.Int32, WaterFastness_Detail_Result.Main.Time);
+            listPar.Add("@Approver", WaterFastness_Detail_Result.Main.WaterFastnessApprover ?? "");
 
             string sqlUpdateWaterFastness = @"
 SET XACT_ABORT ON
@@ -235,7 +238,8 @@ update  WaterFastness set    InspDate = @InspDate,
                     Time = @Time,
                     Remark = @Remark,
                     EditName = @editName,
-                    EditDate = getdate()
+                    EditDate = getdate(),
+                    Approver = @Approver
 where   POID = @POID and TestNo = @TestNo
 
 
@@ -492,7 +496,7 @@ update  WaterFastness_Detail set Roll           =  @Roll         ,
             listPar.Add("@TestAfterPicture", waterFastness_Detail_Result.Main.TestAfterPicture);
             listPar.Add("@Temperature", DbType.Int32, waterFastness_Detail_Result.Main.Temperature);
             listPar.Add("@Time", DbType.Int32, waterFastness_Detail_Result.Main.Time);
-
+            listPar.Add("@Approver",  waterFastness_Detail_Result.Main.WaterFastnessApprover);
             string NewReportNo = GetID(waterFastness_Detail_Result.MDivisionID + "WF", "WaterFastness", DateTime.Today, 2, "ReportNo");
             listPar.Add("@ReportNo", NewReportNo);
 
@@ -508,9 +512,9 @@ from    WaterFastness  WITH(NOLOCK)
 where POID = @POID
 
 ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
-insert into WaterFastness(POID, TestNo, InspDate, Article, Status, Inspector, Temperature, Time , Remark, addName, addDate ,ReportNo)
+insert into WaterFastness(POID, TestNo, InspDate, Article, Status, Inspector, Temperature, Time , Remark, addName, addDate ,ReportNo,Approver)
         OUTPUT INSERTED.ID, INSERTED.TestNo into @WaterFastnessID
-        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Temperature, @Time, @Remark, @addName, getdate() ,@ReportNo)
+        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Temperature, @Time, @Remark, @addName, getdate() ,@ReportNo,@Approver)
 
 select  [WaterFastnessID] = ID, TestNo
 from @WaterFastnessID

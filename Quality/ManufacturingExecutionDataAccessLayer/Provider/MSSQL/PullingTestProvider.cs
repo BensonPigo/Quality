@@ -123,6 +123,10 @@ select    p.ReportNo
         ,[AddName] = a.name
         ,[Signature] = (select t.Signature from [MainServer].Production.dbo.Technician t where t.ID = p.AddName and t.Junk = 0)
         ,p.StyleType
+        ,[PullingTestApprover] = p.Approver
+        ,[PullingTestApproverName] = (select Name from Pass1 where id = p.Approver)
+        ,p.ReceiveDate
+        ,p.ReportDate
 from PullingTest p WITH(NOLOCK)
 left join Production.dbo.Pass1 a WITH(NOLOCK) ON a.ID=p.AddName 
 left join Production.dbo.Pass1 e WITH(NOLOCK) ON e.ID=p.EditName
@@ -250,6 +254,9 @@ AND StyleType = @StyleType
                 { "@AddName", DbType.String, Req.AddName ?? "" } ,
                 { "@Gender", DbType.String, Req.Gender ?? "" } ,
                 { "@StyleType", DbType.String, Req.StyleType ?? "" } ,
+                { "@Approver", DbType.String, Req.PullingTestApprover ?? "" } ,
+                { "@ReceiveDate", DbType.DateTime, Req.ReceiveDate} ,
+                { "@ReportDate", DbType.DateTime, Req.ReportDate} ,
             };
 
             if (Req.TestBeforePicture != null)
@@ -296,7 +303,11 @@ INSERT INTO PullingTest
            ,AddDate
            ,AddName
            ,Gender
-           ,StyleType)
+           ,StyleType
+           ,Approver
+           ,ReceiveDate
+           ,ReportDate
+)
 VALUES(    
             (   ---流水號處理
                 select REPLACE( @ReportNo ,'%','') + ISNULL(REPLICATE('0',4-len( CAST( CAST( RIGHT( max(ReportNo),4) as int) + 1 as varchar) ))+ CAST( CAST( RIGHT( max(ReportNo),4) as int) + 1 as varchar),'0001')
@@ -324,7 +335,11 @@ VALUES(
            ,GETDATE()
            ,@AddName
            ,@Gender
-           ,@StyleType)
+           ,@StyleType
+           ,@Approver
+           ,@ReceiveDate
+           ,@ReportDate
+)
 
 INSERT INTO SciPMSFile_PullingTest
            (ReportNo
@@ -377,6 +392,29 @@ VALUES(
             {
                 modifyCol += $@"        ,TestDate = NULL " + Environment.NewLine;
             }
+
+            if (Req.ReceiveDate.HasValue)
+            {
+                modifyCol += $@"        ,ReceiveDate = @ReceiveDate " + Environment.NewLine;
+                objParameter.Add("@ReceiveDate", DbType.DateTime, Req.ReceiveDate.Value);
+            }
+            else
+            {
+                modifyCol += $@"        ,ReceiveDate = NULL " + Environment.NewLine;
+            }
+
+            if (Req.ReportDate.HasValue)
+            {
+                modifyCol += $@"        ,ReportDate = @ReportDate " + Environment.NewLine;
+                objParameter.Add("@ReportDate", DbType.DateTime, Req.ReportDate.Value);
+            }
+            else
+            {
+                modifyCol += $@"        ,ReportDate = NULL " + Environment.NewLine;
+            }
+
+
+
             if (!string.IsNullOrEmpty(Req.Result))
             {
                 modifyCol += $@"        ,Result = @Result " + Environment.NewLine;
@@ -420,6 +458,12 @@ VALUES(
             {
                 modifyCol += $@"        ,EditName = @EditName " + Environment.NewLine;
                 objParameter.Add("@EditName", DbType.String, Req.EditName ?? "");
+            }
+
+            if (!string.IsNullOrEmpty(Req.PullingTestApprover))
+            {
+                modifyCol += $@"        ,Approver = @Approver " + Environment.NewLine;
+                objParameter.Add("@Approver", DbType.String, Req.PullingTestApprover ?? "");
             }
 
             //Gender

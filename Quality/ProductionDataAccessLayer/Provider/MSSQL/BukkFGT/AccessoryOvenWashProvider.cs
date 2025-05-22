@@ -295,6 +295,10 @@ select   al.POID
         ,al.Seq2
 		,OvenTestBeforePicture = (select top 1 OvenTestBeforePicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
 		,OvenTestAfterPicture = (select top 1 OvenTestAfterPicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
+        ,[OvenApprover] = al.OvenApprover
+        ,[OvenApproverName] = (Select Name from pass1 where id = al.OvenApprover)
+        ,al.OvenReceiveDate
+        ,al.OvenReportDate
 from AIR_Laboratory al WITH(NOLOCK)
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
@@ -422,12 +426,36 @@ where   al.ID=@AIR_LaboratoryID
                 listPar.Add("@OvenDate", DBNull.Value);
             }
 
+            updateCol += $@" , OvenReportDate = @OvenReportDate" + Environment.NewLine;
+            if (Req.OvenReportDate.HasValue)
+            {
+                listPar.Add("@OvenReportDate", Req.OvenReportDate.Value);
+            }
+            else
+            {
+                listPar.Add("@OvenReportDate", DBNull.Value);
+            }
+
+            updateCol += $@" , OvenReceiveDate = @OvenReceiveDate" + Environment.NewLine;
+            if (Req.OvenReceiveDate.HasValue)
+            {
+                listPar.Add("@OvenReceiveDate", Req.OvenReceiveDate.Value);
+            }
+            else
+            {
+                listPar.Add("@OvenReceiveDate", DBNull.Value);
+            }
+
             if (!string.IsNullOrEmpty(Req.EditName))
             {
                 updateCol += $@" , EditName = @EditName" + Environment.NewLine;
                 listPar.Add("@EditName", Req.EditName);
             }
-
+            if (!string.IsNullOrEmpty(Req.OvenApprover))
+            {
+                updateCol += $@" , OvenApprover = @OvenApprover" + Environment.NewLine;
+                listPar.Add("@OvenApprover", Req.OvenApprover);
+            }
             #endregion
 
             string sqlCmd = $@"
@@ -594,6 +622,8 @@ select  [SP#] = al.POID
         ,[Oven Last Test Date]= convert(varchar, al.OvenDate , 111)  
 		,[Oven Lab Tech	AIR_Laboratory]=al.OvenInspector
         ,Remark = al.OvenRemark
+        ,[OvenApprover] = al.OvenApprover
+        ,[OvenApproverName] = (Select Name from pass1 where id = al.OvenApprover)
 from AIR_Laboratory al WITH(NOLOCK)
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 INNER JOIn Orders o WITH(NOLOCK) ON o.ID = a.POID
@@ -652,7 +682,10 @@ select   al.POID
         ,al.DryProcess
         ,al.MachineModel
         ,al.WashingCycle
-
+        ,[WashApprover] = al.WashApprover
+        ,[WashApproverName] = (select Name from pass1 where id = al.WashApprover)
+        ,WashReceiveDate
+        ,WashReportDate
 from AIR_Laboratory al WITH(NOLOCK)
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 inner join Orders o WITH(NOLOCK) ON o.ID = al.POID
@@ -734,10 +767,35 @@ where   al.ID=@AIR_LaboratoryID
                 listPar.Add("@WashDate", DBNull.Value);
             }
 
+            updateCol += $@" , WashReceiveDate = @WashReceiveDate" + Environment.NewLine;
+            if (Req.WashReceiveDate.HasValue)
+            {
+                listPar.Add("@WashReceiveDate", Req.WashReceiveDate.Value);
+            }
+            else
+            {
+                listPar.Add("@WashReceiveDate", DBNull.Value);
+            }
+
+            updateCol += $@" , WashReportDate = @WashReportDate" + Environment.NewLine;
+            if (Req.WashReceiveDate.HasValue)
+            {
+                listPar.Add("@WashReportDate", Req.WashReportDate.Value);
+            }
+            else
+            {
+                listPar.Add("@WashReportDate", DBNull.Value);
+            }
+
             if (!string.IsNullOrEmpty(Req.EditName))
             {
                 updateCol += $@" , EditName = @EditName" + Environment.NewLine;
                 listPar.Add("@EditName", Req.EditName);
+            }
+            if (!string.IsNullOrEmpty(Req.WashApprover))
+            {
+                updateCol += $@" , WashApprover = @WashApprover" + Environment.NewLine;
+                listPar.Add("@WashApprover", Req.WashApprover);
             }
             #endregion
 
@@ -1040,7 +1098,8 @@ select   al.POID
 		,al.ResultCrossStaining
         ,WashingFastnessTestBeforePicture = (select top 1 WashingFastnessTestBeforePicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
         ,WashingFastnessTestAfterPicture = (select top 1 WashingFastnessTestAfterPicture from SciPMSFile_AIR_Laboratory ali WITH(NOLOCK) where ali.ID=al.ID AND  ali.POID = al.POID AND ali.Seq1 = al.Seq1 AND ali.Seq2 = al.Seq2)
-
+        ,[WashingFastnessApprover] = al.WashingFastnessApprover
+        ,[WashingFastnessApproverName] = (select Name from Pass1 where id = al.WashingFastnessApprover)
 from AIR_Laboratory al WITH(NOLOCK)
 inner join AIR a WITH(NOLOCK) ON a.ID = al.ID
 left join Receiving r WITH(NOLOCK) on a.ReceivingID = r.Id
@@ -1167,7 +1226,8 @@ where   ID = @AIR_LaboratoryID
             updateCol += $@" , ResultCrossStaining = @ResultCrossStaining" + Environment.NewLine;
             listPar.Add("@ResultCrossStaining", Req.ResultCrossStaining ?? string.Empty);
 
-
+            updateCol += $@" , WashingFastnessApprover = @WashingFastnessApprover" + Environment.NewLine;
+            listPar.Add("@WashingFastnessApprover", Req.WashingFastnessApprover ?? string.Empty);
 
             updateCol += $@" , WashingFastness = (
                                                     CASE WHEN   @ResultChange = 'Pass' AND @ResultAcetate = 'Pass' AND @ResultCotton = 'Pass' AND @ResultNylon = 'Pass' 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web;
 namespace DatabaseObject.ProductionDB
 {
     /*(MockupCrocking) 詳細敘述如下*/
@@ -214,6 +215,13 @@ namespace DatabaseObject.ProductionDB
         {
             get => _EditName ?? string.Empty;
             set => _EditName = value;
+        }
+
+        private string _Approver;
+        public string Approver
+        {
+            get => _Approver ?? string.Empty;
+            set => _Approver = value;
         }
     }
 

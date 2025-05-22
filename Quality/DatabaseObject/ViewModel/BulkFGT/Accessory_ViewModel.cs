@@ -143,6 +143,11 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string CcAddress { get; set; }
         public string Subject { get; set; }
         public string Body { get; set; }
+        public string OvenApprover { get; set; }
+        public string OvenApproverName { get; set; }
+
+        public DateTime? OvenReceiveDate { get; set; }
+        public DateTime? OvenReportDate { get; set; }
     }
 
     public class Accessory_OvenExcel : Accessory_Oven
@@ -300,6 +305,10 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Subject { get; set; }
         public string Body { get; set; }
         public List<HttpPostedFileBase> Files { get; set; }
+        public string WashApprover { get; set; }
+        public string WashApproverName { get; set; }
+        public DateTime? WashReceiveDate { get; set; }
+        public DateTime? WashReportDate { get; set; }
     }
 
     public class Accessory_WashExcel : Accessory_Wash
@@ -456,6 +465,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Subject { get; set; }
         public string Body { get; set; }
         public List<HttpPostedFileBase> Files { get; set; }
+        public string WashingFastnessApprover { get; set; }
+        public string WashingFastnessApproverName { get; set; }
     }
 
     public class Accessory_WashingFastnessExcel : Accessory_WashingFastness

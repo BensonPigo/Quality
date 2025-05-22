@@ -339,7 +339,7 @@
                                     </td>
                                     <td><h5>Report Date</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.Main.ReportDateText, new { @class = "Readonly" })
+                                        @Html.TextBoxFor(o => o.Main.ReportDate, "{0:yyyy/MM/dd}", new { @class = "date-picker OnlyEdit" })
                                     </td>
                                 </tr>
                                 <tr>
@@ -388,7 +388,21 @@
                                     </td>
                                     <td><h5>Remark</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(o => o.Main.Remark, new { @maxlemhth = "300" , @class = "OnlyEdit" })
+                                        @Html.TextBoxFor(o => o.Main.Remark, new { @maxlemhth = "300", @class = "OnlyEdit" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Approver</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(modelItem => Model.Main.Approver, new { @style = "width:30%", @class = "inputApprover", @disabled = "disabled" })
+                                        @Html.TextBoxFor(modelItem => Model.Main.ApproverName, new { @style = "width:55%", @disabled = "disabled" })
+                                        <input id="btnApproverSelectItem" type="button" class="OnlyEdit site-btn btn-blue btnApproverSelectItem" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td><h5>Preparer</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(modelItem => Model.Main.Preparer, new { @style = "width:30%", @class = "inputPreparer", @disabled = "disabled" })
+                                        @Html.TextBoxFor(modelItem => Model.Main.PreparerName, new { @style = "width:55%", @disabled = "disabled" })
+                                        <input id="btnPreparerSelectItem" type="button" class="OnlyEdit site-btn btn-blue btnPreparerSelectItem" style="margin:0;border:0;" value="..." />
                                     </td>
                                 </tr>
                             </tbody>
@@ -656,7 +670,7 @@
             $('#Edit ,#Delete ,#Encode, #Amend, #Excel, #PDF ,#SendMail').unbind('click').removeClass("IsEditMode");
             $('#Save, #Undo, #New, #Picture').bind('click').addClass("IsEditMode");
 
-            $('.DetailTable input,.DetailTable select:not(.NotEdit)').removeAttr("disabled");
+            $('.DetailTable input,.DetailTable select:not(.NotEdit),.inputApprover,.inputPreparer').removeAttr("disabled");
 
             if (EditType == "New") {
                 $(".DataTable input:not(#ReportNo,#LastEditName,.Readonly), .DataTable select").removeAttr("disabled");
@@ -704,7 +718,7 @@
                 $('#Encode').unbind('click').removeClass("IsEditMode");
             }
 
-            $(".DataTable input, .DataTable select").attr("disabled", "disabled");
+            $(".DataTable input, .DataTable select,.inputApprover,.inputPreparer").attr("disabled", "disabled");
             $('.DetailTable input,.DetailTable select').attr("disabled");
             $(".DetailTable img").addClass('display-None');
 
@@ -1098,7 +1112,83 @@
         });
     }
 
-    function DetailButtonBind() {
+    function DetailButtonBind()
+    {
+        $('.inputPreparer').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#Main_Preparer").val('');
+                $("#Main_PreparerName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Main_Preparer").val('');
+                        $("#Main_PreparerName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#Main_Preparer").val(data[0].ID);
+                        $("#Main_PreparerName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnPreparerSelectItem').unbind('click').on('click', function () {
+            var targetID ='Main_Preparer';
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+        $('.inputApprover').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#Main_Approver").val('');
+                $("#Main_ApproverName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Main_Approver").val('');
+                        $("#Main_ApproverName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#Main_Approver").val(data[0].ID);
+                        $("#Main_ApproverName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnApproverSelectItem').unbind('click').on('click', function () {
+            var targetID ='Main_Approver';
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+
         $('#btnDetailBrandSelectItem').on('click', function () {
             var para = "?TargetID=BrandID";
             window.open('@Url.Action("BrandList","PublicWindow",new{Area=""})' + para, 'BrandID', config = 'toolbar=no,status=no,location=no,width=400,height=650');
@@ -1328,7 +1418,12 @@
         $('#TechnicianDesc').val(data.Name + " Ext. " + data.ExtNo);
     }
 
-    function GetPass1(data) {
+    function GetPass1(data, targetID) {
+        if (targetID.includes('Main_Approver') || targetID.includes('Main_Preparer')) {
+            $(`#${targetID}`).val(data.ID);
+            $(`#${targetID}Name`).val(data.Name);
+        }
+        else
         $('#MR').val(data.ID);
         $('#MRDesc').val(data.Name + " Ext. " + data.ExtNo);
         $('#MRMail').val(data.EMail);

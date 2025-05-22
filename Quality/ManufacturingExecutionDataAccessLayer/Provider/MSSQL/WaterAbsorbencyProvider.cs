@@ -81,6 +81,8 @@ select a.*
         ,d.TestBeforePicture
         ,d.TestBeforeWashPicture
         ,d.TestAfterPicture
+,[ApproverName] = (select Name from [MainServer].Production.dbo.pass1 where id = a.Approver)
+,[PreparerName] = (select Name from [MainServer].Production.dbo.pass1 where id = a.Preparer)
 from WaterAbsorbencyTest a
 left join SciPMSFile_WaterAbsorbencyTest d WITH(NOLOCK) on a.ReportNo = d.ReportNo
 where 1=1
@@ -161,6 +163,9 @@ where 1=1
                 { "@FabricDescription", DbType.String, Req.Main.FabricDescription ?? "" } ,
                 { "@Result", DbType.String, Req.Main.Result ?? "Pass" } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
+                { "@ReportDate", DbType.Date, Req.Main.ReportDate } ,
+                { "@Approver", DbType.String, Req.Main.Approver??""} ,
+                { "@Preparer", DbType.String, Req.Main.Preparer??""} ,
             };
 
             if (Req.Main.TestBeforePicture != null)
@@ -211,7 +216,11 @@ INSERT INTO dbo.WaterAbsorbencyTest
            ,Status
            ,Result
            ,AddDate
-           ,AddName)
+           ,AddName
+           ,ReportDate
+           ,Approver
+           ,Preparer
+)
 VALUES
            (@ReportNo
            ,@BrandID
@@ -231,6 +240,9 @@ VALUES
            ,@Result
            ,GETDATE()
            ,@AddName
+           ,@ReportDate
+           ,@Approver
+           ,@Preparer
 )
 ;
 
@@ -255,6 +267,9 @@ VALUES
                 { "@FabricColor", DbType.String, Req.Main.FabricColor ?? "" } ,
                 { "@FabricDescription", DbType.String, Req.Main.FabricDescription ?? "" } ,                
                 { "@EditName", DbType.String, UserID ?? "" } ,
+                { "@ReportDate", DbType.Date, Req.Main.ReportDate } ,
+                { "@Approver", DbType.String, Req.Main.Approver??""} ,
+                { "@Preparer", DbType.String, Req.Main.Preparer??""} ,
             };
 
             if (Req.Main.TestBeforePicture != null)
@@ -297,6 +312,9 @@ UPDATE WaterAbsorbencyTest
       ,FabricRefNo = @FabricRefNo
       ,FabricColor = @FabricColor
       ,FabricDescription = @FabricDescription
+      ,ReportDate = @ReportDate
+      ,Approver   = @Approver
+      ,Preparer   = @Preparer
 WHERE ReportNo = @ReportNo
 ;
 if exists(select 1 from PMSFile.dbo.WaterAbsorbencyTest WHERE ReportNo = @ReportNo)

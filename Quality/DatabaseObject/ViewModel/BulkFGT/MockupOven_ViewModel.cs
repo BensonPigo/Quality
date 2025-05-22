@@ -62,6 +62,10 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
         public List<string> Requirements { get; set; }
         public string MailSubject { get; set; }
+
+        public string MockupOvenTest_Approver { get; set; }
+        public string MockupOvenTest_ApproverName { get; set; }
+
     }
 
     public class MockupOven_Detail_ViewModel : MockupOven_Detail

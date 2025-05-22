@@ -111,6 +111,8 @@ select a.*
         ,d.TestFaceSideAfterPicture
         ,d.TestBackSideBeforePicture
         ,d.TestBackSideAfterPicture
+,[ApproverName] = (select Name from [MainServer].Production.dbo.pass1 where id = a.Approver)
+,[PreparerName] = (select Name from [MainServer].Production.dbo.pass1 where id = a.Preparer)
 from RandomTumblePillingTest a
 left join PMSFile.dbo.RandomTumblePillingTest d WITH(NOLOCK) on a.ReportNo = d.ReportNo
 where 1=1
@@ -190,6 +192,9 @@ where 1=1
                 { "@TestStandard", DbType.String, Req.Main.TestStandard ?? "" } ,
                 { "@Result", DbType.String, Req.Main.Result ?? "Pass" } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
+                { "@ReportDate", DbType.Date, Req.Main.ReportDate} ,
+                { "@Approver", DbType.String, Req.Main.Approver ?? "" } ,
+                { "@Preparer", DbType.String, Req.Main.Preparer ?? "" } ,
             };
 
             if (Req.Main.TestFaceSideBeforePicture != null)
@@ -247,7 +252,11 @@ INSERT INTO dbo.RandomTumblePillingTest
            ,Status
            ,Result
            ,AddDate
-           ,AddName)
+           ,AddName
+           ,ReportDate
+           ,Approver  
+           ,Preparer  
+)
 VALUES
            (@ReportNo
            ,@BrandID
@@ -266,6 +275,9 @@ VALUES
            ,@Result
            ,GETDATE()
            ,@AddName
+           ,@ReportDate
+           ,@Approver  
+           ,@Preparer  
 )
 ;
 
@@ -290,6 +302,9 @@ VALUES
                 { "@FabricColor", DbType.String, Req.Main.FabricColor ?? "" } ,
                 { "@TestStandard", DbType.String, Req.Main.TestStandard ?? "" } ,
                 { "@EditName", DbType.String, UserID ?? "" } ,
+                { "@ReportDate", DbType.Date, Req.Main.ReportDate} ,
+                { "@Approver", DbType.String, Req.Main.Approver ?? "" } ,
+                { "@Preparer", DbType.String, Req.Main.Preparer ?? "" } ,
             };
 
             if (Req.Main.TestFaceSideBeforePicture != null)
@@ -341,6 +356,9 @@ UPDATE RandomTumblePillingTest
       ,FabricRefNo = @FabricRefNo
       ,FabricColor = @FabricColor
       ,TestStandard = @TestStandard
+,ReportDate = @ReportDate
+,Approver   = @Approver
+,Preparer   = @Preparer
 WHERE ReportNo = @ReportNo
 ;
 if exists(select 1 from PMSFile.dbo.RandomTumblePillingTest WHERE ReportNo = @ReportNo)
@@ -491,7 +509,6 @@ DELETE FROM RandomTumblePillingTest_Detail where ReportNo = @ReportNo AND Ukey =
 UPDATE RandomTumblePillingTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = @Status
-    , ReportDate = GETDATE()
 WHERE ReportNo = @ReportNo
 ";
             }
@@ -501,7 +518,6 @@ WHERE ReportNo = @ReportNo
 UPDATE RandomTumblePillingTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New' 
-    , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ";
             }

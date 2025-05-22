@@ -93,6 +93,8 @@ where o.Category ='B'  --只抓大貨單
 select a.*
         ,d.TestAfterPicture
         ,d.TestBeforePicture
+,[ApproverName] = (select Name from [MainServer].Production.dbo.pass1 where id = a.Approver)
+,[PreparerName] = (select Name from [MainServer].Production.dbo.pass1 where id = a.Preparer)
 from HydrostaticPressureWaterproofTest a
 left join PMSFile.dbo.HydrostaticPressureWaterproofTest d WITH(NOLOCK) on a.ReportNo = d.ReportNo
 where Junk = 0
@@ -178,6 +180,9 @@ where 1=1
                 { "@WashCycles", DbType.Int32, Req.Main.WashCycles } ,
                 { "@Result", DbType.String, Req.Main.Result ?? "Pass" } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
+                { "@ReportDate", DbType.Date, Req.Main.ReportDate } ,
+                { "@Approver", DbType.String, Req.Main.Approver ?? "" } ,
+                { "@Preparer", DbType.String, Req.Main.Preparer ?? "" } ,
             };
 
             if (Req.Main.TestBeforePicture != null)
@@ -220,7 +225,10 @@ INSERT INTO dbo.HydrostaticPressureWaterproofTest
            ,Status
            ,Remark
            ,AddDate
-           ,AddName)
+           ,AddName
+           ,ReportDate
+           ,Approver
+           ,Preparer)
 VALUES
            (@ReportNo
            ,(select top 1 FactoryID from SciProduction_Orders with(NOLOCK) where ID = @OrderID)
@@ -242,7 +250,10 @@ VALUES
            ,'New'
            ,@Remark
            ,GETDATE()
-           ,@AddName)
+           ,@AddName
+           ,@ReportDate
+           ,@Approver
+           ,@Preparer)
 ;
 
 IF NOT EXISTS ( select 1 from PMSFile.dbo.HydrostaticPressureWaterproofTest where ReportNo = @ReportNo)
@@ -277,6 +288,9 @@ end
                 { "@FabricDescription", DbType.String, Req.Main.FabricDescription ?? "" } ,
                 { "@Remark", DbType.String, Req.Main.Remark ?? "" } ,
                 { "@EditName", DbType.String, UserID ?? "" } ,
+                { "@ReportDate", DbType.Date, Req.Main.ReportDate } ,
+                { "@Approver", DbType.String, Req.Main.Approver ?? "" } ,
+                { "@Preparer", DbType.String, Req.Main.Preparer ?? "" } ,
             };
 
             if (Req.Main.TestBeforePicture != null)
@@ -309,6 +323,9 @@ UPDATE HydrostaticPressureWaterproofTest
       ,FabricRefNo = @FabricRefNo
       ,FabricColor = @FabricColor
       ,FabricDescription = @FabricDescription
+      ,ReportDate  = @ReportDate
+      ,Approver    = @Approver
+      ,Preparer    = @Preparer
 WHERE ReportNo = @ReportNo
 ;
 if exists(select 1 from PMSFile.dbo.HydrostaticPressureWaterproofTest WHERE ReportNo = @ReportNo)
@@ -455,7 +472,6 @@ UPDATE HydrostaticPressureWaterproofTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = @Status
     , Result = @Result
-    , ReportDate = GETDATE()
 WHERE ReportNo = @ReportNo
 ;
 ";
@@ -466,7 +482,6 @@ WHERE ReportNo = @ReportNo
 UPDATE HydrostaticPressureWaterproofTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New'
-    , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ;
 ";

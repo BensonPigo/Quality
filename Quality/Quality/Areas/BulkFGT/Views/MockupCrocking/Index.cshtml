@@ -318,7 +318,7 @@
                                     <td><h5>T1/SubconName</h5></td>
                                     <td>
                                         <div class="input-group">
-                                            @Html.TextBoxFor(o => o.T1Subcon, "", new { @class = "OnlyEdit", style="width:5vw" })
+                                            @Html.TextBoxFor(o => o.T1Subcon, "", new { @class = "OnlyEdit", style = "width:5vw" })
                                             @Html.TextBoxFor(o => o.T1SubconAbb, "", new { @readonly = "readonly" })
                                             <input id="btnT1SubconSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                         </div>
@@ -333,7 +333,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><h5>Released Date</h5></td>
+                                    <td><h5>Report Date</h5></td>
                                     <td>
                                         @Html.TextBoxFor(o => o.ReleasedDate, "{0:yyyy/MM/dd}", new { @readonly = "readonly", @class = "date-picker OnlyEdit" })
                                     </td>
@@ -371,6 +371,13 @@
                                             <input id="btnTechnicianSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                         </div>
                                     </td>
+                                    <td><h5>Approved By</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(modelItem => Model.MockupCrocking_Approver, new { @style = "width:30%", @class = "inputApprover", @disabled = "disabled" })
+                                        @Html.TextBoxFor(modelItem => Model.MockupCrocking_ApproverName, new { @style = "width:57%", @disabled = "disabled" })
+                                        <input id="btnApproverSelectItem" type="button" class="OnlyEdit site-btn btn-blue btnApproverSelectItem" style="margin:0;border:0;" value="..." />
+                                    </td>
+
                                     <td><h5>MR</h5></td>
                                     <td>
                                         @{
@@ -390,10 +397,13 @@
                                             <input id="btnMRSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                         </div>
                                     </td>
+                                </tr>
+                                <tr>
                                     <td><h5>Last Edit Name</h5></td>
-                                    <td colspan="5">
+                                    <td colspan="1">
                                         <input id="LastEditName" name="LastEditName" readonly="readonly" type="text" value="@Model.LastEditName">
                                     </td>
+
                                 </tr>
                             </tbody>
                         </table>
@@ -527,7 +537,7 @@
 
             $("#Edit, #Delete, #SendMail, #PDF").unbind('click').removeClass("IsEditMode");
             $('#Save, #Undo, #New, #Picture').addClass("IsEditMode");
-            $('.DetailTable input,.DetailTable select').removeAttr("disabled");
+            $('.DetailTable input,.DetailTable select,.inputApprover').removeAttr("disabled");
 
             if (EditType == "New") {
                 $(".DataTable input:not(#ReportNo,#LastEditName), .DataTable select").removeAttr("disabled");
@@ -543,6 +553,7 @@
             $('#btnQuery').on('click', function () {
                 return false;
             });
+
         }
         else {
             $(".queryHeader select").removeAttr("disabled");
@@ -562,7 +573,7 @@
             }
 
             $(".DataTable input, .DataTable select").attr("disabled", "disabled");
-            $('.DetailTable input,.DetailTable select').attr("disabled");
+            $('.DetailTable input,.DetailTable select,.inputApprover').attr("disabled");
             $(".DetailTable img").addClass('display-None');
 
             $('#btnQuery').on('click', function () {
@@ -902,6 +913,7 @@
                 $("#Save").attr("name", "action:Edit");
                 IsEditModeChange();
             }
+            $("#ArtworkTypeID").removeAttr("disabled");
         });
 
         $('#btnNew').on('click', function () {
@@ -1060,6 +1072,46 @@
 
 
     function DetailButtonBind() {
+        $('.btnApproverSelectItem').unbind('click').on('click', function ()
+        {
+            var targetID ='MockupCrocking_Approver';
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+
+        $('.inputApprover').unbind('blur').on('blur', function ()
+        {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#MockupCrocking_Approver").val('');
+                $("#MockupCrocking_ApproverName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#MockupCrocking_Approver").val('');
+                        $("#MockupCrocking_ApproverName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#MockupCrocking_Approver").val(data[0].ID);
+                        $("#MockupCrocking_ApproverName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
         $('#btnDetailBrandSelectItem').on('click', function () {
             var para = "?TargetID=BrandID";
             window.open('@Url.Action("BrandList","PublicWindow",new{Area=""})' + para,'BrandID',config='toolbar=no,status=no,location=no,width=400,height=650');
@@ -1167,10 +1219,20 @@
         $('#TechnicianDesc').val(data.Name + ' Ext.' + data.ExtNo);
     }
 
-    function GetPass1(data, targetID) {
-        $('#' + targetID).val(data.ID);
-        $('#' + targetID + "Desc").val(data.Name + ' Ext.' + data.ExtNo);
-        $('#' + targetID + 'Mail').val(data.EMail);
+    function GetPass1(data, targetID)
+    {
+        debugger;
+        if (targetID.includes('MockupCrocking_Approver'))
+        {
+            $(`#${targetID}`).val(data.ID);
+            $(`#${targetID}Name`).val(data.Name);
+        }
+        else
+        {
+            $('#' + targetID).val(data.ID);
+            $('#' + targetID + "Desc").val(data.Name + ' Ext.' + data.ExtNo);
+            $('#' + targetID + 'Mail').val(data.EMail);
+        }
     }
 
     function GetColor(pickList, targetID) {

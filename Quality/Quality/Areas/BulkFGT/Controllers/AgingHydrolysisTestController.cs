@@ -1,10 +1,12 @@
-﻿using BusinessLogicLayer.Interface.BulkFGT;
+﻿using Antlr.Runtime.Misc;
+using BusinessLogicLayer.Interface.BulkFGT;
 using BusinessLogicLayer.Service;
 using BusinessLogicLayer.Service.BulkFGT;
 using DatabaseObject.RequestModel;
 using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using Microsoft.Office.Interop.Excel;
+using NPOI.SS.Formula.Functions;
 using Quality.Controllers;
 using Quality.Helper;
 using System;
@@ -140,45 +142,57 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         public ActionResult AddDetailRow(int lastNo)
         {
-            AgingHydrolysisTest_ViewModel model = new AgingHydrolysisTest_ViewModel();
+            AgingHydrolysisTest_Detail_ViewModel model = new AgingHydrolysisTest_Detail_ViewModel();
 
+            model = _service.GetDefaulDeailtModel();
 
-            List<string> materialTypeOption = new List<string>();
-            foreach (var item in model.MaterialType_Source)
+            List<string> ScaleOption = new List<string>();
+            foreach (var item in model.Scale_Source)
             {
                 string selected = string.Empty;
-                materialTypeOption.Add($"<option {selected} value='{item.Value}'>{item.Text}</option>");
+                if (item.Value == "4-5")
+                {
+                    selected = "selected";
+                }
+                ScaleOption.Add($"<option {selected} value='{item.Value}'>{item.Text}</option>");
             }
-
-            string oddEven = lastNo % 2 == 0 ? "odd" : "even";
             string html = string.Empty;
             html += $@"
-<!--#region Row {lastNo}-->
+            <!--#region Row {lastNo}-->
+            <div class=""DetailDataAreaItem2 colBody Row{lastNo}"">
+                <input type=""hidden"" class=""detailRowIdx"" name=""name"" value=""{lastNo}"" readonly=""readonly"">
+                <input class="""" id=""MockupList_{lastNo}__SpecimenName"" name=""MockupList[{lastNo}].SpecimenName"" type=""text"" value=""Specimen{lastNo+1}"" readonly=""readonly"">
+            </div>
 
-<div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
-    <input type=""hidden"" class=""detailRowIdx"" name=""name"" value=""{lastNo}"" readonly=""readonly"">
-</div>
+            <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
+                <select id=""MockupList[{lastNo}]_ChangeScale"" name=""MockupList[{lastNo}].ChangeScale"" class=""CanEdit"" onchange=""ScaleChange({lastNo}, this, 'ChangeResult', '4-5')"">
+                {string.Join(Environment.NewLine + "            ", ScaleOption)}
+                </select>
+            </div>
+            <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
+                <input id=""MockupList_{lastNo}__ChangeResult"" name=""MockupList[{lastNo}].ChangeResult"" onchange=""ResultChange(this)"" style=""color:blue"" type=""text"" value=""Pass"" readonly=""readonly"">  
+            </div>
 
-<div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
-    <select class=""CanEdit DetailInput"" id=""DetailList{lastNo}__MaterialType"" name=""DetailList[{lastNo}].MaterialType"">
-    {string.Join(Environment.NewLine + "            ", materialTypeOption)}
-    </select>
-</div>
+            <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
+                <select id=""MockupList[{lastNo}]_StainingScale"" name=""MockupList[{lastNo}].StainingScale"" class=""CanEdit"" onchange=""ScaleChange({lastNo},this,'StainingResult','4-5')"">
+               {string.Join(Environment.NewLine + "            ", ScaleOption)}
+                </select>
+            </div>
+            <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
+                <input id=""MockupList_{lastNo}__StainingResult"" name=""MockupList[{lastNo}].StainingResult"" onchange=""ResultChange(this)"" style=""color:blue"" type=""text"" value=""Pass"" readonly=""readonly"">    
+            </div>
 
-<div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
-    <!--Received Date-->
-</div>
-<div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
-    <!--Report Date-->
-</div>
-<div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
-    <!--Last Update Date-->
-</div>
-<div class=""DetailDataAreaItem2 colBody Row{lastNo}"">
-    <img class='detailDelete' src=""/Image/Icon/Delete.png"" width=""30"">
-</div>
-<!--#endregion-->
-";
+            <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
+                <input class=""CanEdit"" id=""MockupList_{lastNo}__Comment"" name=""MockupList[{lastNo}].Comment"" type=""text"" value="""">            
+            </div>
+            <div class=""DetailDataAreaItem1 colBody Row{lastNo}"">
+                <!--Last Update Date-->
+            </div>
+            <div class=""DetailDataAreaItem2 colBody Row{lastNo}"">
+                <img class=""detailDelete"" src=""/Image/Icon/Delete.png"" width=""30"" style=""display: inline-block;"">
+            </div>
+            <!--#endregion-->
+            ";
 
 
             return Content(html);

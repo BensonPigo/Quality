@@ -587,11 +587,11 @@
 
                     </div>
                     <div class="MainAreaItem odd">
-                        @Html.TextBoxFor(o => o.Main.ReportDateText, new { @class = "" })
+                        @Html.TextBoxFor(o => o.Main.ReportDate, "{0:yyyy/MM/dd}", new { @class = "date-picker CanEdit" })
                     </div>
 
                     <div class="MainAreaItem odd">
-                        <h4 class="colTitle">Submit Date</h4>
+                        <h4 class="colTitle">Receive Date</h4>
                     </div>
                     <div class="MainAreaItem odd">
                         @Html.HiddenFor(o => o.Main.SubmitDate)
@@ -636,7 +636,7 @@
                         <h4 class="colTitle">Article</h4>
 
                     </div>
-                    <div class="MainAreaItem odd">
+                    <div class="MainAreaItem odd CanEdit">
                         <select id="Main_Article" name="Main.Article" class="CanEdit">
                             @foreach (var item in Model.Article_Source)
                             {
@@ -685,11 +685,11 @@
                     <!-- #endregion -->
                     <!-- #region Row 5-->
 
-                        <div class="MainAreaItem2 odd">
-                            <h4 class="colTitle">Before Wash Average Rate</h4>
+                    <div class="MainAreaItem2 odd">
+                        <h4 class="colTitle">Before Wash Average Rate</h4>
 
                     </div>
-                        <div class="MainAreaItem3 odd">
+                    <div class="MainAreaItem3 odd">
                         @Html.TextBoxFor(o => o.Main.BeforeAverageRate, new { @class = "odd", @DetailType = "MainBefore" })
                     </div>
 
@@ -740,6 +740,29 @@
                     <div class="MainAreaItem even">
                         @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "even", @style = "width:100%" })
                     </div>
+                    <!-- #endregion -->
+                    <!-- #region Row 7-->
+
+                    <div class="MainAreaItem2 odd">
+                        <h4 class="colTitle">Preparer</h4>
+
+                    </div>
+                    <div class="MainAreaItem3 odd">
+                        @Html.TextBoxFor(modelItem => Model.Main.Preparer, new { @style = "width:30%", @class = "inputPreparer odd", @disabled = "disabled" })
+                        @Html.TextBoxFor(modelItem => Model.Main.PreparerName, new { @style = "width:55%", @disabled = "disabled", @class = "odd" })
+                        <input id="btnPreparerSelectItem" type="button" class="CanEdit site-btn btn-blue btnPreparerSelectItem" style="margin:0;border:0;" value="..." />
+                    </div>
+
+
+                    <div class="MainAreaItem odd">
+                    </div>
+                    <div class="MainAreaItem odd"></div>
+
+
+                    <div class="MainAreaItem odd">
+                    </div>
+                    <div class="MainAreaItem odd"> </div>
+
                     <!-- #endregion -->
                 </div>
 
@@ -1682,14 +1705,15 @@
                 $(".detailDelete").show();
                 $("#Main_SubmitDateText").addClass('date-picker');
                 $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
-
+                $('.inputPreparer').removeAttr("disabled");
+                DetailButtonBind();
             }
             else {
                 // 可編輯欄位關閉
                 $('.divTime10 input ,.divTime20 input ,.divTime30 input ,.divTime40 input ,.divRateInner1 input').attr("readonly", "readonly");
                 $('.MainArea input ,.MainAreaItem input').attr("readonly", "readonly");
                 $(".detailDelete").hide();
-
+                $(".inputPreparer").attr("disabled", "disabled");
                 // 圖表只有非編輯模式可以用
                 $(".btnShowChart").removeAttr("disabled");
 
@@ -1710,7 +1734,46 @@
         // 移除不可用功能的事件
         $('.toolBarItem:not(.canUse)').unbind('click');
     }
+    function DetailButtonBind()
+    {
+        $('.inputPreparer').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
 
+            if ($(this).val() == "") {
+                $("#Main_Preparer").val('');
+                $("#Main_PreparerName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Main_Preparer").val('');
+                        $("#Main_PreparerName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#Main_Preparer").val(data[0].ID);
+                        $("#Main_PreparerName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnPreparerSelectItem').unbind('click').on('click', function () {
+            var targetID ='Main_Preparer';
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+    }
     function QueryBind() {
 
         $('#btnQuery').on('click', function () {

@@ -76,6 +76,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public MockupCrocking_Request Request { get; set; }
 
         public List<MockupCrocking_Detail_ViewModel> MockupCrocking_Detail { get; set; }
+        public string MockupCrocking_Approver { get; set; } = string.Empty;
+        public string MockupCrocking_ApproverName { get; set; } = string.Empty;
     }
 
     public class MockupCrocking_Detail_ViewModel: MockupCrocking_Detail

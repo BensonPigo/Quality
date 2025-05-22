@@ -152,6 +152,8 @@ namespace DatabaseObject.ViewModel.BulkFGT
         }
 
         public string EditType { get; set; }
+        public string Preparer { get; set; }
+        public string PreparerName { get; set; }
     }
     public class EvaporationRateTest_Detail : CompareBase
     {

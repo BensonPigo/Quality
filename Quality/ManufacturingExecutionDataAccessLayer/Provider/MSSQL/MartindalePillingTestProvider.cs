@@ -112,6 +112,8 @@ select a.*
         ,d.TestBeforePicture
         ,d.Test500AfterPicture
         ,d.Test2000AfterPicture
+,[ApproverName] = (select Name from [MainServer].Production.dbo.pass1 where id = a.Approver)
+,[PreparerName] = (select Name from [MainServer].Production.dbo.pass1 where id = a.Preparer)
 from MartindalePillingTest a
 left join PMSFile.dbo.MartindalePillingTest d WITH(NOLOCK) on a.ReportNo = d.ReportNo
 where 1=1
@@ -192,6 +194,8 @@ where 1=1
                 { "@TestStandard", DbType.String, Req.Main.TestStandard ?? "" } ,
                 { "@Result", DbType.String, Req.Main.Result ?? "Pass" } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
+                { "@Approver",DbType.String,Req.Main.Approver ?? ""},
+                { "@Preparer",DbType.String,Req.Main.Preparer ?? ""},
             };
 
             if (Req.Main.TestBeforePicture != null)
@@ -241,7 +245,9 @@ INSERT INTO dbo.MartindalePillingTest
            ,Status
            ,Result
            ,AddDate
-           ,AddName)
+           ,AddName
+           ,Approver
+           ,Preparer)
 VALUES
            (@ReportNo
            ,@BrandID
@@ -261,6 +267,8 @@ VALUES
            ,@Result
            ,GETDATE()
            ,@AddName
+           ,@Approver
+           ,@Preparer
 )
 ;
 
@@ -286,6 +294,9 @@ VALUES
                 { "@FabricType", DbType.String, Req.Main.FabricType ?? "" } ,
                 { "@TestStandard", DbType.String, Req.Main.TestStandard ?? "" } ,
                 { "@EditName", DbType.String, UserID ?? "" } ,
+                { "@ReportDate",DbType.Date,Req.Main.ReportDate },
+                { "@Approver",DbType.String,Req.Main.Approver ?? ""},
+                { "@Preparer",DbType.String,Req.Main.Preparer ?? ""},
             };
 
             if (Req.Main.TestBeforePicture != null)
@@ -328,6 +339,9 @@ UPDATE MartindalePillingTest
       ,FabricColor = @FabricColor
       ,FabricType = @FabricType
       ,TestStandard = @TestStandard
+    ,ReportDate = @ReportDate
+    ,Approver=@Approver
+    ,Preparer=@Preparer
 WHERE ReportNo = @ReportNo
 ;
 if exists(select 1 from PMSFile.dbo.MartindalePillingTest WHERE ReportNo = @ReportNo)
@@ -473,7 +487,6 @@ DELETE FROM MartindalePillingTest_Detail where ReportNo = @ReportNo AND Ukey = @
 UPDATE MartindalePillingTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = @Status
-    , ReportDate = GETDATE()
 WHERE ReportNo = @ReportNo
 ";
             }
@@ -483,7 +496,6 @@ WHERE ReportNo = @ReportNo
 UPDATE MartindalePillingTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New'
-    , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ";
             }

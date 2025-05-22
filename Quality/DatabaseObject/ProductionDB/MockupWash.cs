@@ -100,6 +100,8 @@ namespace DatabaseObject.ProductionDB
 
         [Display(Name = "區分大貨階段 (B) 與開發階段 (S)")]
         public string Type { get; set; }
+        
+        public string Approver { get; set; }
 
     }
 }

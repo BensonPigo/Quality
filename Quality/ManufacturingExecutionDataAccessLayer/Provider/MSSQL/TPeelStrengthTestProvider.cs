@@ -84,6 +84,8 @@ where o.Category ='B'  --只抓大貨單
 select a.*
         ,d.TestAfterPicture
         ,d.TestBeforePicture
+,[ApproverName] = (select Name from [MainServer].Production.dbo.pass1 where id = a.Approver)
+,[PreparerName] = (select Name from [MainServer].Production.dbo.pass1 where id = a.Preparer)
 from TPeelStrengthTest a
 left join SciPMSFile_TPeelStrengthTest d WITH(NOLOCK) on a.ReportNo = d.ReportNo
 where 1=1
@@ -165,6 +167,10 @@ where 1=1
                 { "@MachineReport", DbType.String, Req.Main.MachineReport ?? "" } ,
                 { "@Result", DbType.String, Req.Main.Result ?? "Pass" } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
+
+                { "@ReportDate", DbType.Date, Req.Main.ReportDate } ,
+                { "@Approver", DbType.String, Req.Main.Approver ?? ""} ,
+                { "@Preparer", DbType.String, Req.Main.Preparer ?? ""} ,
             };
 
             if (Req.Main.TestBeforePicture != null)
@@ -206,7 +212,11 @@ INSERT INTO dbo.TPeelStrengthTest
            ,Status
            ,Result
            ,AddDate
-           ,AddName)
+           ,AddName
+           ,ReportDate
+           ,Approver
+           ,Preparer
+)
 VALUES
            (@ReportNo
            ,@BrandID
@@ -227,6 +237,9 @@ VALUES
            ,@Result
            ,GETDATE()
            ,@AddName
+           ,@ReportDate
+           ,@Approver
+           ,@Preparer
 )
 ;
 
@@ -265,6 +278,9 @@ END
                 { "@MachineReport", DbType.String, Req.Main.MachineReport ?? "" } ,
 
                 { "@EditName", DbType.String, UserID ?? "" } ,
+                { "@ReportDate", DbType.Date, Req.Main.ReportDate } ,
+                { "@Approver", DbType.String, Req.Main.Approver ?? ""} ,
+                { "@Preparer", DbType.String, Req.Main.Preparer ?? ""} ,
             };
 
             if (Req.Main.TestBeforePicture != null)
@@ -299,6 +315,9 @@ UPDATE TPeelStrengthTest
       ,FabricDescription = @FabricDescription
       ,MachineNo = @MachineNo
       ,MachineReport = @MachineReport
+,ReportDate = @ReportDate
+,Approver = @Approver
+,Preparer = @Preparer
 WHERE ReportNo = @ReportNo
 ;
 if exists(select 1 from PMSFile.dbo.TPeelStrengthTest WHERE ReportNo = @ReportNo)
@@ -447,7 +466,6 @@ DELETE FROM TPeelStrengthTest_Detail where ReportNo = @ReportNo AND Ukey = @Ukey
 UPDATE TPeelStrengthTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = @Status
-    , ReportDate = GETDATE()
 WHERE ReportNo = @ReportNo
 ";
             }
@@ -457,7 +475,6 @@ WHERE ReportNo = @ReportNo
 UPDATE TPeelStrengthTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New'
-    , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ";
             }

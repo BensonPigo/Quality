@@ -107,6 +107,8 @@ where o.Category ='B'  --只抓大貨單
 select a.*
         ,d.TestAfterPicture
         ,d.TestBeforePicture
+,[ApproverName] = (select Name from pass1 where id = a.Approver)
+,[PreparerName] = (select Name from pass1 where id = a.Preparer)
 from PhenolicYellowTest a
 left join SciPMSFile_PhenolicYellowTest d WITH(NOLOCK) on a.ReportNo = d.ReportNo
 where 1=1
@@ -186,6 +188,9 @@ where 1=1
                 { "@Temperature", Req.Main.Temperature } ,
                 { "@Time", Req.Main.Time } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
+                { "@ReportDate" ,Req.Main.ReportDate } ,
+                { "@Approver",DbType.String, Req.Main.Approver},
+                { "@Preparer",DbType.String, Req.Main.Preparer},
             };
 
             if (Req.Main.TestBeforePicture != null)
@@ -226,7 +231,11 @@ INSERT INTO dbo.PhenolicYellowTest
            ,Status
            ,Result
            ,AddDate
-           ,AddName)
+           ,AddName
+           ,ReportDate
+           ,Approver
+           ,Preparer
+)
 VALUES
            (@ReportNo
            ,@BrandID
@@ -245,6 +254,9 @@ VALUES
            ,@Result
            ,GETDATE()
            ,@AddName
+           ,@ReportDate
+           ,@Approver
+           ,@Preparer
 )
 ;
 
@@ -270,6 +282,9 @@ VALUES
                 { "@Temperature", Req.Main.Temperature } ,
                 { "@Time", Req.Main.Time } ,
                 { "@EditName", DbType.String, UserID ?? "" } ,
+                { "@ReportDate",DbType.Date, Req.Main.ReportDate},
+                { "@Approver",DbType.String, Req.Main.Approver},
+                { "@Preparer",DbType.String, Req.Main.Preparer},
             };
 
             if (Req.Main.TestBeforePicture != null)
@@ -304,6 +319,9 @@ UPDATE PhenolicYellowTest
       ,FabricColor = @FabricColor
       ,Temperature = @Temperature
       ,Time = @Time
+      ,ReportDate = @ReportDate
+      ,Approver = @Approver
+      ,Preparer = @Preparer
 WHERE ReportNo = @ReportNo
 ;
 if exists(select 1 from PMSFile.dbo.PhenolicYellowTest WHERE ReportNo = @ReportNo)
@@ -451,7 +469,6 @@ DELETE FROM PhenolicYellowTest_Detail where ReportNo = @ReportNo AND Ukey = @Uke
 UPDATE PhenolicYellowTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = @Status
-    , ReportDate = GETDATE()
 WHERE ReportNo = @ReportNo
 ";
             }
@@ -461,7 +478,6 @@ WHERE ReportNo = @ReportNo
 UPDATE PhenolicYellowTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New'
-    , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ";
             }

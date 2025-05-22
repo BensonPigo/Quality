@@ -293,7 +293,7 @@
                                 <tr>
                                     <td><h5>Test Item</h5></td>
                                     <td>
-                                        @Html.DropDownListFor(o => o.Detail.TestItem, Model.TestItem_Source, null, new { @onchange = "TestItemChange(this)", @class = "OnlyEdit" })                                        
+                                        @Html.DropDownListFor(o => o.Detail.TestItem, Model.TestItem_Source, null, new { @onchange = "TestItemChange(this)", @class = "OnlyEdit" })
                                     </td>
                                     <td>
                                         @Html.DropDownListFor(o => o.Detail.PullForceUnit, Model.PullForceUnit_Source, null, new { @onchange = "PullForceUnitChange(this)", @disabled = "disabled", @readonly = "readonly" })
@@ -304,7 +304,7 @@
                                     <td>
                                         <h5>Sec</h5>
                                     </td>
-                                    <td>                                        
+                                    <td>
                                         @Html.TextBoxFor(o => o.Detail.Time, "", new { @onblur = "ResultCheck()", @class = "OnlyEdit", @readonly = "readonly", @type = "number" })
                                     </td>
                                 </tr>
@@ -324,6 +324,20 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td>Receive date </td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Detail.ReceiveDate, "{0:yyyy/MM/dd}", new { @readonly = "readonly", @class = "date-picker OnlyEdit" })
+                                    </td>
+
+                                    <td><h5>Report date</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Detail.ReportDate, "{0:yyyy/MM/dd}", new { @readonly = "readonly", @class = "date-picker OnlyEdit" })
+                                    </td>
+                                    <td><h5></h5></td>
+                                    <td>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td><h5>Snap Operator</h5></td>
                                     <td>
                                         @Html.TextBoxFor(o => o.Detail.SnapOperator, "", new { @class = "OnlyEdit", @readonly = "readonly" })
@@ -331,6 +345,14 @@
                                     <td><h5>Last Edit Name</h5></td>
                                     <td colspan="3">
                                         @Html.TextBoxFor(o => o.Detail.LastEditName, "", new { @readonly = "readonly" })
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Approver</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(modelItem => Model.Detail.PullingTestApprover, new { @style = "width:30%", @class = "inputApprover", @disabled = "disabled" })
+                                        @Html.TextBoxFor(modelItem => Model.Detail.PullingTestApproverName, new { @style = "width:55%", @disabled = "disabled" })
+                                        <input id="btnApproverSelectItem" type="button" class="OnlyEdit site-btn btn-blue btnApproverSelectItem" style="margin:0;border:0;" value="..." />
                                     </td>
                                 </tr>
                             </tbody>
@@ -376,22 +398,22 @@
             $('#Save, #Undo, #New, #Picture').addClass("IsEditMode");
 
             if (EditType == "New") {
-                $(".DetailTable input:not(#ReportNoText,#Detail_LastEditName,#ResultText,#Detail_InspectorName), .DetailTable select:not(#Detail_Gender,#Detail_PullForceUnit,#Detail_StyleType)").removeAttr("disabled");
-                $(".DetailTable input:not(#ReportNoText,#Detail_LastEditName,#ResultText,#Detail_InspectorName), .DetailTable select:not(#Detail_Gender,#Detail_PullForceUnit,#Detail_StyleType)").removeAttr("readonly");
+                $(".DetailTable input:not(#ReportNoText,#Detail_LastEditName,#ResultText,#Detail_InspectorName), .DetailTable select:not(#Detail_Gender,#Detail_PullForceUnit,#Detail_StyleType),").removeAttr("disabled");
+                $(".DetailTable input:not(#ReportNoText,#Detail_LastEditName,#ResultText,#Detail_InspectorName), .DetailTable select:not(#Detail_Gender,#Detail_PullForceUnit,#Detail_StyleType),").removeAttr("readonly");
             }
             else {
                 $(".OnlyEdit").removeAttr("disabled").removeAttr("readonly");
             }
-
+            $(".DetailTable input,.DetailTable select,.inputApprover").removeAttr("disabled", "disabled");
             $(".DetailTable img").addClass('display-None');
-
+            $("").removeAttr("disabled", "disabled");
             DetailButtonBind();
             $('#btnQuery').on('click', function () {
                 return false;
             });
         }
         else {
-            $(".queryHeader select").removeAttr("disabled");
+            $(".queryHeader select,.inputApprover").removeAttr("disabled");
             $(".rowHeader input[type='text']").removeAttr("disabled");
             $(".rowHeader input[type='button']").removeClass("IsEditModeQuery");
 
@@ -405,7 +427,7 @@
             $('#btnNew').removeClass("IsEditModeQuery");
             $('#btnQuery').unbind('click').removeClass("IsEditModeQuery");
             $('#Save, #Undo, #New').unbind('click').removeClass("IsEditMode");
-            $(".DetailTable input:not(#Detail_ReportNo), .DetailTable select").attr("disabled", "disabled");
+            $(".DetailTable input:not(#Detail_ReportNo), .DetailTable select,.inputApprover").attr("disabled", "disabled");
             $(".DetailTable img").removeClass('display-None');
 
             QueryButtonBind();
@@ -715,63 +737,103 @@
             });
         }
 
-    function DetailButtonBind() {
-            $('#btnDetailBrandSelectItem').on('click', function () {
-                window.open('@Url.Action("BrandList","PublicWindow",new{Area=""})','BrandID',config='toolbar=no,status=no,location=no,width=400,height=650');
+    function DetailButtonBind()
+    {
+        $('.inputApprover').unbind('blur').on('blur', function ()
+        {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#Detail_PullingTestApprover").val('');
+                $("#Detail_PullingTestApproverName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Detail_PullingTestApprover").val('');
+                        $("#Detail_PullingTestApproverName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#Detail_PullingTestApprover").val(data[0].ID);
+                        $("#Detail_PullingTestApproverName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
             });
+        });
 
-            $('#btnDetailSeasonSelectItem').on('click', function () {
-                if (checkValue('season','Detail_') == 0) {
-                    return;
-                }
+        $('.btnApproverSelectItem').unbind('click').on('click', function () {
+            var targetID ='Detail_PullingTestApprover';
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
 
-                var para = "?BrandID=" + $('#Detail_BrandID').val();
-                window.open('@Url.Action("SeasonList","PublicWindow",new{Area=""})' + para,'SeasonID',config='toolbar=no,status=no,location=no,width=400,height=650');
-            });
+        $('#btnDetailBrandSelectItem').on('click', function () {
+            window.open('@Url.Action("BrandList","PublicWindow",new{Area=""})','BrandID',config='toolbar=no,status=no,location=no,width=400,height=650');
+        });
 
-            $('#btnDetailInspectorSelectItem').on('click', function () {
-                window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
-            });
+        $('#btnDetailSeasonSelectItem').on('click', function () {
+            if (checkValue('season','Detail_') == 0) {
+                return;
+            }
 
-            $('#btnDetailStyleSelectItem').on('click', function () {
-                if (checkValue('style', 'Detail_') == 0) {
-                    return;
-                }
+            var para = "?BrandID=" + $('#Detail_BrandID').val();
+            window.open('@Url.Action("SeasonList","PublicWindow",new{Area=""})' + para,'SeasonID',config='toolbar=no,status=no,location=no,width=400,height=650');
+        });
 
-                var para = "?BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val();
-                window.open('@Url.Action("StyleList","PublicWindow",new{Area=""})' + para,'StyleID',config='toolbar=no,status=no,location=no,width=400,height=650');
-            });
+        $('#btnDetailInspectorSelectItem').on('click', function () {
+            window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})','Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
+        });
 
-            $('#btnDetailArticleSelectItem').on('click', function () {
-                var para = '';
-                var result = checkValue('article', 'Detail_');
-                if (result == 0) {
-                    return;
-                }
-                else if (result == 1) {
-                    para = "?OrderID=" + $('#Detail_POID').val() + "&StyleUkey=0";
-                }
-                else if (result == 2) {
-                    para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val() + "&StyleID=" + $('#Detail_StyleID').val();
-                }
-                window.open('@Url.Action("ArticleList","PublicWindow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
-            });
+        $('#btnDetailStyleSelectItem').on('click', function () {
+            if (checkValue('style', 'Detail_') == 0) {
+                return;
+            }
 
-            $('#btnDetailSizeCodeSelectItem').on('click', function () {
-                var para = '';
-                var result = checkValue('sizecode', 'Detail_');
-                if (result == 0) {
-                    return;
-                }
-                else if (result == 1) {
-                    para = "?OrderID=" + $('#Detail_POID').val() + "&StyleUkey=0&Article=" + $('#Detail_Article').val();
-                }
-                else if (result == 2) {
-                    para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val() + "&StyleID=" + $('#Detail_StyleID').val();
-                }
+            var para = "?BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val();
+            window.open('@Url.Action("StyleList","PublicWindow",new{Area=""})' + para,'StyleID',config='toolbar=no,status=no,location=no,width=400,height=650');
+        });
 
-                window.open('@Url.Action("SizeList","PublicWindow",new{Area=""})' + para,'SizeCode',config='toolbar=no,status=no,location=no,width=400,height=650');
-            });
+        $('#btnDetailArticleSelectItem').on('click', function () {
+            var para = '';
+            var result = checkValue('article', 'Detail_');
+            if (result == 0) {
+                return;
+            }
+            else if (result == 1) {
+                para = "?OrderID=" + $('#Detail_POID').val() + "&StyleUkey=0";
+            }
+            else if (result == 2) {
+                para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val() + "&StyleID=" + $('#Detail_StyleID').val();
+            }
+            window.open('@Url.Action("ArticleList","PublicWindow",new{Area=""})' + para,'Article',config='toolbar=no,status=no,location=no,width=400,height=650');
+        });
+
+        $('#btnDetailSizeCodeSelectItem').on('click', function () {
+            var para = '';
+            var result = checkValue('sizecode', 'Detail_');
+            if (result == 0) {
+                return;
+            }
+            else if (result == 1) {
+                para = "?OrderID=" + $('#Detail_POID').val() + "&StyleUkey=0&Article=" + $('#Detail_Article').val();
+            }
+            else if (result == 2) {
+                para = "?OrderID=&StyleUkey=0&BrandID=" + $('#Detail_BrandID').val() + "&SeasonID=" + $('#Detail_SeasonID').val() + "&StyleID=" + $('#Detail_StyleID').val();
+            }
+
+            window.open('@Url.Action("SizeList","PublicWindow",new{Area=""})' + para,'SizeCode',config='toolbar=no,status=no,location=no,width=400,height=650');
+        });
 
         blurEvent("Detail_");
         GenderChange($('#Detail_TestItem').val());
@@ -1206,9 +1268,18 @@
         $('#Detail_SizeCode').val(data);
     }
 
-    function GetPass1(data) {
-        $('#Detail_Inspector').val(data.ID);
-        $('#Detail_InspectorName').val(data.Name);
+    function GetPass1(data, targetID) {
+        if (targetID.includes('Detail_PullingTestApprover'))
+        {
+            $(`#${targetID}`).val(data.ID);
+            $(`#${targetID}Name`).val(data.Name);
+        }
+        else
+        {
+            $('#Detail_Inspector').val(data.ID);
+            $('#Detail_InspectorName').val(data.Name);
+        }
+
     }
 
     function GetPicture(data) {

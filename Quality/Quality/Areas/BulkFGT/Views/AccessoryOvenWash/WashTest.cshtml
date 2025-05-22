@@ -303,6 +303,22 @@
                                             @Html.TextBoxFor(o => o.WashDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td><h5>Receive Date</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(o => o.WashReceiveDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                        </td>
+                                        <td><h5>Report Date</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(o => o.WashReportDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
+                                        </td>
+                                        <td><h5>Approver</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.WashApprover, new { @style = "width:30%", @class = "inputWashApprover", @disabled = "disabled" })
+                                            @Html.TextBoxFor(modelItem => Model.WashApproverName, new { @style = "width:55%", @disabled = "disabled" })
+                                            <input id="btnWashApproverSelectItem" type="button" class="site-btn btn-blue btnWashApproverSelectItem" style="margin:0;border:0;" value="..." />
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -348,7 +364,7 @@
                 $('#Encode,#Amend, #Excel, #PDF ,#SendMail').unbind('click');
                 $('#Save').addClass("IsEditMode");
                 $("#Save").removeAttr("disabled", "disabled");
-                $(".DataTable input[type='text'],.DataTable select").removeAttr("disabled", "disabled");
+                $(".DataTable input[type='text'],.DataTable select,.inputWashApprover").removeAttr("disabled", "disabled");
 
                 DetailButtonBind();
             }
@@ -356,7 +372,7 @@
                 $('#Save').unbind('click').removeClass("IsEditMode");
                 $("#Save").attr("disabled", "disabled");
                 $("#Edit,#Encode,#Amend").removeAttr("disabled", "disabled");
-                $(".DataTable input[type='text'],.DataTable select").attr("disabled", "disabled");
+                $(".DataTable input[type='text'],.DataTable select,.inputWashApprover").attr("disabled", "disabled");
                 $('#Excel, #PDF ,#SendMail').addClass("IsEditMode");
 
                 if ('@Model.AIR_LaboratoryID' != '') {
@@ -561,6 +577,43 @@
     }
 
     function DetailButtonBind() {
+        $('.inputWashApprover').unbind('blur').on('blur', function ()
+        {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#WashApprover").val('');
+                $("#WashApproverName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#WashApprover").val('');
+                        $("#WashApproverName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#WashApprover").val(data[0].ID);
+                        $("#WashApproverName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+        $('.btnWashApproverSelectItem').unbind('click').on('click', function () {
+            var targetID ='WashApprover';
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
         $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
             $('#WashInspectorName').val('');
             if ($('#WashInspector').val() == "") {
@@ -598,8 +651,16 @@
 
 
     function GetPass1(data, targetID) {
-        $("#WashInspector").val(data.ID);
-        $("#WashInspectorName").val(data.Name);
+        if (targetID.includes('WashApprover'))
+        {
+            $(`#${targetID}`).val(data.ID);
+            $(`#${targetID}Name`).val(data.Name);
+        }
+        else
+        {
+            $("#WashInspector").val(data.ID);
+            $("#WashInspectorName").val(data.Name);
+        }
     }
 
     function GetPicture(data) {
