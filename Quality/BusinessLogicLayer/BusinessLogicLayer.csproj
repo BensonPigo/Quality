@@ -198,6 +198,7 @@
     <Compile Include="Interface\FinalInspection\IFinalInspectionBeautifulProductAuditService.cs" />
     <Compile Include="Interface\FinalInspection\IFinalInspectionAddDefectService.cs" />
     <Compile Include="Interface\BulkFGT\IGarmentTest_Service.cs" />
+    <Compile Include="Interface\BulkFGT\IGarmentTestUnitOfWork.cs" />
     <Compile Include="Interface\FinalInspection\IQueryService.cs" />
     <Compile Include="Interface\IADAuthAPICheck.cs" />
     <Compile Include="Interface\SampleRFT\IBACriteriaService.cs" />
@@ -245,6 +246,7 @@
     <Compile Include="Service\FinalInspection\FinalInspectionBeautifulProductAuditService.cs" />
     <Compile Include="Service\FinalInspection\FinalInspectionAddDefectService.cs" />
     <Compile Include="Service\BulkFGT\GarmentTest_Service.cs" />
+    <Compile Include="Service\BulkFGT\GarmentTestUnitOfWork.cs" />
     <Compile Include="Service\FinalInspection\QueryService.cs" />
     <Compile Include="Service\LibreOfficeService.cs" />
     <Compile Include="Service\MailToolsService.cs" />
