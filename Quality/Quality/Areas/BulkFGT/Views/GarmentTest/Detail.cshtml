@@ -312,15 +312,15 @@
                                                         chkLineDry = "checked";
                                                     }
                                                 }
-                                                <input class="bigSize DetailDrySelect" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="LineDry" @chkLineDry>
+                                                <input class="bigSize DetailDrySelect" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="@nameof(GarmentTest_Service.DrySelectOption.LineDry)" @chkLineDry>
                                             </td>
                                             <td><h4>Tumble Dry</h4></td>
                                             <td>
-                                                <input class="bigSize DetailDrySelect" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="TumbleDry" @chkTumbleDry>
+                                                <input class="bigSize DetailDrySelect" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="@nameof(GarmentTest_Service.DrySelectOption.TumbleDry)" @chkTumbleDry>
                                             </td>
                                             <td><h4>Hand Wash</h4></td>
                                             <td>
-                                                <input class="bigSize DetailDrySelect" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="HandWash" @chkHandWash>
+                                                <input class="bigSize DetailDrySelect" id="Detail_DrySelect" name="Detail.DrySelect" type="radio" value="@nameof(GarmentTest_Service.DrySelectOption.HandWash)" @chkHandWash>
                                             </td>
                                         </tr>
                                         <tr>
@@ -393,11 +393,11 @@
                                                         string DetailAbove50NaturalFibres = Model.Detail.Above50NaturalFibres != null && Model.Detail.Above50NaturalFibres.Value ? "checked" : "";
                                                         string DetailAbove50SyntheticFibres = Model.Detail.Above50SyntheticFibres != null && Model.Detail.Above50SyntheticFibres.Value ? "checked" : "";
                                                     }
-                                                    <input id="Detail_Above50" name="Detail.Above50" type="radio" class="bigSize" value="Above50NaturalFibres" @DetailAbove50NaturalFibres />
+                                                    <input id="Detail_Above50" name="Detail.Above50" type="radio" class="bigSize" value="@nameof(GarmentTest_Service.Above50Option.Above50NaturalFibres)" @DetailAbove50NaturalFibres />
                                                     <label for="Detail_Above50x">All basic Fabrics ≥ 50% natural fibres</label>
                                                 </div>
                                                 <div>
-                                                    <input id="Detail_Above50" name="Detail.Above50" type="radio" class="bigSize" value="Above50SyntheticFibres" @DetailAbove50SyntheticFibres />
+                                                    <input id="Detail_Above50" name="Detail.Above50" type="radio" class="bigSize" value="@nameof(GarmentTest_Service.Above50Option.Above50SyntheticFibres)" @DetailAbove50SyntheticFibres />
                                                     <label for="Detail_Above50x">All basic Fabrics ≥ 50% synthetic fibres (ex. polyester)</label>
                                                 </div>
                                             </td>

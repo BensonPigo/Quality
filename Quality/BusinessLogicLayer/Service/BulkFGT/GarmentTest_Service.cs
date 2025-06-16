@@ -60,6 +60,19 @@ namespace BusinessLogicLayer.Service.BulkFGT
             Physical_Test,
         }
 
+        public enum DrySelectOption
+        {
+            LineDry,
+            TumbleDry,
+            HandWash,
+        }
+
+        public enum Above50Option
+        {
+            Above50NaturalFibres,
+            Above50SyntheticFibres,
+        }
+
         public GarmentTest_ViewModel GetSelectItemData(GarmentTest_ViewModel garmentTest_ViewModel, SelectType type)
         {
             _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
@@ -445,6 +458,25 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
         private bool SaveDetailRecord(IGarmentTestUnitOfWork uow, GarmentTest_Detail_ViewModel detail, bool sameInstance, ref string errMsg)
         {
+            if (!string.IsNullOrEmpty(detail.DrySelect))
+            {
+                if (Enum.TryParse(detail.DrySelect, out DrySelectOption dry))
+                {
+                    detail.LineDry = dry == DrySelectOption.LineDry;
+                    detail.TumbleDry = dry == DrySelectOption.TumbleDry;
+                    detail.HandWash = dry == DrySelectOption.HandWash;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(detail.Above50))
+            {
+                if (Enum.TryParse(detail.Above50, out Above50Option above))
+                {
+                    detail.Above50NaturalFibres = above == Above50Option.Above50NaturalFibres;
+                    detail.Above50SyntheticFibres = above == Above50Option.Above50SyntheticFibres;
+                }
+            }
+
             if (!detail.LineDry && !detail.TumbleDry && !detail.HandWash)
             {
                 errMsg = "<Line Dry>, <Tumble Dry>, <Hand Wash> have to select one!";

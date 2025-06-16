@@ -375,33 +375,7 @@ namespace Quality.Areas.BulkFGT.Controllers
         [SessionAuthorizeAttribute]
         public ActionResult DetailSave(GarmentTest_Detail_Result result)
         {
-            result.Detail.LineDry = false;
-            result.Detail.TumbleDry = false;
-            result.Detail.HandWash = false;
-            switch (result.Detail.DrySelect)
-            {
-                case "LineDry":
-                    result.Detail.LineDry = true;
-                    break;
-                case "TumbleDry":
-                    result.Detail.TumbleDry = true;
-                    break;
-                case "HandWash":
-                    result.Detail.HandWash = true;
-                    break;
-            }
 
-            result.Detail.Above50NaturalFibres = false;
-            result.Detail.Above50SyntheticFibres = false;
-            switch (result.Detail.Above50)
-            {
-                case "Above50NaturalFibres":
-                    result.Detail.Above50NaturalFibres = true;
-                    break;
-                case "Above50SyntheticFibres":
-                    result.Detail.Above50SyntheticFibres = true;
-                    break;
-            }
 
 
             foreach(var item in result.FGPT.Where(x => string.IsNullOrEmpty(x.Location)))
@@ -432,6 +406,9 @@ namespace Quality.Areas.BulkFGT.Controllers
             ViewBag.TestResultmmList = lists.TestResultmmList;
             ViewBag.MetalContentList = lists.MetalContentList;
             ViewBag.FactoryID = this.FactoryID;
+            return View("Detail", Detail_Result);
+        }
+
         public JsonResult GenerateFGWT(string ID, string No)
         {
             GarmentTest_ViewModel main = _GarmentTest_Service.Get_Main(ID);
