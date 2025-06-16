@@ -137,49 +137,29 @@ order by Location desc, seq
         /// xx.  YYYY/MM/DD   Ver   Author      Comments
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/08/23  1.00    Admin        Create
-        /// </history>
         public int Create(GarmentTest_Detail_Shrinkage Item)
         {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("INSERT INTO [GarmentTest_Detail_Shrinkage]"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,No"+ Environment.NewLine);
-            SbSql.Append("        ,Location"+ Environment.NewLine);
-            SbSql.Append("        ,Type"+ Environment.NewLine);
-            SbSql.Append("        ,BeforeWash"+ Environment.NewLine);
-            SbSql.Append("        ,SizeSpec"+ Environment.NewLine);
-            SbSql.Append("        ,AfterWash1"+ Environment.NewLine);
-            SbSql.Append("        ,Shrinkage1"+ Environment.NewLine);
-            SbSql.Append("        ,AfterWash2"+ Environment.NewLine);
-            SbSql.Append("        ,Shrinkage2"+ Environment.NewLine);
-            SbSql.Append("        ,AfterWash3"+ Environment.NewLine);
-            SbSql.Append("        ,Shrinkage3"+ Environment.NewLine);
-            SbSql.Append("        ,Seq"+ Environment.NewLine);
-            SbSql.Append(")"+ Environment.NewLine);
-            SbSql.Append("VALUES"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
-            SbSql.Append("        ,@No"); objParameter.Add("@No", DbType.Int32, Item.No);
-            SbSql.Append("        ,@Location"); objParameter.Add("@Location", DbType.String, Item.Location);
-            SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, Item.Type);
-            SbSql.Append("        ,@BeforeWash"); objParameter.Add("@BeforeWash", DbType.String, Item.BeforeWash);
-            SbSql.Append("        ,@SizeSpec"); objParameter.Add("@SizeSpec", DbType.String, Item.SizeSpec);
-            SbSql.Append("        ,@AfterWash1"); objParameter.Add("@AfterWash1", DbType.String, Item.AfterWash1);
-            SbSql.Append("        ,@Shrinkage1"); objParameter.Add("@Shrinkage1", DbType.String, Item.Shrinkage1);
-            SbSql.Append("        ,@AfterWash2"); objParameter.Add("@AfterWash2", DbType.String, Item.AfterWash2);
-            SbSql.Append("        ,@Shrinkage2"); objParameter.Add("@Shrinkage2", DbType.String, Item.Shrinkage2);
-            SbSql.Append("        ,@AfterWash3"); objParameter.Add("@AfterWash3", DbType.String, Item.AfterWash3);
-            SbSql.Append("        ,@Shrinkage3"); objParameter.Add("@Shrinkage3", DbType.String, Item.Shrinkage3);
-            SbSql.Append("        ,@Seq"); objParameter.Add("@Seq", DbType.String, Item.Seq);
-            SbSql.Append(")"+ Environment.NewLine);
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, Item.ID },
+                { "@No", DbType.Int32, Item.No },
+                { "@Location", DbType.String, Item.Location },
+                { "@Type", DbType.String, Item.Type },
+                { "@BeforeWash", DbType.String, Item.BeforeWash },
+                { "@SizeSpec", DbType.String, Item.SizeSpec },
+                { "@AfterWash1", DbType.String, Item.AfterWash1 },
+                { "@Shrinkage1", DbType.String, Item.Shrinkage1 },
+                { "@AfterWash2", DbType.String, Item.AfterWash2 },
+                { "@Shrinkage2", DbType.String, Item.Shrinkage2 },
+                { "@AfterWash3", DbType.String, Item.AfterWash3 },
+                { "@Shrinkage3", DbType.String, Item.Shrinkage3 },
+                { "@Seq", DbType.String, Item.Seq }
+            };
 
-
-
-
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteNonQuery(CommandType.StoredProcedure,
+                "InsertGarmentTestDetailShrinkage", objParameter);
         }
+        /// </history>
 		/*更新(Update) 詳細敘述如下*/
         /// <summary>
         /// 更新

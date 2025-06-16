@@ -166,43 +166,26 @@ where ID = @ID{idx} and No = @No{idx} and Seq = @Seq{idx}
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/08/23  1.00    Admin        Create
         /// </history>
+		/*更新(Update) 詳細敘述如下*/
         public int Create(GarmentTest_Detail_Apperance Item)
         {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("INSERT INTO [GarmentTest_Detail_Apperance]"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,No"+ Environment.NewLine);
-            SbSql.Append("        ,Type"+ Environment.NewLine);
-            SbSql.Append("        ,Wash1"+ Environment.NewLine);
-            SbSql.Append("        ,Wash2"+ Environment.NewLine);
-            SbSql.Append("        ,Wash3"+ Environment.NewLine);
-            SbSql.Append("        ,Comment"+ Environment.NewLine);
-            SbSql.Append("        ,Seq"+ Environment.NewLine);
-            SbSql.Append("        ,Wash4"+ Environment.NewLine);
-            SbSql.Append("        ,Wash5"+ Environment.NewLine);
-            SbSql.Append(")"+ Environment.NewLine);
-            SbSql.Append("VALUES"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
-            SbSql.Append("        ,@No"); objParameter.Add("@No", DbType.Int32, Item.No);
-            SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, Item.Type);
-            SbSql.Append("        ,@Wash1"); objParameter.Add("@Wash1", DbType.String, Item.Wash1);
-            SbSql.Append("        ,@Wash2"); objParameter.Add("@Wash2", DbType.String, Item.Wash2);
-            SbSql.Append("        ,@Wash3"); objParameter.Add("@Wash3", DbType.String, Item.Wash3);
-            SbSql.Append("        ,@Comment"); objParameter.Add("@Comment", DbType.String, Item.Comment);
-            SbSql.Append("        ,@Seq"); objParameter.Add("@Seq", DbType.Int32, Item.Seq);
-            SbSql.Append("        ,@Wash4"); objParameter.Add("@Wash4", DbType.String, Item.Wash4);
-            SbSql.Append("        ,@Wash5"); objParameter.Add("@Wash5", DbType.String, Item.Wash5);
-            SbSql.Append(")"+ Environment.NewLine);
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, Item.ID },
+                { "@No", DbType.Int32, Item.No },
+                { "@Type", DbType.String, Item.Type },
+                { "@Wash1", DbType.String, Item.Wash1 },
+                { "@Wash2", DbType.String, Item.Wash2 },
+                { "@Wash3", DbType.String, Item.Wash3 },
+                { "@Comment", DbType.String, Item.Comment },
+                { "@Seq", DbType.Int32, Item.Seq },
+                { "@Wash4", DbType.String, Item.Wash4 },
+                { "@Wash5", DbType.String, Item.Wash5 }
+            };
 
-
-
-
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteNonQuery(CommandType.StoredProcedure,
+                "InsertGarmentTestDetailApperance", objParameter);
         }
-		/*更新(Update) 詳細敘述如下*/
         /// <summary>
         /// 更新
         /// </summary>
