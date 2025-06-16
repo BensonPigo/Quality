@@ -28,6 +28,19 @@ namespace Quality.Areas.BulkFGT.Controllers
         private List<string> TestResultPass = new List<string>() { "Pass", "Fail" };
         private List<string> TestResultmm = new List<string>()  { "<=4", ">4" };
         private List<string> MetalContents = new List<string>() { "None", "Metail Printing", "Metal Thread" };
+
+        private DropdownLists GetDropdownLists(List<string> scales)
+        {
+            return DropdownListHelper.Build(
+                Temperatures,
+                Machines,
+                Necks,
+                Washs,
+                TestResultPass,
+                TestResultmm,
+                MetalContents,
+                scales);
+        }
         public GarmentTestController()
         {
             _GarmentTest_Service = new GarmentTest_Service();
@@ -271,16 +284,10 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         public ActionResult Detail(string ID, string No, bool EditMode)
         {
-            List<SelectListItem> TemperatureList = new SetListItem().ItemListBinding(Temperatures);
-            List<SelectListItem> MachineList = new SetListItem().ItemListBinding(Machines);
-            List<SelectListItem> NeckList = new SetListItem().ItemListBinding(Necks);
-            List<SelectListItem> WashList = new SetListItem().ItemListBinding(Washs);
-            List<SelectListItem> TestResultPassList = new SetListItem().ItemListBinding(TestResultPass);
-            List<SelectListItem> TestResultmmList = new SetListItem().ItemListBinding(TestResultmm);
-            List<SelectListItem> MetalContentList = new SetListItem().ItemListBinding(MetalContents);
             
 
             GarmentTest_Detail_Result Detail_Result = _GarmentTest_Service.Get_All_Detail(ID, No);
+            var lists = GetDropdownLists(Detail_Result.Scales);
             if (TempData["ModelGarmentTest"] != null)
             {
                 GarmentTest_Detail_Result saveResult = (GarmentTest_Detail_Result)TempData["ModelGarmentTest"];
@@ -296,16 +303,14 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             Detail_Result.EditMode = EditMode;
-            List<SelectListItem> ScaleList = new SetListItem().ItemListBinding(Detail_Result.Scales);
-
-            ViewBag.TemperatureList = TemperatureList;
-            ViewBag.MachineList = MachineList;
-            ViewBag.NeckList = NeckList;
-            ViewBag.WashList = WashList;
-            ViewBag.ScaleList = ScaleList;
-            ViewBag.TestResultPassList = TestResultPassList;
-            ViewBag.TestResultmmList = TestResultmmList;
-            ViewBag.MetalContentList = MetalContentList;
+            ViewBag.TemperatureList = lists.TemperatureList;
+            ViewBag.MachineList = lists.MachineList;
+            ViewBag.NeckList = lists.NeckList;
+            ViewBag.WashList = lists.WashList;
+            ViewBag.ScaleList = lists.ScaleList;
+            ViewBag.TestResultPassList = lists.TestResultPassList;
+            ViewBag.TestResultmmList = lists.TestResultmmList;
+            ViewBag.MetalContentList = lists.MetalContentList;
             //ViewBag.FactoryID = this.FactoryID;
             return View(Detail_Result);
         }
@@ -417,29 +422,16 @@ namespace Quality.Areas.BulkFGT.Controllers
             Detail_Result.Result = saveresult.Result;
             Detail_Result.ErrMsg = saveresult.ErrMsg;
 
-            List<SelectListItem> TemperatureList = new SetListItem().ItemListBinding(Temperatures);
-            List<SelectListItem> MetalContentList = new SetListItem().ItemListBinding(MetalContents);
-            List<SelectListItem> MachineList = new SetListItem().ItemListBinding(Machines);
-            List<SelectListItem> NeckList = new SetListItem().ItemListBinding(Necks);
-            List<SelectListItem> WashList = new SetListItem().ItemListBinding(Washs);
-            List<SelectListItem> TestResultPassList = new SetListItem().ItemListBinding(TestResultPass);
-            List<SelectListItem> TestResultmmList = new SetListItem().ItemListBinding(TestResultmm);
-            List<SelectListItem> ScaleList = new SetListItem().ItemListBinding(Detail_Result.Scales);
-            ViewBag.TemperatureList = TemperatureList;
-            ViewBag.MachineList = MachineList;
-            ViewBag.NeckList = NeckList;
-            ViewBag.WashList = WashList;
-            ViewBag.ScaleList = ScaleList;
-            ViewBag.TestResultPassList = TestResultPassList;
-            ViewBag.TestResultmmList = TestResultmmList;
-            ViewBag.MetalContentList = MetalContentList;
+            var lists = GetDropdownLists(Detail_Result.Scales);
+            ViewBag.TemperatureList = lists.TemperatureList;
+            ViewBag.MachineList = lists.MachineList;
+            ViewBag.NeckList = lists.NeckList;
+            ViewBag.WashList = lists.WashList;
+            ViewBag.ScaleList = lists.ScaleList;
+            ViewBag.TestResultPassList = lists.TestResultPassList;
+            ViewBag.TestResultmmList = lists.TestResultmmList;
+            ViewBag.MetalContentList = lists.MetalContentList;
             ViewBag.FactoryID = this.FactoryID;
-
-            return View("Detail", Detail_Result);
-        }
-
-        [HttpPost]
-        [SessionAuthorizeAttribute]
         public JsonResult GenerateFGWT(string ID, string No)
         {
             GarmentTest_ViewModel main = _GarmentTest_Service.Get_Main(ID);
