@@ -148,47 +148,28 @@ order by Location, PMS_FGPT_TestName.Description, t.[Seq]
         /// ===  ==========  ====  ==========  ==========
         /// 01.  2021/08/23  1.00    Admin        Create
         /// </history>
+		/*更新(Update) 詳細敘述如下*/
         public int Create(GarmentTest_Detail_FGPT Item)
         {
-            StringBuilder SbSql = new StringBuilder();
-            SQLParameterCollection objParameter = new SQLParameterCollection();
-            SbSql.Append("INSERT INTO [GarmentTest_Detail_FGPT]"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         ID"+ Environment.NewLine);
-            SbSql.Append("        ,No"+ Environment.NewLine);
-            SbSql.Append("        ,Location"+ Environment.NewLine);
-            SbSql.Append("        ,Type"+ Environment.NewLine);
-            SbSql.Append("        ,TestName"+ Environment.NewLine);
-            SbSql.Append("        ,TestDetail"+ Environment.NewLine);
-            SbSql.Append("        ,Criteria"+ Environment.NewLine);
-            SbSql.Append("        ,TestResult"+ Environment.NewLine);
-            SbSql.Append("        ,TestUnit"+ Environment.NewLine);
-            SbSql.Append("        ,Seq"+ Environment.NewLine);
-            SbSql.Append("        ,TypeSelection_VersionID"+ Environment.NewLine);
-            SbSql.Append("        ,TypeSelection_Seq"+ Environment.NewLine);
-            SbSql.Append(")"+ Environment.NewLine);
-            SbSql.Append("VALUES"+ Environment.NewLine);
-            SbSql.Append("(" + Environment.NewLine);
-            SbSql.Append("         @ID"); objParameter.Add("@ID", DbType.String, Item.ID);
-            SbSql.Append("        ,@No"); objParameter.Add("@No", DbType.Int32, Item.No);
-            SbSql.Append("        ,@Location"); objParameter.Add("@Location", DbType.String, Item.Location);
-            SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, Item.Type);
-            SbSql.Append("        ,@TestName"); objParameter.Add("@TestName", DbType.String, Item.TestName);
-            SbSql.Append("        ,@TestDetail"); objParameter.Add("@TestDetail", DbType.String, Item.TestDetail);
-            SbSql.Append("        ,@Criteria"); objParameter.Add("@Criteria", DbType.Int32, Item.Criteria);
-            SbSql.Append("        ,@TestResult"); objParameter.Add("@TestResult", DbType.String, Item.TestResult);
-            SbSql.Append("        ,@TestUnit"); objParameter.Add("@TestUnit", DbType.String, Item.TestUnit);
-            SbSql.Append("        ,@Seq"); objParameter.Add("@Seq", DbType.Int32, Item.Seq);
-            SbSql.Append("        ,@TypeSelection_VersionID"); objParameter.Add("@TypeSelection_VersionID", DbType.Int32, Item.TypeSelection_VersionID);
-            SbSql.Append("        ,@TypeSelection_Seq"); objParameter.Add("@TypeSelection_Seq", DbType.Int32, Item.TypeSelection_Seq);
-            SbSql.Append(")"+ Environment.NewLine);
+            SQLParameterCollection objParameter = new SQLParameterCollection
+            {
+                { "@ID", DbType.String, Item.ID },
+                { "@No", DbType.Int32, Item.No },
+                { "@Location", DbType.String, Item.Location },
+                { "@Type", DbType.String, Item.Type },
+                { "@TestName", DbType.String, Item.TestName },
+                { "@TestDetail", DbType.String, Item.TestDetail },
+                { "@Criteria", DbType.Int32, Item.Criteria },
+                { "@TestResult", DbType.String, Item.TestResult },
+                { "@TestUnit", DbType.String, Item.TestUnit },
+                { "@Seq", DbType.Int32, Item.Seq },
+                { "@TypeSelection_VersionID", DbType.Int32, Item.TypeSelection_VersionID },
+                { "@TypeSelection_Seq", DbType.Int32, Item.TypeSelection_Seq }
+            };
 
-
-
-
-            return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
+            return ExecuteNonQuery(CommandType.StoredProcedure,
+                "InsertGarmentTestDetailFGPT", objParameter);
         }
-		/*更新(Update) 詳細敘述如下*/
         /// <summary>
         /// 更新
         /// </summary>
