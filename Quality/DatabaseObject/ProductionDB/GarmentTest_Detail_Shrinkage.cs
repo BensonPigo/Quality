@@ -86,6 +86,8 @@ namespace DatabaseObject.ProductionDB
 
         public decimal Shrinkage3 { get; set; }
         public decimal Seq { get; set; }
-    }
+        public string BaseKey { get; set; }
+        public string KeyToFgwt { get; set; }
+}
 
 }

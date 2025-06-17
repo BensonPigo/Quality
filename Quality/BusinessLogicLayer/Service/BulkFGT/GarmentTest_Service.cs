@@ -23,6 +23,7 @@ using ADOHelper.Template.MSSQL;
 using DocumentFormat.OpenXml.Wordprocessing;
 using ClosedXML.Excel.Drawings;
 using DocumentFormat.OpenXml.Spreadsheet;
+using System.Web.Mvc;
 
 namespace BusinessLogicLayer.Service.BulkFGT
 {
@@ -122,6 +123,19 @@ namespace BusinessLogicLayer.Service.BulkFGT
             }
 
             return result;
+        }
+
+        public List<SelectListItem> GetShrinkageLocation(long ID)
+        {
+            _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                return _IGarmentTestProvider.GetShrinkageLocation(ID);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public List<string> Get_Scales()
@@ -263,6 +277,25 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 newItem.TestDetail = newItem.TestUnit;
                 _IGarmentTestProvider.Save_New_FGPT_Item(newItem);
+                result.SaveResult = true;
+            }
+            catch (Exception ex)
+            {
+                result.SaveResult = false;
+                result.ErrMsg = ex.Message;
+            }
+
+            return result;
+        }
+        public GarmentTest_ViewModel Import_Shrinkage_Item(GarmentTest_Detail_Shrinkage newItem)
+        {
+            // 僅傳入 List<GarmentTest_Detail> detail
+
+            GarmentTest_ViewModel result = new GarmentTest_ViewModel();
+            _IGarmentTestProvider = new GarmentTestProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                _IGarmentTestProvider.Save_New_Shrinkage_Item(newItem);
                 result.SaveResult = true;
             }
             catch (Exception ex)
@@ -807,6 +840,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             result.FGPT = Get_FGPT(ID, No).ToList();
             result.FGWT = Get_FGWT(ID, No).ToList();
             result.Scales = Get_Scales();
+            result.Location_Source = GetShrinkageLocation(Convert.ToInt64(ID));
 
             return result;
         }
@@ -1856,11 +1890,9 @@ and t.GarmentTest=1
 
                                     #region Shrinkage
 
-                                    if (dtShrinkages.Select("Location = 'B'").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'B' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt_B = dtShrinkages.Select("Location = 'B'").CopyToDataTable();
-
-
+                                        System.Data.DataTable dt_B = dtShrinkages.Select("Location = 'B' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt_B.Rows.Count > 5)
@@ -1880,6 +1912,7 @@ and t.GarmentTest=1
                                             }
                                         }
 
+                                        int lastRow = 0;
                                         // 依不同品牌/套裝塞入資料
                                         for (int r = 0; r < dt_B.Rows.Count; r++)
                                         {
@@ -1887,20 +1920,22 @@ and t.GarmentTest=1
                                             {
                                                 worksheet.Cell(46 + r, c).Value = this.AddShrinkageUnit_18(dt_B, r, c);
                                             }
+                                            lastRow = 46 + r;
+                                        }
+                                        if (dt_B.Rows.Count <= 5)
+                                        {
+                                            int remaind = 5 - (dt_B.Rows.Count % 5);
+                                            worksheet.Rows(lastRow + 1, lastRow + remaind).Delete();
                                         }
                                     }
                                     else
                                     {
                                         worksheet.Rows(44, 51).Delete();
-                                        //Excel.Range rng = worksheet.get_Range("A44:A51", Type.Missing).EntireRow;
-                                        //rng.Select();
-                                        //rng.Delete(Microsoft.Office.Interop.Excel.XlDirection.xlUp);
-                                        //Marshal.ReleaseComObject(rng);
                                     }
 
-                                    if (dtShrinkages.Select("Location = 'O'").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'O' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'O'").CopyToDataTable();
+                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'O' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt.Rows.Count > 5)
@@ -1920,6 +1955,7 @@ and t.GarmentTest=1
                                             }
                                         }
 
+                                        int lastRow = 0;
                                         // 依不同品牌/套裝塞入資料
                                         for (int r = 0; r < dt.Rows.Count; r++)
                                         {
@@ -1927,6 +1963,12 @@ and t.GarmentTest=1
                                             {
                                                 worksheet.Cell(35 + r, c).Value = this.AddShrinkageUnit_18(dt, r, c);
                                             }
+                                            lastRow = 35 + r;
+                                        }
+                                        if (dt.Rows.Count <= 5)
+                                        {
+                                            int remaind = 5 - (dt.Rows.Count % 5);
+                                            worksheet.Rows(lastRow + 1, lastRow + remaind).Delete();
                                         }
                                     }
                                     else
@@ -1938,9 +1980,9 @@ and t.GarmentTest=1
                                         //Marshal.ReleaseComObject(rng);
                                     }
 
-                                    if (dtShrinkages.Select("Location = 'I'").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'I' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'I'").CopyToDataTable();
+                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'I' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt.Rows.Count > 5)
@@ -1960,6 +2002,7 @@ and t.GarmentTest=1
                                             }
                                         }
 
+                                        int lastRow = 0;
                                         // 依不同品牌/套裝塞入資料
                                         for (int r = 0; r < dt.Rows.Count; r++)
                                         {
@@ -1967,6 +2010,12 @@ and t.GarmentTest=1
                                             {
                                                 worksheet.Cell(28 + r, c).Value = this.AddShrinkageUnit_18(dt, r, c);
                                             }
+                                            lastRow = 28 + r;
+                                        }
+                                        if (dt.Rows.Count <= 5)
+                                        {
+                                            int remaind = 5 - (dt.Rows.Count % 5);
+                                            worksheet.Rows(lastRow + 1, lastRow + remaind).Delete();
                                         }
                                     }
                                     else
@@ -1978,9 +2027,9 @@ and t.GarmentTest=1
                                         //Marshal.ReleaseComObject(rng);
                                     }
 
-                                    if (dtShrinkages.Select("Location = 'T'").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'T' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'T'").CopyToDataTable();
+                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'T' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt.Rows.Count > 5)
@@ -2000,6 +2049,7 @@ and t.GarmentTest=1
                                             }
                                         }
 
+                                        int lastRow = 0;
                                         // 依不同品牌/套裝塞入資料
                                         for (int r = 0; r < dt.Rows.Count; r++)
                                         {
@@ -2007,6 +2057,12 @@ and t.GarmentTest=1
                                             {
                                                 worksheet.Cell(20 + r, c).Value = this.AddShrinkageUnit_18(dt, r, c);
                                             }
+                                            lastRow = 20 + r;
+                                        }
+                                        if (dt.Rows.Count <= 5)
+                                        {
+                                            int remaind = 5 - (dt.Rows.Count % 5);
+                                            worksheet.Rows(lastRow + 1, lastRow + remaind).Delete();
                                         }
                                     }
                                     else
@@ -2624,9 +2680,9 @@ and t.GarmentTest=1
                                     }
 
                                     #region Shrinkage
-                                    if (dtShrinkages.Select("Location = 'B'").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'B' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'B'").CopyToDataTable();
+                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'B' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt.Rows.Count > 5)
@@ -2646,6 +2702,7 @@ and t.GarmentTest=1
                                             }
                                         }
 
+                                        int lastRow = 0;
                                         // 依不同品牌/套裝塞入資料
                                         for (int r = 0; r < dt.Rows.Count; r++)
                                         {
@@ -2653,6 +2710,12 @@ and t.GarmentTest=1
                                             {
                                                 worksheet.Cell(46 + r, c).Value = this.AddShrinkageUnit_18(dt, r, c);
                                             }
+                                            lastRow = 46 + r;
+                                        }
+                                        if (dt.Rows.Count <= 5)
+                                        {
+                                            int remaind = 5 - (dt.Rows.Count % 5);
+                                            worksheet.Rows(lastRow + 1, lastRow + remaind).Delete();
                                         }
                                     }
                                     else
@@ -2664,9 +2727,9 @@ and t.GarmentTest=1
                                         //Marshal.ReleaseComObject(rng);
                                     }
 
-                                    if (dtShrinkages.Select("Location = 'O'").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'O' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'O'").CopyToDataTable();
+                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'O' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt.Rows.Count > 5)
@@ -2688,6 +2751,7 @@ and t.GarmentTest=1
                                             }
                                         }
 
+                                        int lastRow = 0;
                                         // 依不同品牌/套裝塞入資料
                                         for (int r = 0; r < dt.Rows.Count; r++)
                                         {
@@ -2695,6 +2759,13 @@ and t.GarmentTest=1
                                             {
                                                 worksheet.Cell(36 + r, c).Value = this.AddShrinkageUnit_18(dt, r, c);
                                             }
+                                            lastRow = 36 + r;
+                                        }
+
+                                        if (dt.Rows.Count <= 5)
+                                        {
+                                            int remaind = 5 - (dt.Rows.Count % 5);
+                                            worksheet.Rows(lastRow + 1, lastRow + remaind).Delete();
                                         }
                                     }
                                     else
@@ -2706,9 +2777,9 @@ and t.GarmentTest=1
                                         //Marshal.ReleaseComObject(rng);
                                     }
 
-                                    if (dtShrinkages.Select("Location = 'I'").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'I' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'I'").CopyToDataTable();
+                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'I' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt.Rows.Count > 5)
@@ -2730,6 +2801,7 @@ and t.GarmentTest=1
                                             }
                                         }
 
+                                        int lastRow = 0;
                                         // 依不同品牌/套裝塞入資料
                                         for (int r = 0; r < dt.Rows.Count; r++)
                                         {
@@ -2737,6 +2809,12 @@ and t.GarmentTest=1
                                             {
                                                 worksheet.Cell(28 + r, c).Value = this.AddShrinkageUnit_18(dt, r, c);
                                             }
+                                            lastRow = 28 + r;
+                                        }
+                                        if (dt.Rows.Count <= 5)
+                                        {
+                                            int remaind = 5 - (dt.Rows.Count % 5);
+                                            worksheet.Rows(lastRow + 1, lastRow + remaind).Delete();
                                         }
                                     }
                                     else
@@ -2748,9 +2826,9 @@ and t.GarmentTest=1
                                         //Marshal.ReleaseComObject(rng);
                                     }
 
-                                    if (dtShrinkages.Select("Location = 'T'").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'T' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'T'").CopyToDataTable();
+                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'T' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0 )").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt.Rows.Count > 5)
@@ -2772,6 +2850,7 @@ and t.GarmentTest=1
                                             }
                                         }
 
+                                        int lastRow = 0;
                                         // 依不同品牌/套裝塞入資料
                                         for (int r = 0; r < dt.Rows.Count; r++)
                                         {
@@ -2779,6 +2858,12 @@ and t.GarmentTest=1
                                             {
                                                 worksheet.Cell(20 + r, c).Value = this.AddShrinkageUnit_18(dt, r, c);
                                             }
+                                            lastRow = 20 + r;
+                                        }
+                                        if (dt.Rows.Count <= 5)
+                                        {
+                                            int remaind = 5 - (dt.Rows.Count % 5);
+                                            worksheet.Rows(lastRow + 1, lastRow + remaind).Delete();
                                         }
                                     }
                                     else
