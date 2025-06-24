@@ -237,19 +237,42 @@ namespace Quality.Areas.StyleManagement.Controllers
             GarmentTest_Detail_Result result = _GarmentTest_Service.StyleResult_BulkFGTReport(BrandID, StyleID, SeasonID, Article, Type);
             if (result.Result.Value)
             {
-                using (WebClient wc = new WebClient())
+                try
                 {
-                    string reportPath = "/TMP/" + Uri.EscapeDataString(result.reportPath);
-                    byte[] b = wc.DownloadData(reportPath);
-                    Response.Clear();
-                    Response.AddHeader("Content-Disposition", "attachment;filename=" + result.reportPath);
-                    Response.BinaryWrite(b);
-                    Response.End();
-                    return null;
+
+                    string reportPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+                                                   "TMP",
+                                                   result.reportPath);
+
+                    if (System.IO.File.Exists(reportPath))
+                    {
+                        byte[] b = System.IO.File.ReadAllBytes(reportPath);
+                        Response.Clear();
+                        Response.AddHeader("Content-Disposition", "attachment;filename=" + result.reportPath);
+                        Response.BinaryWrite(b);
+                        Response.End();
+                        return null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ViewData["ErrorMessage"] = ex.Message;
                 }
             }
 
-            return null;
+            StyleResult_ViewModel model = new StyleResult_ViewModel();
+            StyleResult_Request Req = new StyleResult_Request()
+            {
+                BrandID = BrandID,
+                SeasonID = SeasonID,
+                StyleID = StyleID,
+            };
+
+            Req.MDivisionID = this.MDivisionID;
+            model = _Service.Get_StyleResult_Browse(Req);
+            model.MsgScript = $@"msg.WithInfo(""Could not found Bulk Report.";
+
+            return View("Index", model);
         }
     }
 }

@@ -3,6 +3,7 @@ using DatabaseObject.ViewModel.StyleManagement;
 using Quality.Controllers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -48,18 +49,15 @@ namespace Quality.Areas.StyleManagement.Controllers
 
                     string fileMame = Service.GetExcel();
 
-                    //宣告並建立WebClient物件
-                    WebClient wc = new WebClient();
-
-                    // 2. 取得hotst name，串成下載URL ，傳到準備前端下載
-                    // URL範例：https://misap:1880/TMP/CFT Comments20210826f7f4ad14-186f-451a-9bc1-6edbcaf6cd65.xlsx 
-                    // (暫存檔檔名是CFT Comments20210826f7f4ad14-186f-451a-9bc1-6edbcaf6cd65.xlsx)
-                    string tempFilePath = "/TMP/" + fileMame;
+                    // 2. 取得應用程式根目錄下 TMP 的檔案路徑
+                    string tempFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+                                                   "TMP",
+                                                   fileMame);
 
                     // 3. 前端下載方式：請參考Index.cshtml的 「window.location.href = '@download'」;
 
-                    //載入要下載的檔案
-                    byte[] b = wc.DownloadData(tempFilePath);
+                    // 載入要下載的檔案
+                    byte[] b = System.IO.File.ReadAllBytes(tempFilePath);
                     //清除Response內的HTML
                     Response.Clear();
                     //設定標頭檔資訊 attachment 是本文章的關鍵字
