@@ -87,5 +87,18 @@ namespace ProductionDataAccessLayer.Interface
         void AmendFabricWash(long ID);
 
         DataTable GetWashDetailForReport(long ID);
+
+        // Weight
+        FabricCrkShrkTestWeight_Main GetFabricWeightTest_Main(long ID);
+
+        List<FabricCrkShrkTestWeight_Detail> GetFabricWeightTest_Detail(long ID);
+
+        void UpdateFabricWeightTestDetail(FabricCrkShrkTestWeight_Result fabricCrkShrkTestWeight_Result, string userID);
+
+        void EncodeFabricWeight(long ID, string testResult, DateTime? WeightDate, string userID);
+
+        void AmendFabricWeight(long ID, string userID);
+
+        DataTable GetWeightDetailForReport(long ID);
     }
 }
