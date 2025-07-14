@@ -1894,7 +1894,7 @@ namespace BusinessLogicLayer.Service
                     worksheet.Cell("H2").Value = fabricCrkShrkTestWeight_Main.StyleID;
                     worksheet.Cell("J2").Value = seasonID;
                     worksheet.Cell("B3").Value = fabricCrkShrkTestWeight_Main.SCIRefno;
-                    worksheet.Cell("D3").Value = fabricCrkShrkTestWeight_Main.NonWeight.HasValue ? fabricCrkShrkTestWeight_Main.NonWeight.Value : false;
+                    worksheet.Cell("D3").Value = fabricCrkShrkTestWeight_Main.WeightEncode.ToString();
                     worksheet.Cell("F3").Value = fabricCrkShrkTestWeight_Main.Weight;
                     worksheet.Cell("H3").Value = fabricCrkShrkTestWeight_Main.WeightDate?.ToString("yyyy/MM/dd") ?? string.Empty;
                     worksheet.Cell("J3").Value = fabricCrkShrkTestWeight_Main.BrandID;
