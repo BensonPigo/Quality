@@ -1890,9 +1890,9 @@ and t.GarmentTest=1
 
                                     #region Shrinkage
 
-                                    if (dtShrinkages.Select("Location = 'B' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'B' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt_B = dtShrinkages.Select("Location = 'B' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").CopyToDataTable();
+                                        System.Data.DataTable dt_B = dtShrinkages.Select("Location = 'B' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt_B.Rows.Count > 5)
@@ -1933,9 +1933,9 @@ and t.GarmentTest=1
                                         worksheet.Rows(44, 51).Delete();
                                     }
 
-                                    if (dtShrinkages.Select("Location = 'O' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'O' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'O' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").CopyToDataTable();
+                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'O' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt.Rows.Count > 5)
@@ -1980,9 +1980,9 @@ and t.GarmentTest=1
                                         //Marshal.ReleaseComObject(rng);
                                     }
 
-                                    if (dtShrinkages.Select("Location = 'I' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'I' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'I' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").CopyToDataTable();
+                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'I' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt.Rows.Count > 5)
@@ -2027,9 +2027,9 @@ and t.GarmentTest=1
                                         //Marshal.ReleaseComObject(rng);
                                     }
 
-                                    if (dtShrinkages.Select("Location = 'T' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'T' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'T' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").CopyToDataTable();
+                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'T' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt.Rows.Count > 5)
@@ -2680,9 +2680,9 @@ and t.GarmentTest=1
                                     }
 
                                     #region Shrinkage
-                                    if (dtShrinkages.Select("Location = 'B' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'B' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'B' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").CopyToDataTable();
+                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'B' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt.Rows.Count > 5)
@@ -2727,9 +2727,9 @@ and t.GarmentTest=1
                                         //Marshal.ReleaseComObject(rng);
                                     }
 
-                                    if (dtShrinkages.Select("Location = 'O' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'O' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'O' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").CopyToDataTable();
+                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'O' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt.Rows.Count > 5)
@@ -2777,9 +2777,9 @@ and t.GarmentTest=1
                                         //Marshal.ReleaseComObject(rng);
                                     }
 
-                                    if (dtShrinkages.Select("Location = 'I' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'I' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'I' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").CopyToDataTable();
+                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'I' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt.Rows.Count > 5)
@@ -2826,9 +2826,9 @@ and t.GarmentTest=1
                                         //Marshal.ReleaseComObject(rng);
                                     }
 
-                                    if (dtShrinkages.Select("Location = 'T' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0)").Length > 0)
+                                    if (dtShrinkages.Select("Location = 'T' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0)").Length > 0)
                                     {
-                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'T' and (Shrinkage1 <> 0 or Shrinkage2 <> 0 or Shrinkage3 <> 0 )").CopyToDataTable();
+                                        System.Data.DataTable dt = dtShrinkages.Select("Location = 'T' and (AfterWash1 <> 0 or AfterWash2 <> 0 or AfterWash3  <> 0 )").CopyToDataTable();
 
                                         // 超過5個測量點則新增行數
                                         if (dt.Rows.Count > 5)
