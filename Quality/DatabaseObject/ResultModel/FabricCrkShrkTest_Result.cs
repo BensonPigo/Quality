@@ -72,6 +72,12 @@ namespace DatabaseObject.ResultModel
         public string Wash { get; set; }
         public DateTime? WashDate { get; set; }
         public string WashRemark { get; set; }
+
+        public bool? NonWeight { get; set; }
+        public string Weight { get; set; }
+        public DateTime? WeightDate { get; set; }
+        public string WeightRemark { get; set; }
+
         public string ReceivingID { get; set; }
     }
 
@@ -409,6 +415,64 @@ namespace DatabaseObject.ResultModel
         public decimal SkewnessTest3 { get; set; } = 0;
         public decimal SkewnessTest4 { get; set; } = 0;
         public decimal SkewnessRate { get; set; }
+        public DateTime? Inspdate { get; set; }
+        public string Inspector { get; set; }
+        public string Name { get; set; }
+        public string Remark { get; set; }
+        public string LastUpdate { get; set; }
+    }
+
+    public class FabricCrkShrkTestWeight_Result : BaseResult
+    {
+        public long ID { get; set; }
+        public FabricCrkShrkTestWeight_Main Weight_Main { get; set; }
+        public List<FabricCrkShrkTestWeight_Detail> Weight_Detail { get; set; }
+    }
+
+    public class FabricCrkShrkTestWeight_Main
+    {
+        public string MailSubject { get; set; }
+        public string MailDesc { get; set; }
+        public string POID { get; set; }
+        public string SEQ { get; set; }
+        public string ColorID { get; set; }
+        public decimal ArriveQty { get; set; }
+        public DateTime? WhseArrival { get; set; }
+        public string ExportID { get; set; }
+        public string ReceivingID { get; set; }
+        public string Supp { get; set; }
+        public string Weight { get; set; } 
+        public bool? NonWeight { get; set; }
+        public string StyleID { get; set; }
+        public DateTime? WeightDate { get; set; }
+        public string WeightInspector { get; set; }
+        public string WeightInspectorName { get; set; }
+        public string BrandID { get; set; }
+        public string SCIRefno { get; set; }
+        public string Refno { get; set; }
+        public string DescDetail { get; set; }
+        private string _WeightRemark;
+        public string WeightRemark
+        {
+            get => _WeightRemark ?? string.Empty;
+            set => _WeightRemark = value;
+        }
+
+        public bool WeightEncode { get; set; }
+
+        public decimal WeightM2 { get; set; }
+    }
+
+    public class FabricCrkShrkTestWeight_Detail : CompareBase
+    {   
+        public Int64 ID { get; set; } 
+        public string Roll { get; set; } 
+        public string Dyelot { get; set; }
+        public DateTime? SubmitDate { get; set; }
+        public decimal WeightM2 { get; set; }
+        public decimal AverageWeightM2 { get; set; }
+        public decimal Difference { get; set; }
+        public string Result { get; set; }
         public DateTime? Inspdate { get; set; }
         public string Inspector { get; set; }
         public string Name { get; set; }

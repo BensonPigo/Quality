@@ -883,5 +883,94 @@ namespace Quality.Areas.BulkFGT.Controllers
             return Json(result);
         }
         #endregion
+
+        #region Weight
+        public ActionResult WeightTest(long ID)
+        {
+            FabricCrkShrkTestWeight_Result fabricCrkShrkTestWeight_Result = _FabricCrkShrkTest_Service.GetFabricCrkShrkTestWeight_Result(ID);
+            if (!fabricCrkShrkTestWeight_Result.Result)
+            {
+                fabricCrkShrkTestWeight_Result = new FabricCrkShrkTestWeight_Result()
+                {
+                    Weight_Main = new FabricCrkShrkTestWeight_Main(),
+                    Weight_Detail = new List<FabricCrkShrkTestWeight_Detail>(),
+                    ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(fabricCrkShrkTestWeight_Result.ErrorMessage) ? string.Empty : fabricCrkShrkTestWeight_Result.ErrorMessage.Replace("'", string.Empty))}');",
+                };
+            }
+
+            if (TempData["ModelWeightTest"] != null)
+            {
+                FabricCrkShrkTestWeight_Result saveResult = (FabricCrkShrkTestWeight_Result)TempData["ModelWeightTest"];
+                fabricCrkShrkTestWeight_Result.Weight_Main.WeightRemark = saveResult.Weight_Main.WeightRemark;
+                fabricCrkShrkTestWeight_Result.Weight_Detail = saveResult.Weight_Detail;
+                fabricCrkShrkTestWeight_Result.Result = saveResult.Result;
+                fabricCrkShrkTestWeight_Result.ErrorMessage = $@"msg.WithInfo('{(string.IsNullOrEmpty(saveResult.ErrorMessage) ? string.Empty : saveResult.ErrorMessage.Replace("'", string.Empty))}');EditMode = true;";
+            }
+
+            List<SelectListItem> skewnessOptionList = new SetListItem().ItemListBinding(skewnessOption);
+            ViewBag.ResultList = new SetListItem().ItemListBinding(resultType);
+            ViewBag.SkewnessOptionList = skewnessOptionList;
+            ViewBag.FactoryID = this.FactoryID;
+            ViewBag.UserMail = this.UserMail;
+            return View(fabricCrkShrkTestWeight_Result);
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public ActionResult WeightTestSave(FabricCrkShrkTestWeight_Result Result)
+        {
+            if (Result.Weight_Detail == null)
+            {
+                Result.Weight_Detail = new List<FabricCrkShrkTestWeight_Detail>();
+            }
+
+            BaseResult saveResult = _FabricCrkShrkTest_Service.SaveFabricCrkShrkTestWeightDetail(Result, this.UserID);
+            if (saveResult.Result)
+            {
+                return RedirectToAction("WeightTest", new { ID = Result.ID });
+            }
+
+            Result.Result = saveResult.Result;
+            Result.ErrorMessage = saveResult.ErrorMessage;
+            TempData["ModelWeightTest"] = Result;
+            ViewBag.UserMail = this.UserMail;
+            return RedirectToAction("WeightTest", new { ID = Result.ID });
+        }
+
+        [HttpPost]
+        public JsonResult Encode_Weight(long ID)
+        {
+            BaseResult result = _FabricCrkShrkTest_Service.EncodeFabricCrkShrkTestWeightDetail(ID, this.UserID, out string testResult);
+            return Json(new { result.Result, result.ErrorMessage, testResult });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult Amend_Weight(long ID)
+        {
+            BaseResult result = _FabricCrkShrkTest_Service.AmendFabricCrkShrkTestWeightDetail(ID, this.UserID);
+            return Json(new { result.Result, ErrorMessage = (result.ErrorMessage == null ? string.Empty : result.ErrorMessage.Replace("'", string.Empty)) });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult Report_Weight(long ID, bool IsToPDF)
+        {
+            BaseResult result;
+            result = _FabricCrkShrkTest_Service.ToReport_Weight(ID, IsToPDF, out string FileName);
+            string reportPath = "/TMP/" + Uri.EscapeDataString(FileName);
+            return Json(new { result.Result, result.ErrorMessage, reportPath });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public JsonResult WeightSendMail(long ID, string TO, string CC, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files)
+        {
+            SendMail_Result result = _FabricCrkShrkTest_Service.SendWeightFailResultMail(TO, CC, ID, false, OrderID, Subject, Body, Files);
+            return Json(result);
+        }
+
+        #endregion
+
     }
 }
