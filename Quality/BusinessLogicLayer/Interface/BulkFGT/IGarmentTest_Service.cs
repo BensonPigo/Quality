@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Mvc;
 using static BusinessLogicLayer.Service.BulkFGT.GarmentTest_Service;
 
 namespace BusinessLogicLayer.Interface.BulkFGT
@@ -57,6 +58,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         GarmentTest_Detail_ViewModel Get_Detail(string ID, string No);
 
         List<string> Get_Scales();
+        List<SelectListItem> GetShrinkageLocation(long GarmentTestID);
 
         GarmentTest_Detail_Result Encode_Detail(string ID, string No, DetailStatus status);
 
@@ -65,6 +67,7 @@ namespace BusinessLogicLayer.Interface.BulkFGT
         GarmentTest_Detail_Result ToReport(string ID, string No, ReportType type, bool IsToPDF, bool test = false, string AssignedFineName = "");
         GarmentTest_Detail_Result DownloadAllReport(string ID, string No, bool IsToPDF);
         GarmentTest_ViewModel Import_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem);
+        GarmentTest_ViewModel Import_Shrinkage_Item(GarmentTest_Detail_Shrinkage newItem);
         GarmentTest_ViewModel Delete_Original_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem);
         GarmentTest_Detail_Result StyleResult_BulkFGTReport(string BrandID, string StyleID, string SeasonID, string Article, string Type);
     }
