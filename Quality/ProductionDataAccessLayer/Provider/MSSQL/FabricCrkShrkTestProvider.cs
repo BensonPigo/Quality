@@ -194,6 +194,10 @@ select	[ID] = f.ID,
         [Wash] = fl.Wash,
         [WashDate] = fl.WashDate,
         [WashRemark] = fl.WashRemark,
+        [NonWeight] = f.nonWeight,
+        [Weight] = f.Weight,
+        [WeightDate] = f.WeightDate,
+        [WeightRemark] = f.WeightRemark,
         [ReceivingID] = f.ReceivingID
 from FIR f with (nolock)
 left join FIR_Laboratory fl WITH (NOLOCK) on f.ID = fl.ID
@@ -231,6 +235,9 @@ update  FIR_Laboratory set  ReceiveSampleDate = @ReceiveSampleDate,
                             nonWash = @nonWash
 where   ID = @ID
 
+update  FIR set  nonWeight=@nonWeight
+where   ID = @ID
+
 {FIR_Laboratory_Utility.UpdateResultSql}
 ";
 
@@ -248,6 +255,7 @@ where   ID = @ID
                         listDetailPar.Add("@nonHeat", fabricCrkShrkTest_Detail.NonHeat);
                         listDetailPar.Add("@NonIron", fabricCrkShrkTest_Detail.NonIron);
                         listDetailPar.Add("@nonWash", fabricCrkShrkTest_Detail.NonWash);
+                        listDetailPar.Add("@nonWeight", fabricCrkShrkTest_Detail.NonWeight);
 
                         ExecuteNonQuery(CommandType.Text, sqlUpdateFIR_Laboratory, listDetailPar);
                     }
@@ -1743,6 +1751,7 @@ where flc.ID = @ID
 
         #endregion
 
+        #region wash
         public FabricCrkShrkTestWash_Main GetFabricWashTest_Main(long ID)
         {
             SQLParameterCollection listPar = new SQLParameterCollection();
@@ -2206,8 +2215,294 @@ where flc.ID = @ID
 
             return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetFabricCrkShrkTestWash_Detail, listPar);
         }
-
         #endregion
 
+        #region weight-獨立測試
+        public FabricCrkShrkTestWeight_Main GetFabricWeightTest_Main(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlGetFabricCrkShrkTestWeight_Main = @"
+
+select	f.POID,
+        o.StyleID,
+        o.BrandID,
+        o.SeasonID,
+        [SEQ] = Concat(f.Seq1, ' ', f.Seq2),
+        r.ExportID,
+        r.WhseArrival,
+        f.SCIRefno,
+        f.Refno,
+        [ColorID] = pc.SpecValue,
+        [Supp] = Concat(f.SuppID, s.AbbEn),
+        f.ArriveQty,
+        f.Weight,
+        f.WeightDate,
+        f.WeightRemark,
+        [NonWeight]=f.nonWeight,
+		f.WeightInspector,
+        [WeightInspectorName] = (select Name from pass1 WITH(NOLOCK) where ID = f.WeightInspector),
+		fab.DescDetail,
+        f.WeightEncode,
+        fab.WeightM2        
+from FIR f with (nolock)
+left join Receiving r WITH (NOLOCK) on r.id = f.receivingid
+left join Po_Supp_Detail psd with (nolock) on psd.ID = f.POID and psd.Seq1 = f.Seq1 and psd.Seq2 = f.Seq2
+left join PO_Supp_Detail_Spec pc WITH(NOLOCK) on psd.ID = pc.ID and psd.SEQ1 = pc.SEQ1 and psd.SEQ2 = pc.SEQ2 and pc.SpecColumnID = 'Color'
+left join Supp s with (nolock) on s.ID = f.SuppID
+left join Orders o with (nolock) on o.ID = f.POID
+left join Fabric fab with (nolock) on fab.SCIRefno = f.SCIRefno
+where f.ID = @ID
+";
+
+            IList<FabricCrkShrkTestWeight_Main> listResult = ExecuteList<FabricCrkShrkTestWeight_Main>(CommandType.Text, sqlGetFabricCrkShrkTestWeight_Main, listPar);
+
+            if (listResult.Count == 0)
+            {
+                throw new Exception("No data found");
+            }
+
+            return listResult[0];
+        }
+
+        public List<FabricCrkShrkTestWeight_Detail> GetFabricWeightTest_Detail(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlGetFabricCrkShrkTestWeight_Detail = @"
+
+select	fw.ID,
+        fw.Roll,
+        fw.Dyelot,
+        fw.SubmitDate,
+        fw.WeightM2,
+        fw.AverageWeightM2,
+        fw.Difference,
+        fw.Result,
+        fw.Inspdate,
+        fw.Inspector,
+        [Name] = (select Concat(Name, ' Ext.', ExtNo) from pass1 WITH(NOLOCK) where ID = fw.Inspector),
+        fw.Remark,
+        [LastUpdate] = Concat(LastUpdateName.val, ' - ', isnull(Format(fw.EditDate, 'yyyy/MM/dd HH:mm:ss'), Format(fw.AddDate, 'yyyy/MM/dd HH:mm:ss')))
+from FIR_Weight fw with (nolock)
+outer apply (select [val] = Name_Extno from View_ShowName where ID = iif(isnull(fw.EditName, '') = '', fw.AddName, fw.EditName)) LastUpdateName
+where fw.ID = @ID
+";
+
+            return ExecuteList<FabricCrkShrkTestWeight_Detail>(CommandType.Text, sqlGetFabricCrkShrkTestWeight_Detail, listPar).ToList();
+        }
+
+        public void UpdateFabricWeightTestDetail(FabricCrkShrkTestWeight_Result fabricCrkShrkTestWeight_Result, string userID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", fabricCrkShrkTestWeight_Result.ID);
+            listPar.Add("@WeightRemark", fabricCrkShrkTestWeight_Result.Weight_Main.WeightRemark ?? string.Empty);
+
+            string sqlUpdateFly_Weight = @"
+SET XACT_ABORT ON
+
+update  FIR
+set  WeightRemark = @WeightRemark
+where   ID = @ID
+;";
+
+            List<FabricCrkShrkTestWeight_Detail> oldWeightData = GetFabricWeightTest_Detail(fabricCrkShrkTestWeight_Result.ID);
+
+            List<FabricCrkShrkTestWeight_Detail> needUpdateDetailList =
+                PublicClass.CompareListValue<FabricCrkShrkTestWeight_Detail>(
+                    fabricCrkShrkTestWeight_Result.Weight_Detail,
+                    oldWeightData,
+                    "ID,Roll,Dyelot",
+                    "SubmitDate,AverageWeightM2,Difference,Inspdate,Inspector,Result,Remark");
+
+            string sqlInsertDetail = @"
+insert into FIR_Weight(
+ID                   ,
+Roll                 ,
+Dyelot               ,
+SubmitDate           ,
+WeightM2             ,
+AverageWeightM2      ,
+Difference           ,
+Inspdate             ,
+Inspector            ,
+Result               ,
+Remark               ,
+AddName              ,
+AddDate              
+)
+values
+(
+@ID                   ,
+@Roll                 ,
+@Dyelot               ,
+@SubmitDate           ,
+@WeightM2             ,
+@AverageWeightM2      ,
+@Difference           ,
+@Inspdate             ,
+@Inspector            ,
+@Result               ,
+@Remark               ,
+@AddName              ,
+getdate()            
+)
+;";
+
+            string sqlDeleteDetail = @"
+delete  FIR_Weight
+where   ID = @ID
+and     Roll = @Roll
+and     Dyelot = @Dyelot
+";
+
+            string sqlUpdateDetail = @"
+update  FIR_Weight
+set SubmitDate          = @SubmitDate           ,
+    AverageWeightM2     = @AverageWeightM2      ,
+    Difference          = @Difference           ,
+    Inspdate            = @Inspdate             ,
+    Inspector           = @Inspector            ,
+    Result              = @Result               ,
+    Remark              = @Remark               ,
+    EditName            = @EditName             ,
+    EditDate            = getDate()
+where   ID = @ID
+and     Roll = @Roll
+and     Dyelot = @Dyelot
+";
+
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                ExecuteNonQuery(CommandType.Text, sqlUpdateFly_Weight, listPar);
+                foreach (FabricCrkShrkTestWeight_Detail detailItem in needUpdateDetailList)
+                {
+                    SQLParameterCollection listDetailPar = new SQLParameterCollection();
+
+                    switch (detailItem.StateType)
+                    {
+                        case DatabaseObject.Public.CompareStateType.Add:
+                            listDetailPar.Add("@ID", fabricCrkShrkTestWeight_Result.ID);
+                            listDetailPar.Add("@Roll", detailItem.Roll);
+                            listDetailPar.Add("@Dyelot", detailItem.Dyelot);
+                            listDetailPar.Add("@SubmitDate", detailItem.SubmitDate);
+                            listDetailPar.Add("@WeightM2", detailItem.WeightM2);
+                            listDetailPar.Add("@AverageWeightM2", detailItem.AverageWeightM2);
+                            listDetailPar.Add("@Difference", detailItem.Difference);
+                            listDetailPar.Add("@Inspdate", detailItem.Inspdate);
+                            listDetailPar.Add("@Inspector", detailItem.Inspector);
+                            listDetailPar.Add("@Result", detailItem.Result);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
+                            listDetailPar.Add("@AddName", userID);
+
+                            ExecuteNonQuery(CommandType.Text, sqlInsertDetail, listDetailPar);
+                            break;
+                        case DatabaseObject.Public.CompareStateType.Edit:
+                            listDetailPar.Add("@ID", fabricCrkShrkTestWeight_Result.ID);
+                            listDetailPar.Add("@SubmitDate", detailItem.SubmitDate);
+                            listDetailPar.Add("@Roll", detailItem.Roll);
+                            listDetailPar.Add("@Dyelot", detailItem.Dyelot);
+                            listDetailPar.Add("@AverageWeightM2", detailItem.AverageWeightM2);
+                            listDetailPar.Add("@Difference", detailItem.Difference);
+                            listDetailPar.Add("@Inspdate", detailItem.Inspdate);
+                            listDetailPar.Add("@Inspector", detailItem.Inspector);
+                            listDetailPar.Add("@Result", detailItem.Result);
+                            listDetailPar.Add("@Remark", detailItem.Remark ?? "");
+                            listDetailPar.Add("@EditName", userID);
+
+                            ExecuteNonQuery(CommandType.Text, sqlUpdateDetail, listDetailPar);
+                            break;
+                        case DatabaseObject.Public.CompareStateType.Delete:
+                            listDetailPar.Add("@ID", fabricCrkShrkTestWeight_Result.ID);
+                            listDetailPar.Add("@Roll", detailItem.Roll);
+                            listDetailPar.Add("@Dyelot", detailItem.Dyelot);
+
+                            ExecuteNonQuery(CommandType.Text, sqlDeleteDetail, listDetailPar);
+                            break;
+                        case DatabaseObject.Public.CompareStateType.None:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                transaction.Complete();
+            }
+        }
+
+        public void EncodeFabricWeight(long ID, string testResult, DateTime? WeightDate, string userID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+            listPar.Add("@testResult", testResult);
+            listPar.Add("@WeightDate", WeightDate);
+            listPar.Add("@userID", userID);
+
+            string sqlUpdateFIR = $@"
+update  FIR
+set Weight = @testResult,
+    WeightDate = @WeightDate,
+    WeightEncode  = 1,
+    WeightInspector = @userID,
+    EditDate = getdate(),
+    EditName = @userID
+where  ID = @ID";
+
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                ExecuteNonQuery(CommandType.Text, sqlUpdateFIR, listPar);
+                transaction.Complete();
+            }
+        }
+
+        public void AmendFabricWeight(long ID, string userID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+            listPar.Add("@userID", userID);
+
+            string sqlUpdateFIR = $@"
+update  FIR
+set Weight = '',
+    WeightDate = null,
+    WeightEncode  = 0,
+    WeightInspector = '',
+    EditDate = getdate(),
+    EditName = @userID
+where  ID = @ID";
+
+            using (TransactionScope transaction = new TransactionScope())
+            {
+                ExecuteNonQuery(CommandType.Text, sqlUpdateFIR, listPar);
+                transaction.Complete();
+            }
+        }
+
+        public DataTable GetWeightDetailForReport(long ID)
+        {
+            SQLParameterCollection listPar = new SQLParameterCollection();
+            listPar.Add("@ID", ID);
+
+            string sqlGetFabricCrkShrkTestWeight_Detail = @"
+select	fw.Roll,
+        fw.Dyelot,        
+        fw.WeightM2,
+        fw.AverageWeightM2,
+        fw.Difference,
+        fw.Result,
+        fw.Inspdate,
+        fw.Inspector,
+        fw.Remark
+from FIR_Weight fw with (nolock)
+where fw.ID = @ID
+";
+
+            return ExecuteDataTableByServiceConn(CommandType.Text, sqlGetFabricCrkShrkTestWeight_Detail, listPar);
+        }
+        #endregion
+
+        #endregion
     }
 }

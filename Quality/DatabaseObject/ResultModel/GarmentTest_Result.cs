@@ -54,8 +54,9 @@ namespace DatabaseObject.ResultModel
                     new SelectListItem() { Text="pass/fail",Value="pass/fail"} ,
                 };
             } 
-            set { } 
+            set { }
         }
+        public List<SelectListItem> Location_Source { get; set; }
 
         public List<SelectListItem> FabricationType_Source
         {

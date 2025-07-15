@@ -83,7 +83,10 @@ select
    ,''
  )
 )
+,m.BaseKey
+,UPPER(m.BaseKey + f.Location) AS KeyToShrinkage
 from GarmentTest_Detail_FGWT f WITH(NOLOCK)
+left join FGWT_Mapping m ON (m.IsContains = 1 AND f.SystemType LIKE '%'+m.Pattern+'%') OR  (m.IsContains = 0 AND f.SystemType = m.Pattern)
 outer apply(
 	select value =
 	cast((
@@ -177,11 +180,11 @@ SELECT locations = STUFF(
             // 若為Hand只寫入第88項
             if (washType == "Hand" && source.MtlTypeID != "WOVEN")
             {
-                fGWTs = GetDefaultFGWT(containsT, containsB, containsTandB, containsI, containsO, source.MtlTypeID, washType, source.FabricationType, fibresType);
+                fGWTs = GetDefaultFGWT(Master.BrandID, containsT, containsB, containsTandB, containsI, containsO, source.MtlTypeID, washType, source.FabricationType, fibresType);
             }
             else
             {
-                fGWTs = GetDefaultFGWT(containsT, containsB, containsTandB, containsI, containsO, source.MtlTypeID, washType, source.FabricationType, fibresType);
+                fGWTs = GetDefaultFGWT(Master.BrandID, containsT, containsB, containsTandB, containsI, containsO, source.MtlTypeID, washType, source.FabricationType, fibresType);
             }
 
             long garmentTest_Detail_ID = source.ID;
@@ -311,6 +314,24 @@ INSERT INTO GarmentTest_Detail_FGWT
                 idx++;
             }
 
+            /* 將User 手動新增的 Shrinkage，插入FGWT中
+            insertCmd.Append($@"
+
+INSERT INTO GarmentTest_Detail_FGWT
+           (ID, No, Location, Type ,TestDetail, BeforeWash ,AfterWash )
+select ID, No, Location, Type
+,TestDetail ='%'
+,BeforeWash = ISNULL(BeforeWash,0)
+,AfterWash = Case When ISNULL(AfterWash3,0) > 0 THEN AfterWash3
+			 When ISNULL(AfterWash2,0) > 0 THEN AfterWash2
+			 ELSE 0
+		 END
+from GarmentTest_Detail_Shrinkage
+where ID = {source.ID}
+and No = {source.No}
+and IsManual = 1
+");
+            */
             // 找不到才Insert
             if (Chk_FGWTExists(source) == false)
             {
@@ -501,7 +522,7 @@ update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodB"]} where id = {dr["I
         /// <param name="fibresType">fibresType</param>
         /// <param name="isAll">>是否All</param>
         /// <returns>預設清單</returns>
-        public List<GarmentTest_Detail_FGWT> GetDefaultFGWT(bool isTop, bool isBottom, bool isTop_Bottom, bool isInner, bool isOuter, string mtlTypeID, string washType, string FabricationType, string fibresType, bool isAll = true)
+        public List<GarmentTest_Detail_FGWT> GetDefaultFGWT(string brandID, bool isTop, bool isBottom, bool isTop_Bottom, bool isInner, bool isOuter, string mtlTypeID, string washType, string FabricationType, string fibresType, bool isAll = true)
         {
             string sqlWhere = string.Empty;
 
@@ -588,7 +609,7 @@ update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodB"]} where id = {dr["I
                     listLocation.Add("'O'");
                 }
 
-                sqlWhere += $" and a.Location in ({listLocation.JoinToString(",")}) ";
+                sqlWhere += $" and a.Location in ({listLocation.JoinToString(",")}) and a.BrandID = '{brandID}'";
             }
 
 
@@ -597,7 +618,7 @@ update GarmentTest_Detail_FGWT set Shrinkage = {dr["MethodB"]} where id = {dr["I
             if (FabricationType != "Non")
             {
                 string sqlWhere2 = sqlWhere;
-                sqlWhere2 += $" and b.FabricationType ='{FabricationType}'  ";
+                sqlWhere2 += $" and b.FabricationType ='{FabricationType}' and a.BrandID = '{brandID}' ";
                 sqlGetDefaultFGWT = $@"
 select distinct a.Seq
 		,[Location] = case when a.Location = 'T' then 'Top'
@@ -619,7 +640,7 @@ select distinct a.Seq
 		,Criteria2 = ISNULL(ISNULL(b.Criteria2,a.Criteria2),0)
 into #CriteriaByFabricationType
 from    Adidas_FGWT a with (nolock)
-inner join Adidas_FGWT_Fabrication b with (nolock) on a.Location=b.Location and a.ReportType=b.ReportType and a.MtlTypeID=b.MtlTypeID and a.Washing=b.Washing
+inner join Adidas_FGWT_Fabrication b with (nolock) on a.BrandID=b.BrandID and a.Location=b.Location and a.ReportType=b.ReportType and a.MtlTypeID=b.MtlTypeID and a.Washing=b.Washing
 where 1 = 1 
 {sqlWhere2}
 
