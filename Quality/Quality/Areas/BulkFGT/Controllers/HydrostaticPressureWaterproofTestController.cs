@@ -119,7 +119,7 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             TempData["EditSaveHydrostaticPressureWaterproofTestModel"] = model;
 
-            return RedirectToAction("Index");
+            return RedirectToAction("IndexGet", new { ReportNo = requestModel.Main.ReportNo, BrandID = requestModel.Main.BrandID, SeasonID = requestModel.Main.SeasonID, StyleID = requestModel.Main.StyleID, Article = requestModel.Main.Article });
         }
 
         [HttpPost]

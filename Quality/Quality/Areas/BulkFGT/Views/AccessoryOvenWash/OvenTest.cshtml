@@ -606,12 +606,13 @@
 
 
     function GetPass1(data, targetID) {
+      
         if (targetID.includes('OvenApprover'))
         {
             $(`#${targetID}`).val(data.ID);
             $(`#${targetID}Name`).val(data.Name);
         }
-        els
+        else
         {
             $("#OvenInspector").val(data.ID);
             $("#OvenInspectorName").val(data.Name);

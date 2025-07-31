@@ -425,12 +425,12 @@
                         <div class="MainDataAreaItem even">
                             @Html.TextBoxFor(o => o.MainDetailData.BuyerDeliveryText, new { @class = "even" })
                         </div>
-                        <div class="MainDataAreaItem even">
+                        <div class="MainDataAreaItem odd">
                             <h4 class="colTitle">Report Date</h4>
                         </div>
 
-                        <div class="MainDataAreaItem even">
-                            @Html.TextBoxFor(o => o.MainDetailData.ReportDateText, new { @class = "even" })
+                        <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainDetailData.ReportDate, "{0:yyyy/MM/dd}", new { @class = "date-picker CanEdit" })
                         </div>
 
                         <!-- #endregion -->
@@ -692,6 +692,7 @@
                 // 編輯模式可用功能開啟
                 $('#Save, #Undo ,#Picture ,#Exit,#NewItem').addClass("canUse");
                 $("#MainDetailData_ReceivedDate").addClass("date-picker");
+                $("#MainDetailData_ReportDate").addClass("date-picker");
                 $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
                 $('#btnDetailApproverSelectItem').on('click', function () {
                     window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})','Approver',config='toolbar=no,status=no,location=no,width=1000,height=650');
@@ -726,7 +727,7 @@
                 $('.MainDataArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select').attr("disabled", true);
                 $('.MainDataArea input ,.MainDataArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
                 $("#MainDetailData_ReceivedDate").removeClass("date-picker");
-
+                $("#MainDetailData_ReportDate").removeClass("date-picker");
                 // 非編輯模式
 
                 // 未Confirmed可用功能開啟

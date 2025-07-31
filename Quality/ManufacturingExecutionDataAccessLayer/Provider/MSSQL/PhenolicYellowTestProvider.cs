@@ -283,8 +283,8 @@ VALUES
                 { "@Time", Req.Main.Time } ,
                 { "@EditName", DbType.String, UserID ?? "" } ,
                 { "@ReportDate",DbType.Date, Req.Main.ReportDate},
-                { "@Approver",DbType.String, Req.Main.Approver},
-                { "@Preparer",DbType.String, Req.Main.Preparer},
+                { "@Approver",DbType.String, Req.Main.Approver ?? ""},
+                { "@Preparer",DbType.String, Req.Main.Preparer ?? ""},
             };
 
             if (Req.Main.TestBeforePicture != null)

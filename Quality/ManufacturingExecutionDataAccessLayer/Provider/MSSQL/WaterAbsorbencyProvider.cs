@@ -460,7 +460,7 @@ DELETE FROM WaterAbsorbencyTest_Detail where ReportNo = @ReportNo AND Ukey = @Uk
 UPDATE WaterAbsorbencyTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = @Status
-    , ReportDate = GETDATE()
+    --, ReportDate = GETDATE()
 WHERE ReportNo = @ReportNo
 ";
             }
@@ -470,7 +470,7 @@ WHERE ReportNo = @ReportNo
 UPDATE WaterAbsorbencyTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New'
-    , ReportDate = NULL
+   -- , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ";
             }
