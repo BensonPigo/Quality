@@ -14,6 +14,7 @@ using System.Transactions;
 using ToolKit;
 using DatabaseObject.Public;
 using Sci;
+using System.Web.Mvc;
 
 namespace ProductionDataAccessLayer.Provider.MSSQL
 {
@@ -248,126 +249,100 @@ where 1=1
                         { "@No", DbType.String, item.No} ,
                     };
 
-                        string insertShrinkage = $@"
-select sl.Location
-into #Location1
-from GarmentTest gt with(nolock)
-inner join style s with(nolock) on s.id = gt.StyleID and s.BrandID = gt.BrandID and s.SeasonID = gt.SeasonID
-inner join Style_Location sl with(nolock) on sl.styleukey = s.ukey
-where gt.id = @ID and sl.Location !='B'
-group by sl.Location
-order by sl.Location desc
+                        string insertShrinkage = $@"---- 新增 GarmentTest_Detail_Shrinkage、GarmentTest_Detail_Apperance
 
-CREATE TABLE #type1([type] [varchar](20),seq numeric(6,0))
-insert into #type1 values('Chest Width',1)
-insert into #type1 values('Sleeve Width',2)
-insert into #type1 values('Sleeve Length',3)
-insert into #type1 values('Back Length',4)
-insert into #type1 values('Hem Opening',5)
----
-select distinct sl.Location
-into #Location2
-from GarmentTest gt with(nolock)
-inner join style s with(nolock) on s.id = gt.StyleID and s.BrandID = gt.BrandID and s.SeasonID = gt.SeasonID
-inner join Style_Location sl with(nolock) on sl.styleukey = s.ukey
-where gt.id = @ID and sl.Location ='B'
+SELECT DISTINCT sl.Location, s.BrandID
+INTO #Location_S
+FROM GarmentTest gt WITH(NOLOCK)
+INNER JOIN style s WITH(NOLOCK)
+    ON s.id = gt.StyleID
+   AND s.BrandID = gt.BrandID
+   AND s.SeasonID = gt.SeasonID
+INNER JOIN Style_Location sl WITH(NOLOCK)
+    ON sl.styleukey = s.ukey
+WHERE gt.id = @ID;
 
-CREATE TABLE #type2([type] [varchar](20),seq numeric(6,0))
-insert into #type2 values('Waistband (relax)',1)
-insert into #type2 values('Hip Width',2)
-insert into #type2 values('Thigh Width',3)
-insert into #type2 values('Side Seam',4)
-insert into #type2 values('Leg Opening',5)
+DECLARE @location_combo VARCHAR(15) = (
+    SELECT STUFF((
+        SELECT ',' + Location
+        FROM (SELECT DISTINCT Location FROM #Location_S) AS s
+        ORDER BY Location ASC
+        FOR XML PATH(''), TYPE
+    ).value('.', 'VARCHAR(MAX)'), 1, 1, '')
+);
 
-select sl.Location,s.BrandID
-into #Location_S
-from GarmentTest gt with(nolock)
-inner join style s with(nolock) on s.id = gt.StyleID and s.BrandID = gt.BrandID and s.SeasonID = gt.SeasonID
-inner join Style_Location sl with(nolock) on sl.styleukey = s.ukey
-where gt.id = @ID
-group by sl.Location,s.BrandID
-order by sl.Location desc
+-- 根據 @BrandID 與 @location_combo 判斷後進行資料插入
+IF EXISTS (select top 1 1 from GarmentTestShrinkage WHERE BrandID = @BrandID)
+BEGIN
+    IF @location_combo = 'B,T'
+    BEGIN
+        INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage] ([ID], [No], [Location], [Type], [seq])
+        SELECT @ID, @NO, t2.Location, t1.Type, t1.Seq
+        FROM GarmentTestShrinkage t1 WITH(NOLOCK)
+        INNER JOIN #Location_S t2 ON t1.Location = t2.Location
+        WHERE t1.BrandID = @BrandID
+          AND t1.LocationGroup = 'TB';
+    END
+    ELSE IF @location_combo = 'B'
+         AND EXISTS (  ----如果Location = 'B'，請根據Style來判斷是裙子還是褲子
+             SELECT 1 --gt.*
+             FROM GarmentTest gt WITH(NOLOCK)
+             INNER JOIN style s WITH(NOLOCK)
+                 ON s.id = gt.StyleID
+                AND s.BrandID = gt.BrandID
+                AND s.SeasonID = gt.SeasonID
+             INNER JOIN Reason r WITH(NOLOCK)
+                 ON r.ID = s.ApparelType
+                AND r.ReasonTypeID = 'Style_Apparel_Type'
+             WHERE r.Name = 'Skirt'
+               AND gt.ID = @ID
+         )
+    BEGIN
+        INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage] ([ID], [No], [Location], [Type], [seq])
+        SELECT @ID, @NO, t2.Location, t1.Type, t1.Seq
+        FROM GarmentTestShrinkage t1 WITH(NOLOCK)
+        INNER JOIN #Location_S t2 ON t1.Location = t2.Location
+        WHERE t1.BrandID = @BrandID
+          AND t1.LocationGroup = 'B'
+          AND t1.Category = 'Skirt';
+    END
+    ELSE
+    BEGIN
+        INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage] ([ID], [No], [Location], [Type], [seq])
+        SELECT DISTINCT @ID, @NO, t2.Location, t1.Type, t1.Seq
+        FROM GarmentTestShrinkage t1 WITH(NOLOCK)
+        INNER JOIN #Location_S t2 ON t1.LocationGroup = t2.Location
+        WHERE t1.BrandID = @BrandID;
+    END
+END
+ELSE
+BEGIN
+    INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage] ([ID], [No], [Location], [Type], [seq])
+    SELECT DISTINCT @ID, @NO, t2.Location, t1.Type, t1.Seq
+    FROM GarmentTestShrinkage t1 WITH(NOLOCK)
+    INNER JOIN #Location_S t2 ON t1.LocationGroup = t2.Location
+    WHERE t1.BrandID = '';
+END
 
-declare @location_combo varchar(15) = 
-(select LocationList = Stuff((
-	select concat(',',Location)
-	from (
-			select 	distinct
-				Location
-			from #Location_S d
-		) s 
-			order by Location asc
-	for xml path ('')
-) , 1, 1, ''))
-
-if @BrandID = 'ADIDAS' or @BrandID = 'REEBOK'
-begin
-	if @location_combo = 'B,T'
-	begin
-		INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
-		select  @ID,@NO, t2.Location, t1.Type, t1.Seq
-		from GarmentTestShrinkage t1  WITH(NOLOCK)
-		inner join  #Location_S t2 on t1.Location = t2.Location
-		where t1.BrandID = @BrandID
-		and t1.LocationGroup = 'TB'
-	end
-    else if @location_combo = 'B' AND EXISTS(  ----如果Location = 'B'，請根據Style來判斷是裙子還是褲子
-            select 1 --gt.*
-            from GarmentTest gt 
-            INNER join style s on s.id = gt.StyleID and s.BrandID = gt.BrandID and s.SeasonID = gt.SeasonID
-            inner join Reason r on r.ID = s.ApparelType and r.ReasonTypeID ='Style_Apparel_Type'
-            where  r.Name ='Skirt'
-            and gt.ID = @ID
-        )
-    begin
-		INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
-		select  @ID,@NO, t2.Location, t1.Type, t1.Seq
-		from GarmentTestShrinkage t1  WITH(NOLOCK)
-		inner join  #Location_S t2 on t1.Location = t2.Location
-		where t1.BrandID = @BrandID
-		and t1.LocationGroup = 'B'
-        and t1.Category='Skirt'
-    end
-	else
-	begin
-		INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
-		select distinct  @ID,@NO, t2.Location, t1.Type, t1.Seq
-		from GarmentTestShrinkage t1  WITH(NOLOCK)
-		inner join  #Location_S t2 on t1.LocationGroup = t2.Location
-		where t1.BrandID = @BrandID
-	end
-end
-else
-begin
-	INSERT INTO [dbo].[GarmentTest_Detail_Shrinkage]([ID],[No],[Location],[Type],[seq])
-	select distinct  @ID,@NO, t2.Location, t1.Type, t1.Seq
-	from GarmentTestShrinkage t1  WITH(NOLOCK)
-	inner join  #Location_S t2 on t1.LocationGroup = t2.Location
-	where t1.BrandID = ''
-end
-
+-- 當 GarmentTest_Detail_Apperance 尚無資料時，插入 Appearance 資料
 IF NOT EXISTS (
-    SELECT  1 FROM GarmentTest_Detail_Apperance
-    where ID=@ID and No = @No
+    SELECT 1 
+    FROM GarmentTest_Detail_Apperance
+    WHERE ID = @ID AND No = @No
 )
-begin
-    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-    values (@ID,@NO,'Printing / Heat Transfer',1)
-    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-    values (@ID,@NO,'Label',2)
-    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-    values (@ID,@NO,'Zipper / Snap Button / Button / Tie Cord',3)
-    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-    values (@ID,@NO,'Discoloration (colour change )',4)
-    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-    values (@ID,@NO,'Colour Staining',5)
-    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-    values (@ID,@NO,'Pilling',6)
-    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-    values (@ID,@NO,'Shrinkage & Twisting',7)
-    INSERT INTO [dbo].[GarmentTest_Detail_Apperance]([ID],[No],[Type],[Seq])
-    values (@ID,@NO,'Appearance of garment after wash',8)
-end
+BEGIN
+    INSERT INTO [dbo].[GarmentTest_Detail_Apperance] ([ID], [No], [Type], [Seq])
+    VALUES 
+        (@ID, @NO, 'Printing / Heat Transfer', 1),
+        (@ID, @NO, 'Label', 2),
+        (@ID, @NO, 'Zipper / Snap Button / Button / Tie Cord', 3),
+        (@ID, @NO, 'Discoloration (colour change )', 4),
+        (@ID, @NO, 'Colour Staining', 5),
+        (@ID, @NO, 'Pilling', 6),
+        (@ID, @NO, 'Shrinkage & Twisting', 7),
+        (@ID, @NO, 'Appearance of garment after wash', 8);
+END
+
 ";
                         ExecuteDataTableByServiceConn(CommandType.Text, insertShrinkage, objParameter1);
                         #endregion
@@ -704,6 +679,28 @@ Delete {(sameInstance ? string.Empty : "[ExtendServer].")}PMSFile.dbo.GarmentTes
             }
         }
 
+        public List<SelectListItem> GetShrinkageLocation(long GarmentTestID)
+        {
+            string sqlcmd = $@"
+select DISTINCT  
+    Text =  CASE WHEN  sl.Location = 'T' THEN 'Top'
+                WHEN sl.Location = 'B' THEN 'Bottom'
+                WHEN sl.Location = 'O' THEN 'Outer'
+                WHEN sl.Location = 'I' THEN 'Innert'
+                WHEN sl.Location = 'S' THEN 'Top+Bottom'
+                ELSE sl.Location 
+            END
+
+    , Value =  sl.Location
+from GarmentTest gt with(nolock)
+inner join style s with(nolock) on s.id = gt.StyleID and s.BrandID = gt.BrandID and s.SeasonID = gt.SeasonID
+inner join Style_Location sl with(nolock) on sl.styleukey = s.ukey
+where gt.id = '{GarmentTestID}'
+";
+            var tmp = ExecuteList<SelectListItem>(CommandType.Text, sqlcmd, new SQLParameterCollection());
+
+            return tmp.Any() ? tmp.ToList() : new List<SelectListItem>();
+        }
 
         public void Save_New_FGPT_Item(GarmentTest_Detail_FGPT_ViewModel newItem)
         {
@@ -735,6 +732,37 @@ VALUES
                     and No = @No
                 )
             )
+";
+
+                ExecuteNonQuery(CommandType.Text, cmd, objParameter);
+                transaction.Complete();
+            }
+        }
+        public void Save_New_Shrinkage_Item(GarmentTest_Detail_Shrinkage newItem)
+        {
+            using (TransactionScope transaction = new TransactionScope())
+            {
+
+                SQLParameterCollection objParameter = new SQLParameterCollection
+                {
+                    { "@ID",  newItem.ID } ,
+                    { "@No", DbType.Int32, newItem.No } ,
+                    { "@Location", DbType.String, newItem.Location } ,
+                    { "@Type", DbType.String, newItem.Type } ,
+                };
+
+                string cmd = $@"
+INSERT INTO GarmentTest_Detail_Shrinkage
+    ([ID],[No],[Location],[Type],IsManual ,Seq)
+
+VALUES
+           (@ID, @No, @Location, @Type, 1 ,
+
+    ( 
+        select MAX(Seq) +1  from GarmentTest_Detail_Shrinkage
+        where id = @ID AND No=@No
+    )
+)
 ";
 
                 ExecuteNonQuery(CommandType.Text, cmd, objParameter);

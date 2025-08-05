@@ -475,6 +475,7 @@
     <Content Include="Areas\BulkFGT\Views\BrandBulkTest\Index.cshtml" />
     <Content Include="Areas\BulkFGT\Views\BrandBulkTest\Detail.cshtml" />
     <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\IronTest.cshtml" />
+    <Content Include="Areas\BulkFGT\Views\FabricCrkShrkTest\WeightTest.cshtml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -1054,6 +1055,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="XLT\FabricCrockingTest_ByBrand_B.xltx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="XLT\FabricWeightTest.xltx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

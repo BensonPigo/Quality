@@ -120,7 +120,9 @@ namespace DatabaseObject.ProductionDB
         }
 
         public string StandardRemark { get; set; }
-
+        
+        public string BaseKey { get; set; }
+        public string KeyToShrinkage { get; set; }
         public int Seq { get; set; }
     }
 

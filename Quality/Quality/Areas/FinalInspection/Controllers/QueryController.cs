@@ -150,45 +150,46 @@ namespace Quality.Areas.FinalInspection.Controllers
             worksheet.Cells[6, 7] = model.FinalInspection.AuditDate.HasValue ? ((DateTime)model.FinalInspection.AuditDate).ToString("yyyy/MM/dd") : string.Empty;
 
             worksheet.Cells[7, 3] = model.SeasonID;
-            worksheet.Cells[7, 7] = model.AvailableQty;
+            worksheet.Cells[7, 7] = model.FinalInspection.SewingLineID;
 
             worksheet.Cells[8, 3] = model.BrandID;
-            worksheet.Cells[8, 7] = model.AQLPlan;
+            worksheet.Cells[8, 7] = model.AvailableQty;
 
             worksheet.Cells[9, 3] = model.TotalSPQty;
-            worksheet.Cells[9, 7] = (double)model.FinalInspection.AcceptQty;
+            worksheet.Cells[9, 7] = model.AQLPlan;
+            worksheet.Cells[10, 7] = (double)model.FinalInspection.AcceptQty;
 
-            worksheet.Cells[10, 7] = (double)model.FinalInspection.AcceptQty + 1;
+            worksheet.Cells[11, 7] = (double)model.FinalInspection.AcceptQty + 1;
             #endregion
 
             #region Others
-            worksheet.Cells[40, 3] = (double)model.FinalInspection.ProductionStatus * 0.01;
-            worksheet.Cells[41, 3] = model.FinalInspection.OthersRemark;
+            worksheet.Cells[41, 3] = (double)model.FinalInspection.ProductionStatus * 0.01;
+            worksheet.Cells[42, 3] = model.FinalInspection.OthersRemark;
             #endregion
 
             #region Result
-            worksheet.Cells[44, 3] = model.FinalInspection.CFA;
-            worksheet.Cells[44, 7] = (double)model.FinalInspection.PassQty;
+            worksheet.Cells[45, 3] = model.FinalInspection.CFA;
+            worksheet.Cells[45, 7] = (double)model.FinalInspection.PassQty;
 
-            worksheet.Cells[45, 3] = model.FinalInspection.SubmitDate.HasValue ? ((DateTime)model.FinalInspection.SubmitDate).ToString("yyyy/MM/dd") : string.Empty;
-            worksheet.Cells[45, 7] = (double)model.FinalInspection.RejectQty;
+            worksheet.Cells[46, 3] = model.FinalInspection.SubmitDate.HasValue ? ((DateTime)model.FinalInspection.SubmitDate).ToString("yyyy/MM/dd") : string.Empty;
+            worksheet.Cells[46, 7] = (double)model.FinalInspection.RejectQty;
 
-            worksheet.Cells[46, 3] = model.FinalInspection.InspectionResult;
-            worksheet.Cells[47, 3] = model.FinalInspection.ShipmentStatus;
+            worksheet.Cells[47, 3] = model.FinalInspection.InspectionResult;
+            worksheet.Cells[48, 3] = model.FinalInspection.ShipmentStatus;
             #endregion
 
             #region Signatrue
 
             int signCtn = model.ListFinalInspectionSignature.Where(o => o.Signature != null).Count();
 
-            int lasrRowIdx = 55;
+            int lasrRowIdx = 56;
             int bonusRowCtn = (signCtn / 3) - 2 + (signCtn % 3 > 0 ? 1 : 0);
             if (bonusRowCtn > 0)
             {
-                Range rngToCopy = worksheet.get_Range("A50:A52").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A51:A53").EntireRow; // 選取要被複製的資料
                 for (int i = 0; i < bonusRowCtn; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A56", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A57", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                     lasrRowIdx += 3;
                 }
@@ -371,24 +372,24 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    worksheet.Rows[35].Delete(XlDeleteShiftDirection.xlShiftUp);
+                    worksheet.Rows[36].Delete(XlDeleteShiftDirection.xlShiftUp);
                 }
             }
             else
             {
                 var groupList = MeasurementList.GroupBy(g => new { g.Time, g.Article, g.SizeCode, g.Location }).ToList();
                 int copyCount = groupList.Count();
-                Range rngToCopy = worksheet.get_Range("A35:A38").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A36:A39").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A35", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A36", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
                 // 開始列41，預設4列
                 for (int i = copyCount - 1; i >= 0; i--)
                 {
-                    int row = i * 4 + 35;
+                    int row = i * 4 + 36;
                     string time = groupList[i].Select(s => s.Time).First();
                     string article = groupList[i].Select(s => s.Article).First();
                     string sizeCode = groupList[i].Select(s => s.SizeCode).First();
@@ -425,23 +426,23 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    worksheet.Rows[26].Delete(XlDeleteShiftDirection.xlShiftUp);
+                    worksheet.Rows[27].Delete(XlDeleteShiftDirection.xlShiftUp);
                 }
             }
             else
             {
                 int copyCount = model.ListViewMoistureResult.Count();
-                Range rngToCopy = worksheet.get_Range("A26:A33").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A27:A34").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A26", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A27", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
                 // 開始列 31，預設 8 列
                 for (int i = 0; i < copyCount; i++)
                 {
-                    int row = i * 8 + 26;
+                    int row = i * 8 + 27;
                     worksheet.Cells[row, 1] = $"Article: {model.ListViewMoistureResult[i].Article}, CTN: {model.ListViewMoistureResult[i].CTNNo}";
                     worksheet.Cells[row + 1, 3] = model.ListViewMoistureResult[i].Instrument;
                     worksheet.Cells[row + 1, 6] = model.ListViewMoistureResult[i].Fabrication;
@@ -466,23 +467,23 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    worksheet.Rows[22].Delete(XlDeleteShiftDirection.xlShiftUp);
+                    worksheet.Rows[23].Delete(XlDeleteShiftDirection.xlShiftUp);
                 }
             }
             else
             {
-                worksheet.Cells[22, 1] = $"Beautiful Product Qty: {model.FinalInspection.BAQty}";
+                worksheet.Cells[23, 1] = $"Beautiful Product Qty: {model.FinalInspection.BAQty}";
                 int copyCount = model.ListBACriteriaItem.Count;
-                Range rngToCopy = worksheet.get_Range("A24").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A25").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A24", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A25", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
                 for (int i = 0; i < copyCount; i++)
                 {
-                    int row = i + 24;
+                    int row = i + 25;
                     worksheet.Cells[row, 1] = model.ListBACriteriaItem[i].BACriteria + ": " + model.ListBACriteriaItem[i].BACriteriaDesc;
                     worksheet.Cells[row, 9] = model.ListBACriteriaItem[i].Qty;
                 }
@@ -494,22 +495,22 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    worksheet.Rows[19].Delete(XlDeleteShiftDirection.xlShiftUp);
+                    worksheet.Rows[20].Delete(XlDeleteShiftDirection.xlShiftUp);
                 }
             }
             else
             {
                 int copyCount = model.ListDefectItem.Count;
-                Range rngToCopy = worksheet.get_Range("A20").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A21").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < copyCount; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A20", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A21", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
                 for (int i = 0; i < copyCount; i++)
                 {
-                    int row = i + 20;
+                    int row = i + 21;
                     worksheet.Cells[row, 1] = model.ListDefectItem[i].DefectTypeDesc;
                     worksheet.Cells[row, 3] = model.ListDefectItem[i].DefectCodeDesc;
                     worksheet.Cells[row, 9] = model.ListDefectItem[i].Qty;
@@ -532,14 +533,14 @@ namespace Quality.Areas.FinalInspection.Controllers
                 }
 
                 // 根據Type數量複製Row
-                Range rngToCopy = worksheet.get_Range("A16:A17").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A17:A18").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < CheckListType.Count; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A16", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A17", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
-                int eachTypeRowIdx = 16;
+                int eachTypeRowIdx = 17;
                 foreach (var type in CheckListType)
                 {
                     // 填入Check List的Type
@@ -592,10 +593,10 @@ namespace Quality.Areas.FinalInspection.Controllers
             {
                 int GeneralRowCount = (AllGeneral.Count % 4) > 0 ? (AllGeneral.Count / 4) + 1 : (AllGeneral.Count / 4);
 
-                Range rngToCopy = worksheet.get_Range("A14:A14").EntireRow; // 選取要被複製的資料
+                Range rngToCopy = worksheet.get_Range("A15:A15").EntireRow; // 選取要被複製的資料
                 for (int i = 1; i < GeneralRowCount; i++)
                 {
-                    Excel.Range rngToInsert = worksheet.get_Range("A14", Type.Missing).EntireRow; // 選擇要被貼上的位置
+                    Excel.Range rngToInsert = worksheet.get_Range("A15", Type.Missing).EntireRow; // 選擇要被貼上的位置
                     rngToInsert.Insert(Excel.XlInsertShiftDirection.xlShiftDown, rngToCopy.Copy(Type.Missing)); // 貼上
                 }
 
@@ -606,7 +607,7 @@ namespace Quality.Areas.FinalInspection.Controllers
                     int col = 1 + (columnCount * 2);
                     string isSelect = model.FinalInspection.GeneralDic[g.GeneralColName] ? "Y" : "N";
 
-                    worksheet.Cells[14 + GeneralRowCount, col] = $@"{g.ItemName}: {isSelect}";
+                    worksheet.Cells[15 + GeneralRowCount, col] = $@"{g.ItemName}: {isSelect}";
                     columnCount++;
 
                     // 一個Row只有四筆資料，超過換行

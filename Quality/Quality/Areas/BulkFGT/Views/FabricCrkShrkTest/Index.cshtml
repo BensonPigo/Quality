@@ -123,13 +123,13 @@
             width: 5vw;
         }
     .DetailDataArea {
-        width: 260%;
+        width: 290%;
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
     }
     .DetailDataAreaItem1 {
-        width: 3%;
+        width: 2.63%;
         padding: 2px;
         height: 3rem;
         border: 1px solid;
@@ -139,7 +139,7 @@
         background-color: white;
     }
     .DetailDataAreaItem2 {
-        width: 1.5%;
+        width: 1.32%;
         padding: 2px;
         height: 3rem;
         border: 1px solid;
@@ -149,7 +149,7 @@
         background-color: white;
     }
     .DetailDataAreaItem3 {
-        width: 4.5%;
+        width: 4%;
         padding: 2px;
         height: 3rem;
         border: 1px solid;
@@ -170,7 +170,7 @@
     }
     .fixedColumn1 {
         position: sticky;
-        left: 1px;
+        left: 2px;
         background-color: mistyrose;
         /*width: 5vw;*/
         /*border: solid 1px gray;*/
@@ -179,7 +179,7 @@
     .fixedColumn2 {
         position: sticky;
         /*width: 5vw;*/
-        left: 7.8%;
+        left: 7.75%;
         background-color: mistyrose;
         /*border: solid 1px gray;*/
     }
@@ -187,7 +187,7 @@
     .fixedColumn3 {
         position: sticky;
         /*width: 5vw;*/
-        left:11.7%;
+        left:11.6%;
         background-color: mistyrose;
         border-left:0;
         /*border: solid 1px gray;*/
@@ -207,6 +207,10 @@
 
     .WashColor {
         background-color: rgb(173, 216, 230);
+    }
+
+    .WeightColor {
+        background-color: rgb(214 232 188);
     }
 </style>
 <div class="main-content">
@@ -388,11 +392,21 @@
                             <div class="DetailDataAreaItem1 colHead">Wash Result</div>
                             <div class="DetailDataAreaItem1 colHead">Wash Last Test Date</div>
                             <div class="DetailDataAreaItem1 colHead">Remark</div>
+
+                            <div class="DetailDataAreaItem1 colHead">
+                                Weight N/A<br />
+                                <input id="selectAllWeight" type="checkbox" class="CanEdit" name="name" />
+                            </div>
+                            <div class="DetailDataAreaItem1 colHead">Weight Result</div>
+                            <div class="DetailDataAreaItem1 colHead">Weight Last Test Date</div>
+                            <div class="DetailDataAreaItem1 colHead">Remark</div>
+
                             <div class="DetailDataAreaItem1 colHead">Receiving</div>
                             <div class="DetailDataAreaItem1 colHead">Crocking</div>
                             <div class="DetailDataAreaItem1 colHead">Heat</div>
                             <div class="DetailDataAreaItem1 colHead">Iron</div>
                             <div class="DetailDataAreaItem1 colHead">Wash</div>
+                            <div class="DetailDataAreaItem1 colHead">Weight</div>
 
                             <!--#endregion-->
 
@@ -546,6 +560,31 @@
                                         <div class="DetailDataAreaItem1 colBody WashColor @rowName">
                                             @Html.DisplayFor(modelItem => Model.Details[i].WashRemark)
                                         </div>
+
+                                        <div class="DetailDataAreaItem1 colBody CheckBoxColor @rowName">
+                                            @Html.CheckBox("Details[" + i + "].NonWeight", Convert.ToBoolean(Model.Details[i].NonWeight), new { @class = "NonWeight CanEdit" })
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody WeightColor @rowName">
+                                            @{
+                                                if (Model.Details[i].Weight == "Pass")
+                                                {
+                                                    styleColor = "blue";
+                                                }
+                                                else
+                                                {
+                                                    styleColor = "red";
+                                                }
+                                            }
+                                            <font color="@styleColor">@Html.DisplayFor(modelItem => Model.Details[i].Weight)</font>
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody WeightColor @rowName">
+                                            @Html.ValueFor(modelItem => Model.Details[i].WeightDate, "{0:yyyy/MM/dd}")
+                                        </div>
+                                        <div class="DetailDataAreaItem1 colBody WeightColor @rowName">
+                                            @Html.DisplayFor(modelItem => Model.Details[i].WeightRemark)
+                                        </div>
+
+
                                         <div class="DetailDataAreaItem1 colBody @rowName">
                                             @Html.DisplayFor(modelItem => Model.Details[i].ReceivingID)
                                         </div>
@@ -554,6 +593,7 @@
                                         <div class="DetailDataAreaItem1 colBody @rowName"><a class="link" href="@Url.Action("HeatTest", @controllerName)?ID=@Model.Details[i].ID">HeatTest</a></div>
                                         <div class="DetailDataAreaItem1 colBody @rowName"><a class="link" href="@Url.Action("IronTest", @controllerName)?ID=@Model.Details[i].ID">IronTest</a></div>
                                         <div class="DetailDataAreaItem1 colBody @rowName"><a class="link" href="@Url.Action("WashTest", @controllerName)?ID=@Model.Details[i].ID">WashTest</a></div>
+                                        <div class="DetailDataAreaItem1 colBody @rowName"><a class="link" href="@Url.Action("WeightTest", @controllerName)?ID=@Model.Details[i].ID">WeightTest</a></div>
                                     </div>
                                 }
                             }
@@ -605,6 +645,14 @@
 
             $('.NonWash').prop('checked', !oldValue);
             $('.NonWash').attr('checked', !oldValue);
+        });
+
+        $("#selectAllWeight").mousedown(function () {
+
+            var oldValue = $(this).prop('checked');
+
+            $('.NonWeight').prop('checked', !oldValue);
+            $('.NonWeight').attr('checked', !oldValue);
         });
 
         if (!$("body").hasClass("sidebar-collapse")) {
@@ -683,6 +731,7 @@
                     NonHeat: $('#Details_' + index + '__NonHeat').prop("checked"),
                     NonIron: $('#Details_' + index + '__NonIron').prop("checked"),
                     NonWash: $('#Details_' + index + '__NonWash').prop("checked"),
+                    NonWeight: $('#Details_' + index + '__NonWeight').prop("checked"),
                 });
             });
 

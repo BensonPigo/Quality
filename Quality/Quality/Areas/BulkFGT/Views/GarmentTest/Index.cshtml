@@ -665,6 +665,10 @@
                     switch (index) {
                         case 0:
                             OrderID = $(this).val();
+
+                            if (OrderID == "") {
+                                $(this).val('');
+                            }
                             break;
                         case 1:
                             submitDate = $(this).val();
@@ -700,6 +704,7 @@
 
 
                 if (OrderID == "") {
+                    $(this).val('');
                     ErrMsg += "SP# cannot be empty";
                     return false;
                 }
@@ -817,14 +822,15 @@
                 return;
             }
 
-            if ($(this).val() == "") {
+            let currentDOM = this;
+            if ($(currentDOM).val() == "") {
                 return;
             }
 
-            var idx = $(this).attr("idx");
+            var idx = $(currentDOM).attr("idx");
             var currentSize = $(`select[name='Model.garmentTest_Details[${idx}].SizeCode']`).val();
-            var SizeCode = $(this).parent().siblings().find("select[class='Detail_SizeCode']");
-            var OrderID = $(this).val();
+            var SizeCode = $(currentDOM).parent().siblings().find("select[class='Detail_SizeCode']");
+            var OrderID = $(currentDOM).val();
             var Brand = $('#Brand').val();
             var Season = $('#Season').val();
             var Style = $('#Style').val();
@@ -837,7 +843,7 @@
                 async: false,
                 success: function (data) {
                     if (data.length == 0) {
-                        $(`#garmentTest_Details_${idx}__OrderID`).val('');
+                        $(currentDOM).val('');
                         msg.WithError("SP not Found");
                     }
                     else {

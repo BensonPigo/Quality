@@ -68,6 +68,18 @@ namespace BusinessLogicLayer.Interface
 
         BaseResult ToReport_Wash(long ID, bool IsToPDF, out string excelFileName, string AssignedFineName = "");
 
+        // Weight
+        FabricCrkShrkTestWeight_Result GetFabricCrkShrkTestWeight_Result(long ID);
+
+        BaseResult SaveFabricCrkShrkTestWeightDetail(FabricCrkShrkTestWeight_Result fabricCrkShrkTestWeight_Result, string userID);
+
+        BaseResult EncodeFabricCrkShrkTestWeightDetail(long ID, string userID, out string testResult);
+
+        SendMail_Result SendWeightFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files);
+
+        BaseResult AmendFabricCrkShrkTestWeightDetail(long ID, string userID);
+
+        BaseResult ToReport_Weight(long ID, bool IsToPDF, out string excelFileName, string AssignedFineName = "");
 
     }
 }

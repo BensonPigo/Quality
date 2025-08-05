@@ -133,6 +133,32 @@ namespace BusinessLogicLayer.Service
             return baseResult;
         }
 
+        public BaseResult AmendFabricCrkShrkTestWeightDetail(long ID, string userID)
+        {
+            BaseResult baseResult = new BaseResult();
+            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+            try
+            {
+                FabricCrkShrkTestWeight_Main fabricCrkShrkTestWeight_Main = _FabricCrkShrkTestProvider.GetFabricWeightTest_Main(ID);
+
+                if (fabricCrkShrkTestWeight_Main.WeightEncode == false)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $"This record is not Encode";
+                    return baseResult;
+                }
+
+                _FabricCrkShrkTestProvider.AmendFabricWeight(ID, userID);
+            }
+            catch (Exception ex)
+            {
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
+            }
+
+            return baseResult;
+        }
+
         public BaseResult EncodeFabricCrkShrkTestCrockingDetail(long ID, string userID, out string testResult)
         {
             BaseResult baseResult = new BaseResult();
@@ -317,6 +343,52 @@ namespace BusinessLogicLayer.Service
             }
         }
 
+        public BaseResult EncodeFabricCrkShrkTestWeightDetail(long ID, string userID, out string testResult)
+        {
+            BaseResult baseResult = new BaseResult();
+            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+            testResult = string.Empty;
+            try
+            {
+                FabricCrkShrkTestWeight_Result fabricCrkShrkTestWeight_Result = this.GetFabricCrkShrkTestWeight_Result(ID);
+
+                if (fabricCrkShrkTestWeight_Result.Weight_Main.WeightEncode == true)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $"This record already Encode";
+                    return baseResult;
+                }
+
+                if (fabricCrkShrkTestWeight_Result.Weight_Detail.Count == 0)
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $"Please test one Roll least.";
+                    return baseResult;
+                }
+
+                string WeightResult = "Pass";
+
+                if (fabricCrkShrkTestWeight_Result.Weight_Detail.Any(s => s.Result.ToUpper() == "FAIL"))
+                {
+                    WeightResult = "Fail";
+                }
+
+                testResult = WeightResult;
+
+                DateTime? WeightDate = fabricCrkShrkTestWeight_Result.Weight_Detail.Max(s => s.Inspdate);
+
+                _FabricCrkShrkTestProvider.EncodeFabricWeight(ID, testResult, WeightDate, userID);
+
+                return baseResult;
+            }
+            catch (Exception ex)
+            {
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
+                return baseResult;
+            }
+        }
+
         public FabricCrkShrkTestCrocking_Result GetFabricCrkShrkTestCrocking_Result(long ID)
         {
             FabricCrkShrkTestCrocking_Result fabricCrkShrkTestCrocking_Result = new FabricCrkShrkTestCrocking_Result();
@@ -463,6 +535,35 @@ namespace BusinessLogicLayer.Service
             }
 
             return fabricCrkShrkTestWash_Result;
+        }
+
+        public FabricCrkShrkTestWeight_Result GetFabricCrkShrkTestWeight_Result(long ID)
+        {
+            FabricCrkShrkTestWeight_Result fabricCrkShrkTestWeight_Result = new FabricCrkShrkTestWeight_Result();
+            try
+            {
+                _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+
+                _ScaleProvider = new ScaleProvider(Common.ProductionDataAccessLayer);
+
+                fabricCrkShrkTestWeight_Result.Weight_Main = _FabricCrkShrkTestProvider.GetFabricWeightTest_Main(ID);
+
+                fabricCrkShrkTestWeight_Result.Weight_Detail = _FabricCrkShrkTestProvider.GetFabricWeightTest_Detail(ID);
+
+                fabricCrkShrkTestWeight_Result.ID = ID;
+
+                fabricCrkShrkTestWeight_Result.Result = true;
+
+                fabricCrkShrkTestWeight_Result.Weight_Main.MailSubject = "Fabric Weight Test";
+                fabricCrkShrkTestWeight_Result.Weight_Main.MailDesc = "Attachment Is Fabric Weight Test detail data";
+            }
+            catch (Exception ex)
+            {
+                fabricCrkShrkTestWeight_Result.Result = false;
+                fabricCrkShrkTestWeight_Result.ErrorMessage = ex.Message.Replace("'", string.Empty);
+            }
+
+            return fabricCrkShrkTestWeight_Result;
         }
 
         public FabricCrkShrkTest_Result GetFabricCrkShrkTest_Result(string POID)
@@ -919,6 +1020,82 @@ namespace BusinessLogicLayer.Service
             return baseResult;
         }
 
+        public BaseResult SaveFabricCrkShrkTestWeightDetail(FabricCrkShrkTestWeight_Result fabricCrkShrkTestWeight_Result, string userID)
+        {
+            BaseResult baseResult = new BaseResult();
+            try
+            {
+                if (fabricCrkShrkTestWeight_Result.Weight_Detail.Any(s => MyUtility.Check.Empty(s.Roll) || MyUtility.Check.Empty(s.Dyelot)))
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = "< Roll, Dyelot > can not be empty.";
+                    return baseResult;
+                }
+
+                if (fabricCrkShrkTestWeight_Result.Weight_Detail.Any(s => s.AverageWeightM2 <= 0))
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = "< Roll, Dyelot > can not be empty.";
+                    return baseResult;
+                }
+
+                if (fabricCrkShrkTestWeight_Result.Weight_Detail.Any(s => MyUtility.Check.Empty(s.Inspdate)))
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = "< Inspection Date > can not be empty.";
+                    return baseResult;
+                }
+
+                if (fabricCrkShrkTestWeight_Result.Weight_Detail.Any(s => MyUtility.Check.Empty(s.Inspector)))
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = "< Lab Tech> can not be empty.";
+                    return baseResult;
+                }
+
+                var listKeyDuplicateItems = fabricCrkShrkTestWeight_Result
+                    .Weight_Detail.GroupBy(s => new
+                    {
+                        s.Roll,
+                        s.Dyelot,
+                    })
+                    .Where(groupItem => groupItem.Count() > 1);
+
+                if (listKeyDuplicateItems.Any())
+                {
+                    baseResult.Result = false;
+                    baseResult.ErrorMessage = $@"The following data is duplicated
+{listKeyDuplicateItems.Select(s => $"[Roll]{s.Key.Roll}, [Dyelot]{s.Key.Dyelot}").JoinToString(Environment.NewLine)}
+";
+                    return baseResult;
+                }
+
+                _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+
+                // 重算Difference, Result
+                foreach (FabricCrkShrkTestWeight_Detail fabricCrkShrkTestWeight_Detail in fabricCrkShrkTestWeight_Result.Weight_Detail)
+                {
+                    if (fabricCrkShrkTestWeight_Detail.WeightM2 == 0)
+                    {
+                        fabricCrkShrkTestWeight_Detail.Result = "Pass";
+                        fabricCrkShrkTestWeight_Detail.Difference = 0.0m;
+                        continue;
+                    }
+
+                    fabricCrkShrkTestWeight_Detail.Difference = MyUtility.Math.Round(((fabricCrkShrkTestWeight_Detail.AverageWeightM2 - fabricCrkShrkTestWeight_Detail.WeightM2) / fabricCrkShrkTestWeight_Detail.WeightM2) * 100, 2);
+                    fabricCrkShrkTestWeight_Detail.Result = Math.Abs(fabricCrkShrkTestWeight_Detail.Difference) <= 5 ? "Pass" : "Fail";
+                }
+
+                _FabricCrkShrkTestProvider.UpdateFabricWeightTestDetail(fabricCrkShrkTestWeight_Result, userID);
+            }
+            catch (Exception ex)
+            {
+                baseResult.Result = false;
+                baseResult.ErrorMessage = ex.Message.Replace("'", string.Empty);
+            }
+
+            return baseResult;
+        }
 
         public BaseResult ToReport_Crocking(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "")
         {
@@ -1666,6 +1843,131 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+        public BaseResult ToReport_Weight(long ID, bool IsPDF, out string excelFileName, string AssignedFineName = "")
+        {
+            _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+            _OrdersProvider = new OrdersProvider(Common.ProductionDataAccessLayer);
+            _QualityBrandTestCodeProvider = new QualityBrandTestCodeProvider(Common.ManufacturingExecutionDataAccessLayer);
+            BaseResult result = new BaseResult();
+            excelFileName = string.Empty;
+            string tmpName = string.Empty;
+
+            try
+            {
+                string baseFilePath = System.Web.HttpContext.Current.Server.MapPath("~/");
+
+                DataTable dtWeightDetail = _FabricCrkShrkTestProvider.GetWeightDetailForReport(ID);
+                FabricCrkShrkTestWeight_Main fabricCrkShrkTestWeight_Main = _FabricCrkShrkTestProvider.GetFabricWeightTest_Main(ID);
+
+                string templatePath = Path.Combine(baseFilePath, "XLT", "FabricWeightTest.xltx");
+
+                if (dtWeightDetail.Rows.Count == 0)
+                {
+                    result.Result = false;
+                    result.ErrorMessage = "Data not found!";
+                    return result;
+                }
+                Guid newGuid = Guid.NewGuid();
+
+                tmpName = "FabricWeightTest_" +
+                          $"{DateTime.Now:yyyyMMddHHmmss}_" +
+                          $"{newGuid.ToString()}";
+                if (AssignedFineName != "")
+                {
+                    tmpName = AssignedFineName;
+                }
+                // 去除非法字元
+                tmpName = FileNameHelper.SanitizeFileName(tmpName);
+
+                string seasonID = _OrdersProvider.Get(new Orders { ID = fabricCrkShrkTestWeight_Main.POID })
+                                    .FirstOrDefault()?.SeasonID ?? string.Empty;
+
+                string outputFilePath = Path.Combine(baseFilePath, "TMP", $"{tmpName}.xlsx");
+
+                using (var workbook = new XLWorkbook(templatePath))
+                {
+                    var worksheet = workbook.Worksheet(1);
+
+                    worksheet.Cell("B2").Value = fabricCrkShrkTestWeight_Main.POID;
+                    worksheet.Cell("D2").Value = fabricCrkShrkTestWeight_Main.SEQ;
+                    worksheet.Cell("F2").Value = fabricCrkShrkTestWeight_Main.ColorID;
+                    worksheet.Cell("H2").Value = fabricCrkShrkTestWeight_Main.StyleID;
+                    worksheet.Cell("J2").Value = seasonID;
+                    worksheet.Cell("B3").Value = fabricCrkShrkTestWeight_Main.SCIRefno;
+                    worksheet.Cell("D3").Value = fabricCrkShrkTestWeight_Main.WeightEncode.ToString();
+                    worksheet.Cell("F3").Value = fabricCrkShrkTestWeight_Main.Weight;
+                    worksheet.Cell("H3").Value = fabricCrkShrkTestWeight_Main.WeightDate?.ToString("yyyy/MM/dd") ?? string.Empty;
+                    worksheet.Cell("J3").Value = fabricCrkShrkTestWeight_Main.BrandID;
+                    worksheet.Cell("B4").Value = fabricCrkShrkTestWeight_Main.Refno;
+                    worksheet.Cell("D4").Value = fabricCrkShrkTestWeight_Main.ArriveQty;
+                    worksheet.Cell("F4").Value = fabricCrkShrkTestWeight_Main.WhseArrival?.ToString("yyyy/MM/dd") ?? string.Empty;
+                    worksheet.Cell("H4").Value = fabricCrkShrkTestWeight_Main.Supp;
+                    worksheet.Cell("J4").Value = fabricCrkShrkTestWeight_Main.ExportID;
+
+                    // 填入詳細數據
+                    int detailStartRow = 6;
+                    for (int i = 0; i < dtWeightDetail.Rows.Count; i++)
+                    {
+                        // 第一筆資料不用複製
+                        if (i > 0)
+                        {
+                            // 1. 複製第 10 列
+                            var rowToCopy = worksheet.Row(detailStartRow);
+
+                            // 2. 插入一列，將第 5 和第 6 列之間騰出空間
+                            worksheet.Row(detailStartRow + i).InsertRowsAbove(1);
+
+                            // 3. 複製格式到新插入的列
+                            var newRow = worksheet.Row(detailStartRow + i);
+
+                            rowToCopy.CopyTo(newRow);
+                        }
+
+                        var row = dtWeightDetail.Rows[i];
+                        for (int j = 0; j < dtWeightDetail.Columns.Count; j++)
+                        {
+                            switch (row[j].GetType().Name)
+                            {
+                                case "String":
+                                    worksheet.Cell(detailStartRow + i, j + 1).Value = row[j].ToString();
+                                    break;
+                                case "Int32":
+                                    worksheet.Cell(detailStartRow + i, j + 1).Value = row[j].ToValue<Int32>();
+                                    break;
+                                case "Decimal":
+                                    worksheet.Cell(detailStartRow + i, j + 1).Value = row[j].ToValue<decimal>();
+                                    break;
+                                case "DateTime":
+                                    worksheet.Cell(detailStartRow + i, j + 1).Value = row[j].ToValue<DateTime>();
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+
+                    workbook.SaveAs(outputFilePath);
+                    excelFileName = $"{tmpName}.xlsx";
+                }
+
+                if (IsPDF)
+                {
+                    //LibreOfficeService officeService = new LibreOfficeService(@"C:\Program Files\LibreOffice\program\");
+                    //officeService.ConvertExcelToPdf(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP"));
+                    ConvertToPDF.ExcelToPDF(outputFilePath, Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/TMP/"), $"{tmpName}.pdf"));
+
+                    excelFileName = $"{tmpName}.pdf";
+                }
+                result.Result = true;
+            }
+            catch (Exception ex)
+            {
+                result.Result = false;
+                result.ErrorMessage = ex.Message.Replace("'", string.Empty);
+            }
+
+            return result;
+        }
         private void AddImageToWorksheet(IXLWorksheet worksheet, byte[] imageData, int row, int col, int width, int height)
         {
             if (imageData != null)
@@ -1911,6 +2213,54 @@ namespace BusinessLogicLayer.Service
 
             return result;
         }
+        public SendMail_Result SendWeightFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files)
+        {
+            SendMail_Result result = new SendMail_Result();
+            try
+            {
+                _FabricCrkShrkTestProvider = new FabricCrkShrkTestProvider(Common.ProductionDataAccessLayer);
+                string name = $"Fabric Weight Test";
+
+                BaseResult baseResult = ToReport_Weight(ID, true, out string excelFileName, name);
+                string FileName = baseResult.Result ? Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/"), "TMP", excelFileName) : string.Empty;
+                SendMail_Request sendMail_Request = new SendMail_Request()
+                {
+                    To = toAddress,
+                    CC = ccAddress,
+                    Subject = "Fabric Weight Test",
+                    Body = "Attachment Is Fabric Weight Test detail data",
+                    //alternateView = plainView,
+                    FileonServer = new List<string> { FileName },
+                    FileUploader = Files,
+                    IsShowAIComment = true,
+                    AICommentType = "Fabric Crocking & Shrinkage Test",
+                    OrderID = OrderID,
+                };
+
+                if (!string.IsNullOrEmpty(Subject))
+                {
+                    sendMail_Request.Subject = Subject;
+                }
+
+                if (!string.IsNullOrEmpty(Body))
+                {
+                    sendMail_Request.Body = Body;
+                }
+
+                _MailService = new MailToolsService();
+
+                result = MailTools.SendMail(sendMail_Request);
+
+            }
+            catch (Exception ex)
+            {
+                result.result = false;
+                result.resultMsg = ex.Message.Replace("'", string.Empty);
+            }
+
+            return result;
+        }
+
         public SendMail_Result SendCrockingFailResultMail(string toAddress, string ccAddress, long ID, bool isTest, string OrderID, string Subject, string Body, List<HttpPostedFileBase> Files)
         {
             SendMail_Result result = new SendMail_Result();

@@ -46,9 +46,12 @@ ID,No
 ,[AfterWash3]
 ,[Shrinkage3]
 ,[Seq]
-from GarmentTest_Detail_Shrinkage WITH(NOLOCK)
-where ID = @ID
-and No = @No
+, m.BaseKey
+, UPPER(m.BaseKey + g.Location) AS KeyToFgwt
+from GarmentTest_Detail_Shrinkage g WITH(NOLOCK)
+left join　Shrinkage_Mapping m　ON (m.IsContains = 1 AND g.Type LIKE '%'+m.Pattern+'%') OR (m.IsContains = 0 AND g.Type = m.Pattern)
+where g.ID = @ID
+and g.No = @No
 ";
 
             return ExecuteList<GarmentTest_Detail_Shrinkage>(CommandType.Text, sqlcmd, objParameter);

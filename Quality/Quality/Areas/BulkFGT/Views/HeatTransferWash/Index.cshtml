@@ -348,6 +348,25 @@
                                             <label for="Main_Teamwear" style="padding: 5px;">Teamwear</label>
                                         </div>
                                     </td>
+                                    <td><h5>Inspetor</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Main.Inspector, "", new { @class = "OnlyEdit", @style = "width: 35%" })
+                                        @Html.TextBoxFor(o => o.Main.InspectorName, "", new { @readonly = "readonly", @style = "width: 55%" })
+                                        <input id="btnInspectorSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin: 0; border: 0; width: 10%;" value="..." />
+
+                                    </td>
+                                    <td><h5>Approver</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Main.Approver, "", new { @class = "OnlyEdit", @style = "width: 35%" })
+                                        @Html.TextBoxFor(o => o.Main.ApproverName, "", new { @readonly = "readonly", @style = "width: 55%" })
+                                        <input id="btnApproverSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin: 0; border: 0; width: 10%;" value="..." />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><h5>Test Date</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(o => o.Main.TestDate, "{0:yyyy/MM/dd}", new { @class = "date-picker OnlyEdit" })
+                                    </td>
                                     <td><h5>Received Date</h5></td>
                                     <td>
                                         @Html.TextBoxFor(o => o.Main.ReceivedDate, "{0:yyyy/MM/dd}", new { @class = "date-picker OnlyEdit" })
@@ -438,7 +457,7 @@
                                             @Html.TextBoxFor(o => Model.Details[i].SecondTime, new { @class = "OnlyEdit", @type = "number" })
                                         </td>
                                         <td>
-                                            @Html.TextBoxFor(o => Model.Details[i].Pressure, new { @class = "OnlyEdit", @type = "number", @onchange = "value=PressureCheck(value)" })
+                                            @Html.TextBoxFor(o => Model.Details[i].Pressure, new { @class = "OnlyEdit", @type = "number", @onchange = "value=PressureCheck(value)" , @step = "0.01" })
                                         </td>
                                         <td>
                                             @Html.TextBoxFor(o => Model.Details[i].PeelOff, new { @class = "OnlyEdit", @maxlength = "5" })
@@ -546,6 +565,73 @@
 
             $('#btnQuery').on('click', function () {
                 return false;
+            });
+
+            $('#btnInspectorSelectItem').on('click', function () {
+                var para = "?Ttile=Inspector&TargetID=Main_Inspector";
+                window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})' + para,'Inspector',config='toolbar=no,status=no,location=no,width=1000,height=650');
+            });
+            $('#btnApproverSelectItem').on('click', function () {
+                var para = "?Ttile=Approver&TargetID=Main_Approver";
+                window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})' + para,'Approver',config='toolbar=no,status=no,location=no,width=1000,height=650');
+            });
+
+            $('#Main_Inspector').blur(function () {
+                if ($(this).val() == '') {
+                    $("#Main_Inspector").val('');
+                    $("#Main_InspectorName").val('');
+                    return;
+                }
+                $.ajax({
+                    url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ID: $(this).val(), ReturnType: "JSON" }),
+                    async: true,
+                    success: function (data) {
+                        if (data.length == 0) {
+                            $("#Main_Inspector").val('');
+                            $("#Main_InspectorName").val('');
+                            msg.WithError('Inspector Not Found');
+                        }
+                        else
+                        {
+                            $("#Main_InspectorName").val(data[0].Name);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+
+            $('#Main_Approver').blur(function () {
+                if ($(this).val() == '') {
+                    $("#Main_Approver").val('');
+                    $("#Main_ApproverName").val('');
+                    return;
+                }
+                $.ajax({
+                    url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                    type: 'POST',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({ID: $(this).val(), ReturnType: "JSON" }),
+                    async: true,
+                    success: function (data) {
+                        if (data.length == 0) {
+                            $("#Main_Approver").val('');
+                            $("#Main_ApproverName").val('');
+                            msg.WithError('Approver Not Found');
+                        }
+                        else
+                        {
+                            $("#Main_ApproverName").val(data[0].Name);
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log(xhr.responseText);
+                    }
+                });
             });
         }
         else {
@@ -1366,7 +1452,6 @@
             $('#MRDesc').val(data.Name + " Ext. " + data.ExtNo);
             $('#MRMail').val(data.EMail);
         }
-
     }
 
     function GetColor(pickList, targetID) {

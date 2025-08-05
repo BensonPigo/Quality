@@ -278,7 +278,6 @@ namespace Quality.Areas.BulkFGT.Controllers
             List<SelectListItem> TestResultPassList = new SetListItem().ItemListBinding(TestResultPass);
             List<SelectListItem> TestResultmmList = new SetListItem().ItemListBinding(TestResultmm);
             List<SelectListItem> MetalContentList = new SetListItem().ItemListBinding(MetalContents);
-            
 
             GarmentTest_Detail_Result Detail_Result = _GarmentTest_Service.Get_All_Detail(ID, No);
             if (TempData["ModelGarmentTest"] != null)
@@ -354,6 +353,41 @@ namespace Quality.Areas.BulkFGT.Controllers
             }
 
             GarmentTest_ViewModel Detail_Result = _GarmentTest_Service.Import_FGPT_Item(newItem);
+
+            return Json(new { Detail_Result.SaveResult, Detail_Result.ErrMsg });
+        }
+
+        [HttpPost]
+        [SessionAuthorizeAttribute]
+        public ActionResult ImportNewShrinkageItem(GarmentTest_Detail_Shrinkage newItem)
+        {
+            switch (newItem.Location)
+            {
+                case "Top":
+                    newItem.Location = "T";
+                    break;
+                case "Bottom":
+                    newItem.Location = "B";
+                    break;
+                case "Outer":
+                    newItem.Location = "O";
+                    break;
+                case "Inner":
+                    newItem.Location = "I";
+                    break;
+                case "Top+Bottom":
+                    newItem.Location = "S";
+                    break;
+                default:
+                    break;
+            }
+            // 避免超出欄位限制
+            if (newItem.Type.Length > 150)
+            {
+                return Json(new { SaveResult = false, ErrMsg = "Type is too long." });
+            }
+
+            GarmentTest_ViewModel Detail_Result = _GarmentTest_Service.Import_Shrinkage_Item(newItem);
 
             return Json(new { Detail_Result.SaveResult, Detail_Result.ErrMsg });
         }

@@ -476,80 +476,7 @@
                                     <tbody>
                                         @for (int i = 0; i <= Model.Shrinkages.Count - 1; i++)
                                         {
-                                            string KeyToFgwt = string.Empty;
-                                            if (Model.Shrinkages[i].Type.Contains("lining"))
-                                            {
-                                                KeyToFgwt = string.Empty;
-                                            }
-                                            else if (Model.Shrinkages[i].Type == "a) Front rise" || Model.Shrinkages[i].Type == "a) length of necktape")
-                                            {
-                                                KeyToFgwt = "a)";
-                                            }
-                                            else if (string.Equals(Model.Shrinkages[i].Type, "a1) Length of center front", StringComparison.OrdinalIgnoreCase))
-                                            {
-                                                KeyToFgwt = "skirt a1)";
-                                            }
-                                            else if (string.Equals(Model.Shrinkages[i].Type, "a2) Length of center back", StringComparison.OrdinalIgnoreCase))
-                                            {
-                                                KeyToFgwt = "skirt a2)";
-                                            }
-                                            else if (Model.Shrinkages[i].Type == "b) Length of side seam" || Model.Shrinkages[i].Type == "b) Back rise" || Model.Shrinkages[i].Type == "b) length armhole to bottom hem")
-                                            {
-                                                KeyToFgwt = "b)";
-                                            }
-                                            else if (string.Equals(Model.Shrinkages[i].Type, "b) Waistband width", StringComparison.OrdinalIgnoreCase))
-                                            {
-                                                KeyToFgwt = "skirt b)";
-                                            }
-                                            else if (string.Equals(Model.Shrinkages[i].Type, "c) Length of front", StringComparison.OrdinalIgnoreCase) || Model.Shrinkages[i].Type == "c) Inseam or crotch width (if inseam less then 3)")
-                                            {
-                                                KeyToFgwt = "c)";
-                                            }
-                                            else if (string.Equals(Model.Shrinkages[i].Type, "c1) Hip width", StringComparison.OrdinalIgnoreCase))
-                                            {
-                                                KeyToFgwt = "skirt c1)";
-                                            }
-                                            else if (string.Equals(Model.Shrinkages[i].Type, "c2) Hem opening", StringComparison.OrdinalIgnoreCase))
-                                            {
-                                                KeyToFgwt = "skirt c2)";
-                                            }
-                                            else if (Model.Shrinkages[i].Type == "d) Length of center-back" || Model.Shrinkages[i].Type == "d) Waistband width" || Model.Shrinkages[i].Type == "d) length of centre back")
-                                            {
-                                                KeyToFgwt = "d)";
-                                            }
-                                            else if (Model.Shrinkages[i].Type == "e) Length of underarm seam" || Model.Shrinkages[i].Type == "e) length of underarm" || Model.Shrinkages[i].Type == "e) Leg opening")
-                                            {
-                                                KeyToFgwt = "e)";
-                                            }
-                                            else if (Model.Shrinkages[i].Type == "f) Across back width" || Model.Shrinkages[i].Type == "f) Knee width" || Model.Shrinkages[i].Type == "f) width across back")
-                                            {
-                                                KeyToFgwt = "f)";
-                                            }
-                                            else if (Model.Shrinkages[i].Type == "g1) Chest width" || Model.Shrinkages[i].Type == "g1) width below centre back neck (average) (Chest Width)")
-                                            {
-                                                KeyToFgwt = "g1)";
-                                            }
-                                            else if (Model.Shrinkages[i].Type == "g2) Hem opening" || Model.Shrinkages[i].Type == "g2) width below centre back neck (average) (Hem Opening)")
-                                            {
-                                                KeyToFgwt = "g2)";
-                                            }
-                                            else if (Model.Shrinkages[i].Type == "g) Thigh width")
-                                            {
-                                                KeyToFgwt = "g)";
-                                            }
-                                            else if (Model.Shrinkages[i].Type == "h) Sleeve width" || Model.Shrinkages[i].Type == "h) width of sleeve")
-                                            {
-                                                KeyToFgwt = "h)";
-                                            }
-                                            else if (Model.Shrinkages[i].Type == "i) Sleeve opening or cuff width" || Model.Shrinkages[i].Type == "i) width of sleeve bottom/cuff bottom")
-                                            {
-                                                KeyToFgwt = "i)";
-                                            }
-
-                                            if (!string.IsNullOrEmpty(KeyToFgwt))
-                                            {
-                                                KeyToFgwt = (KeyToFgwt + Model.Shrinkages[i].Location).ToUpper();
-                                            }
+                                            string KeyToFgwt = Model.Shrinkages[i].KeyToFgwt;
                                             <tr>
                                                 <td>
                                                     @Html.TextBoxFor(o => Model.Shrinkages[i].Location, new { @readonly = "readonly", @style = "width:6vw;" })
@@ -612,6 +539,20 @@
                                                 }
                                             </tr>
                                         }
+                                        <tr>
+                                            @if (bol710)
+                                            {
+                                                <td colspan="10">
+                                                    <button id="btnNewShrinkageItem" class="btn btn-blue" style="text-shadow:none;">New Item</button>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td colspan="8">
+                                                    <button id="btnNewShrinkageItem" class="btn btn-blue" style="text-shadow:none;">New Item</button>
+                                                </td>
+                                            }
+                                        </tr>
                                     </tbody>
                                 </table>
                             }
@@ -805,76 +746,7 @@
                                         bool bolWash = Model.FGWT[i].EditType.Equals("1");
                                         bool bolScale = Model.FGWT[i].EditType.Equals("2");
 
-                                        string KeyToShrinkage = string.Empty;
-                                        if (Model.FGWT[i].SystemType.Contains("lining"))
-                                        {
-                                            KeyToShrinkage = string.Empty;
-                                        }
-                                        else if (Model.FGWT[i].SystemType == "a) length of front leg" || Model.FGWT[i].SystemType == "a) length of necktape")
-                                        {
-                                            KeyToShrinkage = "a)";
-                                        }
-                                        else if (string.Equals(Model.FGWT[i].SystemType, "skirt a1) length from waist to bottom hem (center front)", StringComparison.OrdinalIgnoreCase))
-                                        {
-                                            KeyToShrinkage = "skirt a1)";
-                                        }
-                                        else if (string.Equals(Model.FGWT[i].SystemType, "skirt a2) length from waist to bottom hem (center back)", StringComparison.OrdinalIgnoreCase))
-                                        {
-                                            KeyToShrinkage = "skirt a2)";
-                                        }
-                                        else if (Model.FGWT[i].SystemType == "b) length armhole to bottom hem" || Model.FGWT[i].SystemType == "b) length of back leg")
-                                        {
-                                            KeyToShrinkage = "b)";
-                                        }
-                                        else if (string.Equals(Model.FGWT[i].SystemType, "skirt b) width at waistband", StringComparison.OrdinalIgnoreCase))
-                                        {
-                                            KeyToShrinkage = "skirt b)";
-                                        }
-                                        else if (Model.FGWT[i].SystemType == "c) length of inside leg" || Model.FGWT[i].SystemType == "c) length of front")
-                                        {
-                                            KeyToShrinkage = "c)";
-                                        }
-                                        else if (string.Equals(Model.FGWT[i].SystemType, "skirt c1) width below top/bottom edge of waistband (average) (Hip width)", StringComparison.OrdinalIgnoreCase))
-                                        {
-                                            KeyToShrinkage = "skirt c1)";
-                                        }
-                                        else if (string.Equals(Model.FGWT[i].SystemType, "skirt c2) width below top/bottom edge of waistband (average) (Hem opening)", StringComparison.OrdinalIgnoreCase))
-                                        {
-                                            KeyToShrinkage = "skirt c2)";
-                                        }
-                                        else if (Model.FGWT[i].SystemType == "d) length of centre back" || Model.FGWT[i].SystemType == "d) width at waist")
-                                        {
-                                            KeyToShrinkage = "d)";
-                                        }
-                                        else if (Model.FGWT[i].SystemType == "e) length of underarm" || Model.FGWT[i].SystemType == "e) width at bottom of leg")
-                                        {
-                                            KeyToShrinkage = "e)";
-                                        }
-                                        else if (Model.FGWT[i].SystemType == "f) width across back" || Model.FGWT[i].SystemType == "f) width of leg halfway")
-                                        {
-                                            KeyToShrinkage = "f)";
-                                        }
-                                        else if (Model.FGWT[i].SystemType == "g1) width below centre back neck (average) (Chest Width)")
-                                        {
-                                            KeyToShrinkage = "g1)";
-                                        }
-                                        else if (Model.FGWT[i].SystemType == "g2) width below centre back neck (average) (Hem Opening)")
-                                        {
-                                            KeyToShrinkage = "g2)";
-                                        }
-                                        else if (Model.FGWT[i].SystemType == "g) width of top of leg")
-                                        {
-                                            KeyToShrinkage = "g)";
-                                        }
-                                        else if (Model.FGWT[i].SystemType == "h) width of sleeve")
-                                        {
-                                            KeyToShrinkage = "h)";
-                                        }
-                                        else if (Model.FGWT[i].SystemType == "i) width of sleeve botttom/cuff bottom")
-                                        {
-                                            KeyToShrinkage = "i)";
-                                        }
-                                        KeyToShrinkage = (KeyToShrinkage + Location).ToUpper();
+                                        string KeyToShrinkage = Model.FGWT[i].KeyToShrinkage;
                                         <tr>
                                             <td>
                                                 @Location
@@ -1082,6 +954,36 @@
     </div>
 </div>
 
+<!--Shrinkage New Item 彈跳視窗-->
+<div class="detail-dialog add-New-Shrinkage" title="New Shrinkage Item">
+    <div class="detail-dialog-content dialog-content-w-icon" style="height:25vh">
+        <form class="page-display-form nr-form" style="width:50%;padding:0;">
+            <div class="form-item" style="height: 100%;padding-top:8vh;">
+                <table style="border: 1px solid gray;font-size: 1vw;width: 100%;height: 10vh;text-align: center;background-color: transparent;color: white;">
+                    <tr>
+                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Location</label>
+                        </td>
+                        <td style="border: 1px solid gray;font-size: 2vh;vertical-align: middle;">
+                            @Html.DropDownList("NewShrinkageLocation", Model.Location_Source, new {@style= "width:14vw;" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:10vw;border: 1px solid gray;height: 5vh;font-size: 2vh;background-color:#696868;vertical-align: middle;">
+                            <label>Type</label>
+                        </td>
+                        <td style=" border: 1px solid gray;font-size: 2vh;vertical-align: middle;" >
+                            <input tpye="text" id="NewShrinkageType" maxlength="150" value="" style="width: 14vw; " />
+                        </td>
+                    </tr>
+                </table>
+                <br />
+            </div>
+        </form>
+    </div>
+</div>
+
+
 <!--Detail彈跳視窗-->
 <div class="detail-dialog to-edit-detail" title="New Item">
     <div class="detail-dialog-content dialog-content-w-icon" style="height:35vh">
@@ -1163,6 +1065,15 @@
 
             if (EditMode == false) {
                 AddFgptItem();
+            }
+
+        });
+
+        $("#btnNewShrinkageItem").click(function () {
+            event.preventDefault();
+
+            if (EditMode == false) {
+                AddShrinkageItem();
             }
 
         });
@@ -1287,6 +1198,72 @@
         });
         $(".to-edit-detail").dialog("open");
         $(".to-edit-detail").on("dialogclose", function (event, ui) {
+            EditMode = false;
+
+            //對話窗關閉，Table的內容要清除
+            $("#moduleTable tbody").remove();
+        });
+    }
+
+    function AddShrinkageItem() {
+        $(".add-New-Shrinkage").dialog({
+            width: "30%",
+            dialogClass: "add-contact-box",
+            buttons: {
+                "1": {
+                    text: 'Import',
+                    click: function (btn, obj) {
+
+                        if (EditMode == false) {
+                            var ID = '@Model.Detail.ID';
+                            var No = '@Model.Detail.No';
+                            var Location = $("#NewShrinkageLocation").val();
+                            var Type = $("#NewShrinkageType").val();
+
+                            $.ajax({
+                                url: "@Url.Action("ImportNewShrinkageItem", "GarmentTest", new { Area = "BulkFGT" })",
+                                type: 'POST',
+                                contentType: "application/json; charset=utf-8",
+                                data: JSON.stringify({
+                                    ID: ID,
+                                    No: No,
+                                    Location: Location,
+                                    Type: Type,
+
+                                }),
+                                async: false,
+                                success: function (data) {
+                                    if (data.SaveResult) {
+                                        msg.WithSuccesCheck("Success", function () {
+                                            location.reload();
+                                        });
+                                    }
+                                    else {
+                                        msg.WithError(data.ErrMsg);
+                                    }
+                                },
+                                error: function (xhr, ajaxOptions, thrownError) {
+                                    console.log(xhr.responseText);
+                                }
+                            });
+
+                        }
+
+                    },
+                    "class": "site-btn btn-red btn-lg",
+                    "ID": "dialogEdit"
+                },
+                "2": {
+                    text: 'Exit',
+                    click: function () {
+                        $(this).dialog("close");
+                    }
+                    , "class": "site-btn btn-gy btn-lg"
+                },
+            },
+        });
+        $(".add-New-Shrinkage").dialog("open");
+        $(".add-New-Shrinkage").on("dialogclose", function (event, ui) {
             EditMode = false;
 
             //對話窗關閉，Table的內容要清除

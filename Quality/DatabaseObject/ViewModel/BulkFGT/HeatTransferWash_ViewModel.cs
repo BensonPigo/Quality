@@ -89,6 +89,13 @@ namespace DatabaseObject.ViewModel.BulkFGT
 
         public byte[] Signature { get; set; }
         public string MailSubject { get; set; }
+        public string Approver { get; set; }
+        public string ApproverName { get; set; }
+        public byte[] ApproverSignature { get; set; }
+        public string Inspector { get; set; }
+        public string InspectorName { get; set; }
+        public byte[] InspectorSignature { get; set; }
+        public DateTime? TestDate { get; set; }
         public string AddNameText { get; set; }
         public string AddName { get; set; }
         public DateTime? AddDate { get; set; }
