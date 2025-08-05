@@ -3,6 +3,7 @@ using ADOHelper.Template.MSSQL;
 using ADOHelper.Utility;
 using DatabaseObject.ProductionDB;
 using DatabaseObject.RequestModel;
+using DatabaseObject.ResultModel;
 using DatabaseObject.ViewModel.BulkFGT;
 using ProductionDataAccessLayer.Interface;
 using System;
@@ -78,6 +79,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             //SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
             SbSql.Append("        ,AddDate" + Environment.NewLine);
             SbSql.Append("        ,AddName" + Environment.NewLine);
+            SbSql.Append("        ,Approver" + Environment.NewLine);
             SbSql.Append(")" + Environment.NewLine);
             SbSql.Append("VALUES" + Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
@@ -97,7 +99,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             SbSql.Append("        ,@Technician"); objParameter.Add("@Technician", DbType.String, HttpUtility.HtmlDecode(Item.Technician) ?? string.Empty);
             SbSql.Append("        ,@MR"); objParameter.Add("@MR", DbType.String, HttpUtility.HtmlDecode(Item.MR) ?? string.Empty);
             SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, HttpUtility.HtmlDecode(Item.Type) ?? string.Empty);
-
+            SbSql.Append("        ,@Approver"); objParameter.Add("@Approver", DbType.String, HttpUtility.HtmlDecode(Item.Approver) ?? string.Empty);
             // 2022/01/10 PMSFile上線，因此去掉Image寫入Production DB的部分
             //SbSql.Append("        ,@TestBeforePicture"); 
             //SbSql.Append("        ,@TestAfterPicture");
@@ -160,6 +162,7 @@ UPDATE [MockupCrocking] SET
     ,Result=@Result
     ,Technician=@Technician
     ,MR=@MR
+    ,Approver=@Approver
 
 WHERE ReportNo = @ReportNo
 
@@ -194,6 +197,7 @@ end
             objParameter.Add("@Technician", DbType.String, HttpUtility.HtmlDecode(Item.Technician) ?? string.Empty);
             objParameter.Add("@MR", DbType.String, HttpUtility.HtmlDecode(Item.MR) ?? string.Empty);
             objParameter.Add("@Type", DbType.String, HttpUtility.HtmlDecode(Item.Type) ?? string.Empty);
+            objParameter.Add("@Approver", DbType.String, HttpUtility.HtmlDecode(Item.MockupCrocking_Approver) ?? string.Empty);
             if (Item.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Item.TestBeforePicture); }
             else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
             if (Item.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Item.TestAfterPicture); }
@@ -461,6 +465,8 @@ SELECT {top1}
         ,EditName
         ,Signature = (select t.Signature from Technician t WITH(NOLOCK) where t.ID = Technician)
 		,LastEditName = iif(EditName <> '', Concat (EditName, '-', EditName.Name, ' ', Format(EditDate,'yyyy/MM/dd HH:mm:ss')), Concat (AddName, '-', AddName.Name, ' ', Format(AddDate,'yyyy/MM/dd HH:mm:ss')))
+        ,[MockupCrocking_Approver] = m.Approver
+        ,[MockupCrocking_ApproverName] = (select Name from pass1 WITH(NOLOCK) where ID = m.Approver)
 FROM [MockupCrocking] m WITH(NOLOCK)
 outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo, EMail from pass1 WITH(NOLOCK) where id = m.MR) MR_ne

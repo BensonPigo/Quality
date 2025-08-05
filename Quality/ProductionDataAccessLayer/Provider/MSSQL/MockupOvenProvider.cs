@@ -91,6 +91,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             // SbSql.Append("        ,TestBeforePicture" + Environment.NewLine);
             // SbSql.Append("        ,TestAfterPicture" + Environment.NewLine);
             SbSql.Append("        ,Type" + Environment.NewLine);
+            SbSql.Append("        ,Approver" + Environment.NewLine);
             SbSql.Append(")" + Environment.NewLine);
             SbSql.Append("VALUES" + Environment.NewLine);
             SbSql.Append("(" + Environment.NewLine);
@@ -133,6 +134,7 @@ namespace ProductionDataAccessLayer.Provider.MSSQL
             else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
 
             SbSql.Append("        ,@Type"); objParameter.Add("@Type", DbType.String, HttpUtility.HtmlDecode(Item.Type) ?? string.Empty);
+            SbSql.Append("        ,@Approver"); objParameter.Add("@Approver", DbType.String, HttpUtility.HtmlDecode(Item.Approver) ?? string.Empty);
             SbSql.Append(")" + Environment.NewLine);
 
 
@@ -186,6 +188,7 @@ SET
     ,HT2ndPressnoreverse=@HT2ndPressnoreverse
     ,HT2ndPressreversed=@HT2ndPressreversed
     ,HTCoolingTime=@HTCoolingTime
+    ,Approver = @Approver
 WHERE ReportNo = @ReportNo
 
 
@@ -231,13 +234,12 @@ end
             objParameter.Add("@HT2ndPressnoreverse", DbType.Int32, Item.HT2ndPressnoreverse);
             objParameter.Add("@HT2ndPressreversed", DbType.Int32, Item.HT2ndPressreversed);
             objParameter.Add("@HTCoolingTime", DbType.Int32, Item.HTCoolingTime);
-
             if (Item.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Item.TestBeforePicture); }
             else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
             if (Item.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Item.TestAfterPicture); }
             else { objParameter.Add("@TestAfterPicture", System.Data.SqlTypes.SqlBinary.Null); }
             objParameter.Add("@Type", DbType.String, HttpUtility.HtmlDecode(Item.Type) ?? string.Empty);
-
+            objParameter.Add("@Approver", DbType.String, HttpUtility.HtmlDecode(Item.MockupOvenTest_Approver) ?? string.Empty);
             objParameter.Add("@ReportNo", DbType.String, HttpUtility.HtmlDecode(Item.ReportNo));
 
             //_MockupOvenDetailProvider = new MockupOvenDetailProvider(Common.ProductionDataAccessLayer);
@@ -479,6 +481,8 @@ SELECT {top1}
         ,EditDate
         ,EditName
         ,Signature = (select t.Signature from Technician t where t.ID = Technician)
+        ,[MockupOvenTest_Approver] = m.Approver
+        ,[MockupOvenTest_ApproverName] = (select t.Name from pass1 t where t.ID = m.Approver)
 FROM MockupOven m WITH(NOLOCK)
 outer apply (select Name, ExtNo from pass1 p WITH(NOLOCK) inner join Technician t WITH(NOLOCK) on t.ID = p.ID where t.id = m.Technician) Technician_ne
 outer apply (select Name, ExtNo, EMail from pass1 WITH(NOLOCK) where id = m.MR) MR_ne

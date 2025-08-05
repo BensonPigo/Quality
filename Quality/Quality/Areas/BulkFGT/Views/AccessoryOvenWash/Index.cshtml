@@ -681,6 +681,7 @@
                     async: false,
                     success: function (data) {
                         IsEditModeChange();
+                        $('#ReqOrderID').removeAttr('disabled');
                         $('#btnQuery').click();
                         //if (data.SaveResult) {
                         //    msg.WithSuccess("Success");

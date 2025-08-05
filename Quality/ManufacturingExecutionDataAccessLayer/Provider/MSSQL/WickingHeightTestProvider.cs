@@ -80,6 +80,8 @@ where o.Category ='B'  --只抓大貨單
 select a.*
         ,d.TestWarpPicture
         ,d.TestWeftPicture
+,[ApproverName] = (select Name from [MainServer].Production.dbo.pass1 where id = a.Approver)
+,[PreparerName] = (select Name from [MainServer].Production.dbo.pass1 where id = a.Preparer)
 from WickingHeightTest a
 left join SciPMSFile_WickingHeightTest d WITH(NOLOCK) on a.ReportNo = d.ReportNo
 where 1=1
@@ -270,6 +272,9 @@ VALUES
                 { "@FabricColor", DbType.String, Req.Main.FabricColor ?? "" } ,
                 { "@FabricDescription", DbType.String, Req.Main.FabricDescription ?? "" } ,
                 { "@EditName", DbType.String, UserID ?? "" } ,
+                { "@ReportDate", DbType.Date, Req.Main.ReportDate} ,
+                { "@Approver", DbType.String, Req.Main.Approver ?? "" } ,
+                { "@Preparer", DbType.String, Req.Main.Preparer ?? "" } ,
             };
 
             if (Req.Main.TestWarpPicture != null)
@@ -303,6 +308,9 @@ UPDATE WickingHeightTest
       ,FabricRefNo = @FabricRefNo
       ,FabricColor = @FabricColor
       ,FabricDescription = @FabricDescription
+      ,ReportDate = @ReportDate
+      ,Approver = @Approver
+      ,Preparer = @Preparer
 WHERE ReportNo = @ReportNo
 ;
 if exists(select 1 from PMSFile.dbo.WickingHeightTest WHERE ReportNo = @ReportNo)
@@ -536,7 +544,6 @@ AND Ukey = @Ukey
 UPDATE WickingHeightTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = @Status
-    , ReportDate = GETDATE()
 WHERE ReportNo = @ReportNo
 ";
             }
@@ -546,7 +553,6 @@ WHERE ReportNo = @ReportNo
 UPDATE WickingHeightTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New'
-    , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ";
             }

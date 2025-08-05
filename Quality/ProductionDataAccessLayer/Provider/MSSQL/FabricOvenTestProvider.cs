@@ -145,7 +145,7 @@ from system WITH(NOLOCK)
 
 
 select	[POID] = p.ID,
-		[StyleID] = p.StyleID,
+		[StyleID] = p.StyleID,  
 		[BrandID] = p.BrandID,
 		[SeasonID] = p.SeasonId,
 		[CutInline] = o.CutInline,
@@ -210,7 +210,7 @@ where o.POID = @POID
             listPar.Add("@editName", userID);
             listPar.Add("@TestBeforePicture", fabricOvenTest_Detail_Result.Main.TestBeforePicture);
             listPar.Add("@TestAfterPicture", fabricOvenTest_Detail_Result.Main.TestAfterPicture);
-
+            listPar.Add("@ReportDate", fabricOvenTest_Detail_Result.Main.ReportDate);
             string sqlUpdateOven = @"
 SET XACT_ABORT ON
 -----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
@@ -220,7 +220,8 @@ update  Oven set    InspDate = @InspDate,
                     Approver = @Approver,
                     Remark = @Remark,
                     EditName = @editName,
-                    EditDate = getdate()
+                    EditDate = getdate(),
+                    ReportDate = @ReportDate
 where   POID = @POID and TestNo = @TestNo
 ;
 IF EXISTS(
@@ -418,7 +419,7 @@ update  Oven_Detail set Roll           =  @Roll         ,
             listPar.Add("@addName", userID);
             listPar.Add("@TestBeforePicture", fabricOvenTest_Detail_Result.Main.TestBeforePicture);
             listPar.Add("@TestAfterPicture", fabricOvenTest_Detail_Result.Main.TestAfterPicture);
-
+            listPar.Add("@ReportDate", fabricOvenTest_Detail_Result.Main.ReportDate);
             string NewReportNo = GetID(fabricOvenTest_Detail_Result.MDivisionID + "FO", "Oven", DateTime.Today, 2, "ReportNo");
             listPar.Add("@ReportNo", NewReportNo);
 
@@ -433,9 +434,9 @@ from    Oven  WITH(NOLOCK)
 where POID = @POID
 
 ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
-insert into Oven(POID, TestNo, InspDate, Article, Status, Inspector, Approver, Remark, addName, addDate ,ReportNo)
+insert into Oven(POID, TestNo, InspDate, Article, Status, Inspector, Approver, Remark, addName, addDate ,ReportNo,ReportDate)
         OUTPUT INSERTED.ID, INSERTED.TestNo into @OvenID
-        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Approver, @Remark, @addName, getdate() ,@ReportNo)
+        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Approver, @Remark, @addName, getdate() ,@ReportNo,@ReportDate)
 
 select  [OvenID] = ID, TestNo
 from @OvenID
@@ -554,7 +555,6 @@ exec UpdateInspPercent 'LabOven',@POID
 
             string sqlUpdateOvenMain = @"
 update Oven set Status = 'Confirmed',
-                ReportDate = getdate(),
                 Result = @result
 where POID = @poID and TestNo = @TestNo
 
@@ -571,7 +571,6 @@ exec UpdateInspPercent 'LabOven',@poID
 
             string sqlUpdateOvenMain = @"
 update Oven set Status = 'New',
-                ReportDate = null,
                 Result = ''
 where POID = @poID and TestNo = @TestNo
 

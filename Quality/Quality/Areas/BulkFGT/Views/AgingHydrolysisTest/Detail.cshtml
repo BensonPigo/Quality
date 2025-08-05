@@ -49,7 +49,7 @@
     }
 
     .buttonAreaItem {
-        width: 10%;
+        width: 9%;
         padding: 2px;
     }
 
@@ -85,7 +85,7 @@
         }
 
     .DetailDataAreaItem1 {
-        width: 15.2%;
+        width: 14%;
         padding: 2px;
         height: 3rem;
         border: 1px solid;
@@ -299,6 +299,12 @@
                                 Send to MR
                             </h4>
                         </div>
+                        <div class="buttonAreaItem">
+                            <h4 id="NewItem">
+                                <img src="~/Image/Icon/New.png" width="30" />
+                                New Item
+                            </h4>
+                        </div>
                     </div>
 
                     @*表頭*@
@@ -419,12 +425,12 @@
                         <div class="MainDataAreaItem even">
                             @Html.TextBoxFor(o => o.MainDetailData.BuyerDeliveryText, new { @class = "even" })
                         </div>
-                        <div class="MainDataAreaItem even">
+                        <div class="MainDataAreaItem odd">
                             <h4 class="colTitle">Report Date</h4>
                         </div>
 
-                        <div class="MainDataAreaItem even">
-                            @Html.TextBoxFor(o => o.MainDetailData.ReportDateText, new { @class = "even" })
+                        <div class="MainDataAreaItem odd">
+                            @Html.TextBoxFor(o => o.MainDetailData.ReportDate, "{0:yyyy/MM/dd}", new { @class = "date-picker CanEdit" })
                         </div>
 
                         <!-- #endregion -->
@@ -552,20 +558,24 @@
                             <div class="DetailDataAreaItem1 colHead">
                                 Las Update
                             </div>
-
+                            <div class="DetailDataAreaItem2 colHead">
+                                Action
+                            </div>
                             <!--#endregion-->
 
                             @if (Model.MockupList != null)
                             {
                                 for (int i = 0; i < Model.MockupList.Count; i++)
                                 {
-                                    <div class="DetailDataAreaItem2 colBody ">
+                                    string rowName = $@"Row{i}";
+                                    <div class="DetailDataAreaItem2 colBody @rowName">
+                                        <input type="hidden" class="detailRowIdx" name="name" value="@i" />
                                         @Html.HiddenFor(o => Model.MockupList[i].Ukey)
                                         @Html.HiddenFor(o => Model.MockupList[i].ReportNo, new { @class = "" })
                                         @Html.TextBoxFor(o => Model.MockupList[i].SpecimenName, new { @class = "" })
 
                                     </div>
-                                    <div class="DetailDataAreaItem1 colBody">
+                                    <div class="DetailDataAreaItem1 colBody @rowName">
                                         <select id="MockupList[@i]_ChangeScale" name="MockupList[@i].ChangeScale" class="CanEdit" onchange="ScaleChange(@i, this, 'ChangeResult', '@Model.MockupList[i].ChangeScaleStandard')">
                                             @foreach (var item in Model.Scale_Source)
                                             {
@@ -574,14 +584,14 @@
                                             }
                                         </select>
                                     </div>
-                                    <div class="DetailDataAreaItem1 colBody">
+                                    <div class="DetailDataAreaItem1 colBody @rowName">
                                         @*<select id="MockupList[@i]_ChangeResult" name="MockupList[@i].ChangeResult" class="CanEdit">
-                                                @foreach (var item in Model.Result_Source)
-                                                {
-                                                    string selected = item.Value.Equals(Model.MockupList[i].ChangeResult) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>*@
+                        @foreach (var item in Model.Result_Source)
+                        {
+                            string selected = item.Value.Equals(Model.MockupList[i].ChangeResult) ? "selected" : "";
+                            <option value="@item.Value" @selected>@item.Text</option>
+                        }
+                    </select>*@
 
                                         @Html.HiddenFor(o => Model.MockupList[i].ChangeScaleStandard)
                                         @if (Model.MockupList[i].ChangeResult == "Pass")
@@ -593,7 +603,7 @@
                                             @Html.TextBoxFor(o => Model.MockupList[i].ChangeResult, new { @style = "color:red", @onchange = "ResultChange(this)" })
                                         }
                                     </div>
-                                    <div class="DetailDataAreaItem1 colBody">
+                                    <div class="DetailDataAreaItem1 colBody @rowName">
                                         <select id="MockupList[@i]_StainingScale" name="MockupList[@i].StainingScale" class="CanEdit" onchange="ScaleChange(@i,this,'StainingResult','@Model.MockupList[i].StainingScaleStandard')">
                                             @foreach (var item in Model.Scale_Source)
                                             {
@@ -602,14 +612,14 @@
                                             }
                                         </select>
                                     </div>
-                                    <div class="DetailDataAreaItem1 colBody">
+                                    <div class="DetailDataAreaItem1 colBody @rowName">
                                         @*<select id="MockupList[@i]_StainingResult" name="MockupList[@i].StainingResult" class="CanEdit">
-                                                @foreach (var item in Model.Result_Source)
-                                                {
-                                                    string selected = item.Value.Equals(Model.MockupList[i].StainingResult) ? "selected" : "";
-                                                    <option value="@item.Value" @selected>@item.Text</option>
-                                                }
-                                            </select>*@
+                        @foreach (var item in Model.Result_Source)
+                        {
+                            string selected = item.Value.Equals(Model.MockupList[i].StainingResult) ? "selected" : "";
+                            <option value="@item.Value" @selected>@item.Text</option>
+                        }
+                    </select>*@
 
                                         @Html.HiddenFor(o => Model.MockupList[i].StainingScaleStandard)
 
@@ -622,11 +632,14 @@
                                             @Html.TextBoxFor(o => Model.MockupList[i].StainingResult, new { @style = "color:red", @onchange = "ResultChange(this)" })
                                         }
                                     </div>
-                                    <div class="DetailDataAreaItem1 colBody">
+                                    <div class="DetailDataAreaItem1 colBody @rowName">
                                         @Html.TextBoxFor(o => Model.MockupList[i].Comment, new { @class = "CanEdit" })
                                     </div>
-                                    <div class="DetailDataAreaItem1 colBody">
+                                    <div class="DetailDataAreaItem1 colBody @rowName">
                                         @Model.MockupList[i].LastUpadate
+                                    </div>
+                                    <div class="DetailDataAreaItem2 colBody @rowName"  >
+                                         <img class="detailDelete"  src="~/Image/Icon/Delete.png" width="30" style="display: none;"/>
                                     </div>
                                 }
                             }
@@ -660,8 +673,8 @@
         // 控制項重置
         ClickEventBind();
         BlurEventBind();
+        const deleteButtons = document.querySelectorAll(".detailDelete");
         $('.toolBarItem').removeClass("canUse");
-
         if ($('#MainDetailData_ReportNo').val() == '' ) {
 
             // 可編輯欄位關閉
@@ -669,14 +682,17 @@
             $('.MainDataArea input ,.MainDataArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
         }
         else {
+            deleteButtons.forEach(button => {
+                button.style.display = EditMode ? "inline-block" : "none";
+            });
             //根據模式區分
             if (EditMode) {
                 // 可編輯欄位開啟
                 $('.CanEdit').removeAttr("disabled").removeAttr("readonly");
-
                 // 編輯模式可用功能開啟
-                $('#Save, #Undo ,#Picture ,#Exit').addClass("canUse");
+                $('#Save, #Undo ,#Picture ,#Exit,#NewItem').addClass("canUse");
                 $("#MainDetailData_ReceivedDate").addClass("date-picker");
+                $("#MainDetailData_ReportDate").addClass("date-picker");
                 $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
                 $('#btnDetailApproverSelectItem').on('click', function () {
                     window.open('@Url.Action("Pass1List","PublicWindow",new{Area=""})','Approver',config='toolbar=no,status=no,location=no,width=1000,height=650');
@@ -711,7 +727,7 @@
                 $('.MainDataArea select ,.DetailDataAreaItem1 select ,.DetailDataAreaItem2 select').attr("disabled", true);
                 $('.MainDataArea input ,.MainDataArea textarea ,.DetailDataAreaItem1 input ,.DetailDataAreaItem2 input').attr("readonly", "readonly");
                 $("#MainDetailData_ReceivedDate").removeClass("date-picker");
-
+                $("#MainDetailData_ReportDate").removeClass("date-picker");
                 // 非編輯模式
 
                 // 未Confirmed可用功能開啟
@@ -856,7 +872,9 @@
             });
         });
 
-
+        $('#NewItem').off('click').on('click', function () {
+            AddDetailRow();
+        });
 
         $('#SendtoMR').on('click', function () {
 
@@ -926,13 +944,110 @@
                 });
             });
         }
+        $('.detailDelete').on('click', function () {
+
+            debugger;
+            if (EditMode == false) {
+                return;
+            }
+            var t = $(this);
+            debugger;
+            msg.WithConfirm('Do you want to delete the data ?',
+                function () {
+                    let targetRow = t.parent('div').attr('class').split(' ').filter(o => o.includes('Row'))[0];
+
+                    $(`.${targetRow}`).remove();
+                    reBuildIndex();
+                    msg.WithSuccess("Delete Success");
+                }, null);
+        });
     }
 
+    function reBuildIndex() {
+        // 取剩下的Row
+        var rows = $('.detailRowIdx');
+        var newIndex = 0;
+
+        // 處理每個 Row
+        rows.each(function () {
+            var oldIndex = $(this).val();
+
+            // 更新 Name 和 ID 屬性
+            ['input', 'select', 'textarea', 'img'].forEach(function (tag) {
+                $(`${tag}[name^="MockupList[${oldIndex}]"], ${tag}[id^="MockupList_${oldIndex}_"]`).each(function () {
+                    var oldAttr = $(this).attr('name') || $(this).attr('id');
+                    var newAttr = oldAttr.replace(oldIndex, newIndex);
+
+                    // 更新 name 或 id
+                    if ($(this).attr('name')) {
+                        $(this).attr('name', newAttr);
+                    }
+                    if ($(this).attr('id')) {
+                        $(this).attr('id', newAttr);
+                    }
+
+                    // 如果是 ScaleChange，需要同步更新 onchange
+                    if (newAttr.endsWith('Scale')) {
+                        $(this).attr('onchange', `ScaleChange(${newIndex}, this, 'Result', '4-5')`);
+                    }
+
+                    // 如果是 SpecimenName，需要同步更新 value
+                    if (newAttr.endsWith('SpecimenName') && $(this).attr('readonly')) {
+                        $(this).val(`Specimen${newIndex + 1}`);
+                    }
+                });
+            });
+
+            // 更新 Row 索引
+            $(this).attr('value', newIndex);
+
+            // 更新 Row class (例如 .Row0, .Row1)
+            var rowDiv = $(this).closest('.DetailDataArea').find(`.colBody.Row${oldIndex}`);
+            rowDiv.each(function () {
+                $(this).removeClass(`Row${oldIndex}`).addClass(`Row${newIndex}`);
+            });
+
+            newIndex++;
+        });
+    }
+
+
+
+
+    function AddDetailRow()
+    {
+         if (EditMode == false) {
+             return;
+         }
+         var lastNO;
+
+         if ($('.detailRowIdx').length > 0) {
+             lastNO = parseInt($('.detailRowIdx:last').val()) + 1;// 因為length會比index多1，所以不用+1了 parseInt($('#DetailTable > tbody > tr:last-child').attr('idx')) + 1;
+         }
+         else {
+             lastNO = 0;
+             $(".colBody").remove();
+         }
+
+         $.ajax({
+             url: "@Url.Action("AddDetailRow", new { Area = "BulkFGT" })",
+             type: 'POST',
+             contentType: "application/json; charset=utf-8",
+             data: JSON.stringify({ lastNO: lastNO}),
+             async: false,
+             success: function (html)
+             {
+                 $(".DetailDataArea").append(html);
+                 ClickEventBind();
+             },
+             error: function (xhr, ajaxOptions, thrownError) {
+                 console.log(xhr.responseText);
+             }
+         });
+     }
     function BlurEventBind() {
 
         $('input ,select').unbind('blur').unbind('change');
-
-
     }
     function FailMail() {
         var para = "?Title=" + $('.page-header span').html() + "&FactoryID=@ViewBag.FactoryID&Type=BulkFGT";

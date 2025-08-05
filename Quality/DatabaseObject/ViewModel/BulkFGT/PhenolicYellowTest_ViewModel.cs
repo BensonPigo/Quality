@@ -120,6 +120,10 @@ namespace DatabaseObject.ViewModel.BulkFGT
         }
 
         public string EditType { get; set; }
+        public string Approver { get; set; }
+        public string ApproverName { get; set; }
+        public string Preparer { get; set; }
+        public string PreparerName { get; set; }
     }
 
     public class PhenolicYellowTest_Detail : CompareBase

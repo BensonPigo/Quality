@@ -142,5 +142,9 @@ namespace DatabaseObject.ViewModel.BulkFGT
         public string Gender { get; set; }
         public byte[] Signature { get; set; }
         public string MailSubject { get; set; }
+        public string PullingTestApprover { get; set; }
+        public string PullingTestApproverName { get; set; }
+        public DateTime? ReceiveDate { get; set; }
+        public DateTime? ReportDate { get; set; }
     }
 }

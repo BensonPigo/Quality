@@ -342,7 +342,7 @@
                                     <td>
                                         @Html.TextBoxFor(o => o.ReceivedDate, "{0:yyyy/MM/dd}", new { @class = "date-picker OnlyEdit" })
                                     </td>
-                                    <td><h5>Released Date</h5></td>
+                                    <td><h5>Report Date</h5></td>
                                     <td>
                                         @Html.TextBoxFor(o => o.ReleasedDate, "{0:yyyy/MM/dd}", new { @class = "date-picker OnlyEdit" })
                                     </td>
@@ -359,7 +359,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><h5>Technician</h5></td>
+                                    <td><h5>Prepare By</h5></td>
                                     <td>
                                         @{
                                             string nameValue = string.Empty;
@@ -403,12 +403,12 @@
                                     <td><h5>Testing Method</h5></td>
                                     <td>
                                         <div class="input-group">
-                                            @Html.CheckBoxFor(o => o.OtherMethod, new { @class = "bigSize OnlyEdit", @onchange = "changeOtherMethod()", @style= "flex-grow: 0;" })
+                                            @Html.CheckBoxFor(o => o.OtherMethod, new { @class = "bigSize OnlyEdit", @onchange = "changeOtherMethod()", @style = "flex-grow: 0;" })
                                             <label for="OtherMethod" style="padding: 5px;">Other Method</label>
                                         </div>
                                     </td>
                                     <td colspan="4">
-                                        @Html.TextBoxFor(o => o.TestingMethod, new { @class= "OnlyEdit" })
+                                        @Html.TextBoxFor(o => o.TestingMethod, new { @class = "OnlyEdit" })
                                         <select id="MethodID" name="MethodID" style="width:70%;" class="OnlyEdit">
                                             @foreach (var item in (List<SelectListItem>)Model.TestingMethod_Source)
                                             {
@@ -418,7 +418,15 @@
                                         </select>
                                     </td>
                                 </tr>
+                                <tr>
+                                    <td><h5>Approved By</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(modelItem => Model.MockupWash_Approver, new { @style = "width:30%", @class = "inputApprover", @disabled = "disabled" })
+                                        @Html.TextBoxFor(modelItem => Model.MockupWash_ApproverName, new { @style = "width:55%", @disabled = "disabled" })
+                                        <input id="btnApproverSelectItem" type="button" class="OnlyEdit site-btn btn-blue btnApproverSelectItem" style="margin:0;border:0;" value="..." />
 
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td colspan="6"><h5>Manufacturer Test Condition (For Heat Transfer)</h5></td>
                                 </tr>
@@ -596,7 +604,7 @@
 
             $("#Edit, #Delete, #SendMail, #PDF").removeClass("IsEditMode");
             $('#Save, #Undo, #New, #Picture').addClass("IsEditMode");
-            $('.DetailTable input,.DetailTable select:not(.NotEdit)').removeAttr("disabled");
+            $('.DetailTable input,.DetailTable select:not(.NotEdit),.inputApprover').removeAttr("disabled");
 
             if (EditType == "New") {
                 $(".DataTable input:not(#ReportNo,#LastEditName), .DataTable select").removeAttr("disabled");
@@ -634,7 +642,7 @@
             }
 
             $(".DataTable input, .DataTable select").attr("disabled", "disabled");
-            $('.DetailTable input,.DetailTable select').attr("disabled");
+            $('.DetailTable input,.DetailTable select,.inputApprover').attr("disabled");
             $(".DetailTable img").addClass('display-None');
 
 
@@ -1177,6 +1185,45 @@
     }
 
     function DetailButtonBind() {
+        $('.btnApproverSelectItem').unbind('click').on('click', function () {
+            var targetID ='MockupWash_Approver';
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+
+        $('.inputApprover').unbind('blur').on('blur', function ()
+        {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#MockupWash_Approver").val('');
+                $("#MockupWash_ApproverName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#MockupWash_Approver").val('');
+                        $("#MockupWash_ApproverName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#MockupWash_Approver").val(data[0].ID);
+                        $("#MockupWash_ApproverName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
         $('#btnDetailBrandSelectItem').on('click', function () {
             var para = "?TargetID=BrandID";
             window.open('@Url.Action("BrandList","PublicWindow",new{Area=""})' + para, 'BrandID', config = 'toolbar=no,status=no,location=no,width=400,height=650');
@@ -1308,10 +1355,17 @@
         $('#TechnicianDesc').val(data.Name + " Ext. " + data.ExtNo);
     }
 
-    function GetPass1(data) {
-        $('#MR').val(data.ID);
-        $('#MRDesc').val(data.Name + " Ext. " + data.ExtNo);
-        $('#MRMail').val(data.EMail);
+    function GetPass1(data, targetID) {
+        if (targetID.includes('MockupWash_Approver')) {
+            $(`#${targetID}`).val(data.ID);
+            $(`#${targetID}Name`).val(data.Name);
+        }
+        else {
+            $('#MR').val(data.ID);
+            $('#MRDesc').val(data.Name + " Ext. " + data.ExtNo);
+            $('#MRMail').val(data.EMail);
+        }
+
     }
 
     function GetColor(pickList, targetID) {

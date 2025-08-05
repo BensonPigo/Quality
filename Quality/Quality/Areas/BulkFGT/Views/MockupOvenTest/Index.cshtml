@@ -402,6 +402,15 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td><h5>Approved By</h5></td>
+                                    <td>
+                                        @Html.TextBoxFor(modelItem => Model.MockupOvenTest_Approver, new { @style = "width:30%", @class = "inputApprover", @disabled = "disabled" })
+                                        @Html.TextBoxFor(modelItem => Model.MockupOvenTest_ApproverName, new { @style = "width:55%", @disabled = "disabled" })
+                                        <input id="btnApproverSelectItem" type="button" class="OnlyEdit site-btn btn-blue btnApproverSelectItem" style="margin:0;border:0;" value="..." />
+
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td colspan="6"><h5 style="font-weight: 900;">Testing Method</h5></td>
                                 </tr>
                                 <tr>
@@ -638,7 +647,7 @@
 
             $("#Edit, #Delete, #SendMail, #PDF").removeClass("IsEditMode");
             $('#Save, #Undo, #New, #Picture').addClass("IsEditMode");
-            $('.DetailTable input,.DetailTable select:not(.NotEdit)').removeAttr("disabled");
+            $('.DetailTable input,.DetailTable select:not(.NotEdit),.inputApprover').removeAttr("disabled");
 
             if (EditType == "New") {
                 $(".DataTable input:not(#ReportNo,#LastEditName), .DataTable select").removeAttr("disabled");
@@ -676,7 +685,7 @@
             }
 
             $(".DataTable input, .DataTable select").attr("disabled", "disabled");
-            $('.DetailTable input,.DetailTable select').attr("disabled");
+            $('.DetailTable input,.DetailTable select,.inputApprover').attr("disabled");
             $(".DetailTable img").addClass('display-None');
 
 
@@ -1221,7 +1230,48 @@
         });
     }
 
-    function DetailButtonBind() {
+    function DetailButtonBind()
+    {
+        $('.btnApproverSelectItem').unbind('click').on('click', function ()
+        {
+            var targetID ='MockupOvenTest_Approver';
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+
+        $('.inputApprover').unbind('blur').on('blur', function ()
+        {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#MockupOvenTest_Approver").val('');
+                $("#MockupOvenTest_ApproverName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#MockupOvenTest_Approver").val('');
+                        $("#MockupOvenTest_ApproverName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#MockupOvenTest_Approver").val(data[0].ID);
+                        $("#MockupOvenTest_ApproverName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
         $('#btnDetailBrandSelectItem').on('click', function () {
             var para = "?TargetID=BrandID";
             window.open('@Url.Action("BrandList","PublicWindow",new{Area=""})' + para, 'BrandID', config = 'toolbar=no,status=no,location=no,width=400,height=650');
@@ -1353,10 +1403,20 @@
         $('#TechnicianDesc').val(data.Name + " Ext. " + data.ExtNo);
     }
 
-    function GetPass1(data) {
-        $('#MR').val(data.ID);
-        $('#MRDesc').val(data.Name + " Ext. " + data.ExtNo);
-        $('#MRMail').val(data.EMail);
+    function GetPass1(data, targetID) {
+        debugger;
+        if(targetID.includes('MockupOvenTest_Approver'))
+        {
+            $(`#${targetID}`).val(data.ID);
+            $(`#${targetID}Name`).val(data.Name);
+        }
+        else
+        {
+            $('#MR').val(data.ID);
+            $('#MRDesc').val(data.Name + " Ext. " + data.ExtNo);
+            $('#MRMail').val(data.EMail);
+        }
+
     }
 
     function GetColor(pickList, targetID) {

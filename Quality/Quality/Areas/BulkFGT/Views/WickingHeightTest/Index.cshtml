@@ -419,124 +419,150 @@
                     </div>
 
                     @*表頭*@
-                    <div class="MainArea">
-                        <!-- #region Row 1-->
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Report No</h4>
+                <div class="MainArea">
+                    <!-- #region Row 1-->
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Report No</h4>
 
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.ReportNo, new { @class = "" })
-
-                            @Html.HiddenFor(o => o.Main.Status)
-                            @Html.HiddenFor(o => o.Main.TestWarpPicture)
-                            @Html.HiddenFor(o => o.Main.TestWeftPicture)
-                        </div>
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Subimt Date</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.HiddenFor(o => o.Main.SubmitDate)
-                            @Html.TextBoxFor(o => o.Main.SubmitDateText, new { @class = "CanEdit" })
-                        </div>
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Report Date</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.ReportDateText, new { @class = "" })
-                        </div>
-
-                        <!-- #endregion -->
-                        <!-- #region Row 2-->
-
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">SP#</h4>
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.OrderID, new { @class = "CanEdit even" })
-                        </div>
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Brand</h4>
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.BrandID, new { @class = "even" })
-                        </div>
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Season</h4>
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.SeasonID, new { @class = "even" })
-                        </div>
-                        <!-- #endregion -->
-                        <!-- #region Row 3-->
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Style</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.StyleID, new { @class = "" })
-                        </div>
-
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Article</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.Article, new { @class = "" })
-                        </div>
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Fabric Type</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.FabricType, new { @class = "" })
-                        </div>
-
-                        <!-- #endregion -->
-                        <!-- #region Row 4-->
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">SEQ</h4>
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.Seq, new { @class = "even" })
-                            @Html.HiddenFor(o => o.Main.Seq1, new { @class = "" })
-                            @Html.HiddenFor(o => o.Main.Seq2, new { @class = "" })
-                        </div>
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Fabric Ref#</h4>
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.FabricRefNo, new { @class = "even", @onclick = "OpenWindow('FabricRefNo')", @placeholder = "Click" })
-                        </div>
-                        <div class="MainAreaItem even">
-                            <h4 class="colTitle">Fabric Color</h4>
-                        </div>
-                        <div class="MainAreaItem even">
-                            @Html.TextBoxFor(o => o.Main.FabricColor, new { @class = "even" })
-                        </div>
-
-                        <!-- #endregion -->
-                        <!-- #region Row 5-->
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Fabric Description</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.FabricDescription, new { @class = "odd CanEdit" })
-                        </div>
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Result</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @{ string mainResultColor = Model.Main.Result == "Pass" ? "blue" : "red";}
-                            @Html.TextBoxFor(o => o.Main.Result, new { @class = "odd", @style = $@"color:{mainResultColor}" })
-                        </div>
-                        <div class="MainAreaItem odd">
-                            <h4 class="colTitle">Last Upadate</h4>
-                        </div>
-                        <div class="MainAreaItem odd">
-                            @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "odd", @style = "width:100%" })
-                        </div>
-                        <!-- #endregion -->
                     </div>
+
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.ReportNo, new { @class = "" })
+
+                        @Html.HiddenFor(o => o.Main.Status)
+                        @Html.HiddenFor(o => o.Main.TestWarpPicture)
+                        @Html.HiddenFor(o => o.Main.TestWeftPicture)
+                    </div>
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Receive Date</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.HiddenFor(o => o.Main.SubmitDate)
+                        @Html.TextBoxFor(o => o.Main.SubmitDateText, new { @class = "CanEdit" })
+                    </div>
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Report Date</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.ReportDate, "{0:yyyy/MM/dd}", new { @class = "date-picker CanEdit" })
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 2-->
+
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">SP#</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.OrderID, new { @class = "CanEdit even" })
+                    </div>
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Brand</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.BrandID, new { @class = "even" })
+                    </div>
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Season</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.SeasonID, new { @class = "even" })
+                    </div>
+                    <!-- #endregion -->
+                    <!-- #region Row 3-->
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Style</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.StyleID, new { @class = "" })
+                    </div>
+
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Article</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.Article, new { @class = "" })
+                    </div>
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Fabric Type</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.FabricType, new { @class = "" })
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 4-->
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">SEQ</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.Seq, new { @class = "even" })
+                        @Html.HiddenFor(o => o.Main.Seq1, new { @class = "" })
+                        @Html.HiddenFor(o => o.Main.Seq2, new { @class = "" })
+                    </div>
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Fabric Ref#</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.FabricRefNo, new { @class = "even", @onclick = "OpenWindow('FabricRefNo')", @placeholder = "Click" })
+                    </div>
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Fabric Color</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(o => o.Main.FabricColor, new { @class = "even" })
+                    </div>
+
+                    <!-- #endregion -->
+                    <!-- #region Row 5-->
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Fabric Description</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.FabricDescription, new { @class = "odd CanEdit" })
+                    </div>
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Result</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @{ string mainResultColor = Model.Main.Result == "Pass" ? "blue" : "red";}
+                        @Html.TextBoxFor(o => o.Main.Result, new { @class = "odd", @style = $@"color:{mainResultColor}" })
+                    </div>
+                    <div class="MainAreaItem odd">
+                        <h4 class="colTitle">Last Upadate</h4>
+                    </div>
+                    <div class="MainAreaItem odd">
+                        @Html.TextBoxFor(o => o.Main.LastUpadate, new { @class = "odd", @style = "width:100%" })
+                    </div>
+                    <!-- #endregion -->
+                    <!-- #region Row 6-->
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Approver</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(modelItem => Model.Main.Approver, new { @style = "width:30%", @class = "inputApprover", @disabled = "disabled" })
+                        @Html.TextBoxFor(modelItem => Model.Main.ApproverName, new { @style = "width:55%", @disabled = "disabled" })
+                        <input id="btnApproverSelectItem" type="button" class="CanEdit site-btn btn-blue btnApproverSelectItem" style="margin:0;border:0;" value="..." />
+                    </div>
+                    <div class="MainAreaItem even">
+                        <h4 class="colTitle">Preparer</h4>
+                    </div>
+                    <div class="MainAreaItem even">
+                        @Html.TextBoxFor(modelItem => Model.Main.Preparer, new { @style = "width:30%", @class = "inputPreparer odd", @disabled = "disabled" })
+                        @Html.TextBoxFor(modelItem => Model.Main.PreparerName, new { @style = "width:55%", @disabled = "disabled", @class = "odd" })
+                        <input id="btnPreparerSelectItem" type="button" class="CanEdit site-btn btn-blue btnPreparerSelectItem" style="margin:0;border:0;" value="..." />
+
+                    </div>
+                    <div class="MainAreaItem even">
+                        
+                    </div>
+                    <div class="MainAreaItem even">
+                        
+                    </div>
+
+                    <!-- #endregion -->
+                </div>
 
                     <br />
                     <div class="bodyDiv">
@@ -679,14 +705,15 @@
                 $(".detailDelete").show();
                 $("#Main_SubmitDateText").addClass('date-picker');
                 $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
-
+                $('.inputApprover,.inputPreparer').removeAttr("disabled");
+                DetailButtonBind();
             }
             else {
                 // 可編輯欄位關閉
                 $('.MainArea select ,.myTable select').attr("disabled", true);
                 $('.MainArea input ,.MainArea textarea ,.myTable input').attr("readonly", "readonly");
                 $(".detailDelete").hide();
-
+                $(".inputApprover,.inputPreparer").attr("disabled", "disabled");
 
                 // 未Confirmed可用功能開啟
                 if ($("#Main_Status").val() == 'New') {
@@ -705,7 +732,89 @@
         // 移除不可用功能的事件
         $('.toolBarItem:not(.canUse)').unbind('click');
     }
+        function DetailButtonBind()
+    {
+        $('.inputPreparer').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
 
+            if ($(this).val() == "") {
+                $("#Main_Preparer").val('');
+                $("#Main_PreparerName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Main_Preparer").val('');
+                        $("#Main_PreparerName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#Main_Preparer").val(data[0].ID);
+                        $("#Main_PreparerName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnPreparerSelectItem').unbind('click').on('click', function () {
+            var targetID ='Main_Preparer';
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+        $('.inputApprover').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#Main_Approver").val('');
+                $("#Main_ApproverName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#Main_Approver").val('');
+                        $("#Main_ApproverName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#Main_Approver").val(data[0].ID);
+                        $("#Main_ApproverName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnApproverSelectItem').unbind('click').on('click', function () {
+            var targetID ='Main_Approver';
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+
+    }
+    function GetPass1(data, targetID)
+    {
+        $(`#${targetID}`).val(data.ID);
+        $(`#${targetID}Name`).val(data.Name);
+    }
     function QueryBind() {
 
         $('#btnQuery').on('click', function () {

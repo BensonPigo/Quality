@@ -385,14 +385,17 @@ INSERT INTO AgingHydrolysisTest_Detail
            ,MaterialType
            ,Status
            ,AddDate
-           ,AddName)
+           ,AddName
+           ,ReportDate
+)
 VALUES 
            (@AgingHydrolysisTestID
            ,@ReportNo
            ,@MaterialType
            ,'New'
-           ,GETDATE()
-           ,@AddName)
+            ,GETDATE()
+            ,@AddName
+            ,@ReportDate)
 ;
 
 if not exists(
@@ -494,7 +497,7 @@ DELETE FROM PMSFile.dbo.AgingHydrolysisTest_Image  where ReportNo = @ReportNo
                         listDetailPar.Add(new SqlParameter($"@ReportNo", newReportNo));
                         listDetailPar.Add(new SqlParameter($"@MaterialType", detailItem.MaterialType));
                         listDetailPar.Add(new SqlParameter($"@AddName", UserID));
-
+                        listDetailPar.Add(new SqlParameter($"@ReportDate", detailItem.ReportDate));
                         ExecuteNonQuery(CommandType.Text, insertDetail, listDetailPar);
 
                         break;
@@ -718,7 +721,7 @@ UPDATE AgingHydrolysisTest_Detail
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = @Status
     , Result = @Result
-    , ReportDate = GETDATE()
+    --, ReportDate = GETDATE()
 WHERE ReportNo = @ReportNo
 ";
             }
@@ -729,7 +732,7 @@ UPDATE AgingHydrolysisTest_Detail
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New'
     , Result = ''
-    , ReportDate = NULL
+    --, ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ";
             }

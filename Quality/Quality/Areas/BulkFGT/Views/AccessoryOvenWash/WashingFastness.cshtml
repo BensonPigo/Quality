@@ -328,6 +328,14 @@
                                             @Html.TextBoxFor(o => o.WashingFastnessRemark, new { @style = "width:100%;" })
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td><h5>Approver</h5></td>
+                                        <td>
+                                            @Html.TextBoxFor(modelItem => Model.WashingFastnessApprover, new { @style = "width:30%", @class = "inputApprover", @disabled = "disabled" })
+                                            @Html.TextBoxFor(modelItem => Model.WashingFastnessApproverName, new { @style = "width:55%", @disabled = "disabled" })
+                                            <input id="btnApproverSelectItem" type="button" class="site-btn btn-blue btnApproverSelectItem" style="margin:0;border:0;" value="..." />
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -377,7 +385,7 @@
                 $('#Encode,#Amend, #Excel, #PDF ,#SendMail').unbind('click');
                 $('#Save').addClass("IsEditMode");
                 $("#Save").removeAttr("disabled", "disabled");
-                $(".DataTable input[type='text'],.DataTable select").removeAttr("disabled", "disabled");
+                $(".DataTable input[type='text'],.DataTable select,.inputApprover ").removeAttr("disabled", "disabled");
 
                 DetailButtonBind();
             }
@@ -385,7 +393,7 @@
                 $('#Save').unbind('click').removeClass("IsEditMode");
                 $("#Save").attr("disabled", "disabled");
                 $("#Edit,#Encode,#Amend").removeAttr("disabled", "disabled");
-                $(".DataTable input[type='text'],.DataTable select").attr("disabled", "disabled");
+                $(".DataTable input[type='text'],.DataTable select,.inputApprover").attr("disabled", "disabled");
                 $('#Excel, #PDF ,#SendMail').addClass("IsEditMode");
 
                 if ('@Model.AIR_LaboratoryID' != '') {
@@ -589,6 +597,45 @@
     }
 
     function DetailButtonBind() {
+
+        $('.inputApprover').unbind('blur').on('blur', function () {
+            var targetID = $(this).closest('tr').attr('idx');
+
+            if ($(this).val() == "") {
+                $("#WashingFastnessApprover").val('');
+                $("#WashingFastnessApproverName").val('');
+                return;
+            }
+
+            $.ajax({
+                url: "@Url.Action("Pass1List", "PublicWindow",new { Area=""})",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ ID: $(this).val(), ReturnType: "JSON" }),
+                async: true,
+                success: function (data) {
+                    if (data.length == 0) {
+                        $("#WashingFastnessApprover").val('');
+                        $("#WashingFastnessApproverName").val('');
+                        msg.WithError('Approver Not Found');
+                    }
+                    else {
+                        $("#WashingFastnessApprover").val(data[0].ID);
+                        $("#WashingFastnessApproverName").val(data[0].Name);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+
+        $('.btnApproverSelectItem').unbind('click').on('click', function () {
+            var targetID ='WashingFastnessApprover';
+            var para = "?TargetID=" + targetID;
+            window.open('@Url.Action("Pass1List", "PublicWindow",new{Area=""})' + para, 'Roll', config = 'toolbar=no,status=no,location=no,width=950,height=650');
+        });
+
         $('.inputInspectorSelectItem').unbind('blur').on('blur', function () {
             $('#WashingFastnessInspectorName').val('');
             if ($('#WashingFastnessInspector').val() == "") {
@@ -625,9 +672,18 @@
     }
 
 
-    function GetPass1(data, targetID) {
-        $("#WashingFastnessInspector").val(data.ID);
-        $("#WashingFastnessInspectorName").val(data.Name);
+    function GetPass1(data, targetID)
+    {
+        if (targetID.includes('WashingFastnessApprover'))
+        {
+            $(`#${targetID}`).val(data.ID);
+            $(`#${targetID}Name`).val(data.Name);
+        }
+        else
+        {
+            $("#WashingFastnessInspector").val(data.ID);
+            $("#WashingFastnessInspectorName").val(data.Name);
+        }
     }
 
     function GetPicture(data) {

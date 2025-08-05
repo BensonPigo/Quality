@@ -88,35 +88,40 @@ WHERE 1=1
             SQLParameterCollection objParameter = new SQLParameterCollection();
 
             string SbSql = $@"
-select b.ReportNo
-      ,b.OrderID
-      ,b.BrandID
-      ,b.SeasonID
-      ,b.StyleID
-      ,b.Article
-      ,b.ReportDate
+            select 
+            b.ReportNo
+            ,b.OrderID
+            ,b.BrandID
+            ,b.SeasonID
+            ,b.StyleID
+            ,b.Article
+            ,b.ReportDate
 
-      ,b.Instrument
-      ,b.Fabrication
-	  ,Standard = CAST( ISNULL(eBrand.Standard, ISNULL(eDefault.Standard,0) ) as decimal(6,2))
-      ,b.Action
-      ,b.Result
-      ,b.Remark
-      ,b.Status
-      ,b.AddName
-      ,b.AddDate
-      ,b.EditName
-      ,b.EditDate
-      ,b.Line
-      ,MRHandleEmail = ISNULL(p.Email, p2.Email)
-from BulkMoistureTest b
-left join EndlineMoisture eDefault on  eDefault.Instrument=b.Instrument and b.Fabrication=eDefault.Fabrication and eDefault.BrandID=''
-left join EndlineMoisture eBrand on  eBrand.Instrument=b.Instrument and b.Fabrication=eBrand.Fabrication and b.BrandID = eBrand.BrandID
-inner join SciProduction_Orders o on b.OrderID = o.ID
-left join SciProduction_Pass1 p on o.MRHandle = p.ID
-left join Pass1 p2 on o.MRHandle = p2.ID
-where 1 = 1 
-";
+            ,b.Instrument
+            ,b.Fabrication
+	        ,Standard = CAST( ISNULL(eBrand.Standard, ISNULL(eDefault.Standard,0) ) as decimal(6,2))
+            ,b.Action
+            ,b.Result
+            ,b.Remark
+            ,b.Status
+            ,b.AddName
+            ,b.AddDate
+            ,b.EditName
+            ,b.EditDate
+            ,b.Line
+            ,MRHandleEmail = ISNULL(p.Email, p2.Email)
+            ,[Approver] = b.Approver
+            ,[ApproverName] = (Select Name from pass1 where id = b.Approver)
+            ,[Preparer] = b.Preparer
+            ,[PreparerName] = (Select Name from pass1 where id = b.Preparer)
+            from BulkMoistureTest b
+            left join EndlineMoisture eDefault on  eDefault.Instrument=b.Instrument and b.Fabrication=eDefault.Fabrication and eDefault.BrandID=''
+            left join EndlineMoisture eBrand on  eBrand.Instrument=b.Instrument and b.Fabrication=eBrand.Fabrication and b.BrandID = eBrand.BrandID
+            inner join SciProduction_Orders o on b.OrderID = o.ID
+            left join SciProduction_Pass1 p on o.MRHandle = p.ID
+            left join Pass1 p2 on o.MRHandle = p2.ID
+            where 1 = 1 
+            ";
             if (!string.IsNullOrEmpty(Req.ReportNo))
             {
                 SbSql += "and b.ReportNo=@ReportNo" + Environment.NewLine;
@@ -181,39 +186,50 @@ where b.ReportNo = @ReportNo
                 { "@Action", DbType.String, Req.Action ?? "" } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
                 { "@Line", DbType.String, Req.Line ?? "" } ,
+                { "@ReportDate", DbType.Date, Req.ReportDate } ,
+                { "@Approver", DbType.String, Req.Approver } ,
+                { "@Preparer", DbType.String, Req.Preparer } ,
             };
 
             SbSql.Append($@"
-INSERT INTO dbo.BulkMoistureTest
-           (ReportNo
-           ,OrderID
-           ,BrandID
-           ,SeasonID
-           ,StyleID
-           ,Status
-           ,Instrument
-           ,Fabrication
-           ,Remark
-           ,Action
-           ,Line
-           ,AddName
-           ,AddDate)
-VALUES
-           (@ReportNo
-           ,@OrderID
-           ,@BrandID
-           ,@SeasonID
-           ,@StyleID
-           ,'New'
-           ,@Instrument
-           ,@Fabrication
-           ,@Remark
-           ,@Action
-           ,@Line
-           ,@AddName
-           ,GETDATE()
-)
-");
+            INSERT INTO dbo.BulkMoistureTest
+            (
+                ReportNo
+               ,OrderID
+               ,BrandID
+               ,SeasonID
+               ,StyleID
+               ,Status
+               ,Instrument
+               ,Fabrication
+               ,Remark
+               ,Action
+               ,Line
+               ,AddName
+               ,AddDate
+               ,ReportDate
+               ,Approver
+               ,Preparer
+            )
+            VALUES
+            (
+                @ReportNo
+                ,@OrderID
+                ,@BrandID
+                ,@SeasonID
+                ,@StyleID
+                ,'New'
+                ,@Instrument
+                ,@Fabrication
+                ,@Remark
+                ,@Action
+                ,@Line
+                ,@AddName
+                ,GETDATE()
+                ,@ReportDate
+                ,@Approver
+                ,@Preparer
+            )");
 
             return ExecuteNonQuery(CommandType.Text, SbSql.ToString(), objParameter);
         }
@@ -279,19 +295,24 @@ VALUES      (@ReportNo
             objParameter.Add("@Remark", DbType.String, Req.Main.Remark ?? string.Empty);
             objParameter.Add("@Line", DbType.String, Req.Main.Line ?? string.Empty);
             objParameter.Add("@Editname", DbType.String, Req.Main.EditName ?? string.Empty);
-
+            objParameter.Add("@ReportDate", DbType.Date, Req.Main.ReportDate);
+            objParameter.Add("@Approver", DbType.String, Req.Main.Approver ?? string.Empty);
+            objParameter.Add("@Preparer", DbType.String, Req.Main.Preparer ?? string.Empty);
 
             string head = $@"
-Update BulkMoistureTest
-Set Instrument = @Instrument
-    ,Fabrication = @Fabrication
-    ,Action = @Action
-    ,Line = @Line
-    ,Remark = @Remark
-    ,EditDate =GETDATE()
-    ,Editname = @Editname
-where ReportNo = @ReportNo
-";
+            Update BulkMoistureTest
+            Set Instrument = @Instrument
+                ,Fabrication = @Fabrication
+                ,Action = @Action
+                ,Line = @Line
+                ,Remark = @Remark
+                ,EditDate =GETDATE()
+                ,Editname = @Editname
+                ,ReportDate = @ReportDate
+                ,Approver = @Approver
+                ,Preparer = @Preparer
+            where ReportNo = @ReportNo
+            ";
 
 
             return ExecuteNonQuery(CommandType.Text, head, objParameter);
@@ -320,20 +341,11 @@ where ReportNo = @ReportNo
             objParameter.Add("@ReportNo", DbType.String, Req.Main.ReportNo ?? string.Empty);
             objParameter.Add("@Status", DbType.String, Req.Main.Status ?? string.Empty);
 
-            if (Req.Main.Status.ToUpper() == "NEW")
-            {
-                objParameter.Add("@ReportDate", DbType.DateTime, DBNull.Value);
-            }
-            if (Req.Main.Status.ToLower() == "confirmed")
-            {
-                objParameter.Add("@ReportDate", DbType.DateTime, DateTime.Now);
-            }
 
             string head = $@"
 
 Update b
-Set  ReportDate = @ReportDate
-    ,Status = @Status
+Set  Status = @Status
     ,Result = IIF(@Status ='New' 
                         ,''
                         , IIF( (select COUNT(1) from BulkMoistureTest_Detail a where a.ReportNo=b.ReportNo and a.Result='Fail') > 0 , 'Fail' ,'Pass')

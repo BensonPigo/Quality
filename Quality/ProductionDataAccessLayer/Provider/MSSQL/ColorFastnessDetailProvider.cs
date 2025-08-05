@@ -66,6 +66,7 @@ select c.*
     ,o.BrandID
     ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) where pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo)
     ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_ColorFastness pmsFile WITH(NOLOCK) where pmsFile.ID = c.ID and pmsFile.POID = c.POID and pmsFile.TestNo = c.TestNo)
+,[ApproverName] = (select Name from [MainServer].Production.dbo.pass1 where id = c.Approver)
 from ColorFastness c WITH(NOLOCK)
 inner join Orders o WITH(NOLOCK) on c.POID = o.ID  
 left join pass1 p on c.Inspector = p.ID
@@ -288,6 +289,7 @@ where id = @ID
                 { "@Machine", sources.Main.Machine} ,
                 { "@Drying", sources.Main.Drying ?? ""} ,
                 { "@UserID", UserID } ,
+                { "@Approver", sources.Main.Approver } ,
             };
 
             if (sources.Main.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", sources.Main.TestBeforePicture); }
@@ -329,6 +331,7 @@ set	  [InspDate] = @InspDate
       ,[Detergent] = @Detergent
       ,[Machine] = @Machine
       ,[Drying] = @Drying
+      ,[Approver] = @Approver
       -----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
 where ID = @ID
 and POID = @POID 
@@ -361,8 +364,8 @@ exec UpdateInspPercent 'LabColorFastness', @POID
 SET XACT_ABORT ON
 
 ----2022/01/10 PMSFile上線，因此去掉Image寫入原本DB的部分
-insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,CycleTime,Detergent,Machine,Drying)
-values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDATE(),@Temperature,@Cycle,@CycleTime,@Detergent,@Machine,@Drying)
+insert into ColorFastness(ID,POID,TestNo,InspDate,Article,Status,Inspector,Remark,addName,addDate,Temperature,Cycle,CycleTime,Detergent,Machine,Drying,Approver)
+values(@ID ,@POID,@TestNo,GETDATE(),@Article,'New',@UserID,@Remark,@UserID,GETDATE(),@Temperature,@Cycle,@CycleTime,@Detergent,@Machine,@Drying,@Approver)
 
 insert into SciPMSFile_ColorFastness(ID,POID,TestNo,TestBeforePicture,TestAfterPicture)
 values(@ID,@POID,@TestNo,@TestBeforePicture,@TestAfterPicture)

@@ -15,6 +15,7 @@ namespace DatabaseObject.ResultModel
 
     public class WaterFastness_Main
     {
+        public string ID { get; set; }
         public string POID { get; set; }
         public string StyleID { get; set; }
         public string BrandID { get; set; }
@@ -70,6 +71,8 @@ namespace DatabaseObject.ResultModel
         public byte[] TestBeforePicture { get; set; }
         public byte[] TestAfterPicture { get; set; }
         public string MailSubject { get; set; }
+        public string WaterFastnessApprover { get; set; }
+        public string WaterFastnessApproverName { get; set; }
     }
 
     public class WaterFastness_Detail_Detail : CompareBase

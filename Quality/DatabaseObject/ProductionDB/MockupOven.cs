@@ -136,5 +136,11 @@ namespace DatabaseObject.ProductionDB
             }
         }
 
+        private string _Approver;
+        public string Approver 
+        {
+            get => _Approver;
+            set => _Approver = value;
+        }
     }
 }

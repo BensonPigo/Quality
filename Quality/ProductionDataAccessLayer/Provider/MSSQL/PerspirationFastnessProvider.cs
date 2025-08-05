@@ -88,6 +88,8 @@ select	[TestNo] = cast(o.TestNo as varchar),
         o.MetalContent
         ,TestBeforePicture = (select top 1 TestBeforePicture from SciPMSFile_PerspirationFastness oi WITH(NOLOCK) where  o.ID = oi.ID)
         ,TestAfterPicture = (select top 1 TestAfterPicture from SciPMSFile_PerspirationFastness oi WITH(NOLOCK) where o.ID = oi.ID)
+        ,[Approver] = o.Approver
+        ,[ApproverName] = (select Name from pass1 where id = o.Approver)
 from PerspirationFastness o with (nolock)
 inner join Orders od with (nolock) on od.ID = o.POID
 left join pass1 pass1Inspector WITH(NOLOCK) on o.Inspector = pass1Inspector.ID
@@ -241,7 +243,7 @@ where o.POID = @POID
             listPar.Add("@TestAfterPicture", PerspirationFastness_Detail_Result.Main.TestAfterPicture);
             listPar.Add("@Temperature", DbType.Int32, PerspirationFastness_Detail_Result.Main.Temperature);
             listPar.Add("@Time", DbType.Int32, PerspirationFastness_Detail_Result.Main.Time);
-
+            listPar.Add("@Approver", PerspirationFastness_Detail_Result.Main.Approver ?? "");
             string sqlUpdatePerspirationFastness = @"
 SET XACT_ABORT ON
 -----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
@@ -253,7 +255,8 @@ update  PerspirationFastness set    InspDate = @InspDate,
                     MetalContent = @MetalContent,
                     Remark = @Remark,
                     EditName = @editName,
-                    EditDate = getdate()
+                    EditDate = getdate(),
+                    Approver = @Approver
 where   POID = @POID and TestNo = @TestNo
 
 
@@ -637,7 +640,7 @@ update  PerspirationFastness_Detail set Roll           =  @Roll         ,
             listPar.Add("@MetalContent", PerspirationFastness_Detail_Result.Main.MetalContent);
             listPar.Add("@Temperature", DbType.Int32, PerspirationFastness_Detail_Result.Main.Temperature);
             listPar.Add("@Time", DbType.Int32, PerspirationFastness_Detail_Result.Main.Time);
-
+            listPar.Add("@Approver",PerspirationFastness_Detail_Result.Main.Approver);
             string NewReportNo = GetID(PerspirationFastness_Detail_Result.MDivisionID + "PF", "PerspirationFastness", DateTime.Today, 2, "ReportNo");
             listPar.Add("@ReportNo", NewReportNo);
 
@@ -653,9 +656,9 @@ from    PerspirationFastness  WITH(NOLOCK)
 where POID = @POID
 
 ----2022/01/10 PMSFile上線，因此去掉Image寫入DB的部分
-insert into PerspirationFastness(POID, TestNo, InspDate, Article, Status, Inspector, Temperature, MetalContent, Time , Remark, addName, addDate ,ReportNo)
+insert into PerspirationFastness(POID, TestNo, InspDate, Article, Status, Inspector, Temperature, MetalContent, Time , Remark, addName, addDate ,ReportNo,Approver)
         OUTPUT INSERTED.ID, INSERTED.TestNo into @PerspirationFastnessID
-        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Temperature, @MetalContent, @Time, @Remark, @addName, getdate() ,@ReportNo)
+        values(@POID, @TestNo, @InspDate, @Article, 'New', @Inspector, @Temperature, @MetalContent, @Time, @Remark, @addName, getdate() ,@ReportNo,@Approver)
 
 select  [PerspirationFastnessID] = ID, TestNo
 from @PerspirationFastnessID

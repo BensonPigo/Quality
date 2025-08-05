@@ -55,18 +55,19 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SQLParameterCollection paras = new SQLParameterCollection();
 
             string SbSql = $@"
+            select DISTINCT Article
+            from Production.dbo.Style_Article WITH(NOLOCK)
+            where 1=1
+            AND StyleUkey in (
+            select Ukey
+            from Production.dbo.Style WITH(NOLOCK)
+            where id= @StyleID and BrandID=@BrandID and SeasonID=@SeasonID)";
 
-select o.*, oa.Article
-from Orders o
-inner join Order_Article oa on oa.id = o.ID
-where o.Category ='B'  --只抓大貨單
-";
 
-            if (!string.IsNullOrEmpty(Req.OrderID))
-            {
-                SbSql += $@" and o.ID = @OrderID" + Environment.NewLine;
-                paras.Add("@OrderID", DbType.String, Req.OrderID);
-            }
+            paras.Add("@StyleID", DbType.String, Req.StyleID ?? "");
+            paras.Add("@BrandID", DbType.String, Req.BrandID ?? "");
+            paras.Add("@SeasonID", DbType.String, Req.SeasonID ?? "");
+
 
             var tmp = ExecuteList<DatabaseObject.ProductionDB.Orders>(CommandType.Text, SbSql, paras);
 
@@ -88,6 +89,8 @@ select a.*
 		,ApproverName = ISNULL(p1.Name,p2.Name)
         ,d.TestAfterPicture
         ,d.TestBeforePicture
+,[ApproverName] = (select Name from [MainServer].Production.dbo.pass1 where id = a.Approver)
+,[PreparerName] = (select Name from [MainServer].Production.dbo.pass1 where id = a.Preparer)
 from EvaporationRateTest a
 left join PMSFile.dbo.EvaporationRateTest d WITH(NOLOCK) on a.ReportNo = d.ReportNo
 left join ManufacturingExecution.dbo.Pass1 p1 on a.Approver = p1.ID
@@ -241,6 +244,8 @@ where 1=1
                 { "@BeforeAverageRate", DbType.Decimal, Req.Main.BeforeAverageRate } ,
                 { "@AfterAverageRate", DbType.Decimal, Req.Main.AfterAverageRate } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
+                { "@ReportDate", DbType.Date, Req.Main.ReportDate} ,
+                { "@Preparer", DbType.String, Req.Main.Preparer ?? ""} ,
             };
 
             if (Req.Main.TestBeforePicture != null)
@@ -281,7 +286,9 @@ INSERT INTO dbo.EvaporationRateTest
            ,AfterAverageRate
            ,Status
            ,AddDate
-           ,AddName)
+           ,AddName
+,ReportDate
+,Preparer)
 VALUES
            (@ReportNo
            ,(select top 1 FactoryID from SciProduction_Orders with(NOLOCK) where ID = @OrderID)
@@ -301,7 +308,9 @@ VALUES
            ,@AfterAverageRate
            ,'New'
            ,GETDATE()
-           ,@AddName)
+           ,@AddName
+           ,@Preparer
+,@ReportDate)
 ;
 
 IF EXISTS(
@@ -337,6 +346,9 @@ END
                 { "@AfterAverageRate", DbType.Decimal, Req.Main.AfterAverageRate } ,
                 { "@Remark", DbType.String, Req.Main.Remark ?? "" } ,
                 { "@EditName", DbType.String, UserID ?? "" } ,
+                { "@ReportDate", DbType.Date, Req.Main.ReportDate} ,
+                { "@Article", DbType.String, Req.Main.Article ?? ""} ,
+                { "@Preparer", DbType.String, Req.Main.Preparer ?? ""} ,
             };
 
             if (Req.Main.TestBeforePicture != null)
@@ -371,6 +383,9 @@ UPDATE EvaporationRateTest
       ,FabricDescription = @FabricDescription
       ,BeforeAverageRate = @BeforeAverageRate
       ,AfterAverageRate = @AfterAverageRate
+      ,ReportDate = @ReportDate
+      ,Preparer  = @Preparer
+,Article =@Article
 WHERE ReportNo = @ReportNo
 ;
 if exists(select 1 from PMSFile.dbo.EvaporationRateTest WHERE ReportNo = @ReportNo)
@@ -874,7 +889,6 @@ UPDATE EvaporationRateTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = @Status
     , Result = IIF(BeforeAverageRate >= 0.2 AND AfterAverageRate >= 0.2 , 'Pass' , 'Fail')
-    , ReportDate = GETDATE()
 WHERE ReportNo = @ReportNo
 ;
 ";
@@ -886,7 +900,6 @@ UPDATE EvaporationRateTest
 SET EditDate = GETDATE() , EditName = @EditName
     , Status = 'New'
     , Result = ''
-    , ReportDate = NULL
 WHERE ReportNo = @ReportNo
 ;
 ";

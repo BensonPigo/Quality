@@ -285,9 +285,8 @@
                                         <input id="btnDetailApproverSelectItem" type="button" class="OnlyEdit site-btn btn-blue" style="margin:0;border:0;" value="..." />
                                     </td>
                                     <td ><h5>Report Date</h5></td>
-
                                     <td >
-                                        @Html.TextBoxFor(o => Model.Main.ReportDate, "{0:yyyy/MM/dd}", new { @readonly = "readonly" })
+                                        @Html.TextBoxFor(o => Model.Main.ReportDate, "{0:yyyy/MM/dd}", new { @class = "date-picker" })
                                     </td>
 
                                 </tr>
@@ -839,7 +838,7 @@
         });
 
         $('#Encode').unbind('click').on('click', function () {
-
+            debugger;
             var detail = [];
             var ErrMsg = "";
             $('.DetailTable > tbody > tr').each(function (index, value) {
@@ -1126,7 +1125,7 @@
             success: function (data) {
                 $('.DetailTable > tbody').append(data);
                 DetailDetailButtonBind();
-                $('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
+                //$('.date-picker').datepicker({ changeYear: true, changeMonth: true, currentText: "Now" });
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.responseText);

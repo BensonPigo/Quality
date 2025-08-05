@@ -117,7 +117,8 @@ namespace Quality.Areas.BulkFGT.Controllers
 
             TempData["EditSaveEvaporationRateTestModel"] = model;
 
-            return RedirectToAction("Index");
+            return RedirectToAction("IndexGet", new { ReportNo = requestModel.Main.ReportNo, BrandID = requestModel.Main.BrandID, SeasonID = requestModel.Main.SeasonID, StyleID = requestModel.Main.StyleID, Article = requestModel.Main.Article });
+
         }
 
         [HttpPost]
@@ -137,34 +138,34 @@ namespace Quality.Areas.BulkFGT.Controllers
 
         [SessionAuthorizeAttribute]
         [HttpPost]
-        public ActionResult AddTimeRow(int TimeListIdx, string detailType, string specimenID, int lastTime, string parentTabID)
+        public ActionResult AddTimeRow(int TimeListModelIdx, int TimeListDomIdx, string detailType, string specimenID, int lastTime, string parentTabID)
         {
             MockupOven_ViewModel model = new MockupOven_ViewModel();
 
             string html = "";
             html += $@"
-<div class=""divTime10"">
-    <input class="""" id=""TimeList_{TimeListIdx}__Ukey"" name = ""TimeList[{TimeListIdx}].Ukey"" style = ""width: 100 % "" type = ""hidden"" value = ""0"" >
-    <input class="""" id=""TimeList_{TimeListIdx}__SpecimenUkey"" name = ""TimeList[{TimeListIdx}].SpecimenUkey"" style = ""width:100% "" type = ""hidden"" value = ""0"" >
-    <input class="""" id=""TimeList_{TimeListIdx}__SpecimenID"" name=""TimeList[{TimeListIdx}].SpecimenID"" style=""width:100%"" type=""hidden"" value=""{specimenID}"">
-    <input class="""" id=""TimeList_{TimeListIdx}__DetailType"" name=""TimeList[{TimeListIdx}].DetailType"" style=""width:100%"" type=""hidden"" value=""{detailType}"">
+<div class=""divTime10 TimeListRow"" DomTimeListIdx=""{TimeListDomIdx}"" >
+    <input class="""" id=""TimeList_{TimeListModelIdx}__Ukey"" name = ""TimeList[{TimeListModelIdx}].Ukey"" style = ""width: 100 % "" type = ""hidden"" value = ""0"" >
+    <input class="""" id=""TimeList_{TimeListModelIdx}__SpecimenUkey"" name = ""TimeList[{TimeListModelIdx}].SpecimenUkey"" style = ""width:100% "" type = ""hidden"" value = ""0"" >
+    <input class="""" id=""TimeList_{TimeListModelIdx}__SpecimenID"" name=""TimeList[{TimeListModelIdx}].SpecimenID"" style=""width:100%"" type=""hidden"" value=""{specimenID}"">
+    <input class="""" id=""TimeList_{TimeListModelIdx}__DetailType"" name=""TimeList[{TimeListModelIdx}].DetailType"" style=""width:100%"" type=""hidden"" value=""{detailType}"">
     
-    <input class="""" id=""TimeList_{TimeListIdx}__InitialTime"" name=""TimeList[{TimeListIdx}].InitialTime"" style=""width:100%"" type=""hidden"" value=""0"">
-    <input class="""" id=""TimeList_{TimeListIdx}__InitialTimeUkey"" name=""TimeList[{TimeListIdx}].InitialTimeUkey"" style=""width:100%"" type=""hidden"" value=""0"">
-    <input class="""" id=""TimeList_{TimeListIdx}__IsInitialMass"" name=""TimeList[{TimeListIdx}].IsInitialMass"" style=""width:100%"" type=""hidden"" value=""False"">
-    <input class=""Time"" id=""TimeList_{TimeListIdx}__Time"" name=""TimeList[{TimeListIdx}].Time"" detailtype=""{detailType}"" specimenid=""{specimenID}""  style=""width:100%"" type=""text"" value=""{lastTime}"" readonly>
+    <input class="""" id=""TimeList_{TimeListModelIdx}__InitialTime"" name=""TimeList[{TimeListModelIdx}].InitialTime"" style=""width:100%"" type=""hidden"" value=""0"">
+    <input class="""" id=""TimeList_{TimeListModelIdx}__InitialTimeUkey"" name=""TimeList[{TimeListModelIdx}].InitialTimeUkey"" style=""width:100%"" type=""hidden"" value=""0"">
+    <input class="""" id=""TimeList_{TimeListModelIdx}__IsInitialMass"" name=""TimeList[{TimeListModelIdx}].IsInitialMass"" style=""width:100%"" type=""hidden"" value=""False"">
+    <input class=""Time"" id=""TimeList_{TimeListModelIdx}__Time"" name=""TimeList[{TimeListModelIdx}].Time"" detailtype=""{detailType}"" specimenid=""{specimenID}""  style=""width:100%"" type=""text"" value=""{lastTime}"" readonly>
 </div>
-<div class=""divTime10"">        
-    <input detailtype=""{detailType}"" isinitialmass=""False"" specimenid=""{specimenID}"" time=""{lastTime}"" class=""CanEdit Mass"" id=""TimeList_{TimeListIdx}__Mass"" name=""TimeList[{TimeListIdx}].Mass"" onchange=""value=MassCheck(value);AutoUpdateTime(this)"" style=""width:100%"" type=""text"" value=""0"">
+<div class=""divTime10 TimeListRow"" DomTimeListIdx=""{TimeListDomIdx}"" >        
+    <input detailtype=""{detailType}"" isinitialmass=""False"" specimenid=""{specimenID}"" time=""{lastTime}"" class=""CanEdit Mass"" id=""TimeList_{TimeListModelIdx}__Mass"" name=""TimeList[{TimeListModelIdx}].Mass"" onchange=""value=MassCheck(value);AutoUpdateEvaporation(this)"" style=""width:100%"" type=""text"" value=""0"">
 </div>                                                                
-<div class=""divTime30"">
-    <input detailtype=""{detailType}"" parentTabID=""{parentTabID}"" TimeListIdx=""{TimeListIdx}"" initialtime=""0"" specimenid=""{specimenID}"" time=""{lastTime}"" class=""Evaporation"" id=""TimeList_{TimeListIdx}__Evaporation"" name=""TimeList[{TimeListIdx}].Evaporation"" style=""width:100%"" type=""text"" value=""0"">
+<div class=""divTime30 TimeListRow"" DomTimeListIdx=""{TimeListDomIdx}"" >
+    <input detailtype=""{detailType}"" parentTabID=""{parentTabID}"" initialtime=""0"" specimenid=""{specimenID}"" time=""{lastTime}"" class=""Evaporation"" id=""TimeList_{TimeListModelIdx}__Evaporation"" name=""TimeList[{TimeListModelIdx}].Evaporation"" style=""width:100%"" type=""text"" value=""0"" readonly>
 </div>
-<div class=""divTime40"">
-    <input class="""""" id = ""TimeList_{TimeListIdx}__LastUpadate"" name = ""TimeList[{TimeListIdx}].LastUpadate"" style = ""width: 100 % "" type = ""text"" value = """" >    
+<div class=""divTime40 TimeListRow"" DomTimeListIdx=""{TimeListDomIdx}"" >
+    <input class="""""" id = ""TimeList_{TimeListModelIdx}__LastUpadate"" name = ""TimeList[{TimeListModelIdx}].LastUpadate"" style = ""width: 100 % "" type = ""text"" value = """" >    
 </div>
-<div class=""divTime10"">
-    <input type=""hidden"" class=""detailTimeListIdx"" name=""name"" value=""{TimeListIdx}"" />
+<div class=""divTime10 TimeListRow"" DomTimeListIdx=""{TimeListDomIdx}"" >
+    <input type=""hidden"" class=""detailTimeListIdx"" name=""name"" value=""{TimeListModelIdx}"" />
 	<img class=""detailDelete"" src=""/Image/Icon/Delete.png"" width=""30"" style=""min-width:30px"" />
 </div>
 ";

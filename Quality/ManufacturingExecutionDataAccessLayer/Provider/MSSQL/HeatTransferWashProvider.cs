@@ -113,6 +113,8 @@ select h.ReportNo
       ,Signature = Technician.Signature
       ,ArtworkTypeID_FullName = SubProcessInfo.ID
       ,h.ReceivedDate
+      ,[Preparer] = h.Preparer
+      ,[PreparerName] = (select Name from pass1 where id = h.Preparer)
       ,h.Approver
       ,[ApproverName] = pass1Approver.Name
       ,ApproverSignature = ApproverSignature.Signature
@@ -245,6 +247,8 @@ order by EditDate desc
                 //{ "@Cycles", DbType.Int32, Req.Cycles } ,
                 //{ "@TemperatureUnit", DbType.Int32, Req.TemperatureUnit } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
+                { "@Approver", DbType.String, Req.Approver ?? "" } ,
+                { "@Preparer", DbType.String, Req.Preparer ?? "" } ,
             };
 
             if (Req.TestBeforePicture != null)
@@ -286,7 +290,10 @@ INSERT INTO HeatTransferWash
            ,Approver
            ,TestDate
            ,AddName
-           ,AddDate)
+           ,AddDate
+           ,Approver
+           ,Preparer
+)
 VALUES  (     
             @ReportNo
            ,@OrderID
@@ -305,7 +312,10 @@ VALUES  (
            ,@Approver
            ,@TestDate
            ,@AddName
-           ,GETDATE() )
+           ,GETDATE()
+           ,@Approver
+           ,@Preparer
+)
 
 INSERT INTO SciPMSFile_HeatTransferWash
            (ReportNo
@@ -385,6 +395,7 @@ VALUES      (@ReportNo
             objParameter.Add("@Remark", DbType.String, Req.Main.Remark ?? string.Empty);
             objParameter.Add("@ArtworkTypeID", DbType.String, Req.Main.ArtworkTypeID ?? string.Empty);
             objParameter.Add("@ReceivedDate", DbType.Date, Req.Main.ReceivedDate);
+            objParameter.Add("@ReportDate", DbType.Date, Req.Main.ReportDate);
             //objParameter.Add("@Temperature", DbType.Int32, Req.Main.Temperature);
             //objParameter.Add("@Time", DbType.Int32, Req.Main.Time);
             //objParameter.Add("@Pressure", DbType.Decimal, Req.Main.Pressure);
@@ -393,11 +404,11 @@ VALUES      (@ReportNo
             //objParameter.Add("@TemperatureUnit", DbType.Int32, Req.Main.TemperatureUnit);
             objParameter.Add("@Editname", DbType.String, Req.Main.EditName ?? string.Empty);
             objParameter.Add("@ReportNo", DbType.String, Req.Main.ReportNo ?? string.Empty);
+            objParameter.Add("@Preparer", DbType.String, Req.Main.Preparer ?? string.Empty);
             objParameter.Add("@Inspector", DbType.String, Req.Main.Inspector ?? string.Empty);
             objParameter.Add("@Approver", DbType.String, Req.Main.Approver ?? string.Empty);
             objParameter.Add("@TestDate", DbType.Date, Req.Main.TestDate);
-
-
+			
             if (Req.Main.TestBeforePicture != null) { objParameter.Add("@TestBeforePicture", Req.Main.TestBeforePicture); }
             else { objParameter.Add("@TestBeforePicture", System.Data.SqlTypes.SqlBinary.Null); }
             if (Req.Main.TestAfterPicture != null) { objParameter.Add("@TestAfterPicture", Req.Main.TestAfterPicture); }
@@ -415,6 +426,8 @@ Set Line = @Line
     ,EditDate = GETDATE()
     ,Editname = @Editname
     ,ReceivedDate = @ReceivedDate
+    ,ReportDate = @ReportDate
+    ,Preparer  =  @Preparer
     ,Inspector = @Inspector
     ,Approver = @Approver
     ,TestDate = @TestDate
@@ -469,20 +482,10 @@ where ReportNo = @ReportNo
             objParameter.Add("@ReportNo", DbType.String, Req.Main.ReportNo ?? string.Empty);
             objParameter.Add("@Status", DbType.String, Req.Main.Status ?? string.Empty);
 
-            if (Req.Main.Status.ToUpper() == "NEW")
-            {
-                objParameter.Add("@ReportDate", DbType.DateTime, DBNull.Value);
-            }
-            if (Req.Main.Status.ToLower() == "confirmed")
-            {
-                objParameter.Add("@ReportDate", DbType.DateTime, DateTime.Now);
-            }
-
             string head = $@"
 
 Update b
-Set  ReportDate = @ReportDate
-    ,Status = @Status
+Set  Status = @Status
     ,Result = IIF( (select COUNT(1) from HeatTransferWash_Detail a where a.ReportNo=b.ReportNo and a.Result='Fail') > 0 , 'Fail' ,'Pass')
     ,EditDate = GETDATE()
     ,Editname = @Editname
