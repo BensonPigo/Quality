@@ -247,7 +247,6 @@ order by EditDate desc
                 //{ "@Cycles", DbType.Int32, Req.Cycles } ,
                 //{ "@TemperatureUnit", DbType.Int32, Req.TemperatureUnit } ,
                 { "@AddName", DbType.String, UserID ?? "" } ,
-                { "@Approver", DbType.String, Req.Approver ?? "" } ,
                 { "@Preparer", DbType.String, Req.Preparer ?? "" } ,
             };
 
@@ -291,7 +290,6 @@ INSERT INTO HeatTransferWash
            ,TestDate
            ,AddName
            ,AddDate
-           ,Approver
            ,Preparer
 )
 VALUES  (     
@@ -313,7 +311,6 @@ VALUES  (
            ,@TestDate
            ,@AddName
            ,GETDATE()
-           ,@Approver
            ,@Preparer
 )
 

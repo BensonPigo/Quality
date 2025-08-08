@@ -187,8 +187,8 @@ where b.ReportNo = @ReportNo
                 { "@AddName", DbType.String, UserID ?? "" } ,
                 { "@Line", DbType.String, Req.Line ?? "" } ,
                 { "@ReportDate", DbType.Date, Req.ReportDate } ,
-                { "@Approver", DbType.String, Req.Approver } ,
-                { "@Preparer", DbType.String, Req.Preparer } ,
+                { "@Approver", DbType.String, Req.Approver ?? "" } ,
+                { "@Preparer", DbType.String, Req.Preparer  ?? ""} ,
             };
 
             SbSql.Append($@"

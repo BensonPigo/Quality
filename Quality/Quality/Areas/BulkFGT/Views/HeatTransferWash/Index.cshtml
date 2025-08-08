@@ -393,15 +393,12 @@
                                 <tr>
                                     <td><h5>Preparer</h5></td>
                                     <td>
-                                        @Html.TextBoxFor(modelItem => Model.Main.Approver, new { @style = "width:30%", @class = "inputApprover", @disabled = "disabled" })
-                                        @Html.TextBoxFor(modelItem => Model.Main.ApproverName, new { @style = "width:55%", @disabled = "disabled" })
-                                        <input id="btnApproverSelectItem" type="button" class="OnlyEdit site-btn btn-blue btnApproverSelectItem" style="margin:0;border:0;" value="..." />
-                                    </td>
-                                    <td><h5>Approver</h5></td>
-                                    <td>
                                         @Html.TextBoxFor(modelItem => Model.Main.Preparer, new { @style = "width:30%", @class = "inputPreparer", @disabled = "disabled" })
                                         @Html.TextBoxFor(modelItem => Model.Main.PreparerName, new { @style = "width:55%", @disabled = "disabled" })
                                         <input id="btnPreparerSelectItem" type="button" class="OnlyEdit site-btn btn-blue btnPreparerSelectItem" style="margin:0;border:0;" value="..." />
+                                    </td>
+                                    <td><h5></h5></td>
+                                    <td>
                                     </td>
                                 </tr>
                             </tbody>
@@ -1441,7 +1438,7 @@
 
     function GetPass1(data, targetID)
     {
-        if (targetID.includes('Main_Preparer') || targetID.includes('Main_Approver'))
+        if (targetID.includes('Main_Preparer') || targetID.includes('Main_Approver') || targetID.includes('Main_Inspector'))
         {
             $(`#${targetID}`).val(data.ID);
             $(`#${targetID}Name`).val(data.Name);
