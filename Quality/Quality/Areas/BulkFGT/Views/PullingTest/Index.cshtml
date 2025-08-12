@@ -398,8 +398,8 @@
             $('#Save, #Undo, #New, #Picture').addClass("IsEditMode");
 
             if (EditType == "New") {
-                $(".DetailTable input:not(#ReportNoText,#Detail_LastEditName,#ResultText,#Detail_InspectorName), .DetailTable select:not(#Detail_Gender,#Detail_PullForceUnit,#Detail_StyleType),").removeAttr("disabled");
-                $(".DetailTable input:not(#ReportNoText,#Detail_LastEditName,#ResultText,#Detail_InspectorName), .DetailTable select:not(#Detail_Gender,#Detail_PullForceUnit,#Detail_StyleType),").removeAttr("readonly");
+                $(".DetailTable input:not(#ReportNoText,#Detail_LastEditName,#ResultText,#Detail_InspectorName), .DetailTable select:not(#Detail_Gender,#Detail_PullForceUnit,#Detail_StyleType)").removeAttr("disabled");
+                $(".DetailTable input:not(#ReportNoText,#Detail_LastEditName,#ResultText,#Detail_InspectorName), .DetailTable select:not(#Detail_Gender,#Detail_PullForceUnit,#Detail_StyleType)").removeAttr("readonly");
             }
             else {
                 $(".OnlyEdit").removeAttr("disabled").removeAttr("readonly");
