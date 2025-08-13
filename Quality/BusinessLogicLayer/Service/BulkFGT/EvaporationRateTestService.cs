@@ -271,7 +271,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
 
                     // 取得Article 下拉選單
                     _Provider = new EvaporationRateTestProvider(Common.ProductionDataAccessLayer);
-                    List<DatabaseObject.ProductionDB.Orders> tmpOrders = _Provider.GetOrderInfo(new EvaporationRateTest_Request() { StyleID = model.Main.StyleID ,BrandID = model.Main.BrandID,SeasonID = model.Main.SeasonID });
+                    List<DatabaseObject.ProductionDB.Orders> tmpOrders = _Provider.GetOrderInfo(new EvaporationRateTest_Request() {OrderID = model.Main.OrderID, StyleID = model.Main.StyleID ,BrandID = model.Main.BrandID,SeasonID = model.Main.SeasonID });
 
                     foreach (var oriData in tmpOrders)
                     {
@@ -317,7 +317,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _Provider = new EvaporationRateTestProvider(Common.ProductionDataAccessLayer);
 
-                tmpOrders = _Provider.GetOrderInfo(new EvaporationRateTest_Request() { StyleID = model.Main.StyleID, BrandID = model.Main.BrandID, SeasonID = model.Main.SeasonID });
+                tmpOrders = _Provider.GetOrderInfo(new EvaporationRateTest_Request() { OrderID = OrderID });
 
 
                 // 確認SP#是否存在
