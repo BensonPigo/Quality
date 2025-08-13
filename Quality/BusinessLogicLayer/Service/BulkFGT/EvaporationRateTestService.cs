@@ -317,7 +317,7 @@ namespace BusinessLogicLayer.Service.BulkFGT
             {
                 _Provider = new EvaporationRateTestProvider(Common.ProductionDataAccessLayer);
 
-                tmpOrders = _Provider.GetOrderInfo(new EvaporationRateTest_Request() { StyleID = model.Main.StyleID, BrandID = model.Main.BrandID, SeasonID = model.Main.SeasonID });
+                tmpOrders = _Provider.GetOrderInfo(new EvaporationRateTest_Request() { OrderID = OrderID });
 
 
                 // 確認SP#是否存在

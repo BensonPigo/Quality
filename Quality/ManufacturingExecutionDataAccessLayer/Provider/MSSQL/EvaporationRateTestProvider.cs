@@ -55,18 +55,29 @@ namespace ManufacturingExecutionDataAccessLayer.Provider.MSSQL
             SQLParameterCollection paras = new SQLParameterCollection();
 
             string SbSql = $@"
-            select DISTINCT Article
-            from Production.dbo.Style_Article WITH(NOLOCK)
-            where 1=1
-            AND StyleUkey in (
-            select Ukey
-            from Production.dbo.Style WITH(NOLOCK)
-            where id= @StyleID and BrandID=@BrandID and SeasonID=@SeasonID)";
+select DISTINCT sa.Article, o.*
+from Production.dbo.Style_Article sa WITH(NOLOCK)
+inner join Production.dbo.Orders o WITH(NOLOCK) on o.StyleUkey = sa.StyleUkey
+where Category ='B'
+";
 
+            if (!string.IsNullOrEmpty(Req.OrderID))
+            {
+                SbSql += $@" AND o.ID = @OrderID ";
+                paras.Add("@OrderID", DbType.String, Req.OrderID ?? "");
+            }
+            else if (!string.IsNullOrEmpty(Req.BrandID) && !string.IsNullOrEmpty(Req.SeasonID) && !string.IsNullOrEmpty(Req.StyleID))
+            {
+                SbSql += $@" AND o.StyleID = @StyleID AND o.BrandID = @BrandID AND o.SeasonID = @SeasonID )";
+                paras.Add("@StyleID", DbType.String, Req.StyleID ?? "");
+                paras.Add("@BrandID", DbType.String, Req.BrandID ?? "");
+                paras.Add("@SeasonID", DbType.String, Req.SeasonID ?? "");
+            }
+            else
+            {
+                SbSql += $@"AND 1=0";
+            }
 
-            paras.Add("@StyleID", DbType.String, Req.StyleID ?? "");
-            paras.Add("@BrandID", DbType.String, Req.BrandID ?? "");
-            paras.Add("@SeasonID", DbType.String, Req.SeasonID ?? "");
 
 
             var tmp = ExecuteList<DatabaseObject.ProductionDB.Orders>(CommandType.Text, SbSql, paras);
