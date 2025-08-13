@@ -68,7 +68,7 @@ where Category ='B'
             }
             else if (!string.IsNullOrEmpty(Req.BrandID) && !string.IsNullOrEmpty(Req.SeasonID) && !string.IsNullOrEmpty(Req.StyleID))
             {
-                SbSql += $@" AND o.StyleID = @StyleID AND o.BrandID = @BrandID AND o.SeasonID = @SeasonID )";
+                SbSql += $@" AND o.StyleID = @StyleID AND o.BrandID = @BrandID AND o.SeasonID = @SeasonID ";
                 paras.Add("@StyleID", DbType.String, Req.StyleID ?? "");
                 paras.Add("@BrandID", DbType.String, Req.BrandID ?? "");
                 paras.Add("@SeasonID", DbType.String, Req.SeasonID ?? "");
@@ -298,8 +298,8 @@ INSERT INTO dbo.EvaporationRateTest
            ,Status
            ,AddDate
            ,AddName
-,ReportDate
-,Preparer)
+            ,ReportDate
+            ,Preparer)
 VALUES
            (@ReportNo
            ,(select top 1 FactoryID from SciProduction_Orders with(NOLOCK) where ID = @OrderID)
@@ -320,8 +320,9 @@ VALUES
            ,'New'
            ,GETDATE()
            ,@AddName
+           ,@ReportDate
            ,@Preparer
-,@ReportDate)
+)
 ;
 
 IF EXISTS(
